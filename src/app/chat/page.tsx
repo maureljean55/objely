@@ -13,9 +13,8 @@ export default function SecureChatPage() {
   return (
     <div className="bg-background text-on-background font-body-md antialiased">
       <header className="glass-header fixed top-0 inset-x-0 z-50 flex justify-between items-center w-full px-container-margin py-base shadow-[0_1px_0_rgba(0,0,0,0.05)]">
-        <Link href="/matching" className="text-primary p-2 -ml-2 rounded-full hover:bg-surface-container-high/50 transition-colors flex items-center">
+        <Link href="/matching" aria-label="Retour" className="text-primary p-2 -ml-2 rounded-full hover:bg-surface-container-high/50 transition-colors flex items-center">
           <span className="material-symbols-outlined" style={{ fontVariationSettings: "'FILL' 0" }}>arrow_back_ios</span>
-          <span className="font-label-md text-label-md ml-1">Retour</span>
         </Link>
         <div className="flex flex-col items-center">
           <h1 className="font-headline-sm text-headline-sm text-on-surface">Sac à dos noir</h1>

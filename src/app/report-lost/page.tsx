@@ -34,6 +34,7 @@ const CATEGORIES = [
     id: "other",
     label: "Autre objet",
     image: "https://images.unsplash.com/photo-1607166452427-7e4477079cb9?w=400&h=400&fit=crop",
+    mystery: true,
   },
 ] as const;
 
@@ -83,13 +84,22 @@ export default function ReportLostCategoryPage() {
                 <img
                   src={category.image}
                   alt={category.label}
-                  className="absolute inset-0 w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
+                  className={`absolute inset-0 w-full h-full object-cover transition-transform duration-300 group-hover:scale-105 ${
+                    "mystery" in category && category.mystery ? "blur-md scale-110" : ""
+                  }`}
                 />
                 <div
                   className={`absolute inset-0 transition-colors ${
                     isSelected ? "bg-primary/25" : "bg-black/15 group-hover:bg-black/5"
                   }`}
                 />
+                {"mystery" in category && category.mystery && (
+                  <div className="absolute inset-0 flex items-center justify-center">
+                    <span className="material-symbols-outlined text-white text-5xl drop-shadow-md" style={{ fontVariationSettings: "'FILL' 1" }}>
+                      help
+                    </span>
+                  </div>
+                )}
                 {isSelected && (
                   <div className="absolute top-2 right-2 w-7 h-7 rounded-full bg-primary flex items-center justify-center shadow-md">
                     <span className="material-symbols-outlined text-white text-[18px]">check</span>
