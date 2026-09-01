@@ -48,23 +48,21 @@ const RESULTS = [
 
 export default function SearchFiltersPage() {
   return (
-    <div className="bg-background text-on-background font-body-md min-h-screen pb-24 md:pb-0 pt-20">
-      <header className="fixed top-0 w-full z-50 bg-surface/80 backdrop-blur-md shadow-sm">
-        <div className="flex items-center justify-between px-container-margin py-sm w-full max-w-full mx-auto md:max-w-[1140px]">
-          <Link href="/" className="text-on-surface-variant hover:opacity-80 transition-opacity active:scale-95 hidden md:flex items-center justify-center">
-            <span className="material-symbols-outlined text-[24px]">arrow_back</span>
-          </Link>
-          <h1 className="font-display text-headline-sm font-bold text-on-surface text-center flex-1">Rechercher un objet</h1>
-          <button className="text-on-surface-variant hover:opacity-80 transition-opacity active:scale-95 flex items-center justify-center">
-            <span className="material-symbols-outlined text-[24px]">info</span>
-          </button>
-        </div>
-      </header>
+    <div className="bg-background text-on-background font-body-md min-h-screen pb-24 md:pb-0 pt-[176px] md:pt-[132px]">
+      <header className="fixed top-0 inset-x-0 z-50 bg-surface/90 backdrop-blur-md shadow-sm">
+        <div className="max-w-[1140px] mx-auto px-container-margin py-sm">
+          <div className="flex items-center justify-between">
+            <Link href="/" className="text-on-surface-variant hover:opacity-80 transition-opacity active:scale-95 hidden md:flex items-center justify-center">
+              <span className="material-symbols-outlined text-[24px]">arrow_back</span>
+            </Link>
+            <h1 className="font-display text-headline-sm font-bold text-on-surface text-center flex-1">Rechercher un objet</h1>
+            <button className="text-on-surface-variant hover:opacity-80 transition-opacity active:scale-95 flex items-center justify-center">
+              <span className="material-symbols-outlined text-[24px]">info</span>
+            </button>
+          </div>
 
-      <main className="max-w-[1140px] mx-auto px-container-margin">
-        <section className="mt-lg mb-lg">
-          <div className="flex flex-col md:flex-row gap-sm items-center w-full">
-            <div className="relative w-full flex-1">
+          <div className="flex flex-row gap-sm items-center w-full mt-md">
+            <div className="relative flex-1 min-w-0">
               <span className="material-symbols-outlined absolute left-sm top-1/2 -translate-y-1/2 text-outline">search</span>
               <input
                 className="w-full bg-surface text-on-surface placeholder:text-outline rounded border-none focus:ring-1 focus:ring-primary pl-[44px] pr-sm h-[56px] font-body-md transition-all shadow-sm"
@@ -72,11 +70,12 @@ export default function SearchFiltersPage() {
                 type="text"
               />
             </div>
-            <button className="flex items-center justify-center gap-2 bg-surface text-primary border border-primary rounded px-md h-[56px] font-headline-sm hover:opacity-80 transition-opacity whitespace-nowrap w-full md:w-auto shadow-sm">
+            <button className="shrink-0 flex items-center justify-center gap-2 bg-surface text-primary border border-primary rounded px-md h-[56px] font-headline-sm hover:opacity-80 transition-opacity whitespace-nowrap shadow-sm">
               <span className="material-symbols-outlined">tune</span>
-              Filtres
+              <span className="hidden sm:inline">Filtres</span>
             </button>
           </div>
+
           <div className="flex gap-sm overflow-x-auto hide-scrollbar mt-sm py-xs w-full">
             {FILTERS.map((filter, i) => (
               <button
@@ -91,8 +90,10 @@ export default function SearchFiltersPage() {
               </button>
             ))}
           </div>
-        </section>
+        </div>
+      </header>
 
+      <main className="max-w-[1140px] mx-auto px-container-margin pt-lg">
         <section className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-md mb-xl">
           {RESULTS.map((item) => (
             <Link

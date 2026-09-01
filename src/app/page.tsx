@@ -85,23 +85,23 @@ export default function HomeDashboardPage() {
         <nav className="flex gap-gutter">
           <Link className="text-primary font-label-md text-label-md hover:opacity-80 transition-opacity flex flex-col items-center" href="/">
             <span className="material-symbols-outlined mb-1" style={{ fontVariationSettings: "'FILL' 1" }}>home</span>
-            Home
+            Accueil
           </Link>
           <Link className="text-on-surface-variant font-label-md text-label-md hover:opacity-80 transition-opacity flex flex-col items-center" href="/search">
             <span className="material-symbols-outlined mb-1">search</span>
-            Search
+            Recherche
           </Link>
           <Link className="text-on-surface-variant font-label-md text-label-md hover:opacity-80 transition-opacity flex flex-col items-center" href="/report-lost">
             <span className="material-symbols-outlined mb-1">add_circle</span>
-            Declare
+            Déclarer
           </Link>
           <Link className="text-on-surface-variant font-label-md text-label-md hover:opacity-80 transition-opacity flex flex-col items-center" href="/chat">
             <span className="material-symbols-outlined mb-1">explore</span>
-            Activity
+            Activité
           </Link>
           <Link className="text-on-surface-variant font-label-md text-label-md hover:opacity-80 transition-opacity flex flex-col items-center" href="/profile">
             <span className="material-symbols-outlined mb-1">person</span>
-            Profile
+            Profil
           </Link>
         </nav>
         <Link href="/profile" className="w-10 h-10 flex items-center justify-center rounded-full surface-card overflow-hidden bg-surface-container-high">
