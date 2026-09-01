@@ -23,9 +23,7 @@ export default function MyItemsPage() {
           <span className="material-symbols-outlined">arrow_back_ios</span>
         </Link>
         <h1 className="font-headline-lg-mobile text-headline-lg-mobile text-primary absolute left-1/2 -translate-x-1/2">Mes objets</h1>
-        <Link href="/profile/settings" aria-label="Paramètres" className="w-10 h-10 flex items-center justify-center text-on-surface-variant hover:opacity-70 transition-opacity active:scale-95">
-          <span className="material-symbols-outlined">settings</span>
-        </Link>
+        <div className="w-10 h-10" />
       </header>
 
       <main className="pt-20 px-container-margin flex flex-col gap-lg max-w-2xl mx-auto">
