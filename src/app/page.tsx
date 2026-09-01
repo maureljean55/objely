@@ -91,10 +91,6 @@ export default function HomeDashboardPage() {
             <span className="material-symbols-outlined mb-1">search</span>
             Recherche
           </Link>
-          <Link className="text-on-surface-variant font-label-md text-label-md hover:opacity-80 transition-opacity flex flex-col items-center" href="/report-lost">
-            <span className="material-symbols-outlined mb-1">add_circle</span>
-            Déclarer
-          </Link>
           <Link className="text-on-surface-variant font-label-md text-label-md hover:opacity-80 transition-opacity flex flex-col items-center" href="/chat">
             <span className="material-symbols-outlined mb-1">explore</span>
             Activité

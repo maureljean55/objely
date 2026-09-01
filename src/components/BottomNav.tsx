@@ -1,11 +1,10 @@
 import Link from "next/link";
 
-type NavKey = "home" | "search" | "declare" | "activity" | "profile";
+type NavKey = "home" | "search" | "activity" | "profile";
 
 const ITEMS: { key: NavKey; href: string; icon: string; label: string }[] = [
   { key: "home", href: "/", icon: "home", label: "Accueil" },
   { key: "search", href: "/search", icon: "search", label: "Recherche" },
-  { key: "declare", href: "/report-lost", icon: "add_circle", label: "Déclarer" },
   { key: "activity", href: "/chat", icon: "explore", label: "Activité" },
   { key: "profile", href: "/profile", icon: "person", label: "Profil" },
 ];
