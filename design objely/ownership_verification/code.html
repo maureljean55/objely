@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+
+<html lang="fr"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Objely - Ownership Verification</title>
+<!-- Material Symbols -->
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<!-- Google Fonts: Plus Jakarta Sans -->
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<!-- Tailwind CSS -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "secondary-fixed": "#e3dfff",
+                        "primary-fixed": "#d8e2ff",
+                        "surface-container": "#ededf2",
+                        "on-error-container": "#93000a",
+                        "on-tertiary-fixed": "#001c3a",
+                        "error-container": "#ffdad6",
+                        "on-secondary-container": "#352c8a",
+                        "secondary": "#5952af",
+                        "tertiary-container": "#5d769a",
+                        "tertiary-fixed": "#d4e3ff",
+                        "inverse-primary": "#adc6ff",
+                        "surface-container-high": "#e8e8ed",
+                        "primary-container": "#0070eb",
+                        "tertiary": "#455d80",
+                        "surface-bright": "#f9f9fe",
+                        "on-primary-fixed": "#001a41",
+                        "on-background": "#1a1c1f",
+                        "on-tertiary-fixed-variant": "#2f486a",
+                        "on-secondary": "#ffffff",
+                        "surface-container-lowest": "#ffffff",
+                        "on-surface": "#1a1c1f",
+                        "on-error": "#ffffff",
+                        "outline-variant": "#c1c6d7",
+                        "surface-dim": "#d9dade",
+                        "surface": "#f9f9fe",
+                        "on-primary": "#ffffff",
+                        "primary-fixed-dim": "#adc6ff",
+                        "on-tertiary-container": "#fefcff",
+                        "on-primary-fixed-variant": "#004493",
+                        "inverse-surface": "#2e3034",
+                        "secondary-container": "#a19afd",
+                        "on-primary-container": "#fefcff",
+                        "inverse-on-surface": "#f0f0f5",
+                        "background": "#f9f9fe",
+                        "primary": "#0058bc",
+                        "surface-container-highest": "#e2e2e7",
+                        "surface-container-low": "#f3f3f8",
+                        "on-surface-variant": "#414755",
+                        "secondary-fixed-dim": "#c5c0ff",
+                        "tertiary-fixed-dim": "#afc8f0",
+                        "outline": "#717786",
+                        "on-secondary-fixed-variant": "#413996",
+                        "on-secondary-fixed": "#140067",
+                        "error": "#ba1a1a",
+                        "on-tertiary": "#ffffff",
+                        "surface-variant": "#e2e2e7",
+                        "surface-tint": "#005bc1"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "1rem",
+                        "lg": "2rem",
+                        "xl": "3rem",
+                        "full": "9999px"
+                    },
+                    "spacing": {
+                        "sm": "12px",
+                        "container-margin": "20px",
+                        "md": "16px",
+                        "xl": "32px",
+                        "gutter": "16px",
+                        "base": "8px",
+                        "lg": "24px",
+                        "xs": "4px"
+                    },
+                    "fontFamily": {
+                        "display": ["Plus Jakarta Sans"],
+                        "label-md": ["Plus Jakarta Sans"],
+                        "headline-md": ["Plus Jakarta Sans"],
+                        "headline-sm": ["Plus Jakarta Sans"],
+                        "body-lg": ["Plus Jakarta Sans"],
+                        "body-md": ["Plus Jakarta Sans"],
+                        "headline-lg": ["Plus Jakarta Sans"],
+                        "headline-lg-mobile": ["Plus Jakarta Sans"]
+                    },
+                    "fontSize": {
+                        "display": ["34px", { "lineHeight": "41px", "letterSpacing": "-0.02em", "fontWeight": "700" }],
+                        "label-md": ["13px", { "lineHeight": "18px", "letterSpacing": "0.05em", "fontWeight": "500" }],
+                        "headline-md": ["22px", { "lineHeight": "28px", "fontWeight": "600" }],
+                        "headline-sm": ["17px", { "lineHeight": "22px", "fontWeight": "600" }],
+                        "body-lg": ["17px", { "lineHeight": "24px", "fontWeight": "400" }],
+                        "body-md": ["15px", { "lineHeight": "20px", "fontWeight": "400" }],
+                        "headline-lg": ["28px", { "lineHeight": "34px", "letterSpacing": "-0.01em", "fontWeight": "700" }],
+                        "headline-lg-mobile": ["24px", { "lineHeight": "30px", "fontWeight": "700" }]
+                    }
+                }
+            }
+        }
+    </script>
+<style>
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            background-color: #f9f9fe;
+        }
+        
+        /* Soft Bloom Shadow for Elevated Cards */
+        .shadow-soft-bloom {
+            box-shadow: 0px 10px 30px rgba(0, 31, 63, 0.08);
+        }
+
+        /* Ambient inner stroke for surface cards */
+        .surface-card-border {
+            box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.05);
+        }
+        
+        /* Button subtle gradient */
+        .btn-gradient {
+            background: linear-gradient(180deg, #007AFF 0%, #0058bc 100%);
+        }
+        
+        /* Progress Indicator Gradient */
+        .progress-gradient {
+            background: linear-gradient(90deg, #007AFF 0%, #A29BFE 100%);
+        }
+
+        /* Glassmorphism utility */
+        .glass-panel {
+            background: rgba(255, 255, 255, 0.7);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background text-on-surface antialiased min-h-screen flex flex-col pb-24 md:pb-0">
+<!-- TopAppBar -->
+<header class="fixed top-0 w-full z-50 bg-surface/80 dark:bg-surface-dim/80 backdrop-blur-md shadow-sm transition-transform duration-300" id="top-app-bar">
+<div class="flex items-center justify-between px-container-margin py-sm w-full max-w-full mx-auto md:max-w-[1140px]">
+<button class="w-10 h-10 flex items-center justify-center rounded-full hover:opacity-80 transition-opacity active:scale-95 text-on-surface-variant focus:outline-none focus:ring-2 focus:ring-primary/20">
+<span class="material-symbols-outlined" data-icon="arrow_back" style="font-variation-settings: 'FILL' 0;">arrow_back</span>
+</button>
+<h1 class="font-display text-headline-sm font-bold text-on-surface dark:text-on-surface-variant flex-1 text-center truncate px-2">Vérification</h1>
+<button class="w-10 h-10 flex items-center justify-center rounded-full hover:opacity-80 transition-opacity active:scale-95 text-on-surface-variant focus:outline-none focus:ring-2 focus:ring-primary/20">
+<span class="material-symbols-outlined" data-icon="info" style="font-variation-settings: 'FILL' 0;">info</span>
+</button>
+</div>
+</header>
+<!-- Main Content Canvas -->
+<main class="flex-1 w-full max-w-[1140px] mx-auto pt-24 px-container-margin md:px-xl pb-32">
+<!-- Header Section -->
+<div class="mb-xl text-center md:text-left max-w-2xl mx-auto md:mx-0">
+<h2 class="font-headline-lg-mobile md:font-headline-lg text-headline-lg-mobile md:text-headline-lg text-on-surface mb-sm">
+                Prouvez que cet objet vous appartient
+            </h2>
+<p class="font-body-md text-body-md text-on-surface-variant">
+                Répondez à quelques questions pour confirmer que vous êtes bien le propriétaire de cet objet.
+            </p>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-12 gap-xl">
+<!-- Context Card (Left Column on Desktop) -->
+<div class="md:col-span-5 md:col-start-1 flex flex-col gap-lg">
+<div class="bg-surface-container-lowest rounded-xl shadow-soft-bloom surface-card-border overflow-hidden flex flex-col">
+<div class="relative h-48 w-full bg-surface-container-high">
+<!-- Blurred image to obscure details -->
+<img alt="Objet trouvé - portefeuille" class="w-full h-full object-cover filter blur-sm scale-110 opacity-90 transition-all duration-500 hover:blur-md" data-alt="A blurred, soft-focus photograph of a high-end brown leather wallet resting on a clean white minimalist surface. The lighting is bright and even, casting soft diffuse shadows typical of a premium iOS-inspired light-mode aesthetic. The exact details of the wallet are intentionally obscured by a strong depth-of-field blur, conveying a sense of privacy and hidden identity." src="https://lh3.googleusercontent.com/aida-public/AB6AXuD9uwELYpCAg-H2lwfgw6zwBhEWCfYnsqaKo5hOlNVY5RWyoG7ikbvy2H_AS59f383yydhPI6sf2kypKog-HtW-gnyAsI_DlcRjjilULCAu8XCRJ8OLeYJZgU3WaqREQpH1ZcRxucTu9u2u6FaBZUU7B1VbaY23jvsHM32b0aAaSvl6iHJln7sqip57Lxdi265_sR6di47mOUKNueY75YPNSfkD5L-migV8RzBADRGIlzKgTa-xmenk"/>
+<!-- Status Badge -->
+<div class="absolute top-md right-md bg-surface-container-lowest/90 backdrop-blur-md px-3 py-1 rounded-full border border-surface-variant flex items-center gap-2 shadow-sm">
+<span class="w-2 h-2 rounded-full bg-primary-container animate-pulse"></span>
+<span class="font-label-md text-label-md text-on-surface">Trouvé le 12 Oct</span>
+</div>
+</div>
+<div class="p-md flex items-center justify-between bg-surface-container-lowest">
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 rounded-full bg-secondary-fixed/30 flex items-center justify-center text-on-secondary-fixed">
+<span class="material-symbols-outlined text-[20px]">wallet</span>
+</div>
+<div>
+<h3 class="font-headline-sm text-headline-sm text-on-surface">Portefeuille en cuir</h3>
+<p class="font-body-md text-body-md text-on-surface-variant text-sm">Paris 10e, Métro Gare du Nord</p>
+</div>
+</div>
+</div>
+</div>
+<!-- Security Info Card -->
+<div class="bg-surface-container-low rounded-xl p-md flex items-start gap-md border border-surface-variant/50">
+<div class="mt-1 flex-shrink-0 text-primary-container">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">lock</span>
+</div>
+<p class="font-body-md text-body-md text-on-surface-variant leading-relaxed">
+<strong class="text-on-surface font-semibold">Vos informations restent privées.</strong> Ces réponses ne sont visibles que par le trouveur pour valider la restitution.
+                    </p>
+</div>
+</div>
+<!-- Questionnaire Form (Right Column on Desktop) -->
+<div class="md:col-span-7 md:col-start-6">
+<form class="flex flex-col gap-lg bg-surface-container-lowest rounded-[32px] p-lg md:p-xl shadow-soft-bloom surface-card-border">
+<!-- Progress Step Indicator -->
+<div class="flex items-center gap-2 mb-2">
+<div class="h-1 w-12 rounded-full progress-gradient"></div>
+<div class="h-1 w-12 rounded-full bg-surface-variant"></div>
+<span class="font-label-md text-label-md text-on-surface-variant ml-2">Étape 1 sur 2</span>
+</div>
+<!-- Question 1 -->
+<div class="flex flex-col gap-2">
+<label class="font-headline-sm text-headline-sm text-on-surface" for="q-brand">
+                            Quelle est la marque ou le logo présent sur l'objet ?
+                        </label>
+<p class="font-body-md text-body-md text-on-surface-variant text-sm mb-1">
+                            Soyez précis si possible (ex: logo en métal doré, marque embossée à l'intérieur).
+                        </p>
+<div class="relative">
+<input class="w-full h-14 bg-[#F2F2F7] border-transparent rounded-[16px] px-md font-body-lg text-body-lg text-on-surface focus:border-primary-container focus:bg-surface-container-lowest focus:ring-1 focus:ring-primary-container transition-all placeholder:text-outline-variant" id="q-brand" name="brand" placeholder="Ex: Montblanc, Le Tanneur..." type="text"/>
+</div>
+</div>
+<hr class="border-surface-variant/50"/>
+<!-- Question 2 -->
+<div class="flex flex-col gap-2">
+<label class="font-headline-sm text-headline-sm text-on-surface" for="q-details">
+                            Quel détail particulier ou contenu se trouve à l'intérieur ?
+                        </label>
+<p class="font-body-md text-body-md text-on-surface-variant text-sm mb-1">
+                            Décrivez un élément unique (une carte spécifique, une photo, une griffe).
+                        </p>
+<div class="relative">
+<textarea class="w-full bg-[#F2F2F7] border-transparent rounded-[16px] p-md font-body-lg text-body-lg text-on-surface focus:border-primary-container focus:bg-surface-container-lowest focus:ring-1 focus:ring-primary-container transition-all placeholder:text-outline-variant resize-none" id="q-details" name="details" placeholder="Ex: Il y a une carte de fidélité Monoprix rouge, et une vieille photo d'identité pliée dans la pochette gauche..." rows="4"></textarea>
+</div>
+</div>
+<!-- Action Buttons -->
+<div class="pt-sm flex flex-col sm:flex-row-reverse gap-sm mt-md">
+<button class="btn-gradient min-h-[56px] px-lg rounded-[16px] flex-1 flex items-center justify-center gap-2 text-on-primary font-headline-sm text-headline-sm hover:opacity-90 active:scale-[0.98] transition-all shadow-md shadow-primary/20" type="button">
+                            Vérifier la propriété
+                            <span class="material-symbols-outlined text-[20px]">arrow_forward</span>
+</button>
+<button class="min-h-[56px] px-lg rounded-[16px] sm:w-auto bg-transparent border-none text-primary-container font-headline-sm text-headline-sm hover:bg-surface-container-high/50 active:scale-[0.98] transition-all" type="button">
+                            Annuler
+                        </button>
+</div>
+</form>
+</div>
+</div>
+</main>
+<!-- Suppressed BottomNavBar for transactional flow -->
+<!-- According to "Automatic Suppression" rules: Exclude the navigation shell if the page intent is Linear/Transactional... -->
+<script>
+        // Simple scroll handler for TopAppBar elevation effect
+        const topAppBar = document.getElementById('top-app-bar');
+        window.addEventListener('scroll', () => {
+            if (window.scrollY > 10) {
+                topAppBar.classList.add('shadow-md', 'bg-surface/95');
+                topAppBar.classList.remove('shadow-sm', 'bg-surface/80');
+            } else {
+                topAppBar.classList.remove('shadow-md', 'bg-surface/95');
+                topAppBar.classList.add('shadow-sm', 'bg-surface/80');
+            }
+        });
+    </script>
+</body></html>

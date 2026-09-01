@@ -1,0 +1,295 @@
+<!DOCTYPE html>
+
+<html class="light" lang="fr"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Objely - Rechercher</title>
+<!-- Material Symbols -->
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<!-- Tailwind CSS -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<!-- Plus Jakarta Sans Font -->
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<!-- Tailwind Config injected from design guidelines -->
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "primary": "#0058bc",
+                        "on-surface-variant": "#414755",
+                        "on-background": "#1a1c1f",
+                        "surface-tint": "#005bc1",
+                        "on-primary-fixed-variant": "#004493",
+                        "outline": "#717786",
+                        "outline-variant": "#c1c6d7",
+                        "on-error": "#ffffff",
+                        "primary-fixed": "#d8e2ff",
+                        "on-secondary": "#ffffff",
+                        "surface-container-lowest": "#ffffff",
+                        "error": "#ba1a1a",
+                        "primary-fixed-dim": "#adc6ff",
+                        "background": "#f9f9fe",
+                        "surface": "#f9f9fe",
+                        "surface-dim": "#d9dade",
+                        "tertiary-fixed": "#d4e3ff",
+                        "secondary-fixed-dim": "#c5c0ff",
+                        "on-tertiary": "#ffffff",
+                        "tertiary-fixed-dim": "#afc8f0",
+                        "on-tertiary-fixed-variant": "#2f486a",
+                        "on-primary-container": "#fefcff",
+                        "primary-container": "#0070eb",
+                        "surface-container-highest": "#e2e2e7",
+                        "surface-container-low": "#f3f3f8",
+                        "tertiary-container": "#5d769a",
+                        "on-secondary-fixed-variant": "#413996",
+                        "on-error-container": "#93000a",
+                        "on-tertiary-fixed": "#001c3a",
+                        "surface-bright": "#f9f9fe",
+                        "inverse-primary": "#adc6ff",
+                        "on-primary-fixed": "#001a41",
+                        "on-surface": "#1a1c1f",
+                        "inverse-surface": "#2e3034",
+                        "tertiary": "#455d80",
+                        "secondary-fixed": "#e3dfff",
+                        "on-primary": "#ffffff",
+                        "secondary": "#5952af",
+                        "on-secondary-container": "#352c8a",
+                        "surface-variant": "#e2e2e7",
+                        "on-tertiary-container": "#fefcff",
+                        "secondary-container": "#a19afd",
+                        "inverse-on-surface": "#f0f0f5",
+                        "surface-container": "#ededf2",
+                        "surface-container-high": "#e8e8ed",
+                        "on-secondary-fixed": "#140067",
+                        "error-container": "#ffdad6"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "1rem",
+                        "lg": "2rem",
+                        "xl": "3rem",
+                        "full": "9999px"
+                    },
+                    "spacing": {
+                        "gutter": "16px",
+                        "md": "16px",
+                        "sm": "12px",
+                        "xs": "4px",
+                        "lg": "24px",
+                        "container-margin": "20px",
+                        "base": "8px",
+                        "xl": "32px",
+                        "safe-bottom": "env(safe-area-inset-bottom, 20px)"
+                    },
+                    "fontFamily": {
+                        "body-md": ["Plus Jakarta Sans"],
+                        "headline-lg-mobile": ["Plus Jakarta Sans"],
+                        "display": ["Plus Jakarta Sans"],
+                        "label-md": ["Plus Jakarta Sans"],
+                        "headline-md": ["Plus Jakarta Sans"],
+                        "headline-sm": ["Plus Jakarta Sans"],
+                        "body-lg": ["Plus Jakarta Sans"],
+                        "headline-lg": ["Plus Jakarta Sans"]
+                    },
+                    "fontSize": {
+                        "body-md": ["15px", { "lineHeight": "20px", "fontWeight": "400" }],
+                        "headline-lg-mobile": ["24px", { "lineHeight": "30px", "fontWeight": "700" }],
+                        "display": ["34px", { "lineHeight": "41px", "letterSpacing": "-0.02em", "fontWeight": "700" }],
+                        "label-md": ["13px", { "lineHeight": "18px", "letterSpacing": "0.05em", "fontWeight": "500" }],
+                        "headline-md": ["22px", { "lineHeight": "28px", "fontWeight": "600" }],
+                        "headline-sm": ["17px", { "lineHeight": "22px", "fontWeight": "600" }],
+                        "body-lg": ["17px", { "lineHeight": "24px", "fontWeight": "400" }],
+                        "headline-lg": ["28px", { "lineHeight": "34px", "letterSpacing": "-0.01em", "fontWeight": "700" }]
+                    },
+                    "boxShadow": {
+                        "soft-bloom": "0px 10px 30px rgba(0, 31, 63, 0.08)",
+                        "nav": "0px -10px 30px rgba(0, 31, 63, 0.08)"
+                    }
+                }
+            }
+        }
+    </script>
+<style>
+        /* Custom scrollbar hiding for smooth horizontal scroll */
+        .hide-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+        .hide-scrollbar {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+    </style>
+</head>
+<body class="bg-[#F2F2F7] text-on-background font-body-md min-h-screen pb-24 md:pb-0 pt-20">
+<!-- TopAppBar -->
+<header class="fixed top-0 w-full z-50 bg-surface/80 dark:bg-surface-dim/80 backdrop-blur-md shadow-sm">
+<div class="flex items-center justify-between px-container-margin py-sm w-full max-w-full mx-auto md:max-w-[1140px]">
+<button class="text-on-surface-variant hover:opacity-80 transition-opacity active:scale-95 transition-transform hidden md:flex items-center justify-center">
+<span class="material-symbols-outlined text-[24px]">arrow_back</span>
+</button>
+<h1 class="font-display text-headline-sm font-bold text-on-surface dark:text-on-surface-variant text-center flex-1">
+                Rechercher un objet
+            </h1>
+<button class="text-on-surface-variant hover:opacity-80 transition-opacity active:scale-95 transition-transform flex items-center justify-center">
+<span class="material-symbols-outlined text-[24px]">info</span>
+</button>
+</div>
+</header>
+<main class="max-w-[1140px] mx-auto px-container-margin">
+<!-- Search Section -->
+<section class="mt-lg mb-lg">
+<div class="flex flex-col md:flex-row gap-sm items-center w-full">
+<div class="relative w-full flex-1">
+<span class="material-symbols-outlined absolute left-sm top-1/2 -translate-y-1/2 text-outline">search</span>
+<input class="w-full bg-surface text-on-surface placeholder:text-outline rounded-DEFAULT border-none focus:ring-1 focus:ring-primary pl-[44px] pr-sm h-[56px] font-body-md transition-all shadow-sm" placeholder="Que recherchez-vous ?" type="text"/>
+</div>
+<button class="flex items-center justify-center gap-2 bg-surface text-primary border border-primary rounded-DEFAULT px-md h-[56px] font-headline-sm hover:opacity-80 transition-opacity whitespace-nowrap w-full md:w-auto shadow-sm">
+<span class="material-symbols-outlined">tune</span>
+                    Filtres
+                </button>
+</div>
+<!-- Filter Chips (Horizontal Scroll) -->
+<div class="flex gap-sm overflow-x-auto hide-scrollbar mt-sm py-xs w-full">
+<button class="bg-[#A29BFE]/15 text-[#A29BFE] rounded-full px-4 py-2 font-label-md whitespace-nowrap border border-transparent">Tous</button>
+<button class="bg-surface text-on-surface-variant rounded-full px-4 py-2 font-label-md whitespace-nowrap border border-outline-variant hover:bg-surface-variant transition-colors">Téléphones</button>
+<button class="bg-surface text-on-surface-variant rounded-full px-4 py-2 font-label-md whitespace-nowrap border border-outline-variant hover:bg-surface-variant transition-colors">Sacs</button>
+<button class="bg-surface text-on-surface-variant rounded-full px-4 py-2 font-label-md whitespace-nowrap border border-outline-variant hover:bg-surface-variant transition-colors">Clés</button>
+<button class="bg-surface text-on-surface-variant rounded-full px-4 py-2 font-label-md whitespace-nowrap border border-outline-variant hover:bg-surface-variant transition-colors">Portefeuilles</button>
+<button class="bg-surface text-on-surface-variant rounded-full px-4 py-2 font-label-md whitespace-nowrap border border-outline-variant hover:bg-surface-variant transition-colors">Ordinateurs</button>
+<button class="bg-surface text-on-surface-variant rounded-full px-4 py-2 font-label-md whitespace-nowrap border border-outline-variant hover:bg-surface-variant transition-colors">Autres</button>
+</div>
+</section>
+<!-- Results Grid -->
+<section class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-md mb-xl">
+<!-- Item Card 1 -->
+<article class="bg-surface rounded-lg shadow-soft-bloom overflow-hidden relative group border border-black/5 hover:scale-[1.02] transition-transform duration-300">
+<div class="h-48 w-full relative">
+<img class="w-full h-full object-cover rounded-t-lg" data-alt="A highly detailed close-up shot of a modern car key fob resting on a clean, light-colored concrete surface. The lighting is bright and diffuse, creating soft shadows and highlighting the metallic and textured plastic details of the key. The scene feels premium, orderly, and slightly melancholic, reflecting a lost item in an urban environment. Minimalist composition with a cool-toned, calming aesthetic." src="https://lh3.googleusercontent.com/aida-public/AB6AXuD12B1FPVpUN5NIKUAnRKs5zpF18Vs7MYWFKe5RJJU61StGE4BMYN6mFim0UfZNg_b2BcOfvsFJuCTHHVPjQ-eBDgsWsPYnrwuyVh8tcST2eWbs5w_Bjxu5uA3dquqlFMhbPc-nMofuIJ2EgoDgXkhHY6dma8zwP1ajRjCQg_F7yu63w8SaReqUwpu_5AAnYMvKSyVVmD8grwvtr6gVqXNECBTSMRAK2fMRWjCFzQBVnFOPMqrPRVTr"/>
+<div class="absolute top-sm right-sm bg-error-container text-on-error-container px-3 py-1 rounded-full font-label-md flex items-center gap-1 shadow-sm backdrop-blur-md bg-opacity-90">
+<span class="material-symbols-outlined text-[14px]">warning</span>
+                        Perdu
+                    </div>
+</div>
+<div class="p-md flex flex-col gap-sm bg-surface">
+<div class="flex justify-between items-start">
+<h2 class="font-headline-sm text-on-surface font-semibold line-clamp-1">Clés de voiture</h2>
+<span class="text-outline text-[12px] font-label-md whitespace-nowrap">Il y a 2h</span>
+</div>
+<div class="flex flex-col gap-1 text-on-surface-variant font-label-md">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-[16px]">location_on</span>
+<span>Paris 15e</span>
+</div>
+<div class="flex items-center gap-2 text-primary">
+<span class="material-symbols-outlined text-[16px]">near_me</span>
+<span>à 500m</span>
+</div>
+</div>
+</div>
+</article>
+<!-- Item Card 2 -->
+<article class="bg-surface rounded-lg shadow-soft-bloom overflow-hidden relative group border border-black/5 hover:scale-[1.02] transition-transform duration-300">
+<div class="h-48 w-full relative">
+<img class="w-full h-full object-cover rounded-t-lg" data-alt="An elegant leather handbag sitting alone on a smooth wooden bench in a brightly lit, modern indoor space. Soft, natural sunlight filters through nearby windows, casting gentle shadows. The bag is crafted from premium tan leather with subtle gold hardware. The overall mood is calm, high-end, and slightly mysterious, fitting for a premium lost-and-found aesthetic." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCzRy31A-tA9ur8LWAQyHrs0D3843_S-zmZtA3E0AVZtv8xbjuWXAMCyu23c-VJGZTpWL-O677uSY5fq4VIFWYXqJiSMB_4IqttGjSembhVoA2vv27RBXEO4_F6VbAQmOVKhElBSGFSvyDbUQCALbJiNRXDjhofuvdN215Sl3KOoleEVgcoPk-YlHJn6_U6YkX5DQ5xjzrLNuxpmEn5Q17b6Dla7wlRL_kDAftywtZln2AIc885pAN0"/>
+<div class="absolute top-sm right-sm bg-[#e8f5e9] text-[#2e7d32] px-3 py-1 rounded-full font-label-md flex items-center gap-1 shadow-sm backdrop-blur-md bg-opacity-90">
+<span class="material-symbols-outlined text-[14px]">check_circle</span>
+                        Trouvé
+                    </div>
+</div>
+<div class="p-md flex flex-col gap-sm bg-surface">
+<div class="flex justify-between items-start">
+<h2 class="font-headline-sm text-on-surface font-semibold line-clamp-1">Sac à main en cuir</h2>
+<span class="text-outline text-[12px] font-label-md whitespace-nowrap">Hier</span>
+</div>
+<div class="flex flex-col gap-1 text-on-surface-variant font-label-md">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-[16px]">location_on</span>
+<span>Gare de Lyon, Paris</span>
+</div>
+<div class="flex items-center gap-2 text-primary">
+<span class="material-symbols-outlined text-[16px]">near_me</span>
+<span>à 2.3km</span>
+</div>
+</div>
+</div>
+</article>
+<!-- Item Card 3 -->
+<article class="bg-surface rounded-lg shadow-soft-bloom overflow-hidden relative group border border-black/5 hover:scale-[1.02] transition-transform duration-300">
+<div class="h-48 w-full relative bg-surface-variant flex items-center justify-center">
+<img class="w-full h-full object-cover rounded-t-lg" data-alt="A sleek, modern smartphone with a dark screen resting on a softly textured, light grey fabric surface. The lighting is studio-quality, emphasizing the metallic edges and glass reflection of the device. The composition is minimalist and clean, evoking a sense of calm order and premium technology within a high-end UI design context." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDhOSzw46jyObmdDIEMPe34PXcctOSk0Xn68_M2_30rLQlDPuTowtmeMb0FAHimvC6QQJT0w7efR4OU_x_uZFtbW04sqehneoQsBdUHlr2pSXfuDqRsWC6NoF8v-tRbU9ckSAGS6DaUnTkU8G0y_PkE_UTmsUzipzZDsCP08Y9elsOYWgGtBDdnd1m47remkrXzdebwp1beROMU1Y7Qnz-p-SHekgDqhmlO9gz3RdbdMLfUHQ-pUlJe"/>
+<div class="absolute top-sm right-sm bg-error-container text-on-error-container px-3 py-1 rounded-full font-label-md flex items-center gap-1 shadow-sm backdrop-blur-md bg-opacity-90">
+<span class="material-symbols-outlined text-[14px]">warning</span>
+                        Perdu
+                    </div>
+</div>
+<div class="p-md flex flex-col gap-sm bg-surface">
+<div class="flex justify-between items-start">
+<h2 class="font-headline-sm text-on-surface font-semibold line-clamp-1">iPhone 14 Pro</h2>
+<span class="text-outline text-[12px] font-label-md whitespace-nowrap">12 Oct</span>
+</div>
+<div class="flex flex-col gap-1 text-on-surface-variant font-label-md">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-[16px]">location_on</span>
+<span>Parc Monceau, Paris 8e</span>
+</div>
+<div class="flex items-center gap-2 text-primary">
+<span class="material-symbols-outlined text-[16px]">near_me</span>
+<span>à 4km</span>
+</div>
+</div>
+</div>
+</article>
+<!-- Item Card 4 -->
+<article class="bg-surface rounded-lg shadow-soft-bloom overflow-hidden relative group border border-black/5 hover:scale-[1.02] transition-transform duration-300">
+<div class="h-48 w-full relative">
+<img class="w-full h-full object-cover rounded-t-lg" data-alt="A small, classic black leather wallet slightly open, resting on a clean, light marble countertop. The lighting is bright and crisp, creating a premium, modern aesthetic with soft, diffused shadows. The scene suggests a lost item waiting to be claimed in a serene, upscale environment, matching a refined digital interface." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBTTXu6kXXl-f6dnnR3XBeqCCgnd9PM4Y4lb2A2Ez4fIBWxPJ9tv7BRQivwkQ2K3KUMjOIOKJdfPIwa-4YcceblYEXq_Oo_Fq3QgCycYynjiOFB8IjjdWdf9EfN8YUWIU86hLwueYqDiShBG8nagKckgKzCJDZTWgCIIdpZIA0EjFA40RsRcbgxWupE30b49QwE8ssMfkbttc2nepVEv2n5ZcBNxAI7lOuKZBDUioKQ8RdijS4D2iV3"/>
+<div class="absolute top-sm right-sm bg-[#e8f5e9] text-[#2e7d32] px-3 py-1 rounded-full font-label-md flex items-center gap-1 shadow-sm backdrop-blur-md bg-opacity-90">
+<span class="material-symbols-outlined text-[14px]">check_circle</span>
+                        Trouvé
+                    </div>
+</div>
+<div class="p-md flex flex-col gap-sm bg-surface">
+<div class="flex justify-between items-start">
+<h2 class="font-headline-sm text-on-surface font-semibold line-clamp-1">Portefeuille Noir</h2>
+<span class="text-outline text-[12px] font-label-md whitespace-nowrap">10 Oct</span>
+</div>
+<div class="flex flex-col gap-1 text-on-surface-variant font-label-md">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-[16px]">location_on</span>
+<span>Métro Châtelet</span>
+</div>
+<div class="flex items-center gap-2 text-primary">
+<span class="material-symbols-outlined text-[16px]">near_me</span>
+<span>à 1.2km</span>
+</div>
+</div>
+</div>
+</article>
+</section>
+</main>
+<!-- BottomNavBar (Mobile Only) -->
+<nav class="md:hidden fixed bottom-0 w-full rounded-t-xl z-50 bg-surface/90 dark:bg-surface-container-lowest/90 backdrop-blur-xl shadow-nav">
+<div class="flex justify-around items-center px-4 pt-base pb-safe-bottom">
+<a class="flex flex-col items-center justify-center text-on-surface-variant dark:text-outline hover:bg-surface-variant/50 active:scale-90 transition-all duration-200 px-3 py-1 rounded-xl" href="#">
+<span class="material-symbols-outlined" data-weight="fill" style="font-variation-settings: 'FILL' 0;">home</span>
+<span class="font-label-md text-label-md mt-1">Accueil</span>
+</a>
+<a class="flex flex-col items-center justify-center text-primary dark:text-primary-fixed-dim bg-primary-container/10 rounded-xl px-3 py-1 hover:bg-surface-variant/50 active:scale-90 transition-all duration-200" href="#">
+<span class="material-symbols-outlined" data-weight="fill" style="font-variation-settings: 'FILL' 1;">search</span>
+<span class="font-label-md text-label-md mt-1 font-bold">Rechercher</span>
+</a>
+<a class="flex flex-col items-center justify-center text-on-surface-variant dark:text-outline hover:bg-surface-variant/50 active:scale-90 transition-all duration-200 px-3 py-1 rounded-xl" href="#">
+<span class="material-symbols-outlined" data-weight="fill" style="font-variation-settings: 'FILL' 0;">inventory_2</span>
+<span class="font-label-md text-label-md mt-1">Mes Objets</span>
+</a>
+<a class="flex flex-col items-center justify-center text-on-surface-variant dark:text-outline hover:bg-surface-variant/50 active:scale-90 transition-all duration-200 px-3 py-1 rounded-xl" href="#">
+<span class="material-symbols-outlined" data-weight="fill" style="font-variation-settings: 'FILL' 0;">person</span>
+<span class="font-label-md text-label-md mt-1">Profil</span>
+</a>
+</div>
+</nav>
+</body></html>

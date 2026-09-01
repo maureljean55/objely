@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+
+<html lang="fr"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Correspondance - Lost &amp; Found</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "on-error": "#ffffff",
+                        "surface-container": "#ededf2",
+                        "primary": "#0058bc",
+                        "surface-container-highest": "#e2e2e7",
+                        "on-secondary-fixed-variant": "#413996",
+                        "surface-dim": "#d9dade",
+                        "on-tertiary": "#ffffff",
+                        "on-tertiary-fixed": "#001c3a",
+                        "outline-variant": "#c1c6d7",
+                        "surface-variant": "#e2e2e7",
+                        "on-tertiary-fixed-variant": "#2f486a",
+                        "on-primary-fixed-variant": "#004493",
+                        "primary-container": "#0070eb",
+                        "inverse-on-surface": "#f0f0f5",
+                        "primary-fixed-dim": "#adc6ff",
+                        "background": "#f9f9fe",
+                        "primary-fixed": "#d8e2ff",
+                        "tertiary-fixed": "#d4e3ff",
+                        "inverse-primary": "#adc6ff",
+                        "secondary": "#5952af",
+                        "error": "#ba1a1a",
+                        "tertiary-container": "#5d769a",
+                        "on-secondary": "#ffffff",
+                        "surface-container-low": "#f3f3f8",
+                        "secondary-fixed-dim": "#c5c0ff",
+                        "outline": "#717786",
+                        "on-tertiary-container": "#fefcff",
+                        "inverse-surface": "#2e3034",
+                        "surface-container-lowest": "#ffffff",
+                        "on-primary-fixed": "#001a41",
+                        "error-container": "#ffdad6",
+                        "surface-bright": "#f9f9fe",
+                        "on-primary-container": "#fefcff",
+                        "on-error-container": "#93000a",
+                        "on-secondary-container": "#352c8a",
+                        "on-primary": "#ffffff",
+                        "secondary-fixed": "#e3dfff",
+                        "secondary-container": "#a19afd",
+                        "on-background": "#1a1c1f",
+                        "on-surface": "#1a1c1f",
+                        "on-secondary-fixed": "#140067",
+                        "tertiary-fixed-dim": "#afc8f0",
+                        "surface-container-high": "#e8e8ed",
+                        "tertiary": "#455d80",
+                        "on-surface-variant": "#414755",
+                        "surface": "#f9f9fe",
+                        "surface-tint": "#005bc1"
+                    },
+                    borderRadius: {
+                        "DEFAULT": "1rem",
+                        "lg": "2rem",
+                        "xl": "3rem",
+                        "full": "9999px"
+                    },
+                    spacing: {
+                        "sm": "12px",
+                        "container-margin": "20px",
+                        "base": "8px",
+                        "gutter": "16px",
+                        "md": "16px",
+                        "xl": "32px",
+                        "xs": "4px",
+                        "lg": "24px"
+                    },
+                    fontFamily: {
+                        "body-lg": ["Plus Jakarta Sans"],
+                        "headline-md": ["Plus Jakarta Sans"],
+                        "body-md": ["Plus Jakarta Sans"],
+                        "display": ["Plus Jakarta Sans"],
+                        "headline-sm": ["Plus Jakarta Sans"],
+                        "headline-lg-mobile": ["Plus Jakarta Sans"],
+                        "label-md": ["Plus Jakarta Sans"],
+                        "headline-lg": ["Plus Jakarta Sans"]
+                    },
+                    fontSize: {
+                        "body-lg": ["17px", { lineHeight: "24px", fontWeight: "400" }],
+                        "headline-md": ["22px", { lineHeight: "28px", fontWeight: "600" }],
+                        "body-md": ["15px", { lineHeight: "20px", fontWeight: "400" }],
+                        "display": ["34px", { lineHeight: "41px", letterSpacing: "-0.02em", fontWeight: "700" }],
+                        "headline-sm": ["17px", { lineHeight: "22px", fontWeight: "600" }],
+                        "headline-lg-mobile": ["24px", { lineHeight: "30px", fontWeight: "700" }],
+                        "label-md": ["13px", { lineHeight: "18px", letterSpacing: "0.05em", fontWeight: "500" }],
+                        "headline-lg": ["28px", { lineHeight: "34px", letterSpacing: "-0.01em", fontWeight: "700" }]
+                    }
+                }
+            }
+        }
+    </script>
+<style>
+        body { background-color: #F2F2F7; }
+        .soft-bloom { box-shadow: 0px 10px 30px rgba(0, 31, 63, 0.08); }
+        .inner-stroke { border: 1px solid rgba(0, 0, 0, 0.05); }
+        
+        .progress-ring__circle {
+            transition: stroke-dashoffset 1s ease-in-out;
+            transform: rotate(-90deg);
+            transform-origin: 50% 50%;
+        }
+    </style>
+</head>
+<body class="font-body-md text-on-background min-h-screen pb-32">
+<!-- TopAppBar -->
+<header class="fixed bg-background/80 dark:bg-background/80 backdrop-blur-md docked full-width top-0 z-50 flat no shadows flex justify-between items-center w-full px-container-margin py-base max-w-7xl mx-auto">
+<div class="flex items-center gap-md">
+<div class="w-10 h-10 rounded-full overflow-hidden bg-surface-container inner-stroke shrink-0">
+<img class="w-full h-full object-cover" data-alt="A close-up portrait of a user in a bright, modern light-mode setting. Soft, natural lighting highlighting a friendly, reassuring expression. The image feels premium, high-quality, and trustworthy, matching a high-end iOS application aesthetic." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCoGYlQXrN3sFsWFLLWQ5zNqeK2l3wl0U5F3esqvZKNt8Xo002CbxMKd74k0jwoq3C__KxDNnc9pTJAXAo8Pd4-_uGeuv4mdnGXwYJdDFOqJatNCgV5gAKD6k5OpzMkmY76UkvywQXwbkG8j-xeyfJTbxKz3POs-ZoL1k-QKtO9qFjEPDhK2IuV-y_Rx_EdcBtSVCDy26tGCkmmP63ZHSkj2a85--x83G59icN9LGOA3bGAyWmYldmF"/>
+</div>
+<h1 class="font-display text-display text-primary dark:text-primary-fixed tracking-tight">Bonjour 👋</h1>
+</div>
+<button class="w-10 h-10 flex items-center justify-center rounded-full hover:opacity-80 transition-opacity active:scale-95 transition-transform duration-200">
+<span class="material-symbols-outlined text-primary dark:text-primary-fixed" data-icon="notifications" style="font-variation-settings: 'FILL' 0;">notifications</span>
+</button>
+</header>
+<!-- Main Content Canvas -->
+<main class="pt-24 px-container-margin max-w-7xl mx-auto pb-xl">
+<!-- Header Section -->
+<div class="text-center mb-lg pt-md">
+<h2 class="font-headline-lg-mobile md:font-headline-lg text-headline-lg-mobile md:text-headline-lg text-on-background mb-xs">🎉 Une correspondance possible !</h2>
+<p class="font-body-lg text-body-lg text-on-surface-variant">Nous avons trouvé un objet qui ressemble fortement au vôtre.</p>
+</div>
+<!-- Match Score Visualization -->
+<div class="flex justify-center mb-xl relative">
+<div class="relative w-48 h-48 flex items-center justify-center">
+<!-- SVG Progress Ring -->
+<svg class="w-full h-full absolute top-0 left-0" viewbox="0 0 100 100">
+<!-- Background Ring -->
+<circle class="text-surface-container stroke-current" cx="50" cy="50" fill="transparent" r="40" stroke-width="8"></circle>
+<!-- Progress Ring -->
+<circle class="text-primary stroke-current progress-ring__circle" cx="50" cy="50" fill="transparent" r="40" stroke-dasharray="251.2" stroke-dashoffset="10.048" stroke-linecap="round" stroke-width="8"></circle>
+</svg>
+<div class="flex flex-col items-center justify-center z-10 bg-surface-container-lowest/80 backdrop-blur-md rounded-full w-32 h-32 inner-stroke soft-bloom">
+<span class="font-display text-display text-primary">96%</span>
+<span class="font-label-md text-label-md text-on-surface-variant uppercase tracking-widest mt-1">Match</span>
+</div>
+</div>
+</div>
+<!-- Side-by-Side Comparison -->
+<div class="grid grid-cols-2 gap-sm md:gap-gutter mb-xl">
+<!-- Lost Item Card -->
+<div class="bg-surface-container-lowest rounded-[24px] soft-bloom inner-stroke flex flex-col overflow-hidden relative">
+<div class="absolute top-sm right-sm bg-error-container/90 backdrop-blur-sm px-2 py-1 rounded-full z-10 flex items-center gap-1 border border-error/20">
+<span class="material-symbols-outlined text-[12px] text-on-error-container">search</span>
+<span class="font-label-md text-[10px] text-on-error-container leading-none uppercase">Perdu</span>
+</div>
+<div class="h-32 md:h-48 w-full bg-surface-container relative">
+<img class="w-full h-full object-cover" data-alt="A beautifully shot top-down photo of a premium leather wallet lost on a smooth, modern concrete surface. High-key, bright lighting with a soft bloom effect. The aesthetic is extremely clean, minimalist, and high-end, evoking a sense of calm despite the lost item." src="https://lh3.googleusercontent.com/aida-public/AB6AXuABkokfB-6YcPQUUtsM0pA1Pa6HZ13v6ZxMAAXI5_aqG-eGKPWWWVZCGB-cWIiJcKSWJAmaqI3LelDhhjzb3VnCf1KcNqB0mM2YZ_p2MCnWDE6hPsKSR3l6aqURBjMWvOm3PvspKMbBE5y_tC3IIeGHIr2DPXnBQl8pIDSd3GMwW_FjnM2hU-Tz4cTIUbv7WwsaN_ECxtteDsuKmmn3P2L8wPNX0VEZu3jy8Xd4zHZAQX4EEV6ViEw7"/>
+</div>
+<div class="p-md flex-grow flex flex-col justify-between">
+<div>
+<h3 class="font-label-md text-label-md text-on-surface-variant uppercase tracking-wider mb-1">Mon objet perdu</h3>
+<p class="font-headline-sm text-headline-sm text-on-background mb-xs truncate">Portefeuille en cuir</p>
+</div>
+<div class="flex items-center gap-1 mt-sm text-outline">
+<span class="material-symbols-outlined text-[16px]">calendar_today</span>
+<span class="font-body-md text-[12px] truncate">12 Oct 2023</span>
+</div>
+</div>
+</div>
+<!-- Found Item Card -->
+<div class="bg-surface-container-lowest rounded-[24px] soft-bloom inner-stroke flex flex-col overflow-hidden relative">
+<div class="absolute top-sm right-sm bg-primary-container/90 backdrop-blur-sm px-2 py-1 rounded-full z-10 flex items-center gap-1 border border-primary/20">
+<span class="material-symbols-outlined text-[12px] text-on-primary-container">check_circle</span>
+<span class="font-label-md text-[10px] text-on-primary-container leading-none uppercase">Trouvé</span>
+</div>
+<div class="h-32 md:h-48 w-full bg-surface-container relative">
+<img class="w-full h-full object-cover" data-alt="A brightly lit, well-composed photograph of a premium leather wallet sitting on a clean, white marble counter. The lighting is soft and natural, emphasizing the texture of the leather. The environment implies a safe, trustworthy location like a high-end reception desk." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAuycBra52OqhjZjU2k7xhPsKCf8iRng8QTztYHnbpxk5qHviFrqjM_EvKxCVUYjddBZRzrnqPDKC4V5i6fhdRJUPYl3gOJ-t5neDyrGVI3_VAvRBHJTmxa1FpZvAiXbrXCOH3xpLv6aYqmUnCzOhf0PaCLISinlxe6lOswy4Xokn_j8x2rqeP2e_h5oQ0jWnynp9KtT9E6Gja5cfF0PhxEMzIeyh-RGVqyI7AgBDTGWPj_l6ceRno_"/>
+</div>
+<div class="p-md flex-grow flex flex-col justify-between">
+<div>
+<h3 class="font-label-md text-label-md text-on-surface-variant uppercase tracking-wider mb-1">Objet trouvé</h3>
+<p class="font-headline-sm text-headline-sm text-on-background mb-xs truncate">Portefeuille marron</p>
+</div>
+<div class="flex items-center gap-1 mt-sm text-outline">
+<span class="material-symbols-outlined text-[16px]">location_on</span>
+<span class="font-body-md text-[12px] truncate">Gare Centrale</span>
+</div>
+</div>
+</div>
+</div>
+<!-- Action Area -->
+<div class="flex flex-col gap-md">
+<button class="w-full min-h-[56px] bg-primary text-on-primary font-headline-sm text-headline-sm rounded-[16px] shadow-sm hover:opacity-90 active:scale-[0.98] transition-all flex items-center justify-center gap-2 bg-gradient-to-b from-white/5 to-black/5 relative overflow-hidden group">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">handshake</span>
+                Voir la correspondance
+                <div class="absolute inset-0 bg-white/20 translate-y-full group-hover:translate-y-0 transition-transform duration-300 ease-out"></div>
+</button>
+<button class="w-full min-h-[56px] bg-surface-container-lowest text-primary font-headline-sm text-headline-sm rounded-[16px] border border-primary hover:bg-surface-container-lowest/80 active:scale-[0.98] transition-all flex items-center justify-center gap-2">
+                Ce n'est pas mon objet
+            </button>
+</div>
+</main>
+<!-- BottomNavBar -->
+<nav class="fixed bottom-0 left-0 w-full z-50 flex justify-around items-center px-4 pb-8 pt-2 bg-surface-container-lowest/90 dark:bg-surface-container-lowest/90 backdrop-blur-xl shadow-[0px_-10px_30px_rgba(0,31,63,0.08)] rounded-t-xl md:hidden">
+<!-- Home (Active Contextually for general dashboard viewing) -->
+<button class="flex flex-col items-center justify-center text-primary dark:text-primary-fixed bg-primary-container/10 rounded-xl px-3 py-1 scale-90 transition-transform duration-150 group">
+<span class="material-symbols-outlined mb-1 group-hover:opacity-80 transition-opacity" data-icon="home" style="font-variation-settings: 'FILL' 1;">home</span>
+<span class="font-label-md text-label-md">Home</span>
+</button>
+<!-- Search -->
+<button class="flex flex-col items-center justify-center text-on-surface-variant dark:text-outline px-3 py-1 hover:bg-surface-container-high/50 transition-colors rounded-xl group">
+<span class="material-symbols-outlined mb-1 group-hover:opacity-80 transition-opacity" data-icon="search" style="font-variation-settings: 'FILL' 0;">search</span>
+<span class="font-label-md text-label-md">Search</span>
+</button>
+<!-- Declare -->
+<button class="flex flex-col items-center justify-center text-on-surface-variant dark:text-outline px-3 py-1 hover:bg-surface-container-high/50 transition-colors rounded-xl group relative">
+<div class="absolute -top-4 bg-primary text-on-primary rounded-full p-2 shadow-lg group-hover:scale-105 transition-transform">
+<span class="material-symbols-outlined" data-icon="add_circle" style="font-variation-settings: 'FILL' 1;">add_circle</span>
+</div>
+<span class="font-label-md text-label-md mt-6">Declare</span>
+</button>
+<!-- Messages -->
+<button class="flex flex-col items-center justify-center text-on-surface-variant dark:text-outline px-3 py-1 hover:bg-surface-container-high/50 transition-colors rounded-xl group relative">
+<span class="absolute top-1 right-2 w-2 h-2 bg-error rounded-full"></span>
+<span class="material-symbols-outlined mb-1 group-hover:opacity-80 transition-opacity" data-icon="chat_bubble" style="font-variation-settings: 'FILL' 0;">chat_bubble</span>
+<span class="font-label-md text-label-md">Messages</span>
+</button>
+<!-- Profile -->
+<button class="flex flex-col items-center justify-center text-on-surface-variant dark:text-outline px-3 py-1 hover:bg-surface-container-high/50 transition-colors rounded-xl group">
+<span class="material-symbols-outlined mb-1 group-hover:opacity-80 transition-opacity" data-icon="person" style="font-variation-settings: 'FILL' 0;">person</span>
+<span class="font-label-md text-label-md">Profile</span>
+</button>
+</nav>
+<script>
+        // Trigger progress ring animation on load
+        document.addEventListener('DOMContentLoaded', () => {
+            const circle = document.querySelector('.progress-ring__circle');
+            const radius = circle.r.baseVal.value;
+            const circumference = radius * 2 * Math.PI;
+            
+            circle.style.strokeDasharray = `${circumference} ${circumference}`;
+            circle.style.strokeDashoffset = circumference;
+            
+            const percent = 96;
+            const offset = circumference - (percent / 100) * circumference;
+            
+            setTimeout(() => {
+                circle.style.strokeDashoffset = offset;
+            }, 300);
+        });
+    </script>
+</body></html>

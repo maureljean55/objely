@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+
+<html class="light" lang="fr"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Messaging - Sac à dos noir</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "on-error": "#ffffff",
+                        "surface-container": "#ededf2",
+                        "primary": "#0058bc",
+                        "surface-container-highest": "#e2e2e7",
+                        "on-secondary-fixed-variant": "#413996",
+                        "surface-dim": "#d9dade",
+                        "on-tertiary": "#ffffff",
+                        "on-tertiary-fixed": "#001c3a",
+                        "outline-variant": "#c1c6d7",
+                        "surface-variant": "#e2e2e7",
+                        "on-tertiary-fixed-variant": "#2f486a",
+                        "on-primary-fixed-variant": "#004493",
+                        "primary-container": "#0070eb",
+                        "inverse-on-surface": "#f0f0f5",
+                        "primary-fixed-dim": "#adc6ff",
+                        "background": "#f9f9fe",
+                        "primary-fixed": "#d8e2ff",
+                        "tertiary-fixed": "#d4e3ff",
+                        "inverse-primary": "#adc6ff",
+                        "secondary": "#5952af",
+                        "error": "#ba1a1a",
+                        "tertiary-container": "#5d769a",
+                        "on-secondary": "#ffffff",
+                        "surface-container-low": "#f3f3f8",
+                        "secondary-fixed-dim": "#c5c0ff",
+                        "outline": "#717786",
+                        "on-tertiary-container": "#fefcff",
+                        "inverse-surface": "#2e3034",
+                        "surface-container-lowest": "#ffffff",
+                        "on-primary-fixed": "#001a41",
+                        "error-container": "#ffdad6",
+                        "surface-bright": "#f9f9fe",
+                        "on-primary-container": "#fefcff",
+                        "on-error-container": "#93000a",
+                        "on-secondary-container": "#352c8a",
+                        "on-primary": "#ffffff",
+                        "secondary-fixed": "#e3dfff",
+                        "secondary-container": "#a19afd",
+                        "on-background": "#1a1c1f",
+                        "on-surface": "#1a1c1f",
+                        "on-secondary-fixed": "#140067",
+                        "tertiary-fixed-dim": "#afc8f0",
+                        "surface-container-high": "#e8e8ed",
+                        "tertiary": "#455d80",
+                        "on-surface-variant": "#414755",
+                        "surface": "#f9f9fe",
+                        "surface-tint": "#005bc1"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "1rem",
+                        "lg": "2rem",
+                        "xl": "3rem",
+                        "full": "9999px"
+                    },
+                    "spacing": {
+                        "sm": "12px",
+                        "container-margin": "20px",
+                        "base": "8px",
+                        "gutter": "16px",
+                        "md": "16px",
+                        "xl": "32px",
+                        "xs": "4px",
+                        "lg": "24px"
+                    },
+                    "fontFamily": {
+                        "body-lg": ["Plus Jakarta Sans"],
+                        "headline-md": ["Plus Jakarta Sans"],
+                        "body-md": ["Plus Jakarta Sans"],
+                        "display": ["Plus Jakarta Sans"],
+                        "headline-sm": ["Plus Jakarta Sans"],
+                        "headline-lg-mobile": ["Plus Jakarta Sans"],
+                        "label-md": ["Plus Jakarta Sans"],
+                        "headline-lg": ["Plus Jakarta Sans"]
+                    },
+                    "fontSize": {
+                        "body-lg": ["17px", { "lineHeight": "24px", "fontWeight": "400" }],
+                        "headline-md": ["22px", { "lineHeight": "28px", "fontWeight": "600" }],
+                        "body-md": ["15px", { "lineHeight": "20px", "fontWeight": "400" }],
+                        "display": ["34px", { "lineHeight": "41px", "letterSpacing": "-0.02em", "fontWeight": "700" }],
+                        "headline-sm": ["17px", { "lineHeight": "22px", "fontWeight": "600" }],
+                        "headline-lg-mobile": ["24px", { "lineHeight": "30px", "fontWeight": "700" }],
+                        "label-md": ["13px", { "lineHeight": "18px", "letterSpacing": "0.05em", "fontWeight": "500" }],
+                        "headline-lg": ["28px", { "lineHeight": "34px", "letterSpacing": "-0.01em", "fontWeight": "700" }]
+                    }
+                },
+            },
+        }
+    </script>
+<style>
+        .safe-area-pb { padding-bottom: env(safe-area-inset-bottom, 20px); }
+        .glass-header { background: rgba(249, 249, 254, 0.85); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px); }
+        .glass-input { background: rgba(255, 255, 255, 0.9); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); border-top: 1px solid rgba(0,0,0,0.05); }
+        .message-in { border-bottom-left-radius: 4px; }
+        .message-out { border-bottom-right-radius: 4px; background: linear-gradient(180deg, #007AFF 0%, #0058bc 100%); }
+    </style>
+</head>
+<body class="bg-background text-on-background h-screen flex flex-col font-body-md overflow-hidden antialiased">
+<!-- Header (Modeled after TopAppBar but adapted for chat context - suppress main shell as this is transactional/task-focused) -->
+<header class="glass-header docked full-width top-0 z-50 flex justify-between items-center w-full px-container-margin py-base shadow-[0_1px_0_rgba(0,0,0,0.05)]">
+<button class="text-primary p-2 -ml-2 rounded-full hover:bg-surface-container-high/50 transition-colors flex items-center">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 0;">arrow_back_ios</span>
+<span class="font-label-md text-label-md ml-1">Retour</span>
+</button>
+<div class="flex flex-col items-center">
+<h1 class="font-headline-sm text-headline-sm text-on-surface">Sac à dos noir</h1>
+<p class="font-label-md text-label-md text-outline">Trouvé par Jean D.</p>
+</div>
+<button class="text-primary p-2 -mr-2 rounded-full hover:bg-surface-container-high/50 transition-colors">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 0;">more_horiz</span>
+</button>
+</header>
+<!-- Chat Area -->
+<main class="flex-1 overflow-y-auto px-container-margin py-md flex flex-col gap-md">
+<!-- Security Warning -->
+<div class="bg-surface-container-high rounded-xl p-3 flex items-start gap-3 shadow-sm mx-auto max-w-sm mt-2 mb-4">
+<span class="material-symbols-outlined text-tertiary mt-0.5" style="font-variation-settings: 'FILL' 1;">security</span>
+<p class="font-label-md text-label-md text-on-surface-variant flex-1">
+                Pour votre sécurité, <strong class="text-on-surface">ne partagez pas votre adresse personnelle</strong>. Privilégiez un lieu public pour la remise de l'objet.
+            </p>
+</div>
+<!-- Date Separator -->
+<div class="text-center">
+<span class="font-label-md text-label-md text-outline bg-surface-container px-3 py-1 rounded-full">Aujourd'hui, 10:42</span>
+</div>
+<!-- Message In -->
+<div class="flex gap-2 max-w-[85%] self-start">
+<div class="w-8 h-8 rounded-full bg-surface-container-highest overflow-hidden flex-shrink-0">
+<img class="w-full h-full object-cover" data-alt="A small circular avatar showing a friendly man in his 30s with short brown hair and a light beard, smiling gently. The background is a blurred park scene. The lighting is bright and natural, reflecting a premium light-mode UI aesthetic." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAHIRJ2LimYBXyVxFqgSdPjbDpdtNWzzGRXKRClA4UB47l_yxsN7GW8FUNX_H27eXniyu0TtRoE_Pu8tjMqnWXOxLQeeeiGd3KhoTBv4gIX996LHAcP180S1nje4jbcjHY7LhlZ0FDgaK3d2h3aGEO0V_TMDP1lLus-2X94eVwL_v2sIskHfxD3ZOPjQFzkKVgCpR124pGodHTsrUBdZAOZVGUq6vt8eSuNGKYilzkPVjCC3vvbqVhb"/>
+</div>
+<div class="bg-surface-container rounded-2xl message-in px-4 py-2.5 text-on-surface shadow-sm">
+<p class="font-body-md text-body-md">Bonjour ! J'ai trouvé votre sac à dos près du café de la gare.</p>
+</div>
+</div>
+<!-- Message Out -->
+<div class="flex gap-2 max-w-[85%] self-end flex-row-reverse">
+<div class="w-8 h-8 rounded-full bg-primary overflow-hidden flex-shrink-0 flex items-center justify-center text-on-primary">
+<span class="font-label-md text-label-md">Moi</span>
+</div>
+<div class="rounded-2xl message-out px-4 py-2.5 text-on-primary shadow-sm text-right">
+<p class="font-body-md text-body-md">Oh merci beaucoup ! J'étais tellement inquiet. Êtes-vous encore dans les parages ?</p>
+</div>
+</div>
+<!-- Message In -->
+<div class="flex gap-2 max-w-[85%] self-start">
+<div class="w-8 h-8 rounded-full bg-surface-container-highest overflow-hidden flex-shrink-0">
+<img class="w-full h-full object-cover" data-alt="A small circular avatar showing a friendly man in his 30s with short brown hair and a light beard, smiling gently. The background is a blurred park scene. The lighting is bright and natural, reflecting a premium light-mode UI aesthetic." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBsF_egVWpBt-SlY3xn5M0e-w9w23tCLuUSoH6ERTwndwgwhg0RXM6GROt7T1T6z9JVE1zt0qhpcfUz6KM2fu4JQkxVrkhnFIYfZvpfdkn9GhbXDOqdeAwqtaQU2I-51l9Qv6C8zRD9zx_QLstOnAL6HG6kS8ZaQvPBYkQZUbxyVNK-YYZemEj70OcUmsoIIq4QDW62ySz6rr9TL4vqBlrs-osogXm5WsZOs2ZvrXjb_OzWKFluU483"/>
+</div>
+<div class="bg-surface-container rounded-2xl message-in px-4 py-2.5 text-on-surface shadow-sm">
+<p class="font-body-md text-body-md">Je viens de partir, mais je travaille à côté. On peut se voir à midi devant la boulangerie sur la place centrale ?</p>
+</div>
+</div>
+<div class="flex gap-2 max-w-[85%] self-start ml-10 mt-[-8px]">
+<div class="bg-surface-container rounded-2xl px-4 py-2.5 text-on-surface shadow-sm message-in">
+<img class="rounded-lg w-48 h-auto object-cover border border-outline-variant/20 mb-2" data-alt="A photo of a black backpack sitting on a light wooden table inside a brightly lit modern cafe. The backpack is clean and looks relatively new. The scene is shot from a slightly high angle, embodying a clean, premium light-mode visual style." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDRzca4SM0oTU04n-flNmzZTi3eC5L-UsE-MCYGLE6bcr61y1yDe8lWAgibe3yfmm9pieJEe6FBlUmFIDdU3wH1m_WQQXqb4W_8XRv310t6ouy_jUGWM6Hdg453dmMfrwzAGasg6zv6BgjfrVeQMwkpDR7OD5ePwIUq2y7Kr0uKCJa2G6k8FoWmr3SC_cIUNg9kP3KwOvnFGzuiQjBkXyyJZs98piWbGU_POL6dtjdiRMIt1wMc1H__"/>
+<p class="font-body-md text-body-md">C'est bien celui-ci ?</p>
+</div>
+</div>
+</main>
+<!-- Input Area -->
+<footer class="glass-input p-3 safe-area-pb z-50">
+<div class="flex items-end gap-2 max-w-7xl mx-auto w-full">
+<button class="p-2 text-primary hover:bg-primary/10 rounded-full transition-colors flex-shrink-0">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 0;">add_photo_alternate</span>
+</button>
+<div class="flex-1 bg-surface-container-low rounded-xl border border-outline-variant/30 px-4 py-2 flex items-center min-h-[44px]">
+<textarea class="w-full bg-transparent border-none p-0 focus:ring-0 resize-none font-body-md text-body-md text-on-surface placeholder-outline max-h-32" placeholder="Message..." rows="1"></textarea>
+</div>
+<button class="p-2 bg-primary text-on-primary rounded-full hover:opacity-90 transition-opacity flex-shrink-0 shadow-sm flex items-center justify-center h-11 w-11">
+<span class="material-symbols-outlined ml-1" style="font-variation-settings: 'FILL' 1;">send</span>
+</button>
+</div>
+</footer>
+<script>
+        // Simple auto-resize for textarea
+        const tx = document.getElementsByTagName("textarea");
+        for (let i = 0; i < tx.length; i++) {
+            tx[i].setAttribute("style", "height:" + (tx[i].scrollHeight) + "px;overflow-y:hidden;");
+            tx[i].addEventListener("input", OnInput, false);
+        }
+
+        function OnInput() {
+            this.style.height = 0;
+            this.style.height = (this.scrollHeight) + "px";
+        }
+    </script>
+</body></html>

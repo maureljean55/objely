@@ -1,0 +1,364 @@
+<!DOCTYPE html>
+
+<html class="light" lang="fr"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Dashboard - Retrouver</title>
+<!-- Fonts & Icons -->
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<!-- Tailwind CSS -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<!-- Tailwind Configuration -->
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "on-error": "#ffffff",
+                        "surface-container": "#ededf2",
+                        "primary": "#0058bc",
+                        "surface-container-highest": "#e2e2e7",
+                        "on-secondary-fixed-variant": "#413996",
+                        "surface-dim": "#d9dade",
+                        "on-tertiary": "#ffffff",
+                        "on-tertiary-fixed": "#001c3a",
+                        "outline-variant": "#c1c6d7",
+                        "surface-variant": "#e2e2e7",
+                        "on-tertiary-fixed-variant": "#2f486a",
+                        "on-primary-fixed-variant": "#004493",
+                        "primary-container": "#0070eb",
+                        "inverse-on-surface": "#f0f0f5",
+                        "primary-fixed-dim": "#adc6ff",
+                        "background": "#f9f9fe",
+                        "primary-fixed": "#d8e2ff",
+                        "tertiary-fixed": "#d4e3ff",
+                        "inverse-primary": "#adc6ff",
+                        "secondary": "#5952af",
+                        "error": "#ba1a1a",
+                        "tertiary-container": "#5d769a",
+                        "on-secondary": "#ffffff",
+                        "surface-container-low": "#f3f3f8",
+                        "secondary-fixed-dim": "#c5c0ff",
+                        "outline": "#717786",
+                        "on-tertiary-container": "#fefcff",
+                        "inverse-surface": "#2e3034",
+                        "surface-container-lowest": "#ffffff",
+                        "on-primary-fixed": "#001a41",
+                        "error-container": "#ffdad6",
+                        "surface-bright": "#f9f9fe",
+                        "on-primary-container": "#fefcff",
+                        "on-error-container": "#93000a",
+                        "on-secondary-container": "#352c8a",
+                        "on-primary": "#ffffff",
+                        "secondary-fixed": "#e3dfff",
+                        "secondary-container": "#a19afd",
+                        "on-background": "#1a1c1f",
+                        "on-surface": "#1a1c1f",
+                        "on-secondary-fixed": "#140067",
+                        "tertiary-fixed-dim": "#afc8f0",
+                        "surface-container-high": "#e8e8ed",
+                        "tertiary": "#455d80",
+                        "on-surface-variant": "#414755",
+                        "surface": "#f9f9fe",
+                        "surface-tint": "#005bc1"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "1rem",
+                        "lg": "2rem",
+                        "xl": "3rem",
+                        "full": "9999px"
+                    },
+                    "spacing": {
+                        "sm": "12px",
+                        "container-margin": "20px",
+                        "base": "8px",
+                        "gutter": "16px",
+                        "md": "16px",
+                        "xl": "32px",
+                        "xs": "4px",
+                        "lg": "24px"
+                    },
+                    "fontFamily": {
+                        "body-lg": ["Plus Jakarta Sans"],
+                        "headline-md": ["Plus Jakarta Sans"],
+                        "body-md": ["Plus Jakarta Sans"],
+                        "display": ["Plus Jakarta Sans"],
+                        "headline-sm": ["Plus Jakarta Sans"],
+                        "headline-lg-mobile": ["Plus Jakarta Sans"],
+                        "label-md": ["Plus Jakarta Sans"],
+                        "headline-lg": ["Plus Jakarta Sans"]
+                    },
+                    "fontSize": {
+                        "body-lg": ["17px", { "lineHeight": "24px", "fontWeight": "400" }],
+                        "headline-md": ["22px", { "lineHeight": "28px", "fontWeight": "600" }],
+                        "body-md": ["15px", { "lineHeight": "20px", "fontWeight": "400" }],
+                        "display": ["34px", { "lineHeight": "41px", "letterSpacing": "-0.02em", "fontWeight": "700" }],
+                        "headline-sm": ["17px", { "lineHeight": "22px", "fontWeight": "600" }],
+                        "headline-lg-mobile": ["24px", { "lineHeight": "30px", "fontWeight": "700" }],
+                        "label-md": ["13px", { "lineHeight": "18px", "letterSpacing": "0.05em", "fontWeight": "500" }],
+                        "headline-lg": ["28px", { "lineHeight": "34px", "letterSpacing": "-0.01em", "fontWeight": "700" }]
+                    }
+                }
+            }
+        }
+    </script>
+<style>
+        body {
+            background-color: #F2F2F7; /* Solid base layer */
+            -webkit-tap-highlight-color: transparent;
+        }
+        
+        /* Glassmorphism utility */
+        .glass-panel {
+            background: rgba(255, 255, 255, 0.7);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.5);
+        }
+
+        /* Tonal Layers & Soft Bloom */
+        .surface-card {
+            background-color: #FFFFFF;
+            box-shadow: inset 0 0 0 1px rgba(0,0,0,0.05), 0px 10px 30px rgba(0, 31, 63, 0.08);
+        }
+        
+        /* Interactive Depth */
+        .btn-gradient {
+            background: linear-gradient(180deg, rgba(255,255,255,0.05) 0%, rgba(0,0,0,0.05) 100%);
+        }
+        
+        .hide-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+        .hide-scrollbar {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+    </style>
+</head>
+<body class="text-on-background font-body-md pb-[100px] md:pb-0 md:pt-[100px]">
+<!-- TopAppBar (Hidden on Mobile, Visible on Desktop) -->
+<header class="hidden md:flex justify-between items-center w-full px-container-margin py-base max-w-7xl mx-auto docked full-width top-0 z-50 bg-background/80 dark:bg-background/80 backdrop-blur-md border-none shadow-none fixed">
+<div class="flex items-center gap-sm">
+<div class="w-10 h-10 rounded-full overflow-hidden surface-card flex-shrink-0">
+<img alt="User profile photo" class="w-full h-full object-cover" data-alt="A professional headshot of a smiling young adult. Light, bright aesthetic. Clean minimalist background to convey a premium, trustworthy digital experience." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDAkJxQlnv84GZ-j822CSlF5bxPtzT1sTEIzY3zL0eLchgMYy9q67Ezi3DsCfgEdZ-TjYMMrLXnuAcyzMDgMmk15g3l12ZRw5JkDBC21jVPPM-MZR1sXoMd0rS-PXJzNKSmjUEPqyPHgzvRYCa33PmPUqDVcnfUdN5Z4ameoBoNNWmJxI56DkDlRJcXFS7lnA1KoPYjYfDaHUqTaKGIOj9mknr-HqsKyGlMkYu_ZyCZBFyoMxGWofCG"/>
+</div>
+<h1 class="font-headline-md text-headline-md text-primary dark:text-primary-fixed">Bonjour 👋</h1>
+</div>
+<!-- Desktop Nav Links -->
+<nav class="flex gap-gutter">
+<a class="text-primary dark:text-primary-fixed font-label-md text-label-md hover:opacity-80 transition-opacity flex flex-col items-center" href="#">
+<span class="material-symbols-outlined mb-1" style="font-variation-settings: 'FILL' 1;">home</span>
+                Home
+            </a>
+<a class="text-on-surface-variant dark:text-outline font-label-md text-label-md hover:opacity-80 transition-opacity flex flex-col items-center" href="#">
+<span class="material-symbols-outlined mb-1">search</span>
+                Search
+            </a>
+<a class="text-on-surface-variant dark:text-outline font-label-md text-label-md hover:opacity-80 transition-opacity flex flex-col items-center" href="#">
+<span class="material-symbols-outlined mb-1">add_circle</span>
+                Declare
+            </a>
+<a class="text-on-surface-variant dark:text-outline font-label-md text-label-md hover:opacity-80 transition-opacity flex flex-col items-center" href="#">
+<span class="material-symbols-outlined mb-1">chat_bubble</span>
+                Messages
+            </a>
+<a class="text-on-surface-variant dark:text-outline font-label-md text-label-md hover:opacity-80 transition-opacity flex flex-col items-center" href="#">
+<span class="material-symbols-outlined mb-1">person</span>
+                Profile
+            </a>
+</nav>
+<button class="text-on-surface-variant dark:text-outline hover:opacity-80 transition-opacity w-10 h-10 flex items-center justify-center rounded-full surface-card">
+<span class="material-symbols-outlined">notifications</span>
+</button>
+</header>
+<!-- Main Content Canvas -->
+<main class="max-w-7xl mx-auto px-container-margin md:px-lg pt-lg md:pt-xl space-y-xl">
+<!-- Mobile Header (Visible on Mobile, Hidden on Desktop) -->
+<div class="md:hidden flex justify-between items-center">
+<div>
+<h1 class="font-headline-lg-mobile text-headline-lg-mobile text-on-background mb-1">Bonjour 👋</h1>
+<p class="font-body-md text-body-md text-on-surface-variant">Quelque chose à retrouver?</p>
+</div>
+<div class="w-12 h-12 rounded-full overflow-hidden surface-card flex-shrink-0">
+<img alt="User profile photo" class="w-full h-full object-cover" data-alt="A professional headshot of a smiling young adult. Light, bright aesthetic. Clean minimalist background to convey a premium, trustworthy digital experience." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDyeOCt_wyQvmiej-4VusXDLAwho9fxJs6TKsi7_APrp-cPPNRScb4NB3KJQJGpFxpID8fo2aIsRmyZvK5NuD98o-ydLweX7pJHZxuJ_iVPZoTfk0bMH6NqNKUZDxNSYuw7jefPNGwpoHYC_eyn3-_NcYbfvWQ24FkEkTrDiPdGd6uHjvXfhkUJ192JaZEmk6jFiIXimumz8zlaPr4vf9BmbKFWdhaurPYsiaAwkoXZr0cOgXB2HtNi"/>
+</div>
+</div>
+<!-- Desktop Intro Text -->
+<div class="hidden md:block">
+<p class="font-headline-sm text-headline-sm text-on-surface-variant">Quelque chose à retrouver?</p>
+</div>
+<!-- Primary Action Cards (Bento Grid Style) -->
+<section class="grid grid-cols-1 md:grid-cols-2 gap-md md:gap-lg">
+<!-- Perdu Card -->
+<button class="group relative overflow-hidden rounded-[24px] bg-primary h-[200px] md:h-[240px] shadow-lg flex flex-col justify-end p-lg text-left transition-transform hover:scale-[0.98] active:scale-[0.95]">
+<div class="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent z-10"></div>
+<!-- Abstract decorative element -->
+<div class="absolute top-[-20%] right-[-10%] w-64 h-64 bg-white/10 rounded-full blur-3xl z-0 pointer-events-none group-hover:scale-110 transition-transform duration-700"></div>
+<div class="relative z-20 flex justify-between items-end w-full">
+<div>
+<div class="w-10 h-10 rounded-full bg-white/20 backdrop-blur-md flex items-center justify-center mb-md">
+<span class="material-symbols-outlined text-white" style="font-variation-settings: 'FILL' 1;">search</span>
+</div>
+<h2 class="font-headline-md text-headline-md text-white mb-1">J'ai perdu un objet</h2>
+<p class="font-body-md text-body-md text-white/80">Lancer une recherche</p>
+</div>
+<div class="w-8 h-8 rounded-full bg-white flex items-center justify-center translate-x-4 opacity-0 group-hover:translate-x-0 group-hover:opacity-100 transition-all duration-300">
+<span class="material-symbols-outlined text-primary text-sm">arrow_forward</span>
+</div>
+</div>
+</button>
+<!-- Trouvé Card -->
+<button class="group relative overflow-hidden rounded-[24px] bg-secondary h-[200px] md:h-[240px] shadow-lg flex flex-col justify-end p-lg text-left transition-transform hover:scale-[0.98] active:scale-[0.95]">
+<div class="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent z-10"></div>
+<!-- Abstract decorative element -->
+<div class="absolute top-[-20%] left-[-10%] w-64 h-64 bg-white/10 rounded-full blur-3xl z-0 pointer-events-none group-hover:scale-110 transition-transform duration-700"></div>
+<div class="relative z-20 flex justify-between items-end w-full">
+<div>
+<div class="w-10 h-10 rounded-full bg-white/20 backdrop-blur-md flex items-center justify-center mb-md">
+<span class="material-symbols-outlined text-white" style="font-variation-settings: 'FILL' 1;">add_circle</span>
+</div>
+<h2 class="font-headline-md text-headline-md text-white mb-1">J'ai trouvé un objet</h2>
+<p class="font-body-md text-body-md text-white/80">Signaler une découverte</p>
+</div>
+<div class="w-8 h-8 rounded-full bg-white flex items-center justify-center translate-x-4 opacity-0 group-hover:translate-x-0 group-hover:opacity-100 transition-all duration-300">
+<span class="material-symbols-outlined text-secondary text-sm">arrow_forward</span>
+</div>
+</div>
+</button>
+</section>
+<!-- Recent Finds Section -->
+<section class="space-y-md">
+<div class="flex justify-between items-end">
+<h3 class="font-headline-sm text-headline-sm text-on-background">Objets récemment trouvés près de vous</h3>
+<a class="font-label-md text-label-md text-primary hover:underline" href="#">Voir tout</a>
+</div>
+<!-- Horizontal Scroll on Mobile, Grid on Desktop -->
+<div class="flex overflow-x-auto md:grid md:grid-cols-3 gap-md pb-md hide-scrollbar -mx-container-margin px-container-margin md:mx-0 md:px-0">
+<!-- Item Card 1 -->
+<div class="surface-card rounded-[24px] min-w-[240px] md:min-w-0 flex-shrink-0 flex flex-col overflow-hidden group cursor-pointer hover:shadow-xl transition-shadow duration-300">
+<div class="relative h-40 bg-surface-container-high overflow-hidden">
+<img alt="Smartphone trouvé" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" data-alt="A close up photo of a sleek, modern black smartphone lying on a clean, light wood park bench. Soft, diffused daylight illuminating the device, giving it a premium, minimalist feel. Shallow depth of field." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDcKlnzfvaN-bmeuUIGJ4gfRF2ko9IvqtgDqtgdYkukq_BDKZFzXLxulEcuYXV1uhmP-PsSG0byBv4dxCPU5alrDsE7J2eVzRGXpQk8MVoRdo-vRhfWbNSFrvVqgViJTsa6T8mQvVRjNkmobZ8V7D9tRwz8IxlkQE6OgEjxpTd4-Urlfx01o0aeIadJDQEYUPyI_WQ4Zian0mW4_5w-pN4eOWdUyZjNnHBhzM11Zka02iKlUM1y2qru"/>
+<!-- Top Badges -->
+<div class="absolute top-3 left-3 right-3 flex justify-between items-start z-10">
+<!-- Category Chip -->
+<div class="px-3 py-1 rounded-full bg-[#A29BFE]/15 backdrop-blur-md border border-[#A29BFE]/30 text-[#A29BFE] font-label-md text-xs flex items-center gap-1">
+<span class="material-symbols-outlined text-[14px]">smartphone</span>
+                                Électronique
+                            </div>
+<!-- Status Badge -->
+<div class="w-8 h-8 rounded-full bg-white/80 backdrop-blur-md flex items-center justify-center text-primary shadow-sm">
+<span class="material-symbols-outlined text-[18px]">location_on</span>
+</div>
+</div>
+</div>
+<div class="p-md flex-1 flex flex-col justify-between">
+<div>
+<h4 class="font-headline-sm text-headline-sm text-on-background line-clamp-1 mb-1">iPhone 14 Pro Noir</h4>
+<p class="font-body-md text-body-md text-on-surface-variant flex items-center gap-1">
+<span class="material-symbols-outlined text-[16px]">schedule</span>
+                                Il y a 2 heures
+                            </p>
+</div>
+<div class="mt-4 pt-4 border-t border-surface-variant flex items-center justify-between">
+<span class="font-label-md text-label-md text-primary">À 200m</span>
+<button class="text-primary hover:bg-primary/10 p-2 rounded-full transition-colors">
+<span class="material-symbols-outlined">arrow_forward</span>
+</button>
+</div>
+</div>
+</div>
+<!-- Item Card 2 -->
+<div class="surface-card rounded-[24px] min-w-[240px] md:min-w-0 flex-shrink-0 flex flex-col overflow-hidden group cursor-pointer hover:shadow-xl transition-shadow duration-300">
+<div class="relative h-40 bg-surface-container-high overflow-hidden">
+<img alt="Portefeuille en cuir" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" data-alt="A premium leather bifold wallet, rich brown color, resting on a smooth concrete surface. Soft, elegant lighting casting subtle shadows. High quality product photography style." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAVZe46M5x8qXC3h2DOyPoXkYVWeSoWvUI435nRmzIEN1--7pMtaNWlk5Q1VgJPLx5-9u1tGeX6RXZVid3X_lCQXQXvJ4RONcKjQgHs1xyix2HmYk3xP2Q_6HqqILnEqmy7OYiTPFbfsmrEDqLL_A5nESIp-crOQwnTx7lX1jycLQKt2M4SCAdqpKh8mf_5vnYQeena3JPsC1iX82LLXIUKK838cpHi4nelFNdi4dimAk59ayExXFzs"/>
+<div class="absolute top-3 left-3 right-3 flex justify-between items-start z-10">
+<div class="px-3 py-1 rounded-full bg-[#A29BFE]/15 backdrop-blur-md border border-[#A29BFE]/30 text-[#A29BFE] font-label-md text-xs flex items-center gap-1">
+<span class="material-symbols-outlined text-[14px]">wallet</span>
+                                Accessoires
+                            </div>
+<div class="w-8 h-8 rounded-full bg-white/80 backdrop-blur-md flex items-center justify-center text-primary shadow-sm">
+<span class="material-symbols-outlined text-[18px]">location_on</span>
+</div>
+</div>
+</div>
+<div class="p-md flex-1 flex flex-col justify-between">
+<div>
+<h4 class="font-headline-sm text-headline-sm text-on-background line-clamp-1 mb-1">Portefeuille en cuir marron</h4>
+<p class="font-body-md text-body-md text-on-surface-variant flex items-center gap-1">
+<span class="material-symbols-outlined text-[16px]">schedule</span>
+                                Hier
+                            </p>
+</div>
+<div class="mt-4 pt-4 border-t border-surface-variant flex items-center justify-between">
+<span class="font-label-md text-label-md text-primary">À 1.2km</span>
+<button class="text-primary hover:bg-primary/10 p-2 rounded-full transition-colors">
+<span class="material-symbols-outlined">arrow_forward</span>
+</button>
+</div>
+</div>
+</div>
+<!-- Item Card 3 -->
+<div class="surface-card rounded-[24px] min-w-[240px] md:min-w-0 flex-shrink-0 flex flex-col overflow-hidden group cursor-pointer hover:shadow-xl transition-shadow duration-300">
+<div class="relative h-40 bg-surface-container-high overflow-hidden">
+<img alt="Trousseau de clés" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" data-alt="A set of keys with a distinct colorful fabric keychain, laying on a clean white table top. Bright, airy lighting. Minimalist composition focusing on the texture of the keys and keychain." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDRK6RucXPJII7ghVP1FXYAI2ytBS__UWmYa2iiETABeSVJqpxj3iWXUCwWBCV5Sz_p6NBL4CYb6QkyBCp1p4CRyPouWdW6rxgy-MKt-KYY04jPEwwNFU6uGwS7TD6z698rbVfMumjyyrOtMNvzQDsb3MwaBO5W7pnuiWW3A-h-Czp_KEL39k9CvRZmq-fCKY2UEwdOgwHZBVybPVuVSNEJaFyhJ3zZRK4buS_1LriA6D8G7pp7uEwl"/>
+<div class="absolute top-3 left-3 right-3 flex justify-between items-start z-10">
+<div class="px-3 py-1 rounded-full bg-[#A29BFE]/15 backdrop-blur-md border border-[#A29BFE]/30 text-[#A29BFE] font-label-md text-xs flex items-center gap-1">
+<span class="material-symbols-outlined text-[14px]">key</span>
+                                Clés
+                            </div>
+<div class="w-8 h-8 rounded-full bg-white/80 backdrop-blur-md flex items-center justify-center text-primary shadow-sm">
+<span class="material-symbols-outlined text-[18px]">location_on</span>
+</div>
+</div>
+</div>
+<div class="p-md flex-1 flex flex-col justify-between">
+<div>
+<h4 class="font-headline-sm text-headline-sm text-on-background line-clamp-1 mb-1">Trousseau de clés avec lanière</h4>
+<p class="font-body-md text-body-md text-on-surface-variant flex items-center gap-1">
+<span class="material-symbols-outlined text-[16px]">schedule</span>
+                                Lun. 14 Oct
+                            </p>
+</div>
+<div class="mt-4 pt-4 border-t border-surface-variant flex items-center justify-between">
+<span class="font-label-md text-label-md text-primary">À 2.5km</span>
+<button class="text-primary hover:bg-primary/10 p-2 rounded-full transition-colors">
+<span class="material-symbols-outlined">arrow_forward</span>
+</button>
+</div>
+</div>
+</div>
+</div>
+</section>
+</main>
+<!-- BottomNavBar (Visible on Mobile, Hidden on Desktop) -->
+<nav class="md:hidden fixed bottom-0 left-0 w-full z-50 flex justify-around items-center px-4 pb-8 pt-2 docked full-width rounded-t-xl bg-surface-container-lowest/90 dark:bg-surface-container-lowest/90 backdrop-blur-xl shadow-[0px_-10px_30px_rgba(0,31,63,0.08)] shadow-lg border-none">
+<!-- Active Item (Home) -->
+<a class="flex flex-col items-center justify-center text-primary dark:text-primary-fixed bg-primary-container/10 rounded-xl px-3 py-1 hover:bg-surface-container-high/50 transition-colors scale-90 transition-transform duration-150" href="#">
+<span class="material-symbols-outlined mb-1" style="font-variation-settings: 'FILL' 1;">home</span>
+<span class="font-label-md text-label-md">Home</span>
+</a>
+<!-- Inactive Items -->
+<a class="flex flex-col items-center justify-center text-on-surface-variant dark:text-outline px-3 py-1 hover:bg-surface-container-high/50 transition-colors" href="#">
+<span class="material-symbols-outlined mb-1">search</span>
+<span class="font-label-md text-label-md">Search</span>
+</a>
+<a class="flex flex-col items-center justify-center text-on-surface-variant dark:text-outline px-3 py-1 hover:bg-surface-container-high/50 transition-colors" href="#">
+<span class="material-symbols-outlined mb-1">add_circle</span>
+<span class="font-label-md text-label-md">Declare</span>
+</a>
+<a class="flex flex-col items-center justify-center text-on-surface-variant dark:text-outline px-3 py-1 hover:bg-surface-container-high/50 transition-colors" href="#">
+<span class="material-symbols-outlined mb-1">chat_bubble</span>
+<span class="font-label-md text-label-md">Messages</span>
+</a>
+<a class="flex flex-col items-center justify-center text-on-surface-variant dark:text-outline px-3 py-1 hover:bg-surface-container-high/50 transition-colors" href="#">
+<span class="material-symbols-outlined mb-1">person</span>
+<span class="font-label-md text-label-md">Profile</span>
+</a>
+</nav>
+</body></html>
