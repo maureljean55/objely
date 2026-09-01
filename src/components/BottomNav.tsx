@@ -13,10 +13,10 @@ const ITEMS: { key: NavKey; href: string; icon: string; label: string }[] = [
 export default function BottomNav({ active }: { active: NavKey }) {
   return (
     <nav className="md:hidden fixed inset-x-4 bottom-4 z-50">
-      <div className="relative flex items-center justify-between gap-1 px-3 py-3 rounded-full overflow-hidden bg-gradient-to-br from-[#0a1240]/80 via-[#0f1a5c]/75 to-primary/70 backdrop-blur-2xl border border-white/15 shadow-[0_20px_45px_rgba(0,20,60,0.45)]">
-        {/* Glossy specular highlight */}
-        <div className="pointer-events-none absolute -top-6 right-10 w-28 h-20 rounded-full bg-white/25 blur-2xl" />
-        <div className="pointer-events-none absolute inset-0 rounded-full bg-gradient-to-b from-white/10 to-transparent" />
+      <div className="relative flex items-center justify-between gap-1 px-3 py-3 rounded-full overflow-hidden backdrop-blur-2xl border border-white/40 shadow-[0_20px_45px_rgba(0,31,63,0.18)]">
+        {/* Glossy specular highlight — glass material, not a background fill */}
+        <div className="pointer-events-none absolute -top-6 right-10 w-28 h-20 rounded-full bg-white/40 blur-2xl" />
+        <div className="pointer-events-none absolute inset-0 rounded-full bg-gradient-to-b from-white/15 to-transparent" />
 
         {ITEMS.map((item) => {
           const isActive = item.key === active;
@@ -26,8 +26,8 @@ export default function BottomNav({ active }: { active: NavKey }) {
               href={item.href}
               className={
                 isActive
-                  ? "relative z-10 flex flex-1 flex-col items-center justify-center gap-0.5 py-1 text-white transition-transform"
-                  : "relative z-10 flex flex-1 flex-col items-center justify-center gap-0.5 py-1 text-white/60 transition-transform hover:text-white/90"
+                  ? "relative z-10 flex flex-1 flex-col items-center justify-center gap-0.5 py-1 text-primary transition-transform"
+                  : "relative z-10 flex flex-1 flex-col items-center justify-center gap-0.5 py-1 text-on-surface-variant transition-transform hover:text-primary"
               }
             >
               <span
