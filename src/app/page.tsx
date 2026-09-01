@@ -49,7 +49,7 @@ export default function HomeDashboardPage() {
           <div className="px-3 py-1.5 rounded-xl bg-surface-container-lowest shadow-sm">
             <span className="font-headline-sm text-headline-sm text-on-surface">Objely</span>
           </div>
-          <h1 className="font-headline-md text-headline-md text-primary">Bonjour 👋</h1>
+          <h1 className="font-headline-md text-headline-md text-primary">Bonjour</h1>
         </div>
         <nav className="flex gap-gutter">
           <Link className="text-primary font-label-md text-label-md hover:opacity-80 transition-opacity flex flex-col items-center" href="/">
@@ -105,7 +105,7 @@ export default function HomeDashboardPage() {
         {/* Greeting */}
         <div>
           <h1 className="font-headline-lg-mobile md:font-headline-lg text-headline-lg-mobile md:text-headline-lg text-on-background mb-1">
-            Bonjour 👋
+            Bonjour
           </h1>
           <p className="font-body-lg text-body-lg text-on-surface-variant">Quelque chose à retrouver ?</p>
         </div>
