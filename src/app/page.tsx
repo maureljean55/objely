@@ -39,23 +39,43 @@ const RECENT_ITEMS = [
 
 export default function HomeDashboardPage() {
   return (
-    <div className="pt-[84px] pb-[120px] md:pt-[100px] md:pb-0">
+    <div className="pt-[172px] pb-[120px] md:pt-[100px] md:pb-0">
       {/* TopAppBar (mobile) — fixed, stays put while the body scrolls */}
-      <header className="md:hidden fixed top-0 inset-x-0 z-40 flex justify-between items-center px-container-margin py-3 bg-background/80 backdrop-blur-md">
-        <div className="px-3 py-1.5 rounded-xl bg-surface-container-lowest shadow-sm">
-          <span className="font-headline-sm text-headline-sm text-on-surface">Objely</span>
-        </div>
-        <Link href="/profile" className="relative">
-          <div className="w-11 h-11 rounded-full overflow-hidden ring-2 ring-surface-container-lowest shadow-sm bg-surface-container-high">
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img
-              alt="Profil"
-              className="w-full h-full object-cover"
-              src="https://lh3.googleusercontent.com/aida-public/AB6AXuCZfuwmAGmqsioZXn2vl0S5TeziGs1iRvYxOAMNX1PWzii9KRcgCccoERwU1Dj76e0-cAN4M1_1ws_bjeZmtSxzXtieAa2J7ngwaqInqx_rnuPJJ3W5dj_MCvXoNG0YdF_6oyDqnRm6zIuhi6ii40MgIjkG5rsKX0XWiP40a5Eu8sK6GuUecMT6pJPUQbKbX9MSI_u1c4V0_o8xVv6hlzkKug9iRIUbUXwp-O7ITLOaaSCSmax9QdFC"
-            />
+      <header className="md:hidden fixed top-0 inset-x-0 z-40 flex flex-col gap-md px-container-margin pt-3 pb-md bg-background/90 backdrop-blur-md">
+        <div className="flex justify-between items-center">
+          <div className="px-3 py-1.5 rounded-xl bg-surface-container-lowest shadow-sm">
+            <span className="font-headline-sm text-headline-sm text-on-surface">Objely</span>
           </div>
-          <span className="absolute -bottom-0.5 -right-0.5 w-3.5 h-3.5 rounded-full bg-emerald-500 ring-2 ring-surface-container-lowest" />
-        </Link>
+          <Link href="/profile" className="relative">
+            <div className="w-11 h-11 rounded-full overflow-hidden ring-2 ring-surface-container-lowest shadow-sm bg-surface-container-high">
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img
+                alt="Profil"
+                className="w-full h-full object-cover"
+                src="https://lh3.googleusercontent.com/aida-public/AB6AXuCZfuwmAGmqsioZXn2vl0S5TeziGs1iRvYxOAMNX1PWzii9KRcgCccoERwU1Dj76e0-cAN4M1_1ws_bjeZmtSxzXtieAa2J7ngwaqInqx_rnuPJJ3W5dj_MCvXoNG0YdF_6oyDqnRm6zIuhi6ii40MgIjkG5rsKX0XWiP40a5Eu8sK6GuUecMT6pJPUQbKbX9MSI_u1c4V0_o8xVv6hlzkKug9iRIUbUXwp-O7ITLOaaSCSmax9QdFC"
+              />
+            </div>
+            <span className="absolute -bottom-0.5 -right-0.5 w-3.5 h-3.5 rounded-full bg-emerald-500 ring-2 ring-surface-container-lowest" />
+          </Link>
+        </div>
+
+        <h1 className="font-headline-lg-mobile text-headline-lg-mobile text-on-background">
+          Quelque chose à retrouver ?
+        </h1>
+
+        <div className="bg-surface-container-lowest rounded-full shadow-sm overflow-hidden">
+          <div className="flex w-max animate-marquee">
+            {[...RECENT_ACTIVITY, ...RECENT_ACTIVITY].map((entry, i) => (
+              <span
+                key={i}
+                className="font-label-md text-label-md text-on-surface-variant whitespace-nowrap flex items-center gap-3 px-4 py-2.5"
+              >
+                {entry}
+                <span className="text-outline-variant">•</span>
+              </span>
+            ))}
+          </div>
+        </div>
       </header>
 
       {/* TopAppBar (desktop) */}
@@ -98,15 +118,13 @@ export default function HomeDashboardPage() {
       </header>
 
       <main className="max-w-7xl mx-auto px-container-margin md:px-lg pt-lg md:pt-xl space-y-lg">
-        {/* Greeting */}
-        <div>
-          <h1 className="font-headline-lg-mobile md:font-headline-lg text-headline-lg-mobile md:text-headline-lg text-on-background">
-            Quelque chose à retrouver ?
-          </h1>
+        {/* Greeting (desktop only — mobile shows this pinned in the fixed header above) */}
+        <div className="hidden md:block">
+          <h1 className="font-headline-lg text-headline-lg text-on-background">Quelque chose à retrouver ?</h1>
         </div>
 
-        {/* Recent Activity Ticker — auto-scrolling, seamless loop */}
-        <div>
+        {/* Recent Activity Ticker (desktop only), auto-scrolling, seamless loop */}
+        <div className="hidden md:block">
           <div className="bg-surface-container-lowest rounded-full shadow-sm overflow-hidden">
             <div className="flex w-max animate-marquee">
               {[...RECENT_ACTIVITY, ...RECENT_ACTIVITY].map((entry, i) => (
