@@ -5,12 +5,36 @@ import { useRouter } from "next/navigation";
 import Link from "next/link";
 
 const CATEGORIES = [
-  { id: "phone", label: "Téléphone", icon: "smartphone" },
-  { id: "bag", label: "Sac & Bagage", icon: "backpack" },
-  { id: "wallet", label: "Portefeuille", icon: "account_balance_wallet" },
-  { id: "keys", label: "Clés", icon: "key" },
-  { id: "clothes", label: "Vêtements", icon: "styler" },
-  { id: "other", label: "Autre objet", icon: "more_horiz" },
+  {
+    id: "phone",
+    label: "Téléphone",
+    image: "https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?w=400&h=400&fit=crop",
+  },
+  {
+    id: "bag",
+    label: "Sac & Bagage",
+    image: "https://images.unsplash.com/photo-1553062407-98eeb64c6a62?w=400&h=400&fit=crop",
+  },
+  {
+    id: "wallet",
+    label: "Portefeuille",
+    image: "https://images.unsplash.com/photo-1627123424574-724758594e93?w=400&h=400&fit=crop",
+  },
+  {
+    id: "keys",
+    label: "Clés",
+    image: "https://upload.wikimedia.org/wikipedia/commons/3/3c/House_key.jpg",
+  },
+  {
+    id: "clothes",
+    label: "Vêtements",
+    image: "https://images.unsplash.com/photo-1489987707025-afc232f7ea0f?w=400&h=400&fit=crop",
+  },
+  {
+    id: "other",
+    label: "Autre objet",
+    image: "https://images.unsplash.com/photo-1607166452427-7e4477079cb9?w=400&h=400&fit=crop",
+  },
 ] as const;
 
 export default function ReportLostCategoryPage() {
@@ -46,31 +70,34 @@ export default function ReportLostCategoryPage() {
         <div className="grid grid-cols-2 md:grid-cols-3 gap-md grow content-start">
           {CATEGORIES.map((category) => {
             const isSelected = selected === category.id;
-            const isOther = category.id === "other";
             return (
               <button
                 key={category.id}
                 type="button"
                 onClick={() => setSelected(category.id)}
-                className={`category-card glass-panel rounded p-md flex flex-col items-center justify-center aspect-square gap-3 border group focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 ${
-                  isSelected ? "ring-2 ring-primary border-surface-container-high" : "border-surface-container-high"
+                className={`category-card relative rounded-2xl overflow-hidden aspect-square border-2 transition-all group focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 ${
+                  isSelected ? "border-primary shadow-lg" : "border-transparent hover:border-surface-container-high"
                 }`}
               >
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img
+                  src={category.image}
+                  alt={category.label}
+                  className="absolute inset-0 w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
+                />
                 <div
-                  className={`w-14 h-14 rounded-full flex items-center justify-center transition-colors ${
-                    isSelected ? "bg-primary" : isOther ? "bg-surface-container-high group-hover:bg-surface-variant" : "bg-primary-container/10 group-hover:bg-primary-container/20"
+                  className={`absolute inset-0 transition-colors ${
+                    isSelected ? "bg-primary/25" : "bg-black/15 group-hover:bg-black/5"
                   }`}
-                >
-                  <span
-                    className={`material-symbols-outlined text-3xl ${
-                      isSelected ? "text-white" : isOther ? "text-on-surface-variant" : "text-primary"
-                    }`}
-                    style={!isOther ? { fontVariationSettings: "'FILL' 1" } : undefined}
-                  >
-                    {category.icon}
-                  </span>
+                />
+                {isSelected && (
+                  <div className="absolute top-2 right-2 w-7 h-7 rounded-full bg-primary flex items-center justify-center shadow-md">
+                    <span className="material-symbols-outlined text-white text-[18px]">check</span>
+                  </div>
+                )}
+                <div className="absolute bottom-0 inset-x-0 bg-gradient-to-t from-black/75 via-black/20 to-transparent px-3 pt-8 pb-2.5">
+                  <span className="font-label-md text-label-md text-white">{category.label}</span>
                 </div>
-                <span className="font-label-md text-label-md text-on-surface">{category.label}</span>
               </button>
             );
           })}
