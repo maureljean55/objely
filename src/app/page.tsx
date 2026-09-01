@@ -43,9 +43,6 @@ export default function HomeDashboardPage() {
       {/* TopAppBar (mobile) — fixed, stays put while the body scrolls */}
       <header className="md:hidden fixed top-0 inset-x-0 z-40 flex flex-col gap-md px-container-margin pt-3 pb-md bg-background/90 backdrop-blur-md">
         <div className="flex justify-between items-center">
-          <div className="px-3 py-1.5 rounded-xl bg-surface-container-lowest shadow-sm">
-            <span className="font-headline-sm text-headline-sm text-on-surface">Objely</span>
-          </div>
           <Link href="/profile" className="relative">
             <div className="w-11 h-11 rounded-full overflow-hidden ring-2 ring-surface-container-lowest shadow-sm bg-surface-container-high">
               {/* eslint-disable-next-line @next/next/no-img-element */}
@@ -57,6 +54,23 @@ export default function HomeDashboardPage() {
             </div>
             <span className="absolute -bottom-0.5 -right-0.5 w-3.5 h-3.5 rounded-full bg-emerald-500 ring-2 ring-surface-container-lowest" />
           </Link>
+          <div className="flex items-center gap-2">
+            <Link
+              href="/chat"
+              aria-label="Notifications"
+              className="relative w-11 h-11 rounded-full bg-surface-container-lowest shadow-sm flex items-center justify-center text-on-surface-variant hover:text-primary transition-colors"
+            >
+              <span className="material-symbols-outlined text-[22px]">notifications</span>
+              <span className="absolute top-2.5 right-3 w-2 h-2 rounded-full bg-error ring-2 ring-surface-container-lowest" />
+            </Link>
+            <button
+              type="button"
+              aria-label="Scanner un QR code"
+              className="w-11 h-11 rounded-full bg-surface-container-lowest shadow-sm flex items-center justify-center text-on-surface-variant hover:text-primary transition-colors"
+            >
+              <span className="material-symbols-outlined text-[22px]">qr_code_scanner</span>
+            </button>
+          </div>
         </div>
 
         <h1 className="font-headline-lg-mobile text-headline-lg-mobile text-on-background">
