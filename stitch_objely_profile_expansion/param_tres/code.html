@@ -1,0 +1,320 @@
+<!DOCTYPE html>
+
+<html class="light" lang="fr"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" name="viewport"/>
+<title>Paramètres - Objely</title>
+<!-- Fonts & Icons -->
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<!-- Tailwind CSS -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                            "inverse-primary": "#adc6ff",
+                            "on-error-container": "#93000a",
+                            "on-error": "#ffffff",
+                            "on-tertiary-fixed-variant": "#45474b",
+                            "on-tertiary-fixed": "#1a1c1f",
+                            "on-secondary-fixed": "#0c006a",
+                            "inverse-on-surface": "#f3f0f2",
+                            "on-tertiary": "#ffffff",
+                            "on-surface-variant": "#414755",
+                            "on-secondary": "#ffffff",
+                            "on-secondary-fixed-variant": "#3631b4",
+                            "surface-container": "#f0edef",
+                            "secondary-fixed-dim": "#c2c1ff",
+                            "surface-container-highest": "#e4e2e4",
+                            "primary-fixed-dim": "#adc6ff",
+                            "surface-tint": "#005bc1",
+                            "tertiary-fixed-dim": "#c6c6cb",
+                            "on-secondary-container": "#fffbff",
+                            "on-tertiary-container": "#fdfcff",
+                            "error-container": "#ffdad6",
+                            "surface-dim": "#dcd9dc",
+                            "on-primary-fixed": "#001a41",
+                            "surface": "#fcf8fb",
+                            "primary": "#0058bc",
+                            "on-surface": "#1b1b1d",
+                            "surface-container-lowest": "#ffffff",
+                            "on-primary": "#ffffff",
+                            "primary-fixed": "#d8e2ff",
+                            "on-background": "#1b1b1d",
+                            "surface-container-high": "#eae7ea",
+                            "inverse-surface": "#303032",
+                            "tertiary-container": "#737479",
+                            "outline-variant": "#c1c6d7",
+                            "primary-container": "#0070eb",
+                            "on-primary-container": "#fefcff",
+                            "tertiary-fixed": "#e2e2e7",
+                            "background": "#fcf8fb",
+                            "on-primary-fixed-variant": "#004493",
+                            "surface-container-low": "#f6f3f5",
+                            "surface-variant": "#e4e2e4",
+                            "secondary-container": "#6664e4",
+                            "tertiary": "#5a5c60",
+                            "secondary": "#4c4aca",
+                            "secondary-fixed": "#e2dfff",
+                            "surface-bright": "#fcf8fb",
+                            "error": "#ba1a1a",
+                            "outline": "#717786"
+                    },
+                    "borderRadius": {
+                            "DEFAULT": "0.25rem",
+                            "lg": "0.5rem",
+                            "xl": "0.75rem",
+                            "full": "9999px"
+                    },
+                    "spacing": {
+                            "margin-mobile": "20px",
+                            "lg": "24px",
+                            "xs": "8px",
+                            "md": "16px",
+                            "sm": "12px",
+                            "base": "4px",
+                            "gutter": "16px",
+                            "xl": "32px"
+                    },
+                    "fontFamily": {
+                            "title-md": ["Inter"],
+                            "headline-lg": ["Inter"],
+                            "caption": ["Inter"],
+                            "label-md": ["Inter"],
+                            "body-lg": ["Inter"],
+                            "display": ["Inter"],
+                            "headline-lg-mobile": ["Inter"],
+                            "body-sm": ["Inter"]
+                    },
+                    "fontSize": {
+                            "title-md": ["20px", {"lineHeight": "25px", "fontWeight": "600"}],
+                            "headline-lg": ["28px", {"lineHeight": "34px", "letterSpacing": "-0.01em", "fontWeight": "700"}],
+                            "caption": ["12px", {"lineHeight": "16px", "fontWeight": "400"}],
+                            "label-md": ["13px", {"lineHeight": "18px", "letterSpacing": "0.01em", "fontWeight": "500"}],
+                            "body-lg": ["17px", {"lineHeight": "22px", "fontWeight": "400"}],
+                            "display": ["34px", {"lineHeight": "41px", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+                            "headline-lg-mobile": ["24px", {"lineHeight": "30px", "fontWeight": "700"}],
+                            "body-sm": ["15px", {"lineHeight": "20px", "fontWeight": "400"}]
+                    }
+                }
+            }
+        }
+    </script>
+<style>
+        body {
+            -webkit-tap-highlight-color: transparent;
+        }
+        .pb-safe-area { padding-bottom: env(safe-area-inset-bottom, 20px); }
+        .glass-panel {
+            background: rgba(255, 255, 255, 0.7);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.5);
+            box-shadow: 0px 4px 20px rgba(0, 0, 0, 0.05);
+        }
+    </style>
+</head>
+<body class="bg-[#F2F2F7] text-on-surface antialiased flex flex-col min-h-screen">
+<!-- TopAppBar (Semantic Intent: Settings Page -> Temporary Departure -> Shell hidden on Web, using simple header for Mobile) -->
+<header class="fixed top-0 left-0 w-full z-50 flex justify-between items-center px-margin-mobile h-14 bg-surface/80 dark:bg-surface-dim/80 backdrop-blur-xl border-b border-outline-variant/30 dark:border-outline/20">
+<button class="w-10 h-10 flex items-center justify-center text-primary dark:text-inverse-primary active:scale-95 transition-transform duration-150 hover:opacity-70">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 0;">arrow_back_ios</span>
+</button>
+<h1 class="text-title-md font-title-md text-on-surface absolute left-1/2 transform -translate-x-1/2">Paramètres</h1>
+<div class="w-10 h-10"></div> <!-- Spacer for centering -->
+</header>
+<!-- Main Content Canvas -->
+<main class="flex-1 w-full max-w-[800px] mx-auto pt-20 pb-32 px-margin-mobile flex flex-col gap-lg">
+<!-- User Profile Quick Card -->
+<section class="glass-panel rounded-[20px] p-md flex items-center gap-md">
+<div class="w-16 h-16 rounded-full overflow-hidden bg-surface-container flex-shrink-0 border border-outline-variant/50">
+<img alt="User Avatar" class="w-full h-full object-cover" data-alt="A clean, minimalist 3D rendered avatar of a person. The character has a soft, approachable appearance typical of modern tech platforms. The lighting is bright and even, set against a light background to fit a light-mode UI theme. The colors are warm and friendly, reflecting a reliable and empathetic brand identity." src="https://lh3.googleusercontent.com/aida-public/AB6AXuA5NkrN3dbjXUkIAGzKzajXjo7zzEtrqqmxuFWjhMi52_dtXUFIqpMZApGXrsEtu5hjdW0y3wxUafmEdGHH1Un07ZX0D1tk3xDqCYvKZl5WwDGeTqLguwrxeNKnnq2i1A91Q2hwJ27OLIi3fDULeDktw9F4W4JnscPsywTEZwyA6p1ZeONlBbHnKe60mX8r3y8YMcyCwbZTuYomn3Cup2xp2opEALXFKXIj-P7Ch85mlkPDJxy6A9ei5g"/>
+</div>
+<div class="flex-1">
+<h2 class="text-title-md font-title-md text-on-surface">Alexandre Dubois</h2>
+<p class="text-body-sm font-body-sm text-outline">alexandre.dubois@example.com</p>
+</div>
+</section>
+<!-- Compte Section -->
+<section>
+<h3 class="text-label-md font-label-md text-outline uppercase tracking-wider mb-xs ml-md">Compte</h3>
+<div class="bg-white rounded-[20px] shadow-[0px_4px_20px_rgba(0,0,0,0.05)] overflow-hidden">
+<button class="w-full flex items-center justify-between p-md hover:bg-surface-container-low transition-colors active:scale-[0.98]">
+<div class="flex items-center gap-sm">
+<span class="material-symbols-outlined text-outline" style="font-variation-settings: 'FILL' 0;">person</span>
+<span class="text-body-lg font-body-lg text-on-surface">Modifier mon profil</span>
+</div>
+<span class="material-symbols-outlined text-outline-variant" style="font-variation-settings: 'FILL' 0;">chevron_right</span>
+</button>
+<div class="h-[1px] bg-[#D1D1D6] ml-12 mr-0"></div>
+<button class="w-full flex items-center justify-between p-md hover:bg-surface-container-low transition-colors active:scale-[0.98]">
+<div class="flex items-center gap-sm">
+<span class="material-symbols-outlined text-outline" style="font-variation-settings: 'FILL' 0;">mail</span>
+<span class="text-body-lg font-body-lg text-on-surface">Adresse e-mail</span>
+</div>
+<span class="material-symbols-outlined text-outline-variant" style="font-variation-settings: 'FILL' 0;">chevron_right</span>
+</button>
+<div class="h-[1px] bg-[#D1D1D6] ml-12 mr-0"></div>
+<button class="w-full flex items-center justify-between p-md hover:bg-surface-container-low transition-colors active:scale-[0.98]">
+<div class="flex items-center gap-sm">
+<span class="material-symbols-outlined text-outline" style="font-variation-settings: 'FILL' 0;">phone_iphone</span>
+<span class="text-body-lg font-body-lg text-on-surface">Numéro de téléphone</span>
+</div>
+<span class="material-symbols-outlined text-outline-variant" style="font-variation-settings: 'FILL' 0;">chevron_right</span>
+</button>
+</div>
+</section>
+<!-- Préférences Section -->
+<section>
+<h3 class="text-label-md font-label-md text-outline uppercase tracking-wider mb-xs ml-md">Préférences</h3>
+<div class="bg-white rounded-[20px] shadow-[0px_4px_20px_rgba(0,0,0,0.05)] overflow-hidden">
+<button class="w-full flex items-center justify-between p-md hover:bg-surface-container-low transition-colors active:scale-[0.98]">
+<div class="flex items-center gap-sm">
+<span class="material-symbols-outlined text-outline" style="font-variation-settings: 'FILL' 0;">notifications</span>
+<span class="text-body-lg font-body-lg text-on-surface">Notifications</span>
+</div>
+<span class="material-symbols-outlined text-outline-variant" style="font-variation-settings: 'FILL' 0;">chevron_right</span>
+</button>
+<div class="h-[1px] bg-[#D1D1D6] ml-12 mr-0"></div>
+<button class="w-full flex items-center justify-between p-md hover:bg-surface-container-low transition-colors active:scale-[0.98]">
+<div class="flex items-center gap-sm">
+<span class="material-symbols-outlined text-outline" style="font-variation-settings: 'FILL' 0;">language</span>
+<span class="text-body-lg font-body-lg text-on-surface">Langue</span>
+</div>
+<span class="material-symbols-outlined text-outline-variant" style="font-variation-settings: 'FILL' 0;">chevron_right</span>
+</button>
+<div class="h-[1px] bg-[#D1D1D6] ml-12 mr-0"></div>
+<div class="w-full flex items-center justify-between p-md">
+<div class="flex items-center gap-sm">
+<span class="material-symbols-outlined text-outline" style="font-variation-settings: 'FILL' 0;">dark_mode</span>
+<span class="text-body-lg font-body-lg text-on-surface">Mode sombre</span>
+</div>
+<!-- Toggle Switch Placeholder -->
+<div class="w-12 h-6 bg-surface-container-highest rounded-full relative cursor-pointer">
+<div class="absolute left-1 top-1 w-4 h-4 bg-white rounded-full shadow-sm transition-transform"></div>
+</div>
+</div>
+<div class="h-[1px] bg-[#D1D1D6] ml-12 mr-0"></div>
+<button class="w-full flex items-center justify-between p-md hover:bg-surface-container-low transition-colors active:scale-[0.98]">
+<div class="flex items-center gap-sm">
+<span class="material-symbols-outlined text-outline" style="font-variation-settings: 'FILL' 0;">location_on</span>
+<span class="text-body-lg font-body-lg text-on-surface">Localisation</span>
+</div>
+<span class="material-symbols-outlined text-outline-variant" style="font-variation-settings: 'FILL' 0;">chevron_right</span>
+</button>
+</div>
+</section>
+<!-- Sécurité Section -->
+<section>
+<h3 class="text-label-md font-label-md text-outline uppercase tracking-wider mb-xs ml-md">Sécurité</h3>
+<div class="bg-white rounded-[20px] shadow-[0px_4px_20px_rgba(0,0,0,0.05)] overflow-hidden">
+<button class="w-full flex items-center justify-between p-md hover:bg-surface-container-low transition-colors active:scale-[0.98]">
+<div class="flex items-center gap-sm">
+<span class="material-symbols-outlined text-outline" style="font-variation-settings: 'FILL' 0;">key</span>
+<span class="text-body-lg font-body-lg text-on-surface">Mot de passe</span>
+</div>
+<span class="material-symbols-outlined text-outline-variant" style="font-variation-settings: 'FILL' 0;">chevron_right</span>
+</button>
+<div class="h-[1px] bg-[#D1D1D6] ml-12 mr-0"></div>
+<button class="w-full flex items-center justify-between p-md hover:bg-surface-container-low transition-colors active:scale-[0.98]">
+<div class="flex items-center gap-sm">
+<span class="material-symbols-outlined text-outline" style="font-variation-settings: 'FILL' 0;">devices</span>
+<span class="text-body-lg font-body-lg text-on-surface">Connexion et appareils</span>
+</div>
+<span class="material-symbols-outlined text-outline-variant" style="font-variation-settings: 'FILL' 0;">chevron_right</span>
+</button>
+<div class="h-[1px] bg-[#D1D1D6] ml-12 mr-0"></div>
+<button class="w-full flex items-center justify-between p-md hover:bg-surface-container-low transition-colors active:scale-[0.98]">
+<div class="flex items-center gap-sm">
+<span class="material-symbols-outlined text-outline" style="font-variation-settings: 'FILL' 0;">shield</span>
+<span class="text-body-lg font-body-lg text-on-surface">Authentification renforcée</span>
+</div>
+<span class="material-symbols-outlined text-outline-variant" style="font-variation-settings: 'FILL' 0;">chevron_right</span>
+</button>
+</div>
+</section>
+<!-- Confidentialité Section -->
+<section>
+<h3 class="text-label-md font-label-md text-outline uppercase tracking-wider mb-xs ml-md">Confidentialité</h3>
+<div class="bg-white rounded-[20px] shadow-[0px_4px_20px_rgba(0,0,0,0.05)] overflow-hidden">
+<button class="w-full flex items-center justify-between p-md hover:bg-surface-container-low transition-colors active:scale-[0.98]">
+<div class="flex items-center gap-sm">
+<span class="material-symbols-outlined text-outline" style="font-variation-settings: 'FILL' 0;">lock</span>
+<span class="text-body-lg font-body-lg text-on-surface">Confidentialité &amp; Sécurité</span>
+</div>
+<span class="material-symbols-outlined text-outline-variant" style="font-variation-settings: 'FILL' 0;">chevron_right</span>
+</button>
+<div class="h-[1px] bg-[#D1D1D6] ml-12 mr-0"></div>
+<button class="w-full flex items-center justify-between p-md hover:bg-surface-container-low transition-colors active:scale-[0.98]">
+<div class="flex items-center gap-sm">
+<span class="material-symbols-outlined text-outline" style="font-variation-settings: 'FILL' 0;">database</span>
+<span class="text-body-lg font-body-lg text-on-surface">Gestion des données</span>
+</div>
+<span class="material-symbols-outlined text-outline-variant" style="font-variation-settings: 'FILL' 0;">chevron_right</span>
+</button>
+<div class="h-[1px] bg-[#D1D1D6] ml-12 mr-0"></div>
+<button class="w-full flex items-center justify-between p-md hover:bg-surface-container-low transition-colors active:scale-[0.98]">
+<div class="flex items-center gap-sm">
+<span class="material-symbols-outlined text-outline" style="font-variation-settings: 'FILL' 0;">assignment_turned_in</span>
+<span class="text-body-lg font-body-lg text-on-surface">Autorisations</span>
+</div>
+<span class="material-symbols-outlined text-outline-variant" style="font-variation-settings: 'FILL' 0;">chevron_right</span>
+</button>
+</div>
+</section>
+<!-- Assistance Section -->
+<section>
+<h3 class="text-label-md font-label-md text-outline uppercase tracking-wider mb-xs ml-md">Assistance</h3>
+<div class="bg-white rounded-[20px] shadow-[0px_4px_20px_rgba(0,0,0,0.05)] overflow-hidden">
+<button class="w-full flex items-center justify-between p-md hover:bg-surface-container-low transition-colors active:scale-[0.98]">
+<div class="flex items-center gap-sm">
+<span class="material-symbols-outlined text-outline" style="font-variation-settings: 'FILL' 0;">help</span>
+<span class="text-body-lg font-body-lg text-on-surface">Centre d'aide</span>
+</div>
+<span class="material-symbols-outlined text-outline-variant" style="font-variation-settings: 'FILL' 0;">chevron_right</span>
+</button>
+<div class="h-[1px] bg-[#D1D1D6] ml-12 mr-0"></div>
+<button class="w-full flex items-center justify-between p-md hover:bg-surface-container-low transition-colors active:scale-[0.98]">
+<div class="flex items-center gap-sm">
+<span class="material-symbols-outlined text-outline" style="font-variation-settings: 'FILL' 0;">report</span>
+<span class="text-body-lg font-body-lg text-on-surface">Signaler un problème</span>
+</div>
+<span class="material-symbols-outlined text-outline-variant" style="font-variation-settings: 'FILL' 0;">chevron_right</span>
+</button>
+</div>
+</section>
+<!-- Disconnect Button -->
+<button class="w-full py-4 px-6 mt-4 rounded-xl bg-error-container/30 text-error text-body-lg font-body-lg font-semibold active:scale-95 transition-transform">
+            Déconnexion
+        </button>
+</main>
+<!-- BottomNavBar (Semantic Intent: Profile is active as Settings are part of Profile) -->
+<nav class="fixed bottom-0 left-0 w-full z-50 flex justify-around items-center px-4 pt-2 pb-safe-area h-16 bg-surface/80 dark:bg-surface-dim/80 backdrop-blur-xl border-t border-outline-variant/30 dark:border-outline/20 rounded-t-xl md:hidden">
+<!-- Inactive: Accueil -->
+<a class="flex flex-col items-center justify-center text-on-surface-variant dark:text-outline hover:bg-surface-container-low dark:hover:bg-surface-container-highest transition-colors active:scale-90 transition-transform duration-200 w-16 h-full rounded-lg" href="#">
+<span class="material-symbols-outlined mb-1 text-[24px]" style="font-variation-settings: 'FILL' 0;">home</span>
+<span class="text-caption font-caption">Accueil</span>
+</a>
+<!-- Inactive: Recherche -->
+<a class="flex flex-col items-center justify-center text-on-surface-variant dark:text-outline hover:bg-surface-container-low dark:hover:bg-surface-container-highest transition-colors active:scale-90 transition-transform duration-200 w-16 h-full rounded-lg" href="#">
+<span class="material-symbols-outlined mb-1 text-[24px]" style="font-variation-settings: 'FILL' 0;">search</span>
+<span class="text-caption font-caption">Recherche</span>
+</a>
+<!-- Inactive: Activité -->
+<a class="flex flex-col items-center justify-center text-on-surface-variant dark:text-outline hover:bg-surface-container-low dark:hover:bg-surface-container-highest transition-colors active:scale-90 transition-transform duration-200 w-16 h-full rounded-lg" href="#">
+<span class="material-symbols-outlined mb-1 text-[24px]" style="font-variation-settings: 'FILL' 0;">notifications</span>
+<span class="text-caption font-caption">Activité</span>
+</a>
+<!-- Active: Profil (Settings belong to Profile) -->
+<a class="flex flex-col items-center justify-center text-primary dark:text-inverse-primary hover:bg-surface-container-low dark:hover:bg-surface-container-highest transition-colors active:scale-90 transition-transform duration-200 w-16 h-full rounded-lg" href="#">
+<span class="material-symbols-outlined mb-1 text-[24px]" style="font-variation-settings: 'FILL' 1;">person</span>
+<span class="text-caption font-caption font-semibold">Profil</span>
+</a>
+</nav>
+</body></html>

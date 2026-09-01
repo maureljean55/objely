@@ -1,0 +1,294 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="fr"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Notifications - Objely</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "inverse-primary": "#adc6ff",
+                        "on-error-container": "#93000a",
+                        "on-error": "#ffffff",
+                        "on-tertiary-fixed-variant": "#45474b",
+                        "on-tertiary-fixed": "#1a1c1f",
+                        "on-secondary-fixed": "#0c006a",
+                        "inverse-on-surface": "#f3f0f2",
+                        "on-tertiary": "#ffffff",
+                        "on-surface-variant": "#414755",
+                        "on-secondary": "#ffffff",
+                        "on-secondary-fixed-variant": "#3631b4",
+                        "surface-container": "#f0edef",
+                        "secondary-fixed-dim": "#c2c1ff",
+                        "surface-container-highest": "#e4e2e4",
+                        "primary-fixed-dim": "#adc6ff",
+                        "surface-tint": "#005bc1",
+                        "tertiary-fixed-dim": "#c6c6cb",
+                        "on-secondary-container": "#fffbff",
+                        "on-tertiary-container": "#fdfcff",
+                        "error-container": "#ffdad6",
+                        "surface-dim": "#dcd9dc",
+                        "on-primary-fixed": "#001a41",
+                        "surface": "#fcf8fb",
+                        "primary": "#0058bc",
+                        "on-surface": "#1b1b1d",
+                        "surface-container-lowest": "#ffffff",
+                        "on-primary": "#ffffff",
+                        "primary-fixed": "#d8e2ff",
+                        "on-background": "#1b1b1d",
+                        "surface-container-high": "#eae7ea",
+                        "inverse-surface": "#303032",
+                        "tertiary-container": "#737479",
+                        "outline-variant": "#c1c6d7",
+                        "primary-container": "#0070eb",
+                        "on-primary-container": "#fefcff",
+                        "tertiary-fixed": "#e2e2e7",
+                        "background": "#fcf8fb",
+                        "on-primary-fixed-variant": "#004493",
+                        "surface-container-low": "#f6f3f5",
+                        "surface-variant": "#e4e2e4",
+                        "secondary-container": "#6664e4",
+                        "tertiary": "#5a5c60",
+                        "secondary": "#4c4aca",
+                        "secondary-fixed": "#e2dfff",
+                        "surface-bright": "#fcf8fb",
+                        "error": "#ba1a1a",
+                        "outline": "#717786"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "spacing": {
+                        "margin-mobile": "20px",
+                        "lg": "24px",
+                        "xs": "8px",
+                        "md": "16px",
+                        "sm": "12px",
+                        "base": "4px",
+                        "gutter": "16px",
+                        "xl": "32px"
+                    },
+                    "fontFamily": {
+                        "title-md": ["Inter"],
+                        "headline-lg": ["Inter"],
+                        "caption": ["Inter"],
+                        "label-md": ["Inter"],
+                        "body-lg": ["Inter"],
+                        "display": ["Inter"],
+                        "headline-lg-mobile": ["Inter"],
+                        "body-sm": ["Inter"]
+                    },
+                    "fontSize": {
+                        "title-md": ["20px", { "lineHeight": "25px", "fontWeight": "600" }],
+                        "headline-lg": ["28px", { "lineHeight": "34px", "letterSpacing": "-0.01em", "fontWeight": "700" }],
+                        "caption": ["12px", { "lineHeight": "16px", "fontWeight": "400" }],
+                        "label-md": ["13px", { "lineHeight": "18px", "letterSpacing": "0.01em", "fontWeight": "500" }],
+                        "body-lg": ["17px", { "lineHeight": "22px", "fontWeight": "400" }],
+                        "display": ["34px", { "lineHeight": "41px", "letterSpacing": "-0.02em", "fontWeight": "700" }],
+                        "headline-lg-mobile": ["24px", { "lineHeight": "30px", "fontWeight": "700" }],
+                        "body-sm": ["15px", { "lineHeight": "20px", "fontWeight": "400" }]
+                    }
+                },
+            },
+        }
+    </script>
+<style>
+        .toggle-checkbox:checked {
+            right: 0;
+            border-color: #0058bc;
+        }
+        .toggle-checkbox:checked + .toggle-label {
+            background-color: #0058bc;
+        }
+        .toggle-checkbox:checked + .toggle-label:after {
+            transform: translateX(100%);
+            border-color: white;
+        }
+        .toggle-label {
+            width: 50px;
+            height: 30px;
+            background-color: #dcd9dc;
+            border-radius: 9999px;
+            position: relative;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        .toggle-label:after {
+            content: '';
+            position: absolute;
+            top: 2px;
+            left: 2px;
+            width: 26px;
+            height: 26px;
+            background-color: white;
+            border-radius: 50%;
+            transition: transform 0.3s;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+        }
+    </style>
+</head>
+<body class="bg-surface text-on-surface antialiased pb-24 md:pb-0 pt-16">
+<!-- TopAppBar -->
+<header class="fixed top-0 left-0 w-full z-50 flex justify-between items-center px-margin-mobile h-14 bg-surface/80 dark:bg-surface-dim/80 backdrop-blur-xl border-b border-outline-variant/30 dark:border-outline/20">
+<div class="flex items-center hover:opacity-70 transition-opacity active:scale-95 duration-150 cursor-pointer">
+<span class="material-symbols-outlined text-primary dark:text-inverse-primary" data-icon="arrow_back_ios">arrow_back_ios</span>
+</div>
+<div class="text-title-md font-title-md text-primary dark:text-inverse-primary font-semibold text-center flex-1">
+            Notifications
+        </div>
+<div class="flex items-center hover:opacity-70 transition-opacity active:scale-95 duration-150 cursor-pointer">
+<span class="material-symbols-outlined text-primary dark:text-inverse-primary" data-icon="settings">settings</span>
+</div>
+</header>
+<main class="max-w-3xl mx-auto px-margin-mobile pt-lg space-y-xl">
+<!-- Master Toggle -->
+<section class="bg-surface-container-lowest rounded-xl p-md shadow-[0px_4px_20px_rgba(0,0,0,0.05)]">
+<div class="flex justify-between items-center mb-sm">
+<div>
+<h2 class="text-body-lg font-body-lg font-semibold">Autoriser les notifications</h2>
+</div>
+<div class="relative inline-block w-12 mr-2 align-middle select-none transition duration-200 ease-in">
+<input checked="" class="toggle-checkbox absolute block w-6 h-6 rounded-full bg-white border-4 appearance-none cursor-pointer z-10 opacity-0" id="toggle-master" name="toggle" type="checkbox"/>
+<label class="toggle-label block overflow-hidden h-6 rounded-full bg-surface-dim cursor-pointer" for="toggle-master"></label>
+</div>
+</div>
+<p class="text-body-sm font-body-sm text-on-surface-variant">Les notifications vous permettent de ne manquer aucune information importante concernant vos objets perdus ou trouvés.</p>
+</section>
+<!-- Objets Settings -->
+<section>
+<h3 class="text-label-md font-label-md text-primary mb-sm uppercase tracking-wider pl-xs">Objets</h3>
+<div class="bg-surface-container-lowest rounded-xl shadow-[0px_4px_20px_rgba(0,0,0,0.05)] overflow-hidden">
+<div class="flex justify-between items-center p-md border-b border-outline-variant/30">
+<span class="text-body-lg font-body-lg">Nouvelle correspondance</span>
+<div class="relative inline-block w-12 mr-2 align-middle select-none transition duration-200 ease-in">
+<input checked="" class="toggle-checkbox absolute block w-6 h-6 rounded-full bg-white border-4 appearance-none cursor-pointer z-10 opacity-0" id="toggle-obj-1" name="toggle" type="checkbox"/>
+<label class="toggle-label block overflow-hidden h-6 rounded-full bg-surface-dim cursor-pointer" for="toggle-obj-1"></label>
+</div>
+</div>
+<div class="flex justify-between items-center p-md border-b border-outline-variant/30">
+<span class="text-body-lg font-body-lg">Objet trouvé à proximité</span>
+<div class="relative inline-block w-12 mr-2 align-middle select-none transition duration-200 ease-in">
+<input checked="" class="toggle-checkbox absolute block w-6 h-6 rounded-full bg-white border-4 appearance-none cursor-pointer z-10 opacity-0" id="toggle-obj-2" name="toggle" type="checkbox"/>
+<label class="toggle-label block overflow-hidden h-6 rounded-full bg-surface-dim cursor-pointer" for="toggle-obj-2"></label>
+</div>
+</div>
+<div class="flex justify-between items-center p-md">
+<span class="text-body-lg font-body-lg">Mise à jour de ma recherche</span>
+<div class="relative inline-block w-12 mr-2 align-middle select-none transition duration-200 ease-in">
+<input class="toggle-checkbox absolute block w-6 h-6 rounded-full bg-white border-4 appearance-none cursor-pointer z-10 opacity-0" id="toggle-obj-3" name="toggle" type="checkbox"/>
+<label class="toggle-label block overflow-hidden h-6 rounded-full bg-surface-dim cursor-pointer" for="toggle-obj-3"></label>
+</div>
+</div>
+</div>
+</section>
+<!-- Messages Settings -->
+<section>
+<h3 class="text-label-md font-label-md text-primary mb-sm uppercase tracking-wider pl-xs">Messages</h3>
+<div class="bg-surface-container-lowest rounded-xl shadow-[0px_4px_20px_rgba(0,0,0,0.05)] overflow-hidden">
+<div class="flex justify-between items-center p-md border-b border-outline-variant/30">
+<span class="text-body-lg font-body-lg">Nouveau message</span>
+<div class="relative inline-block w-12 mr-2 align-middle select-none transition duration-200 ease-in">
+<input checked="" class="toggle-checkbox absolute block w-6 h-6 rounded-full bg-white border-4 appearance-none cursor-pointer z-10 opacity-0" id="toggle-msg-1" name="toggle" type="checkbox"/>
+<label class="toggle-label block overflow-hidden h-6 rounded-full bg-surface-dim cursor-pointer" for="toggle-msg-1"></label>
+</div>
+</div>
+<div class="flex justify-between items-center p-md border-b border-outline-variant/30">
+<span class="text-body-lg font-body-lg">Demande de restitution</span>
+<div class="relative inline-block w-12 mr-2 align-middle select-none transition duration-200 ease-in">
+<input checked="" class="toggle-checkbox absolute block w-6 h-6 rounded-full bg-white border-4 appearance-none cursor-pointer z-10 opacity-0" id="toggle-msg-2" name="toggle" type="checkbox"/>
+<label class="toggle-label block overflow-hidden h-6 rounded-full bg-surface-dim cursor-pointer" for="toggle-msg-2"></label>
+</div>
+</div>
+<div class="flex justify-between items-center p-md">
+<span class="text-body-lg font-body-lg">Confirmation de rencontre</span>
+<div class="relative inline-block w-12 mr-2 align-middle select-none transition duration-200 ease-in">
+<input checked="" class="toggle-checkbox absolute block w-6 h-6 rounded-full bg-white border-4 appearance-none cursor-pointer z-10 opacity-0" id="toggle-msg-3" name="toggle" type="checkbox"/>
+<label class="toggle-label block overflow-hidden h-6 rounded-full bg-surface-dim cursor-pointer" for="toggle-msg-3"></label>
+</div>
+</div>
+</div>
+</section>
+<!-- Sécurité Settings -->
+<section>
+<h3 class="text-label-md font-label-md text-primary mb-sm uppercase tracking-wider pl-xs">Sécurité</h3>
+<div class="bg-surface-container-lowest rounded-xl shadow-[0px_4px_20px_rgba(0,0,0,0.05)] overflow-hidden">
+<div class="flex justify-between items-center p-md border-b border-outline-variant/30">
+<span class="text-body-lg font-body-lg">Nouvelle connexion</span>
+<div class="relative inline-block w-12 mr-2 align-middle select-none transition duration-200 ease-in">
+<input class="toggle-checkbox absolute block w-6 h-6 rounded-full bg-white border-4 appearance-none cursor-pointer z-10 opacity-0" id="toggle-sec-1" name="toggle" type="checkbox"/>
+<label class="toggle-label block overflow-hidden h-6 rounded-full bg-surface-dim cursor-pointer" for="toggle-sec-1"></label>
+</div>
+</div>
+<div class="flex justify-between items-center p-md">
+<span class="text-body-lg font-body-lg">Activité inhabituelle</span>
+<div class="relative inline-block w-12 mr-2 align-middle select-none transition duration-200 ease-in">
+<input checked="" class="toggle-checkbox absolute block w-6 h-6 rounded-full bg-white border-4 appearance-none cursor-pointer z-10 opacity-0" id="toggle-sec-2" name="toggle" type="checkbox"/>
+<label class="toggle-label block overflow-hidden h-6 rounded-full bg-surface-dim cursor-pointer" for="toggle-sec-2"></label>
+</div>
+</div>
+</div>
+</section>
+<!-- Notification History Preview -->
+<section class="mb-xl">
+<h3 class="text-label-md font-label-md text-primary mb-sm uppercase tracking-wider pl-xs">Historique Récent</h3>
+<div class="space-y-sm">
+<div class="flex items-start gap-md bg-surface-container-lowest p-md rounded-xl shadow-[0px_4px_20px_rgba(0,0,0,0.05)]">
+<div class="w-10 h-10 rounded-full bg-primary-fixed flex items-center justify-center shrink-0">
+<span class="text-xl">🎯</span>
+</div>
+<div>
+<p class="text-body-lg font-body-lg font-medium">Une correspondance possible a été trouvée.</p>
+<p class="text-caption font-caption text-on-surface-variant mt-1">Il y a 2 heures</p>
+</div>
+</div>
+<div class="flex items-start gap-md bg-surface-container-lowest p-md rounded-xl shadow-[0px_4px_20px_rgba(0,0,0,0.05)]">
+<div class="w-10 h-10 rounded-full bg-secondary-fixed flex items-center justify-center shrink-0">
+<span class="text-xl">💬</span>
+</div>
+<div>
+<p class="text-body-lg font-body-lg font-medium">Vous avez reçu un nouveau message.</p>
+<p class="text-caption font-caption text-on-surface-variant mt-1">Hier</p>
+</div>
+</div>
+<div class="flex items-start gap-md bg-surface-container-lowest p-md rounded-xl shadow-[0px_4px_20px_rgba(0,0,0,0.05)]">
+<div class="w-10 h-10 rounded-full bg-error-container flex items-center justify-center shrink-0">
+<span class="text-xl">🎉</span>
+</div>
+<div>
+<p class="text-body-lg font-body-lg font-medium">Votre objet a été retrouvé.</p>
+<p class="text-caption font-caption text-on-surface-variant mt-1">Il y a 3 jours</p>
+</div>
+</div>
+</div>
+</section>
+</main>
+<!-- BottomNavBar -->
+<nav class="fixed bottom-0 left-0 w-full z-50 flex justify-around items-center px-4 pt-2 pb-safe-area h-16 bg-surface/80 dark:bg-surface-dim/80 backdrop-blur-xl border-t border-outline-variant/30 dark:border-outline/20 rounded-t-xl md:hidden">
+<a class="flex flex-col items-center justify-center text-on-surface-variant dark:text-outline hover:bg-surface-container-low dark:hover:bg-surface-container-highest transition-colors active:scale-90 duration-200 flex-1 h-full rounded-lg" href="#">
+<span class="material-symbols-outlined" data-icon="home">home</span>
+<span class="text-label-md font-label-md mt-1">Accueil</span>
+</a>
+<a class="flex flex-col items-center justify-center text-on-surface-variant dark:text-outline hover:bg-surface-container-low dark:hover:bg-surface-container-highest transition-colors active:scale-90 duration-200 flex-1 h-full rounded-lg" href="#">
+<span class="material-symbols-outlined" data-icon="search">search</span>
+<span class="text-label-md font-label-md mt-1">Recherche</span>
+</a>
+<a class="flex flex-col items-center justify-center text-on-surface-variant dark:text-outline hover:bg-surface-container-low dark:hover:bg-surface-container-highest transition-colors active:scale-90 duration-200 flex-1 h-full rounded-lg" href="#">
+<span class="material-symbols-outlined" data-icon="notifications">notifications</span>
+<span class="text-label-md font-label-md mt-1">Activité</span>
+</a>
+<a class="flex flex-col items-center justify-center text-primary dark:text-inverse-primary hover:bg-surface-container-low dark:hover:bg-surface-container-highest transition-colors active:scale-90 duration-200 flex-1 h-full rounded-lg" href="#">
+<span class="material-symbols-outlined" data-icon="person" style="font-variation-settings: 'FILL' 1;">person</span>
+<span class="text-label-md font-label-md mt-1">Profil</span>
+</a>
+</nav>
+</body></html>

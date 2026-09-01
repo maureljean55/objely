@@ -9,26 +9,26 @@ const STATS = [
 ];
 
 const MENU_ITEMS_TOP = [
-  { icon: "inventory_2", label: "Mes Objets", bg: "bg-secondary-fixed/30", color: "text-secondary" },
-  { icon: "lock", label: "Confidentialité & Sécurité", bg: "bg-tertiary-fixed/30", color: "text-tertiary" },
+  { icon: "inventory_2", label: "Mes Objets", bg: "bg-secondary-fixed/30", color: "text-secondary", href: "/profile/items" },
+  { icon: "lock", label: "Confidentialité & Sécurité", bg: "bg-tertiary-fixed/30", color: "text-tertiary", href: "/profile/privacy" },
 ];
 
 const MENU_ITEMS_BOTTOM = [
-  { icon: "notifications", label: "Notifications", bg: "bg-primary-fixed/30", color: "text-primary" },
+  { icon: "notifications", label: "Notifications", bg: "bg-primary-fixed/30", color: "text-primary", href: "/profile/notifications" },
   { icon: "help", label: "Aide", bg: "bg-secondary-fixed/30", color: "text-secondary", href: "/help" },
-  { icon: "flag", label: "Signaler un problème", bg: "bg-surface-variant/50", color: "text-on-surface-variant" },
+  { icon: "flag", label: "Signaler un problème", bg: "bg-surface-variant/50", color: "text-on-surface-variant", href: "/profile/report" },
 ];
 
 function ProfileSummary() {
   return (
     <>
-      <button
-        type="button"
+      <Link
+        href="/profile/settings"
         aria-label="Paramètres du compte"
         className="absolute top-4 right-container-margin md:right-0 w-10 h-10 rounded-full bg-surface-container-lowest shadow-sm flex items-center justify-center text-on-surface-variant hover:text-primary transition-colors"
       >
         <span className="material-symbols-outlined text-[20px]">settings</span>
-      </button>
+      </Link>
 
       <section className="flex flex-col items-center pt-8 pb-6 animate-fadeIn">
         <div className="relative mb-4">
@@ -40,9 +40,9 @@ function ProfileSummary() {
               src="https://lh3.googleusercontent.com/aida-public/AB6AXuCZfuwmAGmqsioZXn2vl0S5TeziGs1iRvYxOAMNX1PWzii9KRcgCccoERwU1Dj76e0-cAN4M1_1ws_bjeZmtSxzXtieAa2J7ngwaqInqx_rnuPJJ3W5dj_MCvXoNG0YdF_6oyDqnRm6zIuhi6ii40MgIjkG5rsKX0XWiP40a5Eu8sK6GuUecMT6pJPUQbKbX9MSI_u1c4V0_o8xVv6hlzkKug9iRIUbUXwp-O7ITLOaaSCSmax9QdFC"
             />
           </div>
-          <button className="absolute bottom-0 right-0 w-8 h-8 bg-surface-container-lowest rounded-full shadow-md flex items-center justify-center text-primary hover:bg-surface-variant transition-colors border border-surface-container">
+          <Link href="/profile/edit" className="absolute bottom-0 right-0 w-8 h-8 bg-surface-container-lowest rounded-full shadow-md flex items-center justify-center text-primary hover:bg-surface-variant transition-colors border border-surface-container">
             <span className="material-symbols-outlined text-[18px]">edit</span>
-          </button>
+          </Link>
         </div>
         <h1 className="font-headline-lg-mobile md:font-headline-lg text-headline-lg-mobile md:text-headline-lg text-on-surface mb-1">
           Julie Bertrand
@@ -94,8 +94,9 @@ export default function UserProfilePage() {
         <section className="bg-surface-container-lowest rounded-[32px] soft-shadow inner-stroke overflow-hidden mb-8 animate-slideUp">
           <div className="flex flex-col">
             {MENU_ITEMS_TOP.map((item) => (
-              <button
+              <Link
                 key={item.label}
+                href={item.href}
                 className="w-full flex items-center justify-between p-lg text-left hover:bg-black/[0.02] transition-colors border-b border-surface-variant/50"
               >
                 <div className="flex items-center gap-4">
@@ -105,7 +106,7 @@ export default function UserProfilePage() {
                   <span className="font-body-lg text-body-lg text-on-surface">{item.label}</span>
                 </div>
                 <span className="material-symbols-outlined text-outline-variant">chevron_right</span>
-              </button>
+              </Link>
             ))}
 
             <ThemeToggle />

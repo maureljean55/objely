@@ -1,0 +1,289 @@
+<!DOCTYPE html>
+
+<html class="light" lang="fr"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" name="viewport"/>
+<title>Mes objets - Objely</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "inverse-primary": "#adc6ff",
+                        "on-error-container": "#93000a",
+                        "on-error": "#ffffff",
+                        "on-tertiary-fixed-variant": "#45474b",
+                        "on-tertiary-fixed": "#1a1c1f",
+                        "on-secondary-fixed": "#0c006a",
+                        "inverse-on-surface": "#f3f0f2",
+                        "on-tertiary": "#ffffff",
+                        "on-surface-variant": "#414755",
+                        "on-secondary": "#ffffff",
+                        "on-secondary-fixed-variant": "#3631b4",
+                        "surface-container": "#f0edef",
+                        "secondary-fixed-dim": "#c2c1ff",
+                        "surface-container-highest": "#e4e2e4",
+                        "primary-fixed-dim": "#adc6ff",
+                        "surface-tint": "#005bc1",
+                        "tertiary-fixed-dim": "#c6c6cb",
+                        "on-secondary-container": "#fffbff",
+                        "on-tertiary-container": "#fdfcff",
+                        "error-container": "#ffdad6",
+                        "surface-dim": "#dcd9dc",
+                        "on-primary-fixed": "#001a41",
+                        "surface": "#fcf8fb",
+                        "primary": "#0058bc",
+                        "on-surface": "#1b1b1d",
+                        "surface-container-lowest": "#ffffff",
+                        "on-primary": "#ffffff",
+                        "primary-fixed": "#d8e2ff",
+                        "on-background": "#1b1b1d",
+                        "surface-container-high": "#eae7ea",
+                        "inverse-surface": "#303032",
+                        "tertiary-container": "#737479",
+                        "outline-variant": "#c1c6d7",
+                        "primary-container": "#0070eb",
+                        "on-primary-container": "#fefcff",
+                        "tertiary-fixed": "#e2e2e7",
+                        "background": "#fcf8fb",
+                        "on-primary-fixed-variant": "#004493",
+                        "surface-container-low": "#f6f3f5",
+                        "surface-variant": "#e4e2e4",
+                        "secondary-container": "#6664e4",
+                        "tertiary": "#5a5c60",
+                        "secondary": "#4c4aca",
+                        "secondary-fixed": "#e2dfff",
+                        "surface-bright": "#fcf8fb",
+                        "error": "#ba1a1a",
+                        "outline": "#717786"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "spacing": {
+                        "margin-mobile": "20px",
+                        "lg": "24px",
+                        "xs": "8px",
+                        "md": "16px",
+                        "sm": "12px",
+                        "base": "4px",
+                        "gutter": "16px",
+                        "xl": "32px"
+                    },
+                    "fontFamily": {
+                        "title-md": ["Inter"],
+                        "headline-lg": ["Inter"],
+                        "caption": ["Inter"],
+                        "label-md": ["Inter"],
+                        "body-lg": ["Inter"],
+                        "display": ["Inter"],
+                        "headline-lg-mobile": ["Inter"],
+                        "body-sm": ["Inter"]
+                    },
+                    "fontSize": {
+                        "title-md": ["20px", { "lineHeight": "25px", "fontWeight": "600" }],
+                        "headline-lg": ["28px", { "lineHeight": "34px", "letterSpacing": "-0.01em", "fontWeight": "700" }],
+                        "caption": ["12px", { "lineHeight": "16px", "fontWeight": "400" }],
+                        "label-md": ["13px", { "lineHeight": "18px", "letterSpacing": "0.01em", "fontWeight": "500" }],
+                        "body-lg": ["17px", { "lineHeight": "22px", "fontWeight": "400" }],
+                        "display": ["34px", { "lineHeight": "41px", "letterSpacing": "-0.02em", "fontWeight": "700" }],
+                        "headline-lg-mobile": ["24px", { "lineHeight": "30px", "fontWeight": "700" }],
+                        "body-sm": ["15px", { "lineHeight": "20px", "fontWeight": "400" }]
+                    }
+                }
+            }
+        }
+    </script>
+<style>
+        /* Safe Area Utilities */
+        .pb-safe-area { padding-bottom: env(safe-area-inset-bottom, 20px); }
+        .pt-safe-area { padding-top: env(safe-area-inset-top, 44px); }
+        
+        /* Soft Shadow */
+        .shadow-soft {
+            box-shadow: 0px 4px 20px rgba(0, 0, 0, 0.05);
+        }
+
+        /* Glassmorphism */
+        .glass-panel {
+            background: rgba(252, 248, 251, 0.85); /* surface color with opacity */
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+        }
+        
+        /* Custom Scrollbar hide */
+        .no-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+        .no-scrollbar {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+    </style>
+</head>
+<body class="bg-[#F2F2F7] text-on-surface antialiased min-h-screen pb-[100px]">
+<!-- Top App Bar -->
+<header class="fixed top-0 left-0 w-full z-50 flex justify-between items-center px-margin-mobile h-14 bg-surface/80 dark:bg-surface-dim/80 backdrop-blur-xl pt-safe-area">
+<button aria-label="Retour" class="w-10 h-10 flex items-center justify-center hover:opacity-70 transition-opacity active:scale-95 text-on-surface-variant">
+<span class="material-symbols-outlined" data-icon="arrow_back_ios">arrow_back_ios</span>
+</button>
+<h1 class="text-headline-lg-mobile font-headline-lg-mobile font-bold text-primary">Mes objets</h1>
+<button aria-label="Paramètres" class="w-10 h-10 flex items-center justify-center hover:opacity-70 transition-opacity active:scale-95 text-on-surface-variant">
+<span class="material-symbols-outlined" data-icon="settings">settings</span>
+</button>
+</header>
+<!-- Main Content Canvas -->
+<main class="pt-[calc(56px+env(safe-area-inset-top,44px))] px-margin-mobile flex flex-col gap-lg">
+<!-- Segmented Control -->
+<div class="bg-surface-container-high rounded-full p-1 flex mt-xs relative">
+<div class="absolute inset-y-1 left-1 w-[32%] bg-surface rounded-full shadow-sm transition-transform duration-300 ease-in-out" id="segment-indicator"></div>
+<button class="relative z-10 flex-1 py-2 text-label-md font-label-md text-on-surface text-center rounded-full transition-colors" id="tab-perdus" onclick="switchTab('perdus', 0)">
+                Perdus
+            </button>
+<button class="relative z-10 flex-1 py-2 text-label-md font-label-md text-on-surface-variant text-center rounded-full transition-colors" id="tab-trouves" onclick="switchTab('trouves', 1)">
+                Trouvés
+            </button>
+<button class="relative z-10 flex-1 py-2 text-label-md font-label-md text-on-surface-variant text-center rounded-full transition-colors" id="tab-retrouves" onclick="switchTab('retrouves', 2)">
+                Retrouvés
+            </button>
+</div>
+<!-- Tab Content: Perdus -->
+<div class="flex flex-col gap-md transition-opacity duration-300" id="content-perdus">
+<!-- Card 1 -->
+<article class="bg-surface rounded-[20px] shadow-soft overflow-hidden">
+<div class="h-32 bg-surface-container w-full relative">
+<img class="w-full h-full object-cover" data-alt="A close-up, highly detailed shot of a black iPhone 14 Pro lying on a sleek, modern wooden table. The lighting is bright and natural, casting soft shadows, creating a high-end, contemporary light-mode aesthetic. The focus is sharp on the camera lenses, conveying a premium and dependable product feel." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBjDhBPV_s8U2mWo_ZwHhXhbw9kUOoiqDA5xlmbXfefcJigpherWHo_r1VonGVOz6v8JYm1IAOd3EFVtTl0X-4bZsJEIkxBf-XJXzfeuFJ5wBUitSk33p_nsa0gfOMuZaxVuvGDpVWou_c6UNyX0y0Ow-RdO1wRU844ndZhC2AVwJhzFr42ksMGg94Yu_Vy50jiLGkQT1Aa52rAa5z2QKLrAwCjxz-ClEKtXZXp5GPrhei6lbv6nYBVSg"/>
+<div class="absolute top-sm right-sm bg-surface/90 backdrop-blur-md px-3 py-1 rounded-full shadow-sm">
+<span class="text-caption font-caption text-primary flex items-center gap-1">
+<span class="material-symbols-outlined text-[14px]">radar</span>
+                            Recherche active
+                        </span>
+</div>
+</div>
+<div class="p-md">
+<div class="flex justify-between items-start mb-sm">
+<div>
+<h2 class="text-title-md font-title-md text-on-surface">iPhone 14 Pro</h2>
+<p class="text-body-sm font-body-sm text-on-surface-variant">Électronique</p>
+</div>
+</div>
+<div class="flex flex-col gap-xs mt-sm pt-sm border-t border-outline-variant/30">
+<div class="flex items-center gap-2 text-body-sm font-body-sm text-on-surface-variant">
+<span class="material-symbols-outlined text-[18px]">calendar_today</span>
+<span>Perdu le 12 oct.</span>
+</div>
+<div class="flex items-center gap-2 text-body-sm font-body-sm text-on-surface-variant">
+<span class="material-symbols-outlined text-[18px]">location_on</span>
+<span>Paris 15e</span>
+</div>
+</div>
+</div>
+</article>
+</div>
+<!-- Tab Content: Trouvés (Empty State) -->
+<div class="hidden opacity-0 flex-col items-center justify-center py-xl transition-opacity duration-300" id="content-trouves">
+<div class="w-48 h-48 mb-lg bg-surface-container-low rounded-full flex items-center justify-center p-6">
+<img class="w-full h-full object-contain" data-alt="A friendly, minimalist 3D illustration of a magnifying glass examining an empty cardboard box. The scene is brightly lit with soft, high-key lighting, emphasizing a clean, modern, light-mode aesthetic. The colors are predominantly soft whites and grays with a subtle pop of Objely blue, conveying a sense of helpfulness and potential discovery." src="https://lh3.googleusercontent.com/aida-public/AB6AXuC3Hs87eY0g7y94xB4fyaeNqHm6AiPkXkX69fu0rZwsiN6LnjFO2zxbG3wUCNdWKILLg3UZWkG1Fy4uu5H6mCiQAMvq4hSwhGRacGeOzCBklUyLPK-hzNs-jZm9Z--eBU7cxp1uOsNau4-IlgNSXsFNrg6zXpttlnJsC_dpsAK0Kg2O1AOLcYMHS2IOU-ujT34hJL87XS6H43X77C0b3uzfsMFn5u4gOMIfhQJvIBgs6jVKzzc3qA3N9g"/>
+</div>
+<h3 class="text-title-md font-title-md text-on-surface text-center mb-sm">Vous n'avez aucun objet trouvé</h3>
+<p class="text-body-sm font-body-sm text-on-surface-variant text-center mb-lg px-lg">
+                Si vous avez trouvé un objet qui ne vous appartient pas, déclarez-le ici pour aider son propriétaire à le retrouver.
+            </p>
+<button class="bg-primary text-on-primary py-md px-xl rounded-full text-body-lg font-body-lg font-semibold hover:opacity-90 active:scale-95 transition-all shadow-md">
+                Déclarer un objet
+            </button>
+</div>
+<!-- Tab Content: Retrouvés -->
+<div class="hidden opacity-0 flex-col gap-md transition-opacity duration-300" id="content-retrouves">
+<!-- Card 2 -->
+<article class="bg-surface rounded-[20px] shadow-soft overflow-hidden">
+<div class="p-md flex items-start gap-md">
+<div class="w-20 h-20 bg-surface-container rounded-xl overflow-hidden shrink-0">
+<img class="w-full h-full object-cover" data-alt="A top-down view of a classic black leather wallet resting on a clean, light-colored stone surface. The lighting is even and bright, casting soft, ambient shadows. The image has a crisp, modern light-mode look, emphasizing the texture of the leather in a minimalist, premium setting." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDM_1pxJb0AvyBlZhmqAp9tTLM6EAxPpHKeahNCpCAo4zK75tx4AfoD5Zntha7L_6EatUm_83nxZr_eQv4nnjCeiTElGfuxVGfTCCxyoMFYg9dVfN808eBFjKM3kwr3odwKOijSknwlMPW3U3AjeRhff2DZoSNdjC-2hXkidsh5BRdvp4qzLQ1jznuNxiqA4cvt-DonUxFvKFB64RDwk4vYcEMmsO_xjcbZ7qDJZp0vODNXhL2f95L_gg"/>
+</div>
+<div class="flex-1">
+<div class="flex justify-between items-start">
+<h2 class="text-title-md font-title-md text-on-surface leading-tight">Portefeuille noir</h2>
+</div>
+<div class="mt-2 flex flex-col gap-1">
+<div class="flex items-center gap-1 text-caption font-caption text-on-surface-variant">
+<span class="material-symbols-outlined text-[14px]">calendar_today</span>
+<span>Trouvé le 10 oct.</span>
+</div>
+<div class="flex items-center gap-1 text-caption font-caption text-on-surface-variant">
+<span class="material-symbols-outlined text-[14px]">location_on</span>
+<span>Gare du Nord</span>
+</div>
+</div>
+<div class="mt-3 inline-flex items-center gap-1 bg-[#E8F5E9] text-[#2E7D32] px-2 py-1 rounded-md">
+<span class="material-symbols-outlined text-[14px]">check_circle</span>
+<span class="text-caption font-caption font-medium">Objet retrouvé</span>
+</div>
+</div>
+</div>
+</article>
+</div>
+</main>
+<!-- Bottom Navigation Bar -->
+<nav class="fixed bottom-0 left-0 w-full z-50 flex justify-around items-center px-4 pt-2 pb-safe-area h-16 bg-surface/80 dark:bg-surface-dim/80 backdrop-blur-xl rounded-t-xl">
+<a class="flex flex-col items-center justify-center text-on-surface-variant dark:text-outline hover:bg-surface-container-low dark:hover:bg-surface-container-highest transition-colors active:scale-90 transition-transform duration-200 w-16 h-full rounded-lg" href="#">
+<span class="material-symbols-outlined" data-icon="home">home</span>
+<span class="text-label-md font-label-md text-[10px] mt-1">Accueil</span>
+</a>
+<a class="flex flex-col items-center justify-center text-on-surface-variant dark:text-outline hover:bg-surface-container-low dark:hover:bg-surface-container-highest transition-colors active:scale-90 transition-transform duration-200 w-16 h-full rounded-lg" href="#">
+<span class="material-symbols-outlined" data-icon="search">search</span>
+<span class="text-label-md font-label-md text-[10px] mt-1">Recherche</span>
+</a>
+<a class="flex flex-col items-center justify-center text-on-surface-variant dark:text-outline hover:bg-surface-container-low dark:hover:bg-surface-container-highest transition-colors active:scale-90 transition-transform duration-200 w-16 h-full rounded-lg" href="#">
+<span class="material-symbols-outlined" data-icon="notifications">notifications</span>
+<span class="text-label-md font-label-md text-[10px] mt-1">Activité</span>
+</a>
+<a class="flex flex-col items-center justify-center text-primary dark:text-inverse-primary hover:bg-surface-container-low dark:hover:bg-surface-container-highest transition-colors active:scale-90 transition-transform duration-200 w-16 h-full rounded-lg" href="#">
+<span class="material-symbols-outlined" data-icon="person" style="font-variation-settings: 'FILL' 1;">person</span>
+<span class="text-label-md font-label-md text-[10px] mt-1 font-bold">Profil</span>
+</a>
+</nav>
+<script>
+        function switchTab(tabId, index) {
+            // Update indicator position
+            const indicator = document.getElementById('segment-indicator');
+            indicator.style.transform = `translateX(${index * 100}%)`;
+
+            // Reset tab text colors
+            ['perdus', 'trouves', 'retrouves'].forEach(t => {
+                document.getElementById(`tab-${t}`).classList.remove('text-on-surface');
+                document.getElementById(`tab-${t}`).classList.add('text-on-surface-variant');
+                
+                const content = document.getElementById(`content-${t}`);
+                content.classList.add('opacity-0');
+                setTimeout(() => {
+                    content.classList.add('hidden');
+                    content.classList.remove('flex');
+                }, 300); // match transition duration
+            });
+
+            // Set active tab text color
+            document.getElementById(`tab-${tabId}`).classList.add('text-on-surface');
+            document.getElementById(`tab-${tabId}`).classList.remove('text-on-surface-variant');
+
+            // Show content
+            setTimeout(() => {
+                const activeContent = document.getElementById(`content-${tabId}`);
+                activeContent.classList.remove('hidden');
+                activeContent.classList.add('flex');
+                // slight delay to allow display:flex to apply before animating opacity
+                setTimeout(() => activeContent.classList.remove('opacity-0'), 10);
+            }, 300);
+        }
+    </script>
+</body></html>
