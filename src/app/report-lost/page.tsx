@@ -18,7 +18,7 @@ export default function ReportLostCategoryPage() {
   const [selected, setSelected] = useState<string | null>(null);
 
   return (
-    <div className="font-body-md text-on-surface antialiased min-h-screen flex flex-col bg-[#F2F2F7]">
+    <div className="font-body-md text-on-surface antialiased min-h-screen flex flex-col bg-background">
       <header className="w-full px-container-margin py-base flex items-center justify-between sticky top-0 z-50 bg-background/80 backdrop-blur-md">
         <Link href="/" aria-label="Retour" className="w-10 h-10 flex items-center justify-center rounded-full hover:bg-surface-container-high/50 transition-colors">
           <span className="material-symbols-outlined text-on-surface-variant">arrow_back</span>
@@ -81,7 +81,7 @@ export default function ReportLostCategoryPage() {
         <div className="max-w-3xl mx-auto flex gap-md">
           <Link
             href="/"
-            className="flex-1 py-4 px-6 rounded border border-[#007AFF] text-[#007AFF] font-headline-sm text-headline-sm bg-white shadow-sm hover:bg-surface-container-low transition-colors text-center"
+            className="flex-1 py-4 px-6 rounded border border-[#007AFF] text-[#007AFF] font-headline-sm text-headline-sm bg-surface-container-lowest shadow-sm hover:bg-surface-container-low transition-colors text-center"
           >
             Annuler
           </Link>

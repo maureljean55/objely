@@ -93,7 +93,7 @@ export default function OwnershipVerificationPage() {
                   Soyez précis si possible (ex: logo en métal doré, marque embossée à l&apos;intérieur).
                 </p>
                 <input
-                  className="w-full h-14 bg-[#F2F2F7] border-transparent rounded-[16px] px-md font-body-lg text-body-lg text-on-surface focus:border-primary-container focus:bg-surface-container-lowest focus:ring-1 focus:ring-primary-container transition-all placeholder:text-outline-variant"
+                  className="w-full h-14 bg-surface-container-low border-transparent rounded-[16px] px-md font-body-lg text-body-lg text-on-surface focus:border-primary-container focus:bg-surface-container-lowest focus:ring-1 focus:ring-primary-container transition-all placeholder:text-outline-variant"
                   id="q-brand"
                   name="brand"
                   placeholder="Ex: Montblanc, Le Tanneur..."
@@ -111,7 +111,7 @@ export default function OwnershipVerificationPage() {
                   Décrivez un élément unique (une carte spécifique, une photo, une griffe).
                 </p>
                 <textarea
-                  className="w-full bg-[#F2F2F7] border-transparent rounded-[16px] p-md font-body-lg text-body-lg text-on-surface focus:border-primary-container focus:bg-surface-container-lowest focus:ring-1 focus:ring-primary-container transition-all placeholder:text-outline-variant resize-none"
+                  className="w-full bg-surface-container-low border-transparent rounded-[16px] p-md font-body-lg text-body-lg text-on-surface focus:border-primary-container focus:bg-surface-container-lowest focus:ring-1 focus:ring-primary-container transition-all placeholder:text-outline-variant resize-none"
                   id="q-details"
                   name="details"
                   placeholder="Ex: Il y a une carte de fidélité Monoprix rouge, et une vieille photo d'identité pliée dans la pochette gauche..."

@@ -188,7 +188,7 @@ export default function ScheduleReturnPage() {
                   className="w-full h-full object-cover"
                   src="https://lh3.googleusercontent.com/aida-public/AB6AXuDdwifSzMCEFvdPpJKTdvUtnCmzNv8RDqLrvxVxCn3p5655mkBjZ-oTo2FAFQBhuyph_IddLIHFTepe7xG8ujAuaTxqV23lyd0sobMNC2pCZwk0mxzjIEwVVOMifjWJyeUnNezOozpZz6VF2uBbo_UxqmQwBoCtbN7PJxOS8fnBHGYn2bYvVhl7zKoaSEVqjaQAKKiboj-SZBPIMby1NkEywMCdUuPaodFKVZ-LlKG_qNZRL8_pJxlM"
                 />
-                <div className="absolute top-4 right-4 bg-white/90 backdrop-blur-md px-3 py-1 rounded-full border border-black/5 flex items-center gap-1.5 shadow-sm">
+                <div className="absolute top-4 right-4 bg-surface-container-lowest/90 backdrop-blur-md px-3 py-1 rounded-full border border-black/5 flex items-center gap-1.5 shadow-sm">
                   <div className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
                   <span className="font-label-md text-label-md text-on-surface">Trouvé</span>
                 </div>

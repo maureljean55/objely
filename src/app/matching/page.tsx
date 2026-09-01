@@ -19,7 +19,7 @@ export default function MatchingVerificationPage() {
   }, []);
 
   return (
-    <div className="font-body-md text-on-background min-h-screen pb-32 bg-[#F2F2F7]">
+    <div className="font-body-md text-on-background min-h-screen pb-32 bg-background">
       <header className="fixed bg-background/80 backdrop-blur-md top-0 z-50 flex justify-between items-center w-full px-container-margin py-base max-w-7xl mx-auto">
         <div className="flex items-center gap-md">
           <div className="w-10 h-10 rounded-full overflow-hidden bg-surface-container inner-stroke shrink-0" />

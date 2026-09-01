@@ -62,12 +62,13 @@ body {
     "opsz" 24;
 }
 
-/* Glassmorphism panels (headers, modals, chat input) */
+/* Glassmorphism panels (headers, modals, chat input) — tinted with the
+   theme's own surface color so they read correctly in dark mode too. */
 .glass-panel {
-  background: rgba(255, 255, 255, 0.7);
+  background: rgb(var(--color-surface-container-lowest) / 0.7);
   backdrop-filter: blur(20px);
   -webkit-backdrop-filter: blur(20px);
-  border: 1px solid rgba(255, 255, 255, 0.5);
+  border: 1px solid rgb(var(--color-outline-variant) / 0.3);
 }
 
 /* Tonal surface card: soft bloom shadow + hairline inner stroke */
@@ -136,16 +137,16 @@ body {
 }
 
 .glass-header {
-  background: rgba(249, 249, 254, 0.85);
+  background: rgb(var(--color-background) / 0.85);
   backdrop-filter: blur(16px);
   -webkit-backdrop-filter: blur(16px);
 }
 
 .glass-input {
-  background: rgba(255, 255, 255, 0.9);
+  background: rgb(var(--color-surface-container-lowest) / 0.9);
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
-  border-top: 1px solid rgba(0, 0, 0, 0.05);
+  border-top: 1px solid rgb(var(--color-outline-variant) / 0.3);
 }
 
 .message-in {

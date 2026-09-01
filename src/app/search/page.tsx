@@ -48,7 +48,7 @@ const RESULTS = [
 
 export default function SearchFiltersPage() {
   return (
-    <div className="bg-[#F2F2F7] text-on-background font-body-md min-h-screen pb-24 md:pb-0 pt-20">
+    <div className="bg-background text-on-background font-body-md min-h-screen pb-24 md:pb-0 pt-20">
       <header className="fixed top-0 w-full z-50 bg-surface/80 backdrop-blur-md shadow-sm">
         <div className="flex items-center justify-between px-container-margin py-sm w-full max-w-full mx-auto md:max-w-[1140px]">
           <Link href="/" className="text-on-surface-variant hover:opacity-80 transition-opacity active:scale-95 hidden md:flex items-center justify-center">
