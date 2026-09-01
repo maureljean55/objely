@@ -11,8 +11,8 @@ export default function SecureChatPage() {
   const textareaRef = useRef<HTMLTextAreaElement>(null);
 
   return (
-    <div className="bg-background text-on-background h-screen flex flex-col font-body-md overflow-hidden antialiased">
-      <header className="glass-header top-0 z-50 flex justify-between items-center w-full px-container-margin py-base shadow-[0_1px_0_rgba(0,0,0,0.05)]">
+    <div className="bg-background text-on-background font-body-md antialiased">
+      <header className="glass-header fixed top-0 inset-x-0 z-50 flex justify-between items-center w-full px-container-margin py-base shadow-[0_1px_0_rgba(0,0,0,0.05)]">
         <Link href="/matching" className="text-primary p-2 -ml-2 rounded-full hover:bg-surface-container-high/50 transition-colors flex items-center">
           <span className="material-symbols-outlined" style={{ fontVariationSettings: "'FILL' 0" }}>arrow_back_ios</span>
           <span className="font-label-md text-label-md ml-1">Retour</span>
@@ -26,7 +26,7 @@ export default function SecureChatPage() {
         </button>
       </header>
 
-      <main className="flex-1 overflow-y-auto px-container-margin py-md flex flex-col gap-md">
+      <main className="min-h-screen px-container-margin py-md pt-[92px] pb-[120px] flex flex-col gap-md">
         <div className="bg-surface-container-high rounded-xl p-3 flex items-start gap-3 shadow-sm mx-auto max-w-sm mt-2 mb-4">
           <span className="material-symbols-outlined text-tertiary mt-0.5" style={{ fontVariationSettings: "'FILL' 1" }}>security</span>
           <p className="font-label-md text-label-md text-on-surface-variant flex-1">
@@ -79,7 +79,7 @@ export default function SecureChatPage() {
         </div>
       </main>
 
-      <footer className="glass-input p-3 safe-area-pb z-50">
+      <footer className="glass-input fixed bottom-0 inset-x-0 z-50 p-3 safe-area-pb">
         <div className="flex items-end gap-2 max-w-7xl mx-auto w-full">
           <button className="p-2 text-primary hover:bg-primary/10 rounded-full transition-colors shrink-0">
             <span className="material-symbols-outlined" style={{ fontVariationSettings: "'FILL' 0" }}>add_photo_alternate</span>

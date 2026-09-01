@@ -19,6 +19,46 @@ const MENU_ITEMS_BOTTOM = [
   { icon: "flag", label: "Signaler un problème", bg: "bg-surface-variant/50", color: "text-on-surface-variant" },
 ];
 
+function ProfileSummary() {
+  return (
+    <>
+      <section className="flex flex-col items-center pt-8 pb-6 animate-fadeIn">
+        <div className="relative mb-4">
+          <div className="w-28 h-28 rounded-full overflow-hidden soft-shadow ring-4 ring-surface-container-lowest bg-surface-container-high">
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img
+              className="w-full h-full object-cover"
+              alt="Julie Bertrand"
+              src="https://lh3.googleusercontent.com/aida-public/AB6AXuCZfuwmAGmqsioZXn2vl0S5TeziGs1iRvYxOAMNX1PWzii9KRcgCccoERwU1Dj76e0-cAN4M1_1ws_bjeZmtSxzXtieAa2J7ngwaqInqx_rnuPJJ3W5dj_MCvXoNG0YdF_6oyDqnRm6zIuhi6ii40MgIjkG5rsKX0XWiP40a5Eu8sK6GuUecMT6pJPUQbKbX9MSI_u1c4V0_o8xVv6hlzkKug9iRIUbUXwp-O7ITLOaaSCSmax9QdFC"
+            />
+          </div>
+          <button className="absolute bottom-0 right-0 w-8 h-8 bg-surface-container-lowest rounded-full shadow-md flex items-center justify-center text-primary hover:bg-surface-variant transition-colors border border-surface-container">
+            <span className="material-symbols-outlined text-[18px]">edit</span>
+          </button>
+        </div>
+        <h1 className="font-headline-lg-mobile md:font-headline-lg text-headline-lg-mobile md:text-headline-lg text-on-surface mb-1">
+          Julie Bertrand
+        </h1>
+        <div className="flex items-center gap-2 bg-gradient-to-r from-amber-50 to-orange-50 border border-amber-200/50 rounded-full px-4 py-1.5 shadow-sm mt-2">
+          <span className="material-symbols-outlined text-amber-500 text-[18px] drop-shadow-sm" style={{ fontVariationSettings: "'FILL' 1" }}>
+            shield
+          </span>
+          <span className="font-label-md text-label-md text-amber-700">Niveau de confiance : Or (98%)</span>
+        </div>
+      </section>
+
+      <section className="grid grid-cols-3 gap-3 animate-slideUp">
+        {STATS.map((stat) => (
+          <div key={stat.label} className="bg-surface-container-lowest rounded-[24px] p-4 flex flex-col items-center justify-center soft-shadow inner-stroke">
+            <span className={`font-headline-lg-mobile text-headline-lg-mobile mb-1 ${stat.color}`}>{stat.value}</span>
+            <span className="font-label-md text-label-md text-on-surface-variant text-center leading-tight whitespace-pre-line">{stat.label}</span>
+          </div>
+        ))}
+      </section>
+    </>
+  );
+}
+
 export default function UserProfilePage() {
   return (
     <div className="bg-background text-on-surface antialiased pb-[100px]">
@@ -33,40 +73,15 @@ export default function UserProfilePage() {
         </div>
       </header>
 
-      <main className="max-w-2xl mx-auto md:mt-8 px-container-margin md:px-0">
-        <section className="flex flex-col items-center pt-8 pb-6 animate-fadeIn">
-          <div className="relative mb-4">
-            <div className="w-28 h-28 rounded-full overflow-hidden soft-shadow ring-4 ring-surface-container-lowest bg-surface-container-high">
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img
-                className="w-full h-full object-cover"
-                alt="Julie Bertrand"
-                src="https://lh3.googleusercontent.com/aida-public/AB6AXuCZfuwmAGmqsioZXn2vl0S5TeziGs1iRvYxOAMNX1PWzii9KRcgCccoERwU1Dj76e0-cAN4M1_1ws_bjeZmtSxzXtieAa2J7ngwaqInqx_rnuPJJ3W5dj_MCvXoNG0YdF_6oyDqnRm6zIuhi6ii40MgIjkG5rsKX0XWiP40a5Eu8sK6GuUecMT6pJPUQbKbX9MSI_u1c4V0_o8xVv6hlzkKug9iRIUbUXwp-O7ITLOaaSCSmax9QdFC"
-              />
-            </div>
-            <button className="absolute bottom-0 right-0 w-8 h-8 bg-surface-container-lowest rounded-full shadow-md flex items-center justify-center text-primary hover:bg-surface-variant transition-colors border border-surface-container">
-              <span className="material-symbols-outlined text-[18px]">edit</span>
-            </button>
-          </div>
-          <h1 className="font-headline-lg-mobile md:font-headline-lg text-headline-lg-mobile md:text-headline-lg text-on-surface mb-1">
-            Julie Bertrand
-          </h1>
-          <div className="flex items-center gap-2 bg-gradient-to-r from-amber-50 to-orange-50 border border-amber-200/50 rounded-full px-4 py-1.5 shadow-sm mt-2">
-            <span className="material-symbols-outlined text-amber-500 text-[18px] drop-shadow-sm" style={{ fontVariationSettings: "'FILL' 1" }}>
-              shield
-            </span>
-            <span className="font-label-md text-label-md text-amber-700">Niveau de confiance : Or (98%)</span>
-          </div>
-        </section>
+      {/* Mobile: photo through stats stays pinned while the menu list below scrolls */}
+      <div className="md:hidden fixed top-0 inset-x-0 z-40 bg-background/95 backdrop-blur-md px-container-margin pb-4 shadow-sm">
+        <ProfileSummary />
+      </div>
 
-        <section className="grid grid-cols-3 gap-3 mb-8 animate-slideUp">
-          {STATS.map((stat) => (
-            <div key={stat.label} className="bg-surface-container-lowest rounded-[24px] p-4 flex flex-col items-center justify-center soft-shadow inner-stroke">
-              <span className={`font-headline-lg-mobile text-headline-lg-mobile mb-1 ${stat.color}`}>{stat.value}</span>
-              <span className="font-label-md text-label-md text-on-surface-variant text-center leading-tight whitespace-pre-line">{stat.label}</span>
-            </div>
-          ))}
-        </section>
+      <main className="max-w-2xl mx-auto md:mt-8 px-container-margin md:px-0 pt-[422px] md:pt-0">
+        <div className="hidden md:block">
+          <ProfileSummary />
+        </div>
 
         <section className="bg-surface-container-lowest rounded-[32px] soft-shadow inner-stroke overflow-hidden mb-8 animate-slideUp">
           <div className="flex flex-col">
