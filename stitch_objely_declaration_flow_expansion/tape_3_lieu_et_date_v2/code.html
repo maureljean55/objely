@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+
+<html class="light" lang="fr"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Déclarer un objet - Étape 3</title>
+<!-- Tailwind CSS -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<!-- Material Symbols -->
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@100..900&family=Inter:wght@100..900&display=swap" rel="stylesheet"/>
+<!-- Theme Configuration -->
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "outline-variant": "#c3c5d9",
+                        "background": "#f8f9fe",
+                        "inverse-on-surface": "#eff0f5",
+                        "on-secondary-fixed": "#23005b",
+                        "secondary-container": "#7000ff",
+                        "surface-container-highest": "#e1e2e7",
+                        "on-primary-fixed-variant": "#0039b3",
+                        "surface-container-low": "#f2f3f8",
+                        "primary-fixed": "#dce1ff",
+                        "secondary": "#5400c3",
+                        "surface-container-lowest": "#ffffff",
+                        "on-primary": "#ffffff",
+                        "on-tertiary-fixed": "#002113",
+                        "on-primary-fixed": "#001551",
+                        "tertiary-container": "#007751",
+                        "on-secondary-container": "#ddcdff",
+                        "error-container": "#ffdad6",
+                        "outline": "#737688",
+                        "inverse-primary": "#b6c4ff",
+                        "surface-variant": "#e1e2e7",
+                        "tertiary-fixed-dim": "#4edea3",
+                        "surface-tint": "#004dea",
+                        "surface-dim": "#d8dadf",
+                        "secondary-fixed-dim": "#d1bcff",
+                        "on-background": "#191c1f",
+                        "on-tertiary": "#ffffff",
+                        "on-secondary": "#ffffff",
+                        "surface": "#f8f9fe",
+                        "on-error": "#ffffff",
+                        "on-surface-variant": "#434656",
+                        "tertiary": "#005c3e",
+                        "tertiary-fixed": "#6ffbbe",
+                        "on-surface": "#191c1f",
+                        "on-tertiary-fixed-variant": "#005236",
+                        "secondary-fixed": "#e9ddff",
+                        "on-secondary-fixed-variant": "#5700c9",
+                        "primary-container": "#0055ff",
+                        "surface-bright": "#f8f9fe",
+                        "on-tertiary-container": "#83ffc6",
+                        "inverse-surface": "#2e3134",
+                        "surface-container": "#eceef3",
+                        "surface-container-high": "#e7e8ed",
+                        "on-error-container": "#93000a",
+                        "primary": "#0041c8",
+                        "primary-fixed-dim": "#b6c4ff",
+                        "error": "#ba1a1a",
+                        "on-primary-container": "#e3e6ff"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "spacing": {
+                        "stack-sm": "8px",
+                        "safe-bottom": "34px",
+                        "stack-md": "16px",
+                        "gutter-mobile": "12px",
+                        "margin-mobile": "20px",
+                        "stack-lg": "24px"
+                    },
+                    "fontFamily": {
+                        "headline-md": ["Hanken Grotesk"],
+                        "body-lg": ["Hanken Grotesk"],
+                        "headline-sm": ["Hanken Grotesk"],
+                        "label-caps": ["Inter"],
+                        "button-text": ["Hanken Grotesk"],
+                        "display-lg": ["Hanken Grotesk"],
+                        "body-sm": ["Hanken Grotesk"]
+                    },
+                    "fontSize": {
+                        "headline-md": ["24px", { "lineHeight": "30px", "letterSpacing": "-0.01em", "fontWeight": "700" }],
+                        "body-lg": ["17px", { "lineHeight": "24px", "fontWeight": "400" }],
+                        "headline-sm": ["20px", { "lineHeight": "25px", "fontWeight": "600" }],
+                        "label-caps": ["12px", { "lineHeight": "16px", "letterSpacing": "0.05em", "fontWeight": "600" }],
+                        "button-text": ["16px", { "lineHeight": "20px", "fontWeight": "600" }],
+                        "display-lg": ["34px", { "lineHeight": "41px", "letterSpacing": "-0.02em", "fontWeight": "800" }],
+                        "body-sm": ["15px", { "lineHeight": "20px", "fontWeight": "400" }]
+                    }
+                }
+            }
+        }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+    </style>
+</head>
+<body class="bg-background text-on-background font-body-lg min-h-screen flex flex-col relative selection:bg-primary-container selection:text-on-primary-container antialiased">
+<!-- TopAppBar from JSON -->
+<header class="bg-surface/80 dark:bg-surface-dim/80 backdrop-blur-xl flex items-center justify-between px-margin-mobile h-16 w-full z-50 docked full-width top-0 sticky flat no shadows">
+<button aria-label="Retour" class="w-12 h-12 flex items-center justify-start text-on-surface-variant dark:text-surface-variant hover:opacity-70 transition-opacity active:scale-95 duration-150">
+<span class="material-symbols-outlined text-[24px]">arrow_back</span>
+</button>
+<h1 class="font-headline-sm text-headline-sm text-on-surface dark:text-inverse-on-surface flex-grow text-center">Déclarer un objet</h1>
+<button aria-label="Fermer" class="w-12 h-12 flex items-center justify-end text-on-surface-variant dark:text-surface-variant hover:opacity-70 transition-opacity active:scale-95 duration-150">
+<span class="material-symbols-outlined text-[24px]">close</span>
+</button>
+</header>
+<!-- Main Content Canvas -->
+<main class="flex-grow overflow-y-auto pb-[120px]">
+<div class="px-margin-mobile py-stack-md flex flex-col gap-stack-lg max-w-2xl mx-auto">
+<!-- Progress Indicator -->
+<div aria-label="Étape 3 sur 4" class="flex items-center gap-2 w-full pt-2">
+<div aria-hidden="true" class="h-1.5 flex-1 rounded-full bg-primary"></div>
+<div aria-hidden="true" class="h-1.5 flex-1 rounded-full bg-primary"></div>
+<div aria-hidden="true" class="h-1.5 flex-1 rounded-full bg-primary"></div>
+<div aria-hidden="true" class="h-1.5 flex-1 rounded-full bg-surface-container-highest"></div>
+</div>
+<!-- Header Section -->
+<section class="flex flex-col gap-2">
+<h2 class="font-headline-md text-headline-md text-on-surface">Où avez-vous perdu votre objet ?</h2>
+<p class="font-body-sm text-body-sm text-on-surface-variant">Indiquez l'endroit et le moment où vous pensez l'avoir perdu.</p>
+</section>
+<!-- Location Section -->
+<section class="flex flex-col gap-stack-md">
+<div class="relative">
+<label class="sr-only" for="location-search">Lieu de perte</label>
+<span class="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-outline">search</span>
+<input class="w-full h-[56px] pl-12 pr-4 bg-surface-container-lowest border border-outline-variant rounded-[16px] font-body-lg text-on-surface placeholder:text-outline focus:border-primary focus:ring-2 focus:ring-primary-container transition-all outline-none shadow-[0px_4px_20px_rgba(0,0,0,0.04)]" id="location-search" placeholder="Rechercher un lieu, une adresse..." type="text"/>
+</div>
+<!-- Realistic Map Preview using requested placeholder -->
+<div class="w-full h-48 rounded-[24px] overflow-hidden relative shadow-[0px_4px_20px_rgba(0,0,0,0.04)] bg-surface-container">
+<img alt="Aperçu de la carte" class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDkQ5S7PrVoIgHzx-1fYIrGhkmvpLA61kRqngDy1dfOBUxKBA82PPfOI5zMXpS5kSmwQx7ykIUjLoKrOgt0zXvC_13-NyfqZyVmNOOrDXr4TGZ7FaDPo3fv9-dltpjr12gnjO3tGYufEgn1H9nFO32NPIf_LwJT3pQnp1T5Y-Fr6bq45CecZtfpsLpiKwdmvpdz-2hB_-FwQ1JsKEvLTFJIgsRyF7U157auGEhh6YhprPDOPZMBufcnEw"/>
+<!-- Central Pin overlay to simulate selection -->
+<div class="absolute inset-0 flex items-center justify-center pointer-events-none pb-8">
+<span class="material-symbols-outlined text-[40px] text-primary" style="font-variation-settings: 'FILL' 1;">location_on</span>
+</div>
+</div>
+<button class="flex items-center gap-2 self-start py-2 px-1 rounded-lg text-primary font-button-text text-button-text hover:opacity-80 transition-opacity active:scale-95">
+<span class="material-symbols-outlined text-[20px]" style="font-variation-settings: 'FILL' 1;">my_location</span>
+                    Utiliser ma position actuelle
+                </button>
+</section>
+<hr class="border-outline-variant/30"/>
+<!-- Date & Time Section -->
+<section class="flex flex-col gap-stack-md">
+<div class="relative">
+<label class="block font-label-caps text-label-caps text-on-surface-variant opacity-80 mb-2 uppercase tracking-wider" for="date-input">Date de perte</label>
+<div class="relative">
+<span class="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-outline">calendar_today</span>
+<input class="w-full h-[56px] pl-12 pr-4 bg-surface-container-lowest border border-outline-variant rounded-[16px] font-body-lg text-on-surface focus:border-primary focus:ring-2 focus:ring-primary-container transition-all outline-none shadow-[0px_4px_20px_rgba(0,0,0,0.04)]" id="date-input" type="text" value="12 octobre 2026"/>
+</div>
+</div>
+<div>
+<span class="block font-label-caps text-label-caps text-on-surface-variant opacity-80 mb-3 uppercase tracking-wider">Moment approximatif</span>
+<div class="flex flex-wrap gap-2">
+<button class="px-5 py-2.5 rounded-full border border-outline-variant bg-surface-container-lowest text-on-surface font-button-text text-[14px] hover:bg-surface-container transition-colors">Matin</button>
+<button class="px-5 py-2.5 rounded-full border border-outline-variant bg-surface-container-lowest text-on-surface font-button-text text-[14px] hover:bg-surface-container transition-colors">Midi</button>
+<!-- Active Chip State -->
+<button class="px-5 py-2.5 rounded-full border-none bg-primary text-on-primary font-button-text text-[14px] shadow-[0px_10px_30px_rgba(0,85,255,0.08)]">Après-midi</button>
+<button class="px-5 py-2.5 rounded-full border border-outline-variant bg-surface-container-lowest text-on-surface font-button-text text-[14px] hover:bg-surface-container transition-colors">Soir</button>
+<button class="px-5 py-2.5 rounded-full border border-outline-variant bg-surface-container-lowest text-on-surface font-button-text text-[14px] hover:bg-surface-container transition-colors">Nuit</button>
+<button class="px-5 py-2.5 rounded-full border border-outline-variant bg-surface-container-lowest text-on-surface font-button-text text-[14px] hover:bg-surface-container transition-colors">Je ne sais pas</button>
+</div>
+</div>
+</section>
+<!-- Details Section -->
+<section class="flex flex-col gap-2">
+<label class="block font-label-caps text-label-caps text-on-surface-variant opacity-80 mb-1 uppercase tracking-wider" for="details-input">Précisions sur le lieu</label>
+<textarea class="w-full p-4 bg-surface-container-lowest border border-outline-variant rounded-[16px] font-body-lg text-on-surface placeholder:text-outline focus:border-primary focus:ring-2 focus:ring-primary-container transition-all outline-none shadow-[0px_4px_20px_rgba(0,0,0,0.04)] min-h-[120px] resize-none" id="details-input" placeholder="Ex: Près de l'entrée principale, dans le bus ligne 4..."></textarea>
+</section>
+<!-- Privacy Note -->
+<div class="flex items-start gap-3 p-4 bg-surface-container-low rounded-[16px]">
+<span class="material-symbols-outlined text-outline mt-0.5" style="font-variation-settings: 'FILL' 1;">lock</span>
+<p class="font-body-sm text-body-sm text-on-surface-variant">Votre adresse exacte ne sera jamais affichée publiquement. Elle aide uniquement nos algorithmes de rapprochement.</p>
+</div>
+</div>
+</main>
+<!-- BottomNavBar from JSON -->
+<footer class="fixed bottom-0 left-0 w-full z-50 flex justify-between items-center px-margin-mobile py-stack-md pb-safe-bottom bg-surface/80 dark:bg-surface-dim/80 backdrop-blur-xl rounded-t-xl shadow-lg dark:shadow-none">
+<!-- Inactive state for Retour based on typical flow logic, Continuer is the primary action -->
+<button class="text-primary dark:text-inverse-primary font-button-text text-button-text px-4 py-2 hover:brightness-110 transition-all active:scale-98 duration-200 flex items-center gap-2">
+<span class="material-symbols-outlined text-[20px]">arrow_back</span>
+            Retour
+        </button>
+<!-- Active state applied to the primary forward action -->
+<button class="bg-primary text-on-primary rounded-xl px-6 py-3 flex items-center justify-center font-button-text text-button-text hover:brightness-110 transition-all active:scale-98 duration-200 gap-2 shadow-[0px_10px_30px_rgba(0,85,255,0.08)]">
+            Continuer
+            <span class="material-symbols-outlined text-[20px]">arrow_forward</span>
+</button>
+</footer>
+</body></html>

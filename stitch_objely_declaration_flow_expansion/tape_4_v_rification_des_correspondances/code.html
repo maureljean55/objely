@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+
+<html class="light" lang="fr"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Step 4 - Matching Screen</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@400;600;700;800&amp;family=Inter:wght@600&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "outline-variant": "#c3c5d9",
+                        "background": "#f8f9fe",
+                        "inverse-on-surface": "#eff0f5",
+                        "on-secondary-fixed": "#23005b",
+                        "secondary-container": "#7000ff",
+                        "surface-container-highest": "#e1e2e7",
+                        "on-primary-fixed-variant": "#0039b3",
+                        "surface-container-low": "#f2f3f8",
+                        "primary-fixed": "#dce1ff",
+                        "secondary": "#5400c3",
+                        "surface-container-lowest": "#ffffff",
+                        "on-primary": "#ffffff",
+                        "on-tertiary-fixed": "#002113",
+                        "on-primary-fixed": "#001551",
+                        "tertiary-container": "#007751",
+                        "on-secondary-container": "#ddcdff",
+                        "error-container": "#ffdad6",
+                        "outline": "#737688",
+                        "inverse-primary": "#b6c4ff",
+                        "surface-variant": "#e1e2e7",
+                        "tertiary-fixed-dim": "#4edea3",
+                        "surface-tint": "#004dea",
+                        "surface-dim": "#d8dadf",
+                        "secondary-fixed-dim": "#d1bcff",
+                        "on-background": "#191c1f",
+                        "on-tertiary": "#ffffff",
+                        "on-secondary": "#ffffff",
+                        "surface": "#f8f9fe",
+                        "on-error": "#ffffff",
+                        "on-surface-variant": "#434656",
+                        "tertiary": "#005c3e",
+                        "tertiary-fixed": "#6ffbbe",
+                        "on-surface": "#191c1f",
+                        "on-tertiary-fixed-variant": "#005236",
+                        "secondary-fixed": "#e9ddff",
+                        "on-secondary-fixed-variant": "#5700c9",
+                        "primary-container": "#0055ff",
+                        "surface-bright": "#f8f9fe",
+                        "on-tertiary-container": "#83ffc6",
+                        "inverse-surface": "#2e3134",
+                        "surface-container": "#eceef3",
+                        "surface-container-high": "#e7e8ed",
+                        "on-error-container": "#93000a",
+                        "primary": "#0041c8",
+                        "primary-fixed-dim": "#b6c4ff",
+                        "error": "#ba1a1a",
+                        "on-primary-container": "#e3e6ff"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px",
+                        "2xl": "1rem",
+                        "3xl": "1.5rem"
+                    },
+                    "spacing": {
+                        "stack-sm": "8px",
+                        "safe-bottom": "34px",
+                        "stack-md": "16px",
+                        "gutter-mobile": "12px",
+                        "margin-mobile": "20px",
+                        "stack-lg": "24px",
+                        "nav-height": "64px"
+                    },
+                    "fontFamily": {
+                        "headline-md": ["Hanken Grotesk"],
+                        "body-lg": ["Hanken Grotesk"],
+                        "headline-sm": ["Hanken Grotesk"],
+                        "label-caps": ["Inter"],
+                        "button-text": ["Hanken Grotesk"],
+                        "display-lg": ["Hanken Grotesk"],
+                        "body-sm": ["Hanken Grotesk"]
+                    },
+                    "fontSize": {
+                        "headline-md": ["24px", { "lineHeight": "30px", "letterSpacing": "-0.01em", "fontWeight": "700" }],
+                        "body-lg": ["17px", { "lineHeight": "24px", "fontWeight": "400" }],
+                        "headline-sm": ["20px", { "lineHeight": "25px", "fontWeight": "600" }],
+                        "label-caps": ["12px", { "lineHeight": "16px", "letterSpacing": "0.05em", "fontWeight": "600" }],
+                        "button-text": ["16px", { "lineHeight": "20px", "fontWeight": "600" }],
+                        "display-lg": ["34px", { "lineHeight": "41px", "letterSpacing": "-0.02em", "fontWeight": "800" }],
+                        "body-sm": ["15px", { "lineHeight": "20px", "fontWeight": "400" }]
+                    },
+                    "boxShadow": {
+                        "soft-1": "0px 4px 20px rgba(0, 0, 0, 0.04)",
+                        "active-2": "0px 10px 30px rgba(0, 85, 255, 0.08)"
+                    }
+                }
+            }
+        }
+    </script>
+<style>
+        .pulse-ring {
+            animation: pulse-ring 2s cubic-bezier(0.215, 0.61, 0.355, 1) infinite;
+        }
+        @keyframes pulse-ring {
+            0% { transform: scale(0.8); opacity: 0.5; }
+            80%, 100% { transform: scale(2); opacity: 0; }
+        }
+    </style>
+</head>
+<body class="bg-background text-on-background antialiased min-h-screen flex flex-col font-body-lg">
+<!-- TopAppBar from JSON -->
+<header class="bg-surface/80 dark:bg-surface-dim/80 backdrop-blur-xl docked full-width top-0 sticky bg-surface dark:bg-surface-dim flat no shadows flex items-center justify-between px-margin-mobile h-16 w-full z-50">
+<button aria-label="Go back" class="hover:opacity-70 transition-opacity active:scale-95 duration-150 p-2 -ml-2 text-primary dark:text-inverse-primary">
+<span class="material-symbols-outlined" data-icon="arrow_back">arrow_back</span>
+</button>
+<h1 class="font-headline-sm text-headline-sm text-on-surface dark:text-inverse-on-surface truncate px-4">Déclarer un objet</h1>
+<button aria-label="Close" class="hover:opacity-70 transition-opacity active:scale-95 duration-150 p-2 -mr-2 text-on-surface-variant dark:text-surface-variant">
+<span class="material-symbols-outlined" data-icon="close">close</span>
+</button>
+</header>
+<!-- Main Content Canvas -->
+<main class="flex-grow px-margin-mobile pt-stack-lg pb-[180px] overflow-x-hidden">
+<!-- Progress Bar -->
+<div class="mb-stack-lg">
+<div class="flex gap-1 mb-2">
+<div class="h-1 flex-1 rounded-full bg-primary-container"></div>
+<div class="h-1 flex-1 rounded-full bg-primary-container"></div>
+<div class="h-1 flex-1 rounded-full bg-primary-container"></div>
+<div class="h-1 flex-1 rounded-full bg-gradient-to-r from-primary-container to-secondary-container"></div>
+</div>
+<p class="font-label-caps text-label-caps text-on-surface-variant text-right">Étape 4 sur 4</p>
+</div>
+<!-- Header Titles -->
+<div class="mb-stack-lg space-y-stack-sm">
+<h2 class="font-headline-md text-headline-md text-on-background">Vérifions d'abord...</h2>
+<p class="font-body-lg text-body-lg text-on-surface-variant">Nous recherchons des objets trouvés qui pourraient correspondre au vôtre.</p>
+</div>
+<!-- Match Status Area -->
+<div class="flex flex-col items-center justify-center py-stack-lg mb-stack-lg">
+<div class="relative flex items-center justify-center w-24 h-24 mb-stack-md">
+<div class="absolute inset-0 rounded-full border-4 border-primary-container opacity-20"></div>
+<div class="absolute inset-0 rounded-full border-4 border-primary-container pulse-ring"></div>
+<div class="bg-primary-container text-on-primary-container rounded-full p-4 z-10 shadow-active-2">
+<span class="material-symbols-outlined text-4xl" data-icon="check_circle" data-weight="fill" style="font-variation-settings: 'FILL' 1;">check_circle</span>
+</div>
+</div>
+<h3 class="font-headline-sm text-headline-sm text-primary mb-1">Une correspondance possible !</h3>
+<p class="font-label-caps text-label-caps text-primary bg-primary-fixed px-3 py-1 rounded-full">96% de correspondance</p>
+</div>
+<!-- Comparison Cards Grid -->
+<div class="grid grid-cols-2 gap-gutter-mobile mb-stack-lg">
+<!-- Card 1: Your Item -->
+<div class="bg-surface-container-lowest rounded-3xl shadow-soft-1 overflow-hidden flex flex-col">
+<div class="bg-surface-variant px-3 py-2 border-b border-surface-container-high">
+<span class="font-label-caps text-label-caps text-on-surface-variant uppercase">VOTRE OBJET</span>
+</div>
+<div class="aspect-square w-full relative">
+<img alt="Votre portefeuille" class="absolute inset-0 w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuALwx7nyFHK_jFbViliIP8ewWq-bMK0ohOquZJWLZv8m79uH563Ce-3h9CiVHqeMdTLvVb9qMPnjcTJ7WOLk3vcRqle_tJw1HfMNUYiEirfXBn0rsfXadduJQP8KRFELRmz5MHhdAbi9LSH1CpLiRuXT7B5-JvmMbRm9OjGlexcMKylVPDKL8SctexoQboF66l4qOa0FxVQgZzct1oiqQ-5TMrsb81opp30iEXi4uMkn0Um42iebuxZXg"/>
+</div>
+<div class="p-3 flex-grow flex flex-col gap-1">
+<h4 class="font-headline-sm text-headline-sm text-on-surface line-clamp-1 text-base">Portefeuille marron</h4>
+<div class="flex items-center text-on-surface-variant text-sm gap-1 mt-auto">
+<span class="material-symbols-outlined text-[16px]" data-icon="calendar_today">calendar_today</span>
+<span class="font-body-sm text-body-sm truncate">Perdu le 12 oct</span>
+</div>
+<div class="flex items-center text-on-surface-variant text-sm gap-1">
+<span class="material-symbols-outlined text-[16px]" data-icon="location_on">location_on</span>
+<span class="font-body-sm text-body-sm truncate">Paris 10e</span>
+</div>
+</div>
+</div>
+<!-- Card 2: Found Item -->
+<div class="bg-surface-container-lowest rounded-3xl shadow-soft-1 overflow-hidden flex flex-col ring-2 ring-primary-container">
+<div class="bg-primary-fixed px-3 py-2 border-b border-primary-fixed-dim">
+<span class="font-label-caps text-label-caps text-primary-container uppercase">OBJET TROUVÉ</span>
+</div>
+<div class="aspect-square w-full relative">
+<div class="bg-cover bg-center w-full h-full" data-alt="A close up shot of a worn brown leather wallet sitting on a clean surface in bright natural light, shallow depth of field, modern aesthetic." style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuC9b0QQcj5vnMfGMYmC_9giQmI1CmhFm5UadVxR3GZdQtTXnV9M-gniyGjU6z4GlSY6C0KHUe_QLfBk0YS7Fjlu5KmNvPqMM_csaa5j4X3IqC_qkKOGyzyt5vgmkV8Hn3qd8mcKutjVvUzzEbcrY6Kqf78XAS4db-bKMy9VtNzC90Hub_5CbQPfjoIwQkKRhGqFwcGy1KP87dOmnm_E79v1va-SX9thMe9iuZWl6kB6pHoN1JWCLL9dXQ')"></div>
+</div>
+<div class="p-3 flex-grow flex flex-col gap-1">
+<h4 class="font-headline-sm text-headline-sm text-on-surface line-clamp-1 text-base">Portefeuille marron</h4>
+<div class="flex items-center text-primary text-sm gap-1 mt-auto">
+<span class="material-symbols-outlined text-[16px]" data-icon="schedule">schedule</span>
+<span class="font-body-sm text-body-sm truncate font-semibold">Trouvé aujourd'hui</span>
+</div>
+<div class="flex items-center text-on-surface-variant text-sm gap-1">
+<span class="material-symbols-outlined text-[16px]" data-icon="location_on">location_on</span>
+<span class="font-body-sm text-body-sm truncate">Gare du Nord</span>
+</div>
+</div>
+</div>
+</div>
+<!-- Match Checklist -->
+<div class="bg-surface-container-lowest rounded-2xl p-stack-md shadow-soft-1 mb-stack-lg">
+<h4 class="font-label-caps text-label-caps text-on-surface-variant uppercase mb-3">Critères de correspondance</h4>
+<ul class="space-y-3">
+<li class="flex items-center gap-3 text-on-surface">
+<span class="material-symbols-outlined text-primary-container text-[20px]" data-icon="check" data-weight="fill">check</span>
+<span class="font-body-lg text-body-lg">Même catégorie</span>
+</li>
+<li class="flex items-center gap-3 text-on-surface">
+<span class="material-symbols-outlined text-primary-container text-[20px]" data-icon="check" data-weight="fill">check</span>
+<span class="font-body-lg text-body-lg">Couleur similaire</span>
+</li>
+<li class="flex items-center gap-3 text-on-surface">
+<span class="material-symbols-outlined text-primary-container text-[20px]" data-icon="check" data-weight="fill">check</span>
+<span class="font-body-lg text-body-lg">Marque similaire</span>
+</li>
+<li class="flex items-center gap-3 text-on-surface">
+<span class="material-symbols-outlined text-primary-container text-[20px]" data-icon="check" data-weight="fill">check</span>
+<span class="font-body-lg text-body-lg">Zone proche</span>
+</li>
+<li class="flex items-center gap-3 text-on-surface">
+<span class="material-symbols-outlined text-primary-container text-[20px]" data-icon="check" data-weight="fill">check</span>
+<span class="font-body-lg text-body-lg">Description similaire</span>
+</li>
+</ul>
+</div>
+</main>
+<!-- Bottom Action Area -->
+<div class="fixed bottom-0 left-0 w-full z-50 flex flex-col gap-3 px-margin-mobile py-stack-md pb-safe-bottom bg-surface/80 dark:bg-surface-dim/80 backdrop-blur-xl border-t-0 shadow-[0_-4px_20px_rgba(0,0,0,0.05)] rounded-t-2xl">
+<button class="w-full h-[56px] bg-primary text-on-primary rounded-2xl flex items-center justify-center font-button-text text-button-text hover:brightness-110 active:scale-95 transition-all shadow-active-2">
+            Voir la correspondance
+        </button>
+<button class="w-full h-[56px] bg-[#EBF2FF] text-primary rounded-2xl flex items-center justify-center font-button-text text-button-text hover:brightness-95 active:scale-95 transition-all">
+            Ce n'est pas mon objet
+        </button>
+</div>
+</body></html>

@@ -3,36 +3,43 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
+import { saveDraft } from "@/lib/declarationDraft";
 
 const CATEGORIES = [
   {
     id: "phone",
     label: "Téléphone",
+    icon: "smartphone",
     image: "https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?w=400&h=400&fit=crop",
   },
   {
     id: "bag",
     label: "Sac & Bagage",
+    icon: "backpack",
     image: "https://images.unsplash.com/photo-1553062407-98eeb64c6a62?w=400&h=400&fit=crop",
   },
   {
     id: "wallet",
     label: "Portefeuille",
+    icon: "account_balance_wallet",
     image: "https://images.unsplash.com/photo-1627123424574-724758594e93?w=400&h=400&fit=crop",
   },
   {
     id: "keys",
     label: "Clés",
+    icon: "key",
     image: "https://upload.wikimedia.org/wikipedia/commons/3/3c/House_key.jpg",
   },
   {
     id: "clothes",
     label: "Vêtements",
+    icon: "checkroom",
     image: "https://images.unsplash.com/photo-1489987707025-afc232f7ea0f?w=400&h=400&fit=crop",
   },
   {
     id: "other",
     label: "Autre objet",
+    icon: "help",
     image: "https://images.unsplash.com/photo-1607166452427-7e4477079cb9?w=400&h=400&fit=crop",
     mystery: true,
   },
@@ -125,7 +132,12 @@ export default function ReportLostCategoryPage() {
           <button
             type="button"
             disabled={!selected}
-            onClick={() => router.push("/matching")}
+            onClick={() => {
+              const category = CATEGORIES.find((c) => c.id === selected);
+              if (!category) return;
+              saveDraft({ categoryId: category.id, categoryLabel: category.label, categoryIcon: category.icon });
+              router.push("/report-lost/details");
+            }}
             className="btn-gradient flex-[2] py-4 px-6 rounded bg-[#007AFF] text-white font-headline-sm text-headline-sm shadow-[0px_4px_14px_rgba(0,122,255,0.3)] hover:opacity-90 transition-opacity text-center disabled:opacity-50 disabled:cursor-not-allowed"
           >
             Continuer
