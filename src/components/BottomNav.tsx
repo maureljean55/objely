@@ -25,16 +25,17 @@ export default function BottomNav({ active }: { active: NavKey }) {
       </svg>
 
       <div
-        className="relative flex items-center justify-between gap-1 px-3 py-3 rounded-full overflow-hidden border border-white/50 shadow-[inset_0_1px_1px_rgba(255,255,255,0.7),inset_0_-1px_2px_rgba(0,31,63,0.08),0_20px_45px_rgba(0,31,63,0.2)]"
+        className="relative flex items-center justify-between gap-1 px-3 py-3 rounded-full overflow-hidden bg-surface-container-lowest/55 border border-white/50 dark:border-white/10 shadow-[inset_0_1px_1px_rgba(255,255,255,0.7),inset_0_-1px_2px_rgba(0,31,63,0.08),0_20px_45px_rgba(0,31,63,0.2)]"
         style={{
           backdropFilter: "url(#liquid-glass-distortion) blur(16px) saturate(160%)",
           WebkitBackdropFilter: "blur(16px) saturate(160%)",
         }}
       >
-        {/* Glossy specular highlight — glass material, not a background fill */}
-        <div className="pointer-events-none absolute -top-8 right-6 w-32 h-24 rounded-full bg-white/50 blur-2xl" />
-        <div className="pointer-events-none absolute -bottom-10 left-4 w-20 h-16 rounded-full bg-white/20 blur-2xl" />
-        <div className="pointer-events-none absolute inset-0 rounded-full bg-gradient-to-b from-white/25 via-transparent to-white/5" />
+        {/* Glossy specular highlight — glass material, tinted by the surface
+            color above so icons stay legible whatever scrolls behind it. */}
+        <div className="pointer-events-none absolute -top-8 right-6 w-32 h-24 rounded-full bg-white/50 dark:bg-white/10 blur-2xl" />
+        <div className="pointer-events-none absolute -bottom-10 left-4 w-20 h-16 rounded-full bg-white/20 dark:bg-white/5 blur-2xl" />
+        <div className="pointer-events-none absolute inset-0 rounded-full bg-gradient-to-b from-white/25 dark:from-white/5 via-transparent to-white/5 dark:to-transparent" />
 
         {ITEMS.map((item) => {
           const isActive = item.key === active;
