@@ -8,7 +8,6 @@ const STATS = [
 ];
 
 const MENU_ITEMS_TOP = [
-  { icon: "person", label: "Paramètres du compte", bg: "bg-primary-fixed/30", color: "text-primary" },
   { icon: "inventory_2", label: "Mes Objets", bg: "bg-secondary-fixed/30", color: "text-secondary" },
   { icon: "lock", label: "Confidentialité & Sécurité", bg: "bg-tertiary-fixed/30", color: "text-tertiary" },
 ];
@@ -22,6 +21,14 @@ const MENU_ITEMS_BOTTOM = [
 function ProfileSummary() {
   return (
     <>
+      <button
+        type="button"
+        aria-label="Paramètres du compte"
+        className="absolute top-4 right-container-margin md:right-0 w-10 h-10 rounded-full bg-surface-container-lowest shadow-sm flex items-center justify-center text-on-surface-variant hover:text-primary transition-colors"
+      >
+        <span className="material-symbols-outlined text-[20px]">settings</span>
+      </button>
+
       <section className="flex flex-col items-center pt-8 pb-6 animate-fadeIn">
         <div className="relative mb-4">
           <div className="w-28 h-28 rounded-full overflow-hidden soft-shadow ring-4 ring-surface-container-lowest bg-surface-container-high">
@@ -79,7 +86,7 @@ export default function UserProfilePage() {
       </div>
 
       <main className="max-w-2xl mx-auto md:mt-8 px-container-margin md:px-0 pt-[422px] md:pt-0">
-        <div className="hidden md:block">
+        <div className="hidden md:block relative">
           <ProfileSummary />
         </div>
 
