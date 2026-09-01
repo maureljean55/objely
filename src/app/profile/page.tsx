@@ -1,3 +1,4 @@
+import Link from "next/link";
 import BottomNav from "@/components/BottomNav";
 import ThemeToggle from "@/components/ThemeToggle";
 
@@ -14,7 +15,7 @@ const MENU_ITEMS_TOP = [
 
 const MENU_ITEMS_BOTTOM = [
   { icon: "notifications", label: "Notifications", bg: "bg-primary-fixed/30", color: "text-primary" },
-  { icon: "help", label: "Centre d'aide", bg: "bg-secondary-fixed/30", color: "text-secondary" },
+  { icon: "help", label: "Centre d'aide", bg: "bg-secondary-fixed/30", color: "text-secondary", href: "/help" },
   { icon: "flag", label: "Signaler un problème", bg: "bg-surface-variant/50", color: "text-on-surface-variant" },
 ];
 
@@ -109,22 +110,31 @@ export default function UserProfilePage() {
 
             <ThemeToggle />
 
-            {MENU_ITEMS_BOTTOM.map((item, i) => (
-              <button
-                key={item.label}
-                className={`w-full flex items-center justify-between p-lg text-left hover:bg-black/[0.02] transition-colors ${
-                  i < MENU_ITEMS_BOTTOM.length - 1 ? "border-b border-surface-variant/50" : ""
-                }`}
-              >
-                <div className="flex items-center gap-4">
-                  <div className={`w-10 h-10 rounded-full flex items-center justify-center ${item.bg} ${item.color}`}>
-                    <span className="material-symbols-outlined">{item.icon}</span>
+            {MENU_ITEMS_BOTTOM.map((item, i) => {
+              const rowClassName = `w-full flex items-center justify-between p-lg text-left hover:bg-black/[0.02] transition-colors ${
+                i < MENU_ITEMS_BOTTOM.length - 1 ? "border-b border-surface-variant/50" : ""
+              }`;
+              const content = (
+                <>
+                  <div className="flex items-center gap-4">
+                    <div className={`w-10 h-10 rounded-full flex items-center justify-center ${item.bg} ${item.color}`}>
+                      <span className="material-symbols-outlined">{item.icon}</span>
+                    </div>
+                    <span className="font-body-lg text-body-lg text-on-surface">{item.label}</span>
                   </div>
-                  <span className="font-body-lg text-body-lg text-on-surface">{item.label}</span>
-                </div>
-                <span className="material-symbols-outlined text-outline-variant">chevron_right</span>
-              </button>
-            ))}
+                  <span className="material-symbols-outlined text-outline-variant">chevron_right</span>
+                </>
+              );
+              return item.href ? (
+                <Link key={item.label} href={item.href} className={rowClassName}>
+                  {content}
+                </Link>
+              ) : (
+                <button key={item.label} className={rowClassName}>
+                  {content}
+                </button>
+              );
+            })}
           </div>
         </section>
 

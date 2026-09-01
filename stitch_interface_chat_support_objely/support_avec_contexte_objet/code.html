@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+
+<html class="light" lang="fr"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Support Conversation</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "surface-tint": "#005bc1",
+                        "inverse-surface": "#2f3034",
+                        "inverse-on-surface": "#f1f0f5",
+                        "background": "#faf9fe",
+                        "tertiary-fixed": "#e2dfff",
+                        "error": "#ba1a1a",
+                        "primary-fixed": "#d8e2ff",
+                        "on-tertiary-fixed-variant": "#3631b4",
+                        "primary-fixed-dim": "#adc6ff",
+                        "secondary-fixed": "#72fe88",
+                        "surface": "#faf9fe",
+                        "outline-variant": "#c1c6d7",
+                        "on-secondary-container": "#00732a",
+                        "tertiary-container": "#6664e4",
+                        "on-error": "#ffffff",
+                        "error-container": "#ffdad6",
+                        "surface-dim": "#dad9df",
+                        "on-tertiary": "#ffffff",
+                        "on-primary": "#ffffff",
+                        "surface-container": "#eeedf3",
+                        "on-primary-container": "#fefcff",
+                        "secondary": "#006e28",
+                        "secondary-fixed-dim": "#53e16f",
+                        "surface-container-lowest": "#ffffff",
+                        "surface-variant": "#e3e2e7",
+                        "primary-container": "#0070eb",
+                        "on-tertiary-container": "#fffbff",
+                        "secondary-container": "#6ffb85",
+                        "on-surface-variant": "#414755",
+                        "on-error-container": "#93000a",
+                        "on-primary-fixed-variant": "#004493",
+                        "inverse-primary": "#adc6ff",
+                        "on-secondary": "#ffffff",
+                        "tertiary-fixed-dim": "#c2c1ff",
+                        "on-secondary-fixed": "#002107",
+                        "surface-container-highest": "#e3e2e7",
+                        "surface-container-high": "#e9e7ed",
+                        "outline": "#717786",
+                        "on-background": "#1a1b1f",
+                        "on-surface": "#1a1b1f",
+                        "surface-bright": "#faf9fe",
+                        "tertiary": "#4c4aca",
+                        "surface-container-low": "#f4f3f8",
+                        "primary": "#0058bc",
+                        "on-secondary-fixed-variant": "#00531c",
+                        "on-primary-fixed": "#001a41",
+                        "on-tertiary-fixed": "#0c006a"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "spacing": {
+                        "gutter": "16px",
+                        "md": "16px",
+                        "xl": "32px",
+                        "lg": "24px",
+                        "sm": "8px",
+                        "xs": "4px",
+                        "margin-desktop": "40px",
+                        "margin-mobile": "16px",
+                        "unit": "4px"
+                    },
+                    "fontFamily": {
+                        "label-sm": ["Inter"],
+                        "body-lg": ["Inter"],
+                        "headline-md": ["Inter"],
+                        "headline-lg": ["Inter"],
+                        "body-md": ["Inter"],
+                        "label-md": ["Inter"],
+                        "headline-sm": ["Inter"],
+                        "headline-lg-mobile": ["Inter"]
+                    },
+                    "fontSize": {
+                        "label-sm": ["11px", { "lineHeight": "13px", "letterSpacing": "0.1px", "fontWeight": "600" }],
+                        "body-lg": ["17px", { "lineHeight": "22px", "letterSpacing": "-0.4px", "fontWeight": "400" }],
+                        "headline-md": ["22px", { "lineHeight": "28px", "letterSpacing": "-0.4px", "fontWeight": "600" }],
+                        "headline-lg": ["34px", { "lineHeight": "41px", "letterSpacing": "-0.4px", "fontWeight": "700" }],
+                        "body-md": ["15px", { "lineHeight": "20px", "letterSpacing": "-0.2px", "fontWeight": "400" }],
+                        "label-md": ["13px", { "lineHeight": "18px", "letterSpacing": "0px", "fontWeight": "500" }],
+                        "headline-sm": ["17px", { "lineHeight": "22px", "letterSpacing": "-0.4px", "fontWeight": "600" }],
+                        "headline-lg-mobile": ["28px", { "lineHeight": "34px", "letterSpacing": "-0.4px", "fontWeight": "700" }]
+                    }
+                }
+            }
+        }
+    </script>
+<style>
+        .typing-dot {
+            animation: typing 1.4s infinite ease-in-out both;
+        }
+        .typing-dot:nth-child(1) { animation-delay: -0.32s; }
+        .typing-dot:nth-child(2) { animation-delay: -0.16s; }
+        @keyframes typing {
+            0%, 80%, 100% { transform: scale(0); }
+            40% { transform: scale(1); }
+        }
+        
+        /* Hide scrollbar for cleaner look */
+        ::-webkit-scrollbar { display: none; }
+        * { -ms-overflow-style: none; scrollbar-width: none; }
+    </style>
+</head>
+<body class="bg-background min-h-screen flex flex-col font-sans antialiased text-on-surface selection:bg-primary/20">
+<!-- TopAppBar Container (Max Width Constrained) -->
+<div class="w-full bg-surface/80 dark:bg-surface-dim/80 backdrop-blur-xl sticky top-0 z-50 shadow-[0px_4px_12px_rgba(0,0,0,0.05)]">
+<div class="max-w-[800px] mx-auto flex items-center justify-between px-margin-mobile h-14 w-full">
+<button class="text-primary dark:text-primary-fixed hover:opacity-70 transition-opacity active:scale-95 transition-transform flex items-center justify-center p-sm -ml-sm rounded-full">
+<span class="material-symbols-outlined">arrow_back_ios</span>
+</button>
+<h1 class="font-headline-sm text-headline-sm font-semibold text-on-surface dark:text-on-surface text-center flex-1">
+                Support
+            </h1>
+<button class="hover:opacity-70 transition-opacity active:scale-95 transition-transform w-8 h-8 rounded-full overflow-hidden shrink-0 border border-outline-variant/20 bg-surface-variant flex items-center justify-center">
+<img class="w-full h-full object-cover" data-alt="A professional, friendly customer support agent avatar headshot. Light, soft lighting, modern corporate style, high trust, clear focus." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCOkLbMjZABwUcH9BtuJ3mYP3_RUiZAWK5Xg92eo7IApjEzPl5sN-yVZLazWlL-Gkrf-6shicIhtWuExF-aqQOYlPmwWOGCZblxSO90_MP3xfEKU2K5lkRHg0thGOhh2eApeWBYPjxiW2x5vt0MKc-Fsl0J-oIkNKcrioEsE56L_1SAwRHuOozd5RWHAh6tdjmJa7kfZh-qf0yOLKDEvxksljtraOUQ4GKfb5ydv4oU9vLVwUeNqrs4"/>
+</button>
+</div>
+</div>
+<!-- Main Chat Area -->
+<main class="flex-1 max-w-[800px] w-full mx-auto flex flex-col relative px-margin-mobile pt-md pb-[120px]">
+<!-- Context Card (Floating/Sticky feel below header) -->
+<div class="bg-surface-container-lowest rounded-xl p-md flex items-center justify-between shadow-sm mb-lg border border-outline-variant/30 mt-sm">
+<div class="flex items-center gap-md">
+<div class="w-12 h-12 rounded-lg bg-surface-container flex items-center justify-center shrink-0">
+<span class="material-symbols-outlined text-outline" style="font-variation-settings: 'FILL' 1;">account_balance_wallet</span>
+</div>
+<div class="flex flex-col gap-[2px]">
+<p class="font-label-sm text-label-sm text-outline uppercase tracking-wider">Objet concerné</p>
+<p class="font-body-md text-body-md text-on-surface font-semibold leading-tight">Portefeuille noir</p>
+<p class="font-label-sm text-label-sm text-outline-variant">(Déclaré le 12 octobre)</p>
+</div>
+</div>
+<button class="font-label-md text-label-md text-primary font-semibold px-md py-sm rounded-full bg-primary/5 hover:bg-primary/10 transition-colors shrink-0">
+                Voir l'objet
+            </button>
+</div>
+<!-- Chat History -->
+<div class="flex flex-col gap-lg w-full">
+<!-- Timestamp -->
+<div class="text-center w-full my-sm">
+<span class="font-label-sm text-label-sm text-outline-variant uppercase tracking-wider">Aujourd'hui 14:22</span>
+</div>
+<!-- Agent Message -->
+<div class="flex flex-col items-start max-w-[85%]">
+<div class="flex items-end gap-sm">
+<div class="w-8 h-8 rounded-full overflow-hidden shrink-0 mb-xs bg-surface-variant">
+<img class="w-full h-full object-cover" data-alt="Small circular avatar of a friendly customer support agent." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDg6DEfmg2lgFBtM5UwxCSgp5NUjerYWRLlqH8-99okKiboW34rwYpRH0BA-_85m3-EnIkc5Y-OY3tmMraGlIupO5coIt5cpLMgEoJjTzUoKGmLHgwcOFt31mGZ_hmIz-y4aRwcD3QsYZvFTzVshbLO-_MrT4wkpj0lahD1S1zfP6RE7AxRvNXC8GKqscvDySCfP10BzM5a_rPRDBreByn-_FnolwsuuSF-Yxb6MBxh_27QTjj7lL9p"/>
+</div>
+<div class="bg-surface-container-highest text-on-surface rounded-2xl rounded-bl-sm px-md py-sm shadow-sm border border-outline-variant/10">
+<p class="font-body-md text-body-md">Bonjour ! Je suis là pour vous aider à retrouver votre portefeuille. Pourriez-vous me confirmer s'il contient des documents d'identité ?</p>
+</div>
+</div>
+</div>
+<!-- User Message with Image Attachment -->
+<div class="flex flex-col items-end w-full">
+<div class="flex flex-col items-end max-w-[85%] gap-xs">
+<div class="bg-primary text-on-primary rounded-2xl rounded-tr-sm p-unit shadow-sm border border-primary/20 overflow-hidden w-full max-w-[280px]">
+<img class="w-full h-[180px] object-cover rounded-xl" data-alt="A close-up, top-down photo of a classic black leather bi-fold wallet resting on a clean, light wood table. Soft natural light, high quality, realistic daily object." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAsx7oSeLX5Z95RCSoBH-pUJRFpVk3A8Xq8-H4tgwBo89m_kuqN0ZSF8GqTtoqVhRGbjCORX09HfwqWEQk3JYiz2IEZWjsGSNSB0B0qd6qvDSmsnHBtyFtPWOQi1yoaiPOVuE8-1K10XJhdVAwVmn2eR3tBPoM7SI4mJGTYfCbKysSZddjLADa0wYd6yveYr_RzUqO4xrAZZgltvgy_PLpaKSoGY7TnTXwHl-IOmSCGvVUPsRgnVkvK"/>
+</div>
+<div class="bg-primary text-on-primary rounded-2xl rounded-br-sm px-md py-sm shadow-sm">
+<p class="font-body-md text-body-md">Oui, voici à quoi il ressemble. Il y a ma carte d'identité à l'intérieur.</p>
+</div>
+<span class="font-label-sm text-label-sm text-outline-variant self-end mt-xs pr-sm">14:25 • Lu</span>
+</div>
+</div>
+<!-- Agent Typing Indicator -->
+<div class="flex flex-col items-start max-w-[85%] mt-sm">
+<div class="flex items-center gap-sm">
+<div class="w-8 h-8 rounded-full overflow-hidden shrink-0 bg-surface-variant opacity-50">
+<img class="w-full h-full object-cover" data-alt="Small circular avatar of a friendly customer support agent." src="https://lh3.googleusercontent.com/aida-public/AB6AXuA-IjQqRmoz834acgiXbD3CkyckJCNT6P0OWcZ5-Ls4zrsf_5i-4eSWkzjxLUewkmSrRC3wH-TnhbZC_QOd-OBwqoc2DdxMYYgzzcUFtOUsveFs4_r-P3gWK-PhumWQHDG2PjC_Rh964X1-avupGrKDPYkMYHozcg6EaEpla6IWds3X-QH-YBYtrc2Kd2SngR1fdwvBWXhWfKsdNO1K3Mv89VrD0RUwpy563QG_RBt_vB4sZZBdSNqR"/>
+</div>
+<div class="flex flex-col gap-xs">
+<p class="font-label-sm text-label-sm text-outline-variant pl-xs">Support Objely est en train d'écrire...</p>
+<div class="bg-surface-container-highest rounded-full px-4 py-3 flex items-center gap-1 w-fit">
+<div class="typing-dot w-1.5 h-1.5 bg-outline rounded-full"></div>
+<div class="typing-dot w-1.5 h-1.5 bg-outline rounded-full"></div>
+<div class="typing-dot w-1.5 h-1.5 bg-outline rounded-full"></div>
+</div>
+</div>
+</div>
+</div>
+<!-- Resolution Prompt (In-flow card) -->
+<div class="w-full mt-xl mb-xl flex justify-center">
+<div class="bg-surface-container-lowest border border-outline-variant/30 rounded-2xl p-lg flex flex-col items-center gap-md shadow-sm w-full max-w-[400px]">
+<div class="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center mb-xs">
+<span class="material-symbols-outlined text-primary text-[24px]">task_alt</span>
+</div>
+<p class="font-headline-sm text-headline-sm text-on-surface text-center">Cette conversation est-elle résolue ?</p>
+<div class="flex flex-col w-full gap-sm mt-sm">
+<button class="w-full bg-primary text-on-primary font-body-md text-body-md font-semibold py-sm rounded-full hover:opacity-90 active:scale-[0.98] transition-all flex items-center justify-center gap-sm shadow-sm">
+                            Oui, merci <span class="material-symbols-outlined text-[18px]">check</span>
+</button>
+<button class="w-full bg-surface-container text-on-surface font-body-md text-body-md font-medium py-sm rounded-full hover:bg-surface-container-high active:scale-[0.98] transition-all">
+                            Non, j'ai encore besoin d'aide
+                        </button>
+</div>
+</div>
+</div>
+</div>
+</main>
+<!-- Input Footer Toolbar -->
+<div class="fixed bottom-0 left-0 w-full bg-surface/90 backdrop-blur-xl border-t border-outline-variant/20 z-40 pb-safe">
+<div class="max-w-[800px] mx-auto flex items-end gap-sm p-sm px-margin-mobile">
+<button class="w-10 h-10 rounded-full flex items-center justify-center text-primary shrink-0 hover:bg-primary/10 transition-colors self-end mb-[2px]">
+<span class="material-symbols-outlined" style="font-weight: 300;">add_circle</span>
+</button>
+<div class="flex-1 bg-surface-container-low rounded-3xl border border-outline-variant/30 px-md py-sm flex items-center min-h-[44px]">
+<input class="w-full bg-transparent border-none p-0 focus:ring-0 font-body-md text-body-md text-on-surface placeholder:text-outline/70" placeholder="Écrivez un message..." type="text"/>
+</div>
+<button class="w-10 h-10 rounded-full flex items-center justify-center text-primary shrink-0 hover:bg-primary/10 transition-colors self-end mb-[2px]">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">send</span>
+</button>
+</div>
+</div>
+</body></html>
