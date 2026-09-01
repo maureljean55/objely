@@ -125,10 +125,10 @@ export default function HomeDashboardPage() {
         </div>
 
         {/* Primary Action Cards */}
-        <section className="flex flex-col gap-md md:grid md:grid-cols-2 md:gap-lg md:pt-2">
+        <section className="flex flex-col gap-lg md:grid md:grid-cols-2 md:gap-lg md:pt-2">
           <Link
             href="/report-lost"
-            className="w-full bg-gradient-to-br from-primary to-primary-container text-white p-lg flex flex-col justify-center gap-1.5 shadow-xl min-h-[190px] rounded-[32px] transition-transform hover:scale-[0.98] active:scale-[0.96]"
+            className="w-[88%] self-start md:w-auto md:self-auto bg-gradient-to-br from-primary to-primary-container text-white p-lg flex flex-col justify-center gap-1.5 shadow-xl min-h-[190px] rounded-tl-[56px] rounded-tr-[110px] rounded-br-[40px] rounded-bl-[100px] md:rounded-[28px] transition-transform hover:scale-[0.98] active:scale-[0.96]"
           >
             <div className="w-11 h-11 rounded-full bg-white/20 flex items-center justify-center mb-1">
               <span className="material-symbols-outlined" style={{ fontVariationSettings: "'FILL' 1" }}>search</span>
@@ -139,7 +139,7 @@ export default function HomeDashboardPage() {
 
           <Link
             href="/report-lost"
-            className="w-full bg-gradient-to-br from-[#7c6ff0] to-secondary-container text-white p-lg flex flex-col justify-center gap-1.5 shadow-xl min-h-[190px] rounded-[32px] transition-transform hover:scale-[0.98] active:scale-[0.96]"
+            className="w-[80%] self-end md:w-auto md:self-auto bg-gradient-to-br from-[#7c6ff0] to-secondary-container text-white p-lg flex flex-col justify-center gap-1.5 shadow-xl min-h-[190px] rounded-tl-[110px] rounded-tr-[56px] rounded-br-[100px] rounded-bl-[40px] md:rounded-[28px] transition-transform hover:scale-[0.98] active:scale-[0.96]"
           >
             <div className="w-11 h-11 rounded-full bg-white/20 flex items-center justify-center mb-1">
               <span className="material-symbols-outlined" style={{ fontVariationSettings: "'FILL' 1" }}>front_hand</span>
