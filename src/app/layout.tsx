@@ -30,10 +30,22 @@ export const viewport: Viewport = {
   viewportFit: "cover",
 };
 
+const THEME_INIT_SCRIPT = `
+(function () {
+  try {
+    var stored = localStorage.getItem("objely-theme");
+    var dark = stored ? stored === "dark" : window.matchMedia("(prefers-color-scheme: dark)").matches;
+    document.documentElement.classList.toggle("dark", dark);
+  } catch (e) {}
+})();
+`;
+
 export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
-    <html lang="fr" className="light">
+    <html lang="fr" suppressHydrationWarning>
       <head>
+        {/* Runs before paint so the stored/system theme applies with no flash. */}
+        <script dangerouslySetInnerHTML={{ __html: THEME_INIT_SCRIPT }} />
         <link href="https://fonts.googleapis.com" rel="preconnect" />
         <link href="https://fonts.gstatic.com" rel="preconnect" crossOrigin="" />
         {/* eslint-disable-next-line @next/next/no-page-custom-font */}

@@ -1,11 +1,6 @@
 import Link from "next/link";
 import BottomNav from "@/components/BottomNav";
-
-const RECENT_ACTIVITY = [
-  "🔑 Clés trouvées à Paris 11e — il y a 5 min",
-  "👜 Sac restitué à son propriétaire — il y a 1 h",
-  "📱 Nouvelle correspondance trouvée — il y a 3 h",
-];
+import NotificationTicker from "@/components/NotificationTicker";
 
 const RECENT_ITEMS = [
   {
@@ -77,19 +72,7 @@ export default function HomeDashboardPage() {
           Quelque chose à retrouver ?
         </h1>
 
-        <div className="bg-surface-container-lowest rounded-full shadow-sm overflow-hidden">
-          <div className="flex w-max animate-marquee">
-            {[...RECENT_ACTIVITY, ...RECENT_ACTIVITY].map((entry, i) => (
-              <span
-                key={i}
-                className="font-label-md text-label-md text-on-surface-variant whitespace-nowrap flex items-center gap-3 px-4 py-2.5"
-              >
-                {entry}
-                <span className="text-outline-variant">•</span>
-              </span>
-            ))}
-          </div>
-        </div>
+        <NotificationTicker />
       </header>
 
       {/* TopAppBar (desktop) */}
@@ -137,21 +120,9 @@ export default function HomeDashboardPage() {
           <h1 className="font-headline-lg text-headline-lg text-on-background">Quelque chose à retrouver ?</h1>
         </div>
 
-        {/* Recent Activity Ticker (desktop only), auto-scrolling, seamless loop */}
-        <div className="hidden md:block">
-          <div className="bg-surface-container-lowest rounded-full shadow-sm overflow-hidden">
-            <div className="flex w-max animate-marquee">
-              {[...RECENT_ACTIVITY, ...RECENT_ACTIVITY].map((entry, i) => (
-                <span
-                  key={i}
-                  className="font-label-md text-label-md text-on-surface-variant whitespace-nowrap flex items-center gap-3 px-4 py-2.5"
-                >
-                  {entry}
-                  <span className="text-outline-variant">•</span>
-                </span>
-              ))}
-            </div>
-          </div>
+        {/* Recent Activity Notification (desktop only) */}
+        <div className="hidden md:block max-w-sm">
+          <NotificationTicker />
         </div>
 
         {/* Primary Action Cards */}

@@ -1,4 +1,5 @@
 import BottomNav from "@/components/BottomNav";
+import ThemeToggle from "@/components/ThemeToggle";
 
 const STATS = [
   { value: "3", label: "Objets\nsignalés", color: "text-primary" },
@@ -6,10 +7,13 @@ const STATS = [
   { value: "2", label: "Retrouvés", color: "text-tertiary" },
 ];
 
-const MENU_ITEMS = [
+const MENU_ITEMS_TOP = [
   { icon: "person", label: "Paramètres du compte", bg: "bg-primary-fixed/30", color: "text-primary" },
   { icon: "inventory_2", label: "Mes Objets", bg: "bg-secondary-fixed/30", color: "text-secondary" },
   { icon: "lock", label: "Confidentialité & Sécurité", bg: "bg-tertiary-fixed/30", color: "text-tertiary" },
+];
+
+const MENU_ITEMS_BOTTOM = [
   { icon: "notifications", label: "Notifications", bg: "bg-primary-fixed/30", color: "text-primary" },
   { icon: "help", label: "Centre d'aide", bg: "bg-secondary-fixed/30", color: "text-secondary" },
   { icon: "flag", label: "Signaler un problème", bg: "bg-surface-variant/50", color: "text-on-surface-variant" },
@@ -66,11 +70,28 @@ export default function UserProfilePage() {
 
         <section className="bg-surface-container-lowest rounded-[32px] soft-shadow inner-stroke overflow-hidden mb-8 animate-slideUp">
           <div className="flex flex-col">
-            {MENU_ITEMS.map((item, i) => (
+            {MENU_ITEMS_TOP.map((item) => (
+              <button
+                key={item.label}
+                className="w-full flex items-center justify-between p-lg text-left hover:bg-black/[0.02] transition-colors border-b border-surface-variant/50"
+              >
+                <div className="flex items-center gap-4">
+                  <div className={`w-10 h-10 rounded-full flex items-center justify-center ${item.bg} ${item.color}`}>
+                    <span className="material-symbols-outlined">{item.icon}</span>
+                  </div>
+                  <span className="font-body-lg text-body-lg text-on-surface">{item.label}</span>
+                </div>
+                <span className="material-symbols-outlined text-outline-variant">chevron_right</span>
+              </button>
+            ))}
+
+            <ThemeToggle />
+
+            {MENU_ITEMS_BOTTOM.map((item, i) => (
               <button
                 key={item.label}
                 className={`w-full flex items-center justify-between p-lg text-left hover:bg-black/[0.02] transition-colors ${
-                  i < MENU_ITEMS.length - 1 ? "border-b border-surface-variant/50" : ""
+                  i < MENU_ITEMS_BOTTOM.length - 1 ? "border-b border-surface-variant/50" : ""
                 }`}
               >
                 <div className="flex items-center gap-4">

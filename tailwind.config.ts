@@ -2,6 +2,16 @@ import type { Config } from "tailwindcss";
 import forms from "@tailwindcss/forms";
 import containerQueries from "@tailwindcss/container-queries";
 
+// Neutral surface/text tokens are backed by CSS variables (see globals.css)
+// so a `.dark` class on <html> can re-theme the whole app at runtime.
+// Brand accent colors stay static hex — they read fine on both themes.
+// Tailwind's Config type doesn't model function color values, even though
+// Tailwind itself supports (and needs) them here — cast to satisfy it.
+function withOpacity(variable: string): string {
+  return ((({ opacityValue }: { opacityValue?: string }) =>
+    opacityValue === undefined ? `rgb(var(${variable}))` : `rgb(var(${variable}) / ${opacityValue})`) as unknown) as string;
+}
+
 // Design tokens ported from `design objely/objely_brand_identity/DESIGN.md`
 const config: Config = {
   darkMode: "class",
@@ -9,20 +19,20 @@ const config: Config = {
   theme: {
     extend: {
       colors: {
-        surface: "#f9f9fe",
-        "surface-dim": "#d9dade",
-        "surface-bright": "#f9f9fe",
-        "surface-container-lowest": "#ffffff",
-        "surface-container-low": "#f3f3f8",
-        "surface-container": "#ededf2",
-        "surface-container-high": "#e8e8ed",
-        "surface-container-highest": "#e2e2e7",
-        "on-surface": "#1a1c1f",
-        "on-surface-variant": "#414755",
-        "inverse-surface": "#2e3034",
-        "inverse-on-surface": "#f0f0f5",
-        outline: "#717786",
-        "outline-variant": "#c1c6d7",
+        surface: withOpacity("--color-surface"),
+        "surface-dim": withOpacity("--color-surface-dim"),
+        "surface-bright": withOpacity("--color-surface-bright"),
+        "surface-container-lowest": withOpacity("--color-surface-container-lowest"),
+        "surface-container-low": withOpacity("--color-surface-container-low"),
+        "surface-container": withOpacity("--color-surface-container"),
+        "surface-container-high": withOpacity("--color-surface-container-high"),
+        "surface-container-highest": withOpacity("--color-surface-container-highest"),
+        "on-surface": withOpacity("--color-on-surface"),
+        "on-surface-variant": withOpacity("--color-on-surface-variant"),
+        "inverse-surface": withOpacity("--color-inverse-surface"),
+        "inverse-on-surface": withOpacity("--color-inverse-on-surface"),
+        outline: withOpacity("--color-outline"),
+        "outline-variant": withOpacity("--color-outline-variant"),
         "surface-tint": "#005bc1",
         primary: "#0058bc",
         "on-primary": "#ffffff",
@@ -53,9 +63,9 @@ const config: Config = {
         "tertiary-fixed-dim": "#afc8f0",
         "on-tertiary-fixed": "#001c3a",
         "on-tertiary-fixed-variant": "#2f486a",
-        background: "#f9f9fe",
-        "on-background": "#1a1c1f",
-        "surface-variant": "#e2e2e7",
+        background: withOpacity("--color-background"),
+        "on-background": withOpacity("--color-on-background"),
+        "surface-variant": withOpacity("--color-surface-variant"),
       },
       borderRadius: {
         sm: "0.5rem",
@@ -114,14 +124,9 @@ const config: Config = {
           from: { opacity: "0", transform: "translateY(20px)" },
           to: { opacity: "1", transform: "translateY(0)" },
         },
-        marquee: {
-          "0%": { transform: "translateX(0%)" },
-          "100%": { transform: "translateX(-50%)" },
-        },
       },
       animation: {
         float: "float 6s ease-in-out infinite",
-        marquee: "marquee 22s linear infinite",
         fadeIn: "fadeIn 0.5s ease-out",
         slideUp: "slideUp 0.5s ease-out both",
       },
