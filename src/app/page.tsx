@@ -124,11 +124,11 @@ export default function HomeDashboardPage() {
           </div>
         </div>
 
-        {/* Primary Action Blobs */}
-        <section className="relative h-[350px] md:h-auto md:static md:grid md:grid-cols-2 md:gap-lg md:pt-2">
+        {/* Primary Action Cards */}
+        <section className="flex flex-col gap-md md:grid md:grid-cols-2 md:gap-lg md:pt-2">
           <Link
             href="/report-lost"
-            className="absolute left-0 top-0 w-[92%] max-w-[280px] h-[220px] md:static md:w-auto md:max-w-none md:h-[220px] bg-gradient-to-br from-primary to-primary-container text-white p-lg pt-lg flex flex-col justify-start gap-1.5 shadow-xl rounded-tl-[56px] rounded-tr-[110px] rounded-br-[40px] rounded-bl-[100px] md:rounded-[28px] md:justify-center z-10 transition-transform hover:scale-[0.98] active:scale-[0.96]"
+            className="w-full bg-gradient-to-br from-primary to-primary-container text-white p-lg flex flex-col justify-center gap-1.5 shadow-xl min-h-[190px] rounded-[32px] transition-transform hover:scale-[0.98] active:scale-[0.96]"
           >
             <div className="w-11 h-11 rounded-full bg-white/20 flex items-center justify-center mb-1">
               <span className="material-symbols-outlined" style={{ fontVariationSettings: "'FILL' 1" }}>search</span>
@@ -139,7 +139,7 @@ export default function HomeDashboardPage() {
 
           <Link
             href="/report-lost"
-            className="absolute right-0 bottom-0 w-[78%] h-[210px] md:static md:w-auto md:h-[220px] bg-gradient-to-br from-[#7c6ff0] to-secondary-container text-white p-lg pb-lg flex flex-col justify-end gap-1.5 shadow-xl rounded-tl-[110px] rounded-tr-[56px] rounded-br-[100px] rounded-bl-[40px] md:rounded-[28px] md:justify-center z-20 transition-transform hover:scale-[0.98] active:scale-[0.96]"
+            className="w-full bg-gradient-to-br from-[#7c6ff0] to-secondary-container text-white p-lg flex flex-col justify-center gap-1.5 shadow-xl min-h-[190px] rounded-[32px] transition-transform hover:scale-[0.98] active:scale-[0.96]"
           >
             <div className="w-11 h-11 rounded-full bg-white/20 flex items-center justify-center mb-1">
               <span className="material-symbols-outlined" style={{ fontVariationSettings: "'FILL' 1" }}>front_hand</span>
@@ -157,7 +157,7 @@ export default function HomeDashboardPage() {
           </div>
           <div className="flex overflow-x-auto md:grid md:grid-cols-3 gap-md pb-md hide-scrollbar -mx-container-margin px-container-margin md:mx-0 md:px-0">
             {RECENT_ITEMS.map((item) => (
-              <Link key={item.id} href="/matching" className="group cursor-pointer min-w-[200px] md:min-w-0 shrink-0">
+              <Link key={item.id} href="/matching" className="group cursor-pointer flex flex-col min-w-[200px] max-w-[200px] md:min-w-0 md:max-w-none shrink-0">
                 <div className="flex items-center gap-1.5 mb-2">
                   <span className="w-2 h-2 rounded-full" style={{ backgroundColor: item.dotColor }} />
                   <span className="font-label-md text-label-md text-on-surface-variant">{item.location}</span>
