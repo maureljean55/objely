@@ -13,10 +13,28 @@ const ITEMS: { key: NavKey; href: string; icon: string; label: string }[] = [
 export default function BottomNav({ active }: { active: NavKey }) {
   return (
     <nav className="md:hidden fixed inset-x-4 bottom-4 z-50">
-      <div className="relative flex items-center justify-between gap-1 px-3 py-3 rounded-full overflow-hidden backdrop-blur-2xl border border-white/40 shadow-[0_20px_45px_rgba(0,31,63,0.18)]">
+      {/* Refraction filter for the liquid-glass surface. Browsers that don't
+          support an SVG reference inside backdrop-filter just fall back to
+          the plain blur() also listed in the style below. */}
+      <svg className="absolute w-0 h-0" aria-hidden="true">
+        <filter id="liquid-glass-distortion" x="-20%" y="-20%" width="140%" height="140%">
+          <feTurbulence type="fractalNoise" baseFrequency="0.008 0.012" numOctaves="2" seed="7" result="noise" />
+          <feGaussianBlur in="noise" stdDeviation="3" result="blurredNoise" />
+          <feDisplacementMap in="SourceGraphic" in2="blurredNoise" scale="22" xChannelSelector="R" yChannelSelector="G" />
+        </filter>
+      </svg>
+
+      <div
+        className="relative flex items-center justify-between gap-1 px-3 py-3 rounded-full overflow-hidden border border-white/50 shadow-[inset_0_1px_1px_rgba(255,255,255,0.7),inset_0_-1px_2px_rgba(0,31,63,0.08),0_20px_45px_rgba(0,31,63,0.2)]"
+        style={{
+          backdropFilter: "url(#liquid-glass-distortion) blur(16px) saturate(160%)",
+          WebkitBackdropFilter: "blur(16px) saturate(160%)",
+        }}
+      >
         {/* Glossy specular highlight — glass material, not a background fill */}
-        <div className="pointer-events-none absolute -top-6 right-10 w-28 h-20 rounded-full bg-white/40 blur-2xl" />
-        <div className="pointer-events-none absolute inset-0 rounded-full bg-gradient-to-b from-white/15 to-transparent" />
+        <div className="pointer-events-none absolute -top-8 right-6 w-32 h-24 rounded-full bg-white/50 blur-2xl" />
+        <div className="pointer-events-none absolute -bottom-10 left-4 w-20 h-16 rounded-full bg-white/20 blur-2xl" />
+        <div className="pointer-events-none absolute inset-0 rounded-full bg-gradient-to-b from-white/25 via-transparent to-white/5" />
 
         {ITEMS.map((item) => {
           const isActive = item.key === active;
