@@ -15,7 +15,7 @@ const MENU_ITEMS_TOP = [
 
 const MENU_ITEMS_BOTTOM = [
   { icon: "notifications", label: "Notifications", bg: "bg-primary-fixed/30", color: "text-primary" },
-  { icon: "help", label: "Centre d'aide", bg: "bg-secondary-fixed/30", color: "text-secondary", href: "/help" },
+  { icon: "help", label: "Aide", bg: "bg-secondary-fixed/30", color: "text-secondary", href: "/help" },
   { icon: "flag", label: "Signaler un problème", bg: "bg-surface-variant/50", color: "text-on-surface-variant" },
 ];
 
