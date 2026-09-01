@@ -1,10 +1,6 @@
 import type { ReactNode } from "react";
 import Link from "next/link";
 import BottomNav from "@/components/BottomNav";
-import ThemeToggle from "@/components/ThemeToggle";
-
-const AVATAR =
-  "https://lh3.googleusercontent.com/aida-public/AB6AXuCZfuwmAGmqsioZXn2vl0S5TeziGs1iRvYxOAMNX1PWzii9KRcgCccoERwU1Dj76e0-cAN4M1_1ws_bjeZmtSxzXtieAa2J7ngwaqInqx_rnuPJJ3W5dj_MCvXoNG0YdF_6oyDqnRm6zIuhi6ii40MgIjkG5rsKX0XWiP40a5Eu8sK6GuUecMT6pJPUQbKbX9MSI_u1c4V0_o8xVv6hlzkKug9iRIUbUXwp-O7ITLOaaSCSmax9QdFC";
 
 function Row({ icon, label, href }: { icon: string; label: string; href?: string }) {
   const content = (
@@ -49,28 +45,9 @@ export default function SettingsPage() {
       </header>
 
       <main className="max-w-[800px] mx-auto pt-20 pb-8 px-container-margin flex flex-col gap-lg">
-        <section className="bg-surface-container-lowest rounded-[20px] soft-shadow p-4 flex items-center gap-4">
-          <div className="w-16 h-16 rounded-full overflow-hidden bg-surface-container-high shrink-0 border border-outline-variant/50">
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img alt="Julie Bertrand" className="w-full h-full object-cover" src={AVATAR} />
-          </div>
-          <div className="flex-1">
-            <h2 className="font-headline-sm text-headline-sm text-on-surface">Julie Bertrand</h2>
-            <p className="font-body-md text-body-md text-outline">julie.bertrand@example.com</p>
-          </div>
-        </section>
-
-        <Section title="Compte">
-          <Row icon="person" label="Modifier mon profil" href="/profile/edit" />
-          <Row icon="mail" label="Adresse e-mail" />
-          <Row icon="phone_iphone" label="Numéro de téléphone" />
-        </Section>
-
         <Section title="Préférences">
           <Row icon="notifications" label="Notifications" href="/profile/notifications" />
           <Row icon="language" label="Langue" />
-          <ThemeToggle />
-          <Row icon="location_on" label="Localisation" />
         </Section>
 
         <Section title="Sécurité">
@@ -90,9 +67,14 @@ export default function SettingsPage() {
           <Row icon="report" label="Signaler un problème" href="/profile/report" />
         </Section>
 
-        <button className="w-full py-4 px-6 rounded-xl bg-error-container/30 text-error font-body-lg text-body-lg font-semibold active:scale-95 transition-transform">
-          Déconnexion
-        </button>
+        <div className="flex flex-col items-center gap-4">
+          <button className="w-full py-4 px-6 rounded-xl bg-error-container/30 text-error font-body-lg text-body-lg font-semibold active:scale-95 transition-transform">
+            Déconnexion
+          </button>
+          <button className="font-label-md text-label-md text-outline hover:text-error transition-colors underline decoration-outline/30 underline-offset-4">
+            Supprimer mon compte
+          </button>
+        </div>
       </main>
 
       <BottomNav active="profile" />

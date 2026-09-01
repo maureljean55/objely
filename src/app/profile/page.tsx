@@ -140,10 +140,6 @@ export default function UserProfilePage() {
         </section>
 
         <section className="flex flex-col items-center gap-6 mb-12 animate-slideUp">
-          <button className="w-full max-w-[300px] min-h-[56px] bg-surface-container-lowest rounded flex items-center justify-center gap-2 font-headline-sm text-headline-sm text-error border border-error-container hover:bg-error-container/20 transition-colors soft-shadow">
-            <span className="material-symbols-outlined">logout</span>
-            Déconnexion
-          </button>
           <button className="font-label-md text-label-md text-outline hover:text-error transition-colors underline decoration-outline/30 underline-offset-4">
             Supprimer mon compte
           </button>
