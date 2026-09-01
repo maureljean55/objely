@@ -2,12 +2,9 @@ import Link from "next/link";
 import BottomNav from "@/components/BottomNav";
 
 const RECENT_ACTIVITY = [
-  "🔑 Clés trouvées à Paris 11e",
-  "il y a 5 min",
-  "👜 Sac restitué à son propriétaire",
-  "il y a 1 h",
-  "📱 Nouvelle correspondance trouvée",
-  "il y a 3 h",
+  "🔑 Clés trouvées à Paris 11e — il y a 5 min",
+  "👜 Sac restitué à son propriétaire — il y a 1 h",
+  "📱 Nouvelle correspondance trouvée — il y a 3 h",
 ];
 
 const RECENT_ITEMS = [
@@ -49,7 +46,6 @@ export default function HomeDashboardPage() {
           <div className="px-3 py-1.5 rounded-xl bg-surface-container-lowest shadow-sm">
             <span className="font-headline-sm text-headline-sm text-on-surface">Objely</span>
           </div>
-          <h1 className="font-headline-md text-headline-md text-primary">Bonjour</h1>
         </div>
         <nav className="flex gap-gutter">
           <Link className="text-primary font-label-md text-label-md hover:opacity-80 transition-opacity flex flex-col items-center" href="/">
@@ -104,20 +100,22 @@ export default function HomeDashboardPage() {
 
         {/* Greeting */}
         <div>
-          <h1 className="font-headline-lg-mobile md:font-headline-lg text-headline-lg-mobile md:text-headline-lg text-on-background mb-1">
-            Bonjour
+          <h1 className="font-headline-lg-mobile md:font-headline-lg text-headline-lg-mobile md:text-headline-lg text-on-background">
+            Quelque chose à retrouver ?
           </h1>
-          <p className="font-body-lg text-body-lg text-on-surface-variant">Quelque chose à retrouver ?</p>
         </div>
 
-        {/* Recent Activity Ticker */}
-        <div className="-mx-container-margin px-container-margin md:mx-0 md:px-0">
-          <div className="bg-surface-container-lowest rounded-full shadow-sm overflow-x-auto hide-scrollbar">
-            <div className="flex items-center gap-2 whitespace-nowrap px-4 py-2.5">
-              {RECENT_ACTIVITY.map((entry, i) => (
-                <span key={entry} className="font-label-md text-label-md text-on-surface-variant flex items-center gap-2">
+        {/* Recent Activity Ticker — auto-scrolling, seamless loop */}
+        <div>
+          <div className="bg-surface-container-lowest rounded-full shadow-sm overflow-hidden">
+            <div className="flex w-max animate-marquee">
+              {[...RECENT_ACTIVITY, ...RECENT_ACTIVITY].map((entry, i) => (
+                <span
+                  key={i}
+                  className="font-label-md text-label-md text-on-surface-variant whitespace-nowrap flex items-center gap-3 px-4 py-2.5"
+                >
                   {entry}
-                  {i < RECENT_ACTIVITY.length - 1 && <span className="text-outline-variant">•</span>}
+                  <span className="text-outline-variant">•</span>
                 </span>
               ))}
             </div>
