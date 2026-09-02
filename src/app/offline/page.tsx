@@ -13,7 +13,7 @@ export default function OfflinePage() {
           Cette page n&apos;est pas disponible hors ligne. Vérifiez votre connexion et réessayez.
         </p>
         <Link
-          href="/"
+          href="/home"
           className="w-full max-w-xs h-14 bg-primary btn-gradient text-on-primary font-headline-sm text-headline-sm rounded-[16px] flex items-center justify-center gap-2 hover:opacity-90 active:scale-[0.98] transition-all shadow-[0_10px_30px_rgba(0,88,188,0.2)]"
         >
           <span className="material-symbols-outlined">refresh</span>

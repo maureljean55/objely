@@ -28,7 +28,7 @@ export default function DeclarationLocationPage() {
           <span className="material-symbols-outlined">arrow_back</span>
         </Link>
         <h1 className="font-headline-sm text-headline-sm text-on-surface">Déclarer un objet</h1>
-        <Link href="/" aria-label="Fermer" className="w-10 h-10 flex items-center justify-center rounded-full hover:bg-surface-container-high/50 transition-colors text-on-surface-variant">
+        <Link href="/home" aria-label="Fermer" className="w-10 h-10 flex items-center justify-center rounded-full hover:bg-surface-container-high/50 transition-colors text-on-surface-variant">
           <span className="material-symbols-outlined">close</span>
         </Link>
       </header>

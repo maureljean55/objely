@@ -82,7 +82,7 @@ export default function ReportFoundCategoryPage() {
   return (
     <div className="font-body-md text-on-surface antialiased min-h-screen flex flex-col bg-background">
       <header className="w-full px-container-margin py-base flex items-center justify-between sticky top-0 z-50 bg-background/80 backdrop-blur-md">
-        <Link href="/" aria-label="Retour" className="w-10 h-10 flex items-center justify-center rounded-full hover:bg-surface-container-high/50 transition-colors">
+        <Link href="/home" aria-label="Retour" className="w-10 h-10 flex items-center justify-center rounded-full hover:bg-surface-container-high/50 transition-colors">
           <span className="material-symbols-outlined text-on-surface-variant">arrow_back</span>
         </Link>
         <div className="flex flex-col items-center">

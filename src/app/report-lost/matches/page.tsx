@@ -42,7 +42,7 @@ export default function DeclarationMatchesPage() {
           <span className="material-symbols-outlined">arrow_back</span>
         </Link>
         <h1 className="font-headline-sm text-headline-sm text-on-surface truncate px-4">Déclarer un objet</h1>
-        <Link href="/" aria-label="Fermer" className="p-2 -mr-2 text-on-surface-variant hover:opacity-70 transition-opacity active:scale-95">
+        <Link href="/home" aria-label="Fermer" className="p-2 -mr-2 text-on-surface-variant hover:opacity-70 transition-opacity active:scale-95">
           <span className="material-symbols-outlined">close</span>
         </Link>
       </header>

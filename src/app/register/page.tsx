@@ -18,14 +18,14 @@ export default function RegisterPage() {
   const handleSubmit = (e: FormEvent) => {
     e.preventDefault();
     if (!canSubmit) return;
-    router.push("/");
+    router.push("/home");
   };
 
   return (
     <div className="font-body-md text-on-surface antialiased min-h-screen flex flex-col bg-background">
       <header className="w-full px-container-margin py-base flex items-center justify-end sticky top-0 z-50 bg-background/80 backdrop-blur-md">
         <Link
-          href="/"
+          href="/home"
           aria-label="Fermer"
           className="w-10 h-10 flex items-center justify-center rounded-full hover:bg-surface-container-high/50 transition-colors"
         >

@@ -16,7 +16,7 @@ export default function SearchFiltersPage() {
       <header className="fixed top-0 inset-x-0 z-50 bg-surface/90 backdrop-blur-md shadow-sm">
         <div className="max-w-[1140px] mx-auto px-container-margin py-sm">
           <div className="flex items-center justify-between">
-            <Link href="/" className="text-on-surface-variant hover:opacity-80 transition-opacity active:scale-95 hidden md:flex items-center justify-center">
+            <Link href="/home" className="text-on-surface-variant hover:opacity-80 transition-opacity active:scale-95 hidden md:flex items-center justify-center">
               <span className="material-symbols-outlined text-[24px]">arrow_back</span>
             </Link>
             <h1 className="font-display text-headline-sm font-bold text-on-surface text-center flex-1">Mes objets</h1>

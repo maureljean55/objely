@@ -225,7 +225,7 @@ export default function ScheduleReturnPage() {
               Votre objet est de nouveau avec vous. Les détails de la rencontre ont été confirmés et envoyés au trouveur.
             </p>
             <button
-              onClick={() => router.push("/")}
+              onClick={() => router.push("/home")}
               className="w-full py-4 rounded-xl bg-emerald-600 text-white font-headline-sm text-headline-sm shadow-md hover:bg-emerald-700 transition-colors"
             >
               Retour à l&apos;accueil

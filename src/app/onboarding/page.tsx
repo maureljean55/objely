@@ -35,7 +35,7 @@ export default function OnboardingStep1Page() {
           Suivant
           <span className="material-symbols-outlined" style={{ fontVariationSettings: "'FILL' 0" }}>arrow_forward</span>
         </Link>
-        <Link href="/" className="font-label-md text-label-md text-outline hover:text-primary transition-colors py-2 px-4 rounded-full">
+        <Link href="/home" className="font-label-md text-label-md text-outline hover:text-primary transition-colors py-2 px-4 rounded-full">
           Passer
         </Link>
       </footer>

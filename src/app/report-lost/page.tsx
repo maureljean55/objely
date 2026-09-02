@@ -52,11 +52,11 @@ export default function ReportLostCategoryPage() {
   return (
     <div className="font-body-md text-on-surface antialiased min-h-screen flex flex-col bg-background">
       <header className="w-full px-container-margin py-base flex items-center justify-between sticky top-0 z-50 bg-background/80 backdrop-blur-md">
-        <Link href="/" aria-label="Retour" className="w-10 h-10 flex items-center justify-center rounded-full hover:bg-surface-container-high/50 transition-colors">
+        <Link href="/home" aria-label="Retour" className="w-10 h-10 flex items-center justify-center rounded-full hover:bg-surface-container-high/50 transition-colors">
           <span className="material-symbols-outlined text-on-surface-variant">arrow_back</span>
         </Link>
         <div className="font-headline-sm text-headline-sm text-on-surface">Déclarer un objet</div>
-        <Link href="/" aria-label="Fermer" className="w-10 h-10 flex items-center justify-center rounded-full hover:bg-surface-container-high/50 transition-colors">
+        <Link href="/home" aria-label="Fermer" className="w-10 h-10 flex items-center justify-center rounded-full hover:bg-surface-container-high/50 transition-colors">
           <span className="material-symbols-outlined text-on-surface-variant">close</span>
         </Link>
       </header>
@@ -124,7 +124,7 @@ export default function ReportLostCategoryPage() {
       <div className="w-full fixed bottom-0 left-0 p-container-margin bg-background/90 backdrop-blur-xl border-t border-surface-container-highest z-40 pb-8">
         <div className="max-w-3xl mx-auto flex gap-md">
           <Link
-            href="/"
+            href="/home"
             className="flex-1 py-4 px-6 rounded border border-[#007AFF] text-[#007AFF] font-headline-sm text-headline-sm bg-surface-container-lowest shadow-sm hover:bg-surface-container-low transition-colors text-center"
           >
             Annuler

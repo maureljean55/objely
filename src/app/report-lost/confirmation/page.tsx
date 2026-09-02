@@ -72,7 +72,7 @@ export default function DeclarationConfirmationPage() {
             <span className="material-symbols-outlined text-[20px]">visibility</span>
           </Link>
           <Link
-            href="/"
+            href="/home"
             className="w-full bg-primary-fixed text-primary font-headline-sm text-headline-sm h-14 rounded-2xl flex items-center justify-center transition-transform active:scale-95"
           >
             Retour à l&apos;accueil

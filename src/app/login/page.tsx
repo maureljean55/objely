@@ -17,7 +17,7 @@ export default function LoginPage() {
   const handleSubmit = (e: FormEvent) => {
     e.preventDefault();
     if (!canSubmit) return;
-    router.push("/");
+    router.push("/home");
   };
 
   return (
@@ -28,7 +28,7 @@ export default function LoginPage() {
       />
 
       <Link
-        href="/"
+        href="/home"
         aria-label="Fermer"
         className="absolute top-5 right-5 z-10 w-10 h-10 flex items-center justify-center rounded-full hover:bg-on-surface/5 transition-colors"
       >

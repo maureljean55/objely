@@ -24,7 +24,7 @@ export default function DeclarationDetailsPage() {
           <span className="material-symbols-outlined text-on-surface-variant">arrow_back</span>
         </Link>
         <div className="font-headline-sm text-headline-sm text-on-surface">Déclarer un objet</div>
-        <Link href="/" aria-label="Fermer" className="w-10 h-10 flex items-center justify-center rounded-full hover:bg-surface-container-high/50 transition-colors">
+        <Link href="/home" aria-label="Fermer" className="w-10 h-10 flex items-center justify-center rounded-full hover:bg-surface-container-high/50 transition-colors">
           <span className="material-symbols-outlined text-on-surface-variant">close</span>
         </Link>
       </header>

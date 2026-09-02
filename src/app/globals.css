@@ -157,3 +157,86 @@ body {
   background-color: #0058bc;
   background-image: linear-gradient(180deg, #007aff 0%, #0058bc 100%);
 }
+
+/* Splash screen — orbiting objects + pulsing magnifier */
+@keyframes orbit-spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+@keyframes orbit-counter-spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(-360deg);
+  }
+}
+.orbit-ring {
+  animation: orbit-spin 16s linear infinite;
+}
+.orbit-item-inner {
+  animation: orbit-counter-spin 16s linear infinite;
+}
+
+@keyframes magnifier-pulse {
+  0%,
+  100% {
+    transform: scale(1);
+    filter: drop-shadow(0 0 14px rgba(147, 197, 253, 0.5));
+  }
+  50% {
+    transform: scale(1.07);
+    filter: drop-shadow(0 0 30px rgba(191, 219, 254, 0.9));
+  }
+}
+.magnifier-pulse {
+  animation: magnifier-pulse 2.1s ease-in-out infinite;
+}
+
+@keyframes radar-ping {
+  0% {
+    transform: scale(0.55);
+    opacity: 0.45;
+  }
+  100% {
+    transform: scale(1.9);
+    opacity: 0;
+  }
+}
+.radar-ping {
+  animation: radar-ping 2.6s cubic-bezier(0.2, 0.6, 0.4, 1) infinite;
+}
+
+@keyframes splash-fade-up {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+.splash-fade-up {
+  animation: splash-fade-up 0.7s ease-out both;
+}
+
+@keyframes dot-bounce {
+  0%,
+  80%,
+  100% {
+    opacity: 0.3;
+    transform: scale(0.7);
+  }
+  40% {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+.dot-bounce {
+  animation: dot-bounce 1.2s ease-in-out infinite;
+}
