@@ -23,7 +23,7 @@ export default function SplashPage() {
   return (
     <div
       className="relative min-h-[100dvh] flex flex-col overflow-hidden"
-      style={{ background: "linear-gradient(135deg, #101a4d 0%, #2c2f8f 40%, #5b2fa6 75%, #3b1768 100%)" }}
+      style={{ background: "linear-gradient(135deg, #0058bc 0%, #0070eb 35%, #7c6ff0 70%, #a19afd 100%)" }}
     >
       <div className="flex-1 flex items-center justify-center">
         <div className="relative w-[280px] h-[280px] flex items-center justify-center">
