@@ -35,7 +35,7 @@ export default function HelpHistoryPage() {
           <span className="material-symbols-outlined text-2xl">arrow_back_ios</span>
         </Link>
         <h1 className="font-headline-sm text-headline-sm text-on-surface absolute left-1/2 -translate-x-1/2 md:static md:translate-x-0">
-          Mes conversations
+          Mes messages
         </h1>
         <div className="w-8 h-8 rounded-full bg-primary-fixed flex items-center justify-center text-primary">
           <span className="font-label-md text-label-md font-bold">SA</span>
