@@ -22,8 +22,11 @@ export default function RegisterPage() {
   };
 
   return (
-    <div className="font-body-md text-on-surface antialiased min-h-screen flex flex-col bg-background">
-      <header className="w-full px-container-margin py-base flex items-center justify-end sticky top-0 z-50 bg-background/80 backdrop-blur-md">
+    <div className="font-body-md text-on-surface antialiased min-h-[100dvh] flex flex-col bg-background">
+      <header
+        className="w-full px-container-margin pb-base flex items-center justify-end sticky top-0 z-50 bg-background/80 backdrop-blur-md"
+        style={{ paddingTop: "calc(0.5rem + env(safe-area-inset-top))" }}
+      >
         <Link
           href="/home"
           aria-label="Fermer"

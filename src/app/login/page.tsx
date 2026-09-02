@@ -5,7 +5,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 
 const ACCENT = "#3A5CF9";
-const HEADER_HEIGHT = 440;
+const HEADER_HEIGHT = "calc(440px + env(safe-area-inset-top))";
 
 export default function LoginPage() {
   const router = useRouter();
@@ -22,14 +22,17 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="relative min-h-screen bg-background overflow-hidden">
+    <div className="relative min-h-[100dvh] bg-background overflow-hidden">
       <div className="fixed top-0 inset-x-0 z-20 bg-background" style={{ height: HEADER_HEIGHT }}>
         <div
           className="absolute inset-x-0 top-0 h-full -z-10 rounded-b-[100%]"
           style={{ background: "radial-gradient(circle at 50% 0%, #cfe0fb 0%, rgb(var(--color-background)) 72%)" }}
         />
 
-        <div className="w-full max-w-md mx-auto px-container-margin pt-16 pb-6 flex flex-col">
+        <div
+          className="w-full max-w-md mx-auto px-container-margin pb-6 flex flex-col"
+          style={{ paddingTop: "calc(4rem + env(safe-area-inset-top))" }}
+        >
           <h1 className="font-headline-lg-mobile font-bold text-[38px] leading-[1.12] tracking-[-0.01em] text-on-surface text-center mb-3">
             Content de
             <br />
