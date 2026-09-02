@@ -44,7 +44,6 @@ export default function HelpHistoryPage() {
 
       <main className="flex-1 w-full max-w-[800px] mx-auto px-container-margin pt-lg pb-xl">
         <div className="mb-lg">
-          <h2 className="font-headline-lg-mobile md:font-headline-lg text-headline-lg-mobile md:text-headline-lg text-on-surface mb-2">Historique</h2>
           <p className="font-body-md text-body-md text-on-surface-variant">Retrouvez toutes vos demandes d&apos;assistance Objely.</p>
         </div>
 
