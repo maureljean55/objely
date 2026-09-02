@@ -23,7 +23,7 @@ export default function SplashPage() {
   return (
     <div
       className="relative min-h-screen flex flex-col items-center justify-center overflow-hidden"
-      style={{ background: "radial-gradient(circle at 50% 38%, #2c4384 0%, #14245a 68%, #0b1638 100%)" }}
+      style={{ background: "radial-gradient(circle at 50% 38%, #4a7bfa 0%, #2f5de8 45%, #1230a8 100%)" }}
     >
       <div className="relative flex flex-col items-center">
         <div className="relative w-[280px] h-[280px] flex items-center justify-center">
