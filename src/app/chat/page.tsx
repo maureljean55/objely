@@ -1,21 +1,22 @@
 "use client";
 
 import { useRef, useState } from "react";
-import Link from "next/link";
+import { useRouter } from "next/navigation";
 
 const AVATAR =
   "https://lh3.googleusercontent.com/aida-public/AB6AXuAHIRJ2LimYBXyVxFqgSdPjbDpdtNWzzGRXKRClA4UB47l_yxsN7GW8FUNX_H27eXniyu0TtRoE_Pu8tjMqnWXOxLQeeeiGd3KhoTBv4gIX996LHAcP180S1nje4jbcjHY7LhlZ0FDgaK3d2h3aGEO0V_TMDP1lLus-2X94eVwL_v2sIskHfxD3ZOPjQFzkKVgCpR124pGodHTsrUBdZAOZVGUq6vt8eSuNGKYilzkPVjCC3vvbqVhb";
 
 export default function SecureChatPage() {
+  const router = useRouter();
   const [draft, setDraft] = useState("");
   const textareaRef = useRef<HTMLTextAreaElement>(null);
 
   return (
     <div className="bg-background text-on-background font-body-md antialiased">
       <header className="glass-header fixed top-0 inset-x-0 z-50 flex justify-between items-center w-full px-container-margin py-base shadow-[0_1px_0_rgba(0,0,0,0.05)]">
-        <Link href="/matching" aria-label="Retour" className="text-primary p-2 -ml-2 rounded-full hover:bg-surface-container-high/50 transition-colors flex items-center">
+        <button type="button" onClick={() => router.back()} aria-label="Retour" className="text-primary p-2 -ml-2 rounded-full hover:bg-surface-container-high/50 transition-colors flex items-center">
           <span className="material-symbols-outlined" style={{ fontVariationSettings: "'FILL' 0" }}>arrow_back_ios</span>
-        </Link>
+        </button>
         <div className="flex flex-col items-center">
           <h1 className="font-headline-sm text-headline-sm text-on-surface">Sac à dos noir</h1>
           <p className="font-label-md text-label-md text-outline">Trouvé par Jean D.</p>

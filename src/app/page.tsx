@@ -146,30 +146,23 @@ export default function HomeDashboardPage() {
           </Link>
         </section>
 
-        {/* Recent Finds */}
+        {/* Recent Finds — community notifications, not links to a specific item */}
         <section className="space-y-md pt-2">
-          <div className="flex justify-between items-end">
-            <h3 className="font-headline-sm text-headline-sm text-on-background">Objets récemment trouvés près de vous</h3>
-            <Link className="font-label-md text-label-md text-primary hover:underline" href="/search">Voir tout</Link>
-          </div>
+          <h3 className="font-headline-sm text-headline-sm text-on-background">Objets récemment trouvés près de vous</h3>
           <div className="flex overflow-x-auto md:grid md:grid-cols-3 gap-md pb-md hide-scrollbar -mx-container-margin px-container-margin md:mx-0 md:px-0">
             {RECENT_ITEMS.map((item) => (
-              <Link key={item.id} href="/matching" className="group cursor-pointer flex flex-col min-w-[200px] max-w-[200px] md:min-w-0 md:max-w-none shrink-0">
+              <div key={item.id} className="flex flex-col min-w-[200px] max-w-[200px] md:min-w-0 md:max-w-none shrink-0">
                 <div className="flex items-center gap-1.5 mb-2">
                   <span className="w-2 h-2 rounded-full" style={{ backgroundColor: item.dotColor }} />
                   <span className="font-label-md text-label-md text-on-surface-variant">{item.location}</span>
                 </div>
                 <div className="relative h-32 rounded-2xl overflow-hidden bg-surface-container-high mb-2">
                   {/* eslint-disable-next-line @next/next/no-img-element */}
-                  <img
-                    alt={item.title}
-                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-                    src={item.image}
-                  />
+                  <img alt={item.title} className="w-full h-full object-cover" src={item.image} />
                 </div>
                 <h4 className="font-headline-sm text-headline-sm text-on-background line-clamp-1 mb-0.5">{item.title}</h4>
                 <p className="font-body-md text-body-md text-on-surface-variant">Trouvé {item.time}</p>
-              </Link>
+              </div>
             ))}
           </div>
         </section>

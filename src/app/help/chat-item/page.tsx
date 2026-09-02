@@ -41,7 +41,7 @@ export default function HelpChatItemPage() {
             </div>
           </div>
           <Link
-            href="/matching"
+            href="/search"
             className="font-label-md text-label-md text-primary font-semibold px-md py-2 rounded-full bg-primary/5 hover:bg-primary/10 transition-colors shrink-0 whitespace-nowrap"
           >
             Voir l&apos;objet

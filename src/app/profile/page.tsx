@@ -9,7 +9,6 @@ const STATS = [
 ];
 
 const MENU_ITEMS_TOP = [
-  { icon: "inventory_2", label: "Mes Objets", bg: "bg-secondary-fixed/30", color: "text-secondary", href: "/profile/items" },
   { icon: "lock", label: "Confidentialité & Sécurité", bg: "bg-tertiary-fixed/30", color: "text-tertiary", href: "/profile/privacy" },
 ];
 

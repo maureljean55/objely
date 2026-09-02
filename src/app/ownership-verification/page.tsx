@@ -1,6 +1,5 @@
 "use client";
 
-import Link from "next/link";
 import { useRouter } from "next/navigation";
 
 export default function OwnershipVerificationPage() {
@@ -10,12 +9,14 @@ export default function OwnershipVerificationPage() {
     <div className="bg-background text-on-surface antialiased min-h-screen flex flex-col pb-24 md:pb-0">
       <header className="fixed top-0 w-full z-50 bg-surface/80 backdrop-blur-md shadow-sm">
         <div className="flex items-center justify-between px-container-margin py-sm w-full max-w-full mx-auto md:max-w-[1140px]">
-          <Link
-            href="/matching"
+          <button
+            type="button"
+            onClick={() => router.back()}
+            aria-label="Retour"
             className="w-10 h-10 flex items-center justify-center rounded-full hover:opacity-80 transition-opacity active:scale-95 text-on-surface-variant focus:outline-none focus:ring-2 focus:ring-primary/20"
           >
             <span className="material-symbols-outlined" style={{ fontVariationSettings: "'FILL' 0" }}>arrow_back</span>
-          </Link>
+          </button>
           <h1 className="font-display text-headline-sm font-bold text-on-surface flex-1 text-center truncate px-2">Vérification</h1>
           <button className="w-10 h-10 flex items-center justify-center rounded-full hover:opacity-80 transition-opacity active:scale-95 text-on-surface-variant focus:outline-none focus:ring-2 focus:ring-primary/20">
             <span className="material-symbols-outlined" style={{ fontVariationSettings: "'FILL' 0" }}>info</span>
@@ -127,12 +128,13 @@ export default function OwnershipVerificationPage() {
                   Vérifier la propriété
                   <span className="material-symbols-outlined text-[20px]">arrow_forward</span>
                 </button>
-                <Link
-                  href="/matching"
+                <button
+                  type="button"
+                  onClick={() => router.back()}
                   className="min-h-[56px] px-lg rounded-[16px] sm:w-auto bg-transparent border-none text-primary-container font-headline-sm text-headline-sm hover:bg-surface-container-high/50 active:scale-[0.98] transition-all flex items-center justify-center"
                 >
                   Annuler
-                </Link>
+                </button>
               </div>
             </form>
           </div>

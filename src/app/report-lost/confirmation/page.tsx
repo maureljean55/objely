@@ -65,7 +65,7 @@ export default function DeclarationConfirmationPage() {
       <div className="fixed bottom-0 left-0 w-full z-50 bg-surface/80 backdrop-blur-xl px-container-margin py-md pb-8 shadow-[0_-4px_20px_rgba(0,0,0,0.03)] border-t border-surface-variant/30">
         <div className="max-w-md mx-auto flex flex-col gap-3">
           <Link
-            href="/profile/items"
+            href="/search"
             className="w-full bg-primary btn-gradient text-on-primary font-headline-sm text-headline-sm h-14 rounded-2xl flex items-center justify-center gap-2 transition-transform active:scale-95"
           >
             Voir mon objet
