@@ -2,7 +2,6 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import HelpNav from "@/components/HelpNav";
 
 const FAQ_ITEMS = [
   "Comment déclarer un objet perdu ou trouvé ?",
@@ -16,7 +15,7 @@ export default function HelpCenterPage() {
   const filteredFaq = FAQ_ITEMS.filter((q) => q.toLowerCase().includes(query.toLowerCase()));
 
   return (
-    <div className="bg-gradient-to-b from-surface-container to-background text-on-background min-h-screen antialiased pb-32">
+    <div className="bg-gradient-to-b from-surface-container to-background text-on-background min-h-screen antialiased pb-12">
       <header className="sticky top-0 z-30 w-full bg-surface/80 backdrop-blur-xl shadow-sm flex items-center justify-between px-container-margin h-14">
         <Link href="/profile" aria-label="Retour" className="text-primary hover:opacity-70 transition-opacity active:scale-95 flex items-center justify-center w-10 h-10 -ml-2 rounded-full">
           <span className="material-symbols-outlined text-[24px]" style={{ fontVariationSettings: "'FILL' 0" }}>arrow_back_ios</span>
@@ -107,8 +106,6 @@ export default function HelpCenterPage() {
           </div>
         </section>
       </main>
-
-      <HelpNav active="messages" />
     </div>
   );
 }
