@@ -5,7 +5,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 
 const ACCENT = "#3A5CF9";
-const HEADER_HEIGHT = "calc(340px + env(safe-area-inset-top))";
+const HEADER_HEIGHT = "calc(260px + env(safe-area-inset-top))";
 
 export default function LoginPage() {
   const router = useRouter();
@@ -30,15 +30,15 @@ export default function LoginPage() {
         />
 
         <div
-          className="w-full max-w-md mx-auto px-container-margin pb-4 flex flex-col"
-          style={{ paddingTop: "calc(2rem + env(safe-area-inset-top))" }}
+          className="w-full max-w-md mx-auto px-container-margin pb-2 flex flex-col"
+          style={{ paddingTop: "calc(0.75rem + env(safe-area-inset-top))" }}
         >
-          <h1 className="font-headline-lg-mobile font-bold text-[32px] leading-[1.12] tracking-[-0.01em] text-on-surface text-center mb-2">
+          <h1 className="font-headline-lg-mobile font-bold text-[32px] leading-[1.12] tracking-[-0.01em] text-on-surface text-center mb-1">
             Content de
             <br />
             vous revoir !
           </h1>
-          <p className="font-body-md text-body-md text-on-surface-variant text-center mb-4">
+          <p className="font-body-md text-body-md text-on-surface-variant text-center mb-2">
             Connectez-vous pour retrouver ce qui compte.
           </p>
 
