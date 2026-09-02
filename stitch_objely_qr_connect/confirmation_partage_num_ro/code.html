@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+
+<html class="light" lang="fr"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" name="viewport"/>
+<title>Confirmation d'activation - Objely</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "on-error": "#ffffff",
+                        "primary-fixed": "#d8e2ff",
+                        "secondary-fixed-dim": "#c2c1ff",
+                        "surface-variant": "#e3e2e7",
+                        "inverse-primary": "#adc6ff",
+                        "on-primary-container": "#fefcff",
+                        "on-primary": "#ffffff",
+                        "on-surface-variant": "#414755",
+                        "on-tertiary-fixed-variant": "#7c2e00",
+                        "on-secondary-container": "#fffbff",
+                        "on-primary-fixed": "#001a41",
+                        "outline": "#717786",
+                        "surface-container-high": "#e9e7ed",
+                        "tertiary-fixed": "#ffdbcc",
+                        "surface-tint": "#005bc1",
+                        "primary-fixed-dim": "#adc6ff",
+                        "surface-container-low": "#f4f3f8",
+                        "tertiary-fixed-dim": "#ffb595",
+                        "secondary-container": "#6664e4",
+                        "surface": "#faf9fe",
+                        "on-tertiary": "#ffffff",
+                        "surface-dim": "#dad9df",
+                        "on-primary-fixed-variant": "#004493",
+                        "inverse-surface": "#2f3034",
+                        "outline-variant": "#c1c6d7",
+                        "on-background": "#1a1b1f",
+                        "on-tertiary-fixed": "#351000",
+                        "on-surface": "#1a1b1f",
+                        "error-container": "#ffdad6",
+                        "primary": "#0058bc",
+                        "surface-container-lowest": "#ffffff",
+                        "tertiary": "#9e3d00",
+                        "background": "#faf9fe",
+                        "on-error-container": "#93000a",
+                        "error": "#ba1a1a",
+                        "on-secondary-fixed": "#0c006a",
+                        "secondary-fixed": "#e2dfff",
+                        "secondary": "#4c4aca",
+                        "primary-container": "#0070eb",
+                        "tertiary-container": "#c64f00",
+                        "surface-bright": "#faf9fe",
+                        "on-secondary": "#ffffff",
+                        "surface-container-highest": "#e3e2e7",
+                        "surface-container": "#eeedf3",
+                        "on-tertiary-container": "#fffbff",
+                        "on-secondary-fixed-variant": "#3631b4",
+                        "inverse-on-surface": "#f1f0f5"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px",
+                        "2xl": "1rem"
+                    },
+                    "spacing": {
+                        "stack-gap-sm": "8px",
+                        "safe-area-bottom": "34px",
+                        "gutter-list": "20px",
+                        "stack-gap-md": "16px",
+                        "margin-main": "16px"
+                    },
+                    "fontFamily": {
+                        "caption": ["Inter"],
+                        "footnote": ["Inter"],
+                        "subheadline": ["Inter"],
+                        "title-2": ["Inter"],
+                        "title-1": ["Inter"],
+                        "body": ["Inter"],
+                        "headline": ["Inter"],
+                        "large-title": ["Inter"]
+                    },
+                    "fontSize": {
+                        "caption": ["12px", { "lineHeight": "16px", "letterSpacing": "0px", "fontWeight": "400" }],
+                        "footnote": ["13px", { "lineHeight": "18px", "letterSpacing": "-0.08px", "fontWeight": "400" }],
+                        "subheadline": ["15px", { "lineHeight": "20px", "letterSpacing": "-0.24px", "fontWeight": "400" }],
+                        "title-2": ["22px", { "lineHeight": "28px", "letterSpacing": "0.35px", "fontWeight": "700" }],
+                        "title-1": ["28px", { "lineHeight": "34px", "letterSpacing": "0.36px", "fontWeight": "700" }],
+                        "body": ["17px", { "lineHeight": "22px", "letterSpacing": "-0.41px", "fontWeight": "400" }],
+                        "headline": ["17px", { "lineHeight": "22px", "letterSpacing": "-0.41px", "fontWeight": "600" }],
+                        "large-title": ["34px", { "lineHeight": "41px", "letterSpacing": "0.37px", "fontWeight": "700" }]
+                    }
+                }
+            }
+        }
+    </script>
+<style>
+        body { -webkit-tap-highlight-color: transparent; }
+        .ios-backdrop {
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+        }
+        .ios-dialog-anim {
+            animation: iosPop 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+        }
+        @keyframes iosPop {
+            0% { transform: scale(1.1); opacity: 0; }
+            100% { transform: scale(1); opacity: 1; }
+        }
+    </style>
+</head>
+<body class="bg-surface text-on-surface font-body antialiased min-h-screen overflow-hidden selection:bg-primary-fixed selection:text-on-primary-fixed">
+<!-- Main Content Canvas (Blurred and Dimmed behind the modal) -->
+<main class="w-full h-full min-h-screen transition-all duration-300 filter blur-sm brightness-90 fixed inset-0 pointer-events-none">
+<!-- TopAppBar Placeholder Context -->
+<header class="fixed top-0 w-full z-10 bg-surface/80 backdrop-blur-md border-b border-outline-variant/30 flex justify-between items-center px-margin-main h-11">
+<button class="text-primary active:opacity-60 transition-opacity">
+<span class="material-symbols-outlined" data-icon="arrow_back_ios">arrow_back_ios</span>
+</button>
+<h1 class="font-title-2 text-title-2 font-bold text-primary">Objely</h1>
+<button class="text-primary active:opacity-60 transition-opacity">
+<span class="material-symbols-outlined" data-icon="settings">settings</span>
+</button>
+</header>
+<!-- Simulated Screen 1 Content -->
+<div class="pt-20 px-margin-main flex flex-col items-center h-full">
+<div class="w-32 h-32 bg-surface-container rounded-2xl shadow-sm border border-outline-variant/20 flex items-center justify-center mb-6">
+<span class="material-symbols-outlined text-6xl text-primary" data-icon="qr_code_2">qr_code_2</span>
+</div>
+<h2 class="font-title-1 text-title-1 mb-2 text-center">Activation du Tag</h2>
+<p class="font-body text-body text-on-surface-variant text-center mb-8 max-w-sm">Associez ce tag à votre profil pour permettre aux autres de vous contacter facilement.</p>
+<div class="w-full max-w-md bg-surface-container-lowest rounded-xl p-4 shadow-sm border border-outline-variant/30 flex items-center justify-between mb-4">
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 rounded-full bg-primary-fixed flex items-center justify-center text-primary">
+<span class="material-symbols-outlined" data-icon="person">person</span>
+</div>
+<div>
+<p class="font-headline text-headline text-on-surface">Jean Dupont</p>
+<p class="font-caption text-caption text-on-surface-variant">Profil personnel</p>
+</div>
+</div>
+<span class="material-symbols-outlined text-primary" data-icon="check_circle">check_circle</span>
+</div>
+<button class="w-full max-w-md bg-primary text-on-primary font-headline text-headline py-3 rounded-lg mt-8 opacity-50">
+                Activer le Tag
+            </button>
+</div>
+</main>
+<!-- iOS Native-Style Alert Modal Overlay -->
+<div aria-modal="true" class="fixed inset-0 z-[100] flex items-center justify-center bg-black/20 ios-backdrop p-4" role="dialog">
+<!-- Dialog Container -->
+<div class="bg-surface-container-lowest w-[270px] rounded-xl overflow-hidden ios-dialog-anim shadow-[0px_4px_12px_rgba(0,0,0,0.08)]">
+<!-- Dialog Content -->
+<div class="pt-5 pb-4 px-4 text-center border-b border-outline-variant/30">
+<h3 class="font-headline text-headline text-on-surface mb-1">Afficher votre numéro ?</h3>
+<p class="font-footnote text-footnote text-on-surface-variant leading-tight">
+                    Votre numéro de téléphone pourra être consulté par toute personne qui scanne votre QR Code. Vous pouvez désactiver cette option à tout moment.
+                </p>
+</div>
+<!-- Dialog Actions (Vertical Stack for clarity, common in standard iOS alerts) -->
+<div class="flex flex-col w-full bg-surface-container-lowest">
+<button class="w-full py-3 text-center border-b border-outline-variant/30 text-primary font-headline text-headline bg-transparent active:bg-surface-variant/50 transition-colors">
+                    Autoriser
+                </button>
+<button class="w-full py-3 text-center text-primary font-body text-body bg-transparent active:bg-surface-variant/50 transition-colors">
+                    Annuler
+                </button>
+</div>
+<!-- Alternative Horizontal Actions (If preferred, uncomment this and comment the flex-col div above)
+            <div class="flex w-full bg-surface-container-lowest">
+                <button class="flex-1 py-3 text-center border-r border-outline-variant/30 text-primary font-body text-body bg-transparent active:bg-surface-variant/50 transition-colors">
+                    Annuler
+                </button>
+                <button class="flex-1 py-3 text-center text-primary font-headline text-headline bg-transparent active:bg-surface-variant/50 transition-colors">
+                    Autoriser
+                </button>
+            </div>
+            -->
+</div>
+</div>
+</body></html>

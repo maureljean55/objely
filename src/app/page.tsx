@@ -58,13 +58,13 @@ export default function HomeDashboardPage() {
               <span className="material-symbols-outlined text-[22px]">notifications</span>
               <span className="absolute top-2.5 right-3 w-2 h-2 rounded-full bg-error ring-2 ring-surface-container-lowest" />
             </Link>
-            <button
-              type="button"
+            <Link
+              href="/qr"
               aria-label="Scanner un QR code"
               className="w-11 h-11 rounded-full bg-surface-container-lowest shadow-sm flex items-center justify-center text-on-surface-variant hover:text-primary transition-colors"
             >
               <span className="material-symbols-outlined text-[22px]">qr_code_scanner</span>
-            </button>
+            </Link>
           </div>
         </div>
 

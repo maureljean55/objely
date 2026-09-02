@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+
+<html class="light" lang="fr"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" name="viewport"/>
+<title>Objely - Résultat du Scan</title>
+<!-- Material Symbols -->
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@100..900&display=swap" rel="stylesheet"/>
+<!-- Tailwind CSS -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<!-- Tailwind Config injected from instructions -->
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "on-error": "#ffffff",
+                        "primary-fixed": "#d8e2ff",
+                        "secondary-fixed-dim": "#c2c1ff",
+                        "surface-variant": "#e3e2e7",
+                        "inverse-primary": "#adc6ff",
+                        "on-primary-container": "#fefcff",
+                        "on-primary": "#ffffff",
+                        "on-surface-variant": "#414755",
+                        "on-tertiary-fixed-variant": "#7c2e00",
+                        "on-secondary-container": "#fffbff",
+                        "on-primary-fixed": "#001a41",
+                        "outline": "#717786",
+                        "surface-container-high": "#e9e7ed",
+                        "tertiary-fixed": "#ffdbcc",
+                        "surface-tint": "#005bc1",
+                        "primary-fixed-dim": "#adc6ff",
+                        "surface-container-low": "#f4f3f8",
+                        "tertiary-fixed-dim": "#ffb595",
+                        "secondary-container": "#6664e4",
+                        "surface": "#faf9fe",
+                        "on-tertiary": "#ffffff",
+                        "surface-dim": "#dad9df",
+                        "on-primary-fixed-variant": "#004493",
+                        "inverse-surface": "#2f3034",
+                        "outline-variant": "#c1c6d7",
+                        "on-background": "#1a1b1f",
+                        "on-tertiary-fixed": "#351000",
+                        "on-surface": "#1a1b1f",
+                        "error-container": "#ffdad6",
+                        "primary": "#0058bc",
+                        "surface-container-lowest": "#ffffff",
+                        "tertiary": "#9e3d00",
+                        "background": "#faf9fe",
+                        "on-error-container": "#93000a",
+                        "error": "#ba1a1a",
+                        "on-secondary-fixed": "#0c006a",
+                        "secondary-fixed": "#e2dfff",
+                        "secondary": "#4c4aca",
+                        "primary-container": "#0070eb",
+                        "tertiary-container": "#c64f00",
+                        "surface-bright": "#faf9fe",
+                        "on-secondary": "#ffffff",
+                        "surface-container-highest": "#e3e2e7",
+                        "surface-container": "#eeedf3",
+                        "on-tertiary-container": "#fffbff",
+                        "on-secondary-fixed-variant": "#3631b4",
+                        "inverse-on-surface": "#f1f0f5"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "spacing": {
+                        "stack-gap-sm": "8px",
+                        "safe-area-bottom": "34px",
+                        "gutter-list": "20px",
+                        "stack-gap-md": "16px",
+                        "margin-main": "16px"
+                    },
+                    "fontFamily": {
+                        "caption": ["Inter"],
+                        "footnote": ["Inter"],
+                        "subheadline": ["Inter"],
+                        "title-2": ["Inter"],
+                        "title-1": ["Inter"],
+                        "body": ["Inter"],
+                        "headline": ["Inter"],
+                        "large-title": ["Inter"]
+                    },
+                    "fontSize": {
+                        "caption": ["12px", { "lineHeight": "16px", "letterSpacing": "0px", "fontWeight": "400" }],
+                        "footnote": ["13px", { "lineHeight": "18px", "letterSpacing": "-0.08px", "fontWeight": "400" }],
+                        "subheadline": ["15px", { "lineHeight": "20px", "letterSpacing": "-0.24px", "fontWeight": "400" }],
+                        "title-2": ["22px", { "lineHeight": "28px", "letterSpacing": "0.35px", "fontWeight": "700" }],
+                        "title-1": ["28px", { "lineHeight": "34px", "letterSpacing": "0.36px", "fontWeight": "700" }],
+                        "body": ["17px", { "lineHeight": "22px", "letterSpacing": "-0.41px", "fontWeight": "400" }],
+                        "headline": ["17px", { "lineHeight": "22px", "letterSpacing": "-0.41px", "fontWeight": "600" }],
+                        "large-title": ["34px", { "lineHeight": "41px", "letterSpacing": "0.37px", "fontWeight": "700" }]
+                    }
+                }
+            }
+        }
+    </script>
+<style>
+        /* Hide scrollbar for Chrome, Safari and Opera */
+        .no-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+        /* Hide scrollbar for IE, Edge and Firefox */
+        .no-scrollbar {
+            -ms-overflow-style: none;  /* IE and Edge */
+            scrollbar-width: none;  /* Firefox */
+        }
+    </style>
+</head>
+<body class="bg-surface text-on-surface antialiased min-h-screen flex flex-col font-sans selection:bg-primary-container selection:text-on-primary-container">
+<!-- TopAppBar -->
+<header class="fixed top-0 w-full z-50 bg-surface/80 dark:bg-surface-dim/80 backdrop-blur-md border-b border-outline-variant/30 dark:border-outline/20">
+<div class="flex justify-between items-center px-margin-main h-11 w-full max-w-md mx-auto">
+<button aria-label="Retour" class="text-primary dark:text-primary-fixed active:opacity-60 transition-opacity active:scale-95 duration-150 flex items-center justify-center p-2 -ml-2 rounded-full hover:bg-surface-variant/50">
+<span class="material-symbols-outlined" data-icon="arrow_back_ios">arrow_back_ios</span>
+</button>
+<h1 class="font-headline text-headline text-on-surface flex-1 text-center truncate px-2">QR Code Objely détecté</h1>
+<div class="w-10"></div> <!-- Placeholder for balancing center alignment -->
+</div>
+</header>
+<!-- Main Content Canvas -->
+<main class="flex-1 w-full max-w-md mx-auto pt-20 pb-safe-area-bottom px-margin-main flex flex-col items-center">
+<!-- Profile Identity Card -->
+<div class="w-full flex flex-col items-center mt-8 mb-12">
+<div class="relative mb-6">
+<img alt="Profile Picture" class="w-32 h-32 rounded-full object-cover border-4 border-surface shadow-sm ring-1 ring-outline-variant/20 bg-surface-container-high" data-alt="A professional headshot of a young male professional named Thomas Martin in a modern office environment. Soft natural lighting highlights his features. The aesthetic is clean, corporate, and trustworthy, with a subtle depth of field blurring the background slightly. Shot with a high-end prime lens." src="https://lh3.googleusercontent.com/aida-public/AB6AXuA-YkVROoSjSy56azjor4JSQuGiaGGJlTajtNJ1zO1MSGovIQTNN2iFZK44kTdqqvwRO3dtv7jkqtuj4cTM8Yhz6oXtlTS0bpKIHkudT_5R1Gy8GqLitdsNZDaWQoWXeLtC7_SC8dzfCl7ezXXLi5z6kFrxl9-An69QzjQoygkyu1fqRDA-c8INlaiMfjLPjRDeaXK1-Pkb5IBPSnrBN9LTFG5qApg7MPrPvOZTAsRO90WoR5yruJL5"/>
+<div class="absolute bottom-0 right-0 bg-primary text-on-primary rounded-full p-1.5 shadow-md border-2 border-surface">
+<span class="material-symbols-outlined text-[18px]" data-icon="verified">verified</span>
+</div>
+</div>
+<h2 class="font-title-1 text-title-1 text-on-surface text-center mb-1">Thomas Martin</h2>
+<div class="inline-flex items-center space-x-1.5 bg-surface-container-high px-3 py-1 rounded-full">
+<span class="w-2 h-2 rounded-full bg-[#34C759]"></span>
+<span class="font-footnote text-footnote text-on-surface-variant">Utilisateur Objely</span>
+</div>
+</div>
+<!-- Contact Information Block -->
+<div class="w-full bg-surface-container-lowest rounded-2xl p-6 mb-8 shadow-[0_4px_24px_rgba(0,0,0,0.04)] border border-outline-variant/20 flex flex-col items-center text-center">
+<div class="w-12 h-12 rounded-full bg-primary-container/10 text-primary-container flex items-center justify-center mb-4">
+<span class="material-symbols-outlined text-2xl" data-icon="lock_open">lock_open</span>
+</div>
+<p class="font-body text-body text-on-surface-variant mb-6 max-w-xs">
+                Cette personne a choisi de partager son numéro avec vous.
+            </p>
+<div class="bg-surface-container-low px-6 py-4 rounded-xl w-full border border-outline-variant/30 flex items-center justify-center space-x-3">
+<span class="material-symbols-outlined text-on-surface-variant" data-icon="phone_iphone">phone_iphone</span>
+<span class="font-large-title text-title-2 md:text-large-title text-on-surface tracking-widest font-bold">06 12 34 56 78</span>
+</div>
+</div>
+<!-- Action Buttons -->
+<div class="w-full flex flex-col space-y-4 mt-auto mb-8">
+<button class="w-full h-[50px] bg-primary text-on-primary font-headline text-headline rounded-[10px] shadow-sm flex items-center justify-center space-x-2 active:scale-[0.98] transition-transform">
+<span class="material-symbols-outlined" data-icon="call">call</span>
+<span>Appeler</span>
+</button>
+<button class="w-full h-[50px] bg-primary/5 text-primary font-headline text-headline rounded-[10px] flex items-center justify-center space-x-2 active:bg-primary/10 transition-colors">
+<span class="material-symbols-outlined" data-icon="chat_bubble">chat_bubble</span>
+<span>Envoyer un message</span>
+</button>
+</div>
+</main>
+<!-- BottomNavBar is intentionally suppressed as this is a linear/transactional sub-page based on the rules -->
+</body></html>

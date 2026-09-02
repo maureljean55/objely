@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+
+<html class="light" lang="fr"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" name="viewport"/>
+<title>Scan Résultat - Numéro Privé</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "on-error": "#ffffff",
+                        "primary-fixed": "#d8e2ff",
+                        "secondary-fixed-dim": "#c2c1ff",
+                        "surface-variant": "#e3e2e7",
+                        "inverse-primary": "#adc6ff",
+                        "on-primary-container": "#fefcff",
+                        "on-primary": "#ffffff",
+                        "on-surface-variant": "#414755",
+                        "on-tertiary-fixed-variant": "#7c2e00",
+                        "on-secondary-container": "#fffbff",
+                        "on-primary-fixed": "#001a41",
+                        "outline": "#717786",
+                        "surface-container-high": "#e9e7ed",
+                        "tertiary-fixed": "#ffdbcc",
+                        "surface-tint": "#005bc1",
+                        "primary-fixed-dim": "#adc6ff",
+                        "surface-container-low": "#f4f3f8",
+                        "tertiary-fixed-dim": "#ffb595",
+                        "secondary-container": "#6664e4",
+                        "surface": "#faf9fe",
+                        "on-tertiary": "#ffffff",
+                        "surface-dim": "#dad9df",
+                        "on-primary-fixed-variant": "#004493",
+                        "inverse-surface": "#2f3034",
+                        "outline-variant": "#c1c6d7",
+                        "on-background": "#1a1b1f",
+                        "on-tertiary-fixed": "#351000",
+                        "on-surface": "#1a1b1f",
+                        "error-container": "#ffdad6",
+                        "primary": "#0058bc",
+                        "surface-container-lowest": "#ffffff",
+                        "tertiary": "#9e3d00",
+                        "background": "#faf9fe",
+                        "on-error-container": "#93000a",
+                        "error": "#ba1a1a",
+                        "on-secondary-fixed": "#0c006a",
+                        "secondary-fixed": "#e2dfff",
+                        "secondary": "#4c4aca",
+                        "primary-container": "#0070eb",
+                        "tertiary-container": "#c64f00",
+                        "surface-bright": "#faf9fe",
+                        "on-secondary": "#ffffff",
+                        "surface-container-highest": "#e3e2e7",
+                        "surface-container": "#eeedf3",
+                        "on-tertiary-container": "#fffbff",
+                        "on-secondary-fixed-variant": "#3631b4",
+                        "inverse-on-surface": "#f1f0f5"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "spacing": {
+                        "stack-gap-sm": "8px",
+                        "safe-area-bottom": "34px",
+                        "gutter-list": "20px",
+                        "stack-gap-md": "16px",
+                        "margin-main": "16px"
+                    },
+                    "fontFamily": {
+                        "caption": ["Inter"],
+                        "footnote": ["Inter"],
+                        "subheadline": ["Inter"],
+                        "title-2": ["Inter"],
+                        "title-1": ["Inter"],
+                        "body": ["Inter"],
+                        "headline": ["Inter"],
+                        "large-title": ["Inter"]
+                    },
+                    "fontSize": {
+                        "caption": ["12px", { "lineHeight": "16px", "letterSpacing": "0px", "fontWeight": "400" }],
+                        "footnote": ["13px", { "lineHeight": "18px", "letterSpacing": "-0.08px", "fontWeight": "400" }],
+                        "subheadline": ["15px", { "lineHeight": "20px", "letterSpacing": "-0.24px", "fontWeight": "400" }],
+                        "title-2": ["22px", { "lineHeight": "28px", "letterSpacing": "0.35px", "fontWeight": "700" }],
+                        "title-1": ["28px", { "lineHeight": "34px", "letterSpacing": "0.36px", "fontWeight": "700" }],
+                        "body": ["17px", { "lineHeight": "22px", "letterSpacing": "-0.41px", "fontWeight": "400" }],
+                        "headline": ["17px", { "lineHeight": "22px", "letterSpacing": "-0.41px", "fontWeight": "600" }],
+                        "large-title": ["34px", { "lineHeight": "41px", "letterSpacing": "0.37px", "fontWeight": "700" }]
+                    }
+                }
+            }
+        }
+    </script>
+<style>
+        body {
+            -webkit-tap-highlight-color: transparent;
+            background-color: #F2F2F7; /* Apple secondary background equivalent */
+        }
+    </style>
+</head>
+<body class="bg-surface-container-low min-h-screen font-body text-on-surface antialiased flex flex-col items-center">
+<!-- TopAppBar -->
+<header class="fixed top-0 w-full z-50 bg-surface/80 dark:bg-surface-dim/80 backdrop-blur-md border-b border-outline-variant/30 dark:border-outline/20">
+<div class="flex justify-between items-center px-margin-main h-11 w-full max-w-[640px] mx-auto">
+<button class="active:opacity-60 transition-opacity active:scale-95 duration-150 flex items-center justify-center p-2 -ml-2">
+<span class="material-symbols-outlined text-primary dark:text-primary-fixed" style="font-variation-settings: 'FILL' 0;">arrow_back_ios</span>
+</button>
+<div class="font-headline text-headline text-on-surface flex-1 text-center truncate px-2">
+                QR Code Objely détecté
+            </div>
+<button class="active:opacity-60 transition-opacity active:scale-95 duration-150 flex items-center justify-center p-2 -mr-2">
+<span class="material-symbols-outlined text-on-surface-variant dark:text-on-surface-variant" style="font-variation-settings: 'FILL' 0;">settings</span>
+</button>
+</div>
+</header>
+<!-- Main Content Canvas -->
+<main class="w-full max-w-[640px] pt-20 px-margin-main pb-[calc(48px+env(safe-area-inset-bottom)+16px)] flex-1 flex flex-col gap-stack-md">
+<!-- Profile Card -->
+<div class="bg-surface rounded-xl shadow-[0px_4px_12px_rgba(0,0,0,0.08)] p-6 flex flex-col items-center text-center gap-stack-sm overflow-hidden relative">
+<div class="absolute inset-0 bg-primary/5 pointer-events-none"></div>
+<!-- Avatar -->
+<div class="w-24 h-24 rounded-full overflow-hidden border-4 border-surface shadow-sm mb-2 relative z-10">
+<img class="w-full h-full object-cover" data-alt="A clean, professional headshot of a modern corporate professional named Thomas Martin. The image should have a bright, airy aesthetic typical of high-end corporate lifestyle photography. The lighting is soft and flattering, creating a polished look. The background is a slightly blurred modern office setting in light tones, emphasizing a trustworthy and secure persona." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAvhnn2hrpPhzVL_CXtKwXnyn3K3UvW01azynM8GnmFZJNnIxPjZt5-tGwqXj27bNmVJNheXhr-44GyDhyig2IALCsESxtucm1NSdfgT2hjF642lr_8Ijtrfde4jAjD1AaJyADcinBXGqdSUpqV3qctx6Re66TO7_2tuBeIsSp_NSqEz5vn-TA-rmLs81otIlupnTOHePwo27rItVs_l1SwIzu_aaPZFyxJYNKL4C3jG3W3yIH64eBY"/>
+</div>
+<!-- Name & Status -->
+<h1 class="font-title-2 text-title-2 text-on-surface relative z-10">Thomas Martin</h1>
+<div class="flex items-center gap-1.5 text-primary bg-primary/10 px-3 py-1 rounded-full relative z-10">
+<span class="material-symbols-outlined text-[16px]" style="font-variation-settings: 'FILL' 1;">verified</span>
+<span class="font-subheadline text-subheadline">Utilisateur Objely</span>
+</div>
+</div>
+<!-- Privacy Info Section (Bento style) -->
+<div class="bg-surface rounded-xl shadow-[0px_4px_12px_rgba(0,0,0,0.08)] p-5 flex flex-col gap-stack-sm">
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 rounded-lg bg-surface-variant flex items-center justify-center text-on-surface-variant">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">lock</span>
+</div>
+<div>
+<h2 class="font-headline text-headline text-on-surface">Numéro privé</h2>
+<p class="font-footnote text-footnote text-on-surface-variant mt-0.5">Cette personne n'a pas autorisé l'affichage de son numéro lors du scan.</p>
+</div>
+</div>
+</div>
+<!-- Action Area -->
+<div class="mt-4">
+<button class="w-full bg-primary text-on-primary font-headline text-headline rounded-[10px] py-3.5 px-4 active:opacity-60 transition-opacity active:scale-[0.98] duration-150 flex items-center justify-center gap-2 shadow-[0px_4px_12px_rgba(0,0,0,0.08)]">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">chat</span>
+                Contacter sur Objely
+            </button>
+</div>
+</main>
+<!-- BottomNavBar suppressed due to Contextual State & Identity Rules (Linear/Transactional/Task-focused screen) -->
+</body></html>
