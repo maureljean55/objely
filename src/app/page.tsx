@@ -23,7 +23,7 @@ export default function SplashPage() {
   return (
     <div
       className="relative min-h-screen flex flex-col items-center justify-center overflow-hidden"
-      style={{ background: "radial-gradient(circle at 50% 38%, #1c2f63 0%, #0a1330 68%, #060a1f 100%)" }}
+      style={{ background: "radial-gradient(circle at 50% 38%, #2c4384 0%, #14245a 68%, #0b1638 100%)" }}
     >
       <div className="relative flex flex-col items-center">
         <div className="relative w-[280px] h-[280px] flex items-center justify-center">
@@ -52,7 +52,7 @@ export default function SplashPage() {
           <img
             src="/illustrations/splash/magnifier.png"
             alt=""
-            className="magnifier-pulse relative w-28 select-none pointer-events-none"
+            className="magnifier-pulse relative w-40 select-none pointer-events-none"
             draggable={false}
           />
         </div>
