@@ -137,12 +137,6 @@ export default function UserProfilePage() {
             })}
           </div>
         </section>
-
-        <section className="flex flex-col items-center gap-6 mb-12 animate-slideUp">
-          <button className="font-label-md text-label-md text-outline hover:text-error transition-colors underline decoration-outline/30 underline-offset-4">
-            Supprimer mon compte
-          </button>
-        </section>
       </main>
 
       <BottomNav active="profile" />
