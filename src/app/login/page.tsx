@@ -5,6 +5,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 
 const ACCENT = "#3A5CF9";
+const HEADER_HEIGHT = 440;
 
 export default function LoginPage() {
   const router = useRouter();
@@ -21,42 +22,41 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="relative min-h-screen flex flex-col bg-background overflow-hidden">
-      <div
-        className="absolute inset-x-0 top-0 h-[480px] -z-10 rounded-b-[100%]"
-        style={{ background: "radial-gradient(circle at 50% 0%, #cfe0fb 0%, rgb(var(--color-background)) 72%)" }}
-      />
+    <div className="relative min-h-screen bg-background overflow-hidden">
+      <div className="fixed top-0 inset-x-0 z-20 bg-background" style={{ height: HEADER_HEIGHT }}>
+        <div
+          className="absolute inset-x-0 top-0 h-full -z-10 rounded-b-[100%]"
+          style={{ background: "radial-gradient(circle at 50% 0%, #cfe0fb 0%, rgb(var(--color-background)) 72%)" }}
+        />
 
-      <Link
-        href="/home"
-        aria-label="Fermer"
-        className="absolute top-5 right-5 z-10 w-10 h-10 flex items-center justify-center rounded-full hover:bg-on-surface/5 transition-colors"
-      >
-        <span className="material-symbols-outlined text-on-surface">close</span>
-      </Link>
+        <div className="w-full max-w-md mx-auto px-container-margin pt-16 pb-6 flex flex-col">
+          <h1 className="font-headline-lg-mobile font-bold text-[38px] leading-[1.12] tracking-[-0.01em] text-on-surface text-center mb-3">
+            Content de
+            <br />
+            vous revoir !
+          </h1>
+          <p className="font-body-md text-body-md text-on-surface-variant text-center mb-6">
+            Connectez-vous pour retrouver ce qui compte.
+          </p>
 
-      <main className="grow w-full max-w-md mx-auto px-container-margin pt-20 pb-16 flex flex-col">
-        <h1 className="font-headline-lg-mobile font-bold text-[38px] leading-[1.12] tracking-[-0.01em] text-on-surface text-center mb-3">
-          Content de
-          <br />
-          vous revoir !
-        </h1>
-        <p className="font-body-md text-body-md text-on-surface-variant text-center mb-6">
-          Connectez-vous pour retrouver ce qui compte.
-        </p>
-
-        <div className="relative w-56 mx-auto mb-8">
-          <CloudShape className="absolute -left-10 top-6 w-14 opacity-80 -z-10" />
-          <CloudShape className="absolute -right-8 top-0 w-20 opacity-70 -z-10" />
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img
-            src="/illustrations/login-mascot.png"
-            alt=""
-            className="w-full select-none pointer-events-none"
-            draggable={false}
-          />
+          <div className="relative w-56 mx-auto">
+            <CloudShape className="absolute -left-10 top-6 w-14 opacity-80 -z-10" />
+            <CloudShape className="absolute -right-8 top-0 w-20 opacity-70 -z-10" />
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img
+              src="/illustrations/login-mascot.png"
+              alt=""
+              className="w-full select-none pointer-events-none"
+              draggable={false}
+            />
+          </div>
         </div>
+      </div>
 
+      <main
+        className="relative z-10 w-full max-w-md mx-auto px-container-margin pb-16 flex flex-col"
+        style={{ paddingTop: HEADER_HEIGHT }}
+      >
         <form onSubmit={handleSubmit} className="flex flex-col gap-lg">
           <div>
             <label htmlFor="email" className="block font-body-md text-body-md font-semibold text-on-surface mb-2">
