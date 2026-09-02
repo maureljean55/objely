@@ -163,7 +163,7 @@ export default function RegisterPage() {
 
         <p className="font-body-md text-body-md text-on-surface-variant text-center mt-lg">
           Déjà un compte ?{" "}
-          <Link href="/login/email" className="text-primary font-semibold">
+          <Link href="/login" className="text-primary font-semibold">
             Se connecter
           </Link>
         </p>
