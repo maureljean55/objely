@@ -8,7 +8,10 @@ export default function OwnershipVerificationPage() {
   return (
     <div className="bg-background text-on-surface antialiased min-h-screen flex flex-col pb-24 md:pb-0">
       <header className="fixed top-0 w-full z-50 bg-surface/80 backdrop-blur-md shadow-sm">
-        <div className="flex items-center justify-between px-container-margin py-sm w-full max-w-full mx-auto md:max-w-[1140px]">
+        <div
+          className="flex items-center justify-between px-container-margin pb-sm w-full max-w-full mx-auto md:max-w-[1140px]"
+          style={{ paddingTop: "calc(0.75rem + env(safe-area-inset-top))" }}
+        >
           <button
             type="button"
             onClick={() => router.back()}
@@ -24,7 +27,7 @@ export default function OwnershipVerificationPage() {
         </div>
       </header>
 
-      <main className="flex-1 w-full max-w-[1140px] mx-auto pt-24 px-container-margin md:px-xl pb-32">
+      <main className="flex-1 w-full max-w-[1140px] mx-auto pt-[calc(6rem+env(safe-area-inset-top))] px-container-margin md:px-xl pb-32">
         <div className="mb-xl text-center md:text-left max-w-2xl mx-auto md:mx-0">
           <h2 className="font-headline-lg-mobile md:font-headline-lg text-headline-lg-mobile md:text-headline-lg text-on-surface mb-sm">
             Prouvez que cet objet vous appartient

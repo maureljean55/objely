@@ -14,7 +14,7 @@ export default function HelpChatPage() {
 
   return (
     <div className="bg-background text-on-background font-body-md antialiased">
-      <header className="glass-header fixed top-0 inset-x-0 z-50 flex items-center justify-between px-container-margin h-14 shadow-sm">
+      <header className="glass-header fixed top-0 inset-x-0 z-50 flex items-center justify-between px-container-margin min-h-14 pt-[env(safe-area-inset-top)] shadow-sm">
         <Link href="/help" className="text-primary hover:opacity-70 transition-opacity active:scale-95 flex items-center justify-center w-10 h-10 -ml-2 rounded-full">
           <span className="material-symbols-outlined" style={{ fontVariationSettings: "'FILL' 0" }}>arrow_back_ios</span>
         </Link>
@@ -35,7 +35,7 @@ export default function HelpChatPage() {
         </button>
       </header>
 
-      <main className="min-h-screen max-w-[800px] mx-auto px-container-margin py-md pt-[92px] pb-[140px] flex flex-col gap-md">
+      <main className="min-h-screen max-w-[800px] mx-auto px-container-margin py-md pt-[calc(92px+env(safe-area-inset-top))] pb-[140px] flex flex-col gap-md">
         <div className="text-center">
           <span className="font-label-md text-[11px] text-outline-variant uppercase tracking-wider">Aujourd&apos;hui, 10:42</span>
         </div>

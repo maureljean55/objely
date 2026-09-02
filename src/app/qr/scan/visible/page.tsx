@@ -11,7 +11,7 @@ export default function QrScanVisiblePage() {
 
   return (
     <div className="bg-background text-on-background font-body-md antialiased min-h-screen flex flex-col">
-      <header className="glass-header fixed top-0 inset-x-0 z-50 flex items-center px-container-margin h-14 w-full shadow-[0_1px_0_rgba(0,0,0,0.05)]">
+      <header className="glass-header fixed top-0 inset-x-0 z-50 flex items-center px-container-margin min-h-14 pt-[env(safe-area-inset-top)] w-full shadow-[0_1px_0_rgba(0,0,0,0.05)]">
         <button type="button" onClick={() => router.back()} aria-label="Retour" className="w-10 h-10 flex items-center justify-center rounded-full text-primary hover:bg-surface-container-high/50 transition-colors -ml-2">
           <span className="material-symbols-outlined">arrow_back_ios</span>
         </button>
@@ -19,7 +19,7 @@ export default function QrScanVisiblePage() {
         <div className="w-10 h-10" />
       </header>
 
-      <main className="flex-1 w-full max-w-md mx-auto pt-[104px] px-container-margin flex flex-col items-center">
+      <main className="flex-1 w-full max-w-md mx-auto pt-[calc(104px+env(safe-area-inset-top))] px-container-margin flex flex-col items-center">
         <div className="flex flex-col items-center mt-lg mb-xl">
           <div className="relative mb-lg">
             {/* eslint-disable-next-line @next/next/no-img-element */}

@@ -18,7 +18,7 @@ export default function MatchDetailPage() {
 
   return (
     <div className="bg-background text-on-background font-body-md antialiased min-h-screen pb-[160px]">
-      <header className="glass-header fixed top-0 inset-x-0 z-50 flex items-center justify-between px-container-margin h-16 w-full shadow-[0_1px_0_rgba(0,0,0,0.05)]">
+      <header className="glass-header fixed top-0 inset-x-0 z-50 flex items-center justify-between px-container-margin min-h-16 pt-[env(safe-area-inset-top)] w-full shadow-[0_1px_0_rgba(0,0,0,0.05)]">
         <button type="button" onClick={() => router.back()} aria-label="Retour" className="w-10 h-10 flex items-center justify-center rounded-full text-primary hover:bg-surface-container-high/50 transition-colors">
           <span className="material-symbols-outlined">arrow_back</span>
         </button>
@@ -26,7 +26,7 @@ export default function MatchDetailPage() {
         <div className="w-10 h-10" />
       </header>
 
-      <main className="pt-[88px] px-container-margin max-w-2xl mx-auto flex flex-col gap-lg">
+      <main className="pt-[calc(88px+env(safe-area-inset-top))] px-container-margin max-w-2xl mx-auto flex flex-col gap-lg">
         <section className="text-center">
           <h2 className="font-headline-lg-mobile text-headline-lg-mobile text-on-surface mb-1">
             🎉 Une correspondance possible !

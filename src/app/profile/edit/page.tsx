@@ -32,7 +32,7 @@ export default function EditProfilePage() {
 
   return (
     <div className="bg-background text-on-surface antialiased min-h-screen pb-32">
-      <header className="fixed top-0 inset-x-0 z-50 flex items-center justify-between px-container-margin h-14 bg-surface/80 backdrop-blur-xl border-b border-outline-variant/30">
+      <header className="fixed top-0 inset-x-0 z-50 flex items-center justify-between px-container-margin min-h-14 pt-[env(safe-area-inset-top)] bg-surface/80 backdrop-blur-xl border-b border-outline-variant/30">
         <Link href="/profile/settings" aria-label="Retour" className="text-primary hover:opacity-70 transition-opacity active:scale-95 -ml-2 p-2 flex items-center justify-center">
           <span className="material-symbols-outlined">arrow_back_ios</span>
         </Link>
@@ -45,7 +45,7 @@ export default function EditProfilePage() {
         </button>
       </header>
 
-      <main className="pt-20 px-container-margin pb-8 max-w-lg mx-auto">
+      <main className="pt-[calc(5rem+env(safe-area-inset-top))] px-container-margin pb-8 max-w-lg mx-auto">
         <section className="flex flex-col items-center justify-center py-xl">
           <div className="relative mb-3">
             <div className="w-24 h-24 rounded-full overflow-hidden border-4 border-surface-container-lowest soft-shadow">

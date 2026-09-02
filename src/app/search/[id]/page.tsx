@@ -11,7 +11,10 @@ export default async function MyItemDetailPage({ params }: { params: Promise<{ i
   return (
     <div className="bg-background text-on-surface antialiased min-h-screen pb-24 md:pb-12">
       <header className="fixed top-0 inset-x-0 z-50 bg-surface/90 backdrop-blur-md shadow-sm">
-        <div className="max-w-[720px] mx-auto flex items-center justify-between px-container-margin py-sm">
+        <div
+          className="max-w-[720px] mx-auto flex items-center justify-between px-container-margin pb-sm"
+          style={{ paddingTop: "calc(0.75rem + env(safe-area-inset-top))" }}
+        >
           <Link href="/search" aria-label="Retour" className="w-10 h-10 flex items-center justify-center rounded-full text-on-surface-variant hover:opacity-80 transition-opacity active:scale-95">
             <span className="material-symbols-outlined text-[24px]">arrow_back</span>
           </Link>
@@ -20,7 +23,7 @@ export default async function MyItemDetailPage({ params }: { params: Promise<{ i
         </div>
       </header>
 
-      <main className="max-w-[720px] mx-auto px-container-margin pt-[88px]">
+      <main className="max-w-[720px] mx-auto px-container-margin pt-[calc(88px+env(safe-area-inset-top))]">
         <div className="relative h-56 w-full rounded-2xl overflow-hidden bg-surface-container-high mb-lg">
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img alt={item.title} className="w-full h-full object-cover" src={item.image} />

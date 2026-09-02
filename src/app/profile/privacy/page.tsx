@@ -14,7 +14,7 @@ export default function PrivacySecurityPage() {
 
   return (
     <div className="bg-background text-on-surface antialiased min-h-screen pb-32">
-      <header className="fixed top-0 inset-x-0 z-50 flex items-center justify-between px-container-margin h-14 bg-surface/80 backdrop-blur-xl border-b border-outline-variant/30">
+      <header className="fixed top-0 inset-x-0 z-50 flex items-center justify-between px-container-margin min-h-14 pt-[env(safe-area-inset-top)] bg-surface/80 backdrop-blur-xl border-b border-outline-variant/30">
         <Link href="/profile" aria-label="Retour" className="text-primary hover:opacity-70 transition-opacity active:scale-95 p-2 -ml-2 flex items-center justify-center">
           <span className="material-symbols-outlined">arrow_back_ios</span>
         </Link>
@@ -22,7 +22,7 @@ export default function PrivacySecurityPage() {
         <div className="w-10" />
       </header>
 
-      <main className="max-w-2xl mx-auto px-container-margin pt-20 pb-8 flex flex-col gap-lg">
+      <main className="max-w-2xl mx-auto px-container-margin pt-[calc(5rem+env(safe-area-inset-top))] pb-8 flex flex-col gap-lg">
         <section className="bg-surface-container-lowest rounded-xl soft-shadow p-4 flex items-start gap-4">
           <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center shrink-0">
             <span className="material-symbols-outlined text-primary text-[28px]" style={{ fontVariationSettings: "'FILL' 1" }}>shield_lock</span>

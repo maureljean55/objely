@@ -52,7 +52,7 @@ export default function ReportFoundMatchesPage() {
 
   return (
     <div className="bg-background text-on-background antialiased min-h-screen flex flex-col font-body-md">
-      <header className="bg-surface/80 backdrop-blur-xl sticky top-0 flex items-center justify-between px-container-margin h-16 w-full z-50">
+      <header className="bg-surface/80 backdrop-blur-xl sticky top-0 flex items-center justify-between px-container-margin min-h-16 pt-[env(safe-area-inset-top)] w-full z-50">
         <Link href="/report-found/location" aria-label="Retour" className="p-2 -ml-2 text-primary hover:opacity-70 transition-opacity active:scale-95">
           <span className="material-symbols-outlined">arrow_back</span>
         </Link>

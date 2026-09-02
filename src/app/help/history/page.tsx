@@ -30,7 +30,7 @@ const CONVERSATIONS = [
 export default function HelpHistoryPage() {
   return (
     <div className="bg-background text-on-surface min-h-screen flex flex-col antialiased">
-      <header className="sticky top-0 w-full z-30 bg-surface/80 backdrop-blur-xl shadow-sm flex items-center justify-between px-container-margin h-14">
+      <header className="sticky top-0 w-full z-30 bg-surface/80 backdrop-blur-xl shadow-sm flex items-center justify-between px-container-margin min-h-14 pt-[env(safe-area-inset-top)]">
         <Link href="/help" aria-label="Retour" className="flex items-center justify-center p-2 -ml-2 text-primary hover:opacity-70 active:scale-95 transition-transform">
           <span className="material-symbols-outlined text-2xl">arrow_back_ios</span>
         </Link>

@@ -22,7 +22,7 @@ export default function ReportFoundLocationPage() {
 
   return (
     <div className="bg-background text-on-background font-body-md min-h-screen flex flex-col antialiased">
-      <header className="bg-surface/80 backdrop-blur-xl flex items-center justify-between px-container-margin h-16 w-full z-50 sticky top-0">
+      <header className="bg-surface/80 backdrop-blur-xl flex items-center justify-between px-container-margin min-h-16 pt-[env(safe-area-inset-top)] w-full z-50 sticky top-0">
         <Link href="/report-found/details" aria-label="Retour" className="w-10 h-10 flex items-center justify-center rounded-full hover:bg-surface-container-high/50 transition-colors text-on-surface-variant">
           <span className="material-symbols-outlined">arrow_back</span>
         </Link>

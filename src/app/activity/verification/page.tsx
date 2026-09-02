@@ -13,7 +13,7 @@ export default function VerificationReviewPage() {
 
   return (
     <div className="bg-background text-on-background font-body-md antialiased min-h-screen pb-[180px]">
-      <header className="glass-header fixed top-0 inset-x-0 z-50 flex items-center justify-between px-container-margin h-16 w-full shadow-[0_1px_0_rgba(0,0,0,0.05)]">
+      <header className="glass-header fixed top-0 inset-x-0 z-50 flex items-center justify-between px-container-margin min-h-16 pt-[env(safe-area-inset-top)] w-full shadow-[0_1px_0_rgba(0,0,0,0.05)]">
         <button type="button" onClick={() => router.back()} aria-label="Retour" className="w-10 h-10 flex items-center justify-center rounded-full text-primary hover:bg-surface-container-high/50 transition-colors">
           <span className="material-symbols-outlined">arrow_back</span>
         </button>
@@ -23,7 +23,7 @@ export default function VerificationReviewPage() {
         </button>
       </header>
 
-      <main className="pt-[104px] px-container-margin max-w-2xl mx-auto">
+      <main className="pt-[calc(104px+env(safe-area-inset-top))] px-container-margin max-w-2xl mx-auto">
         <div className="mb-lg text-center">
           <h2 className="font-headline-lg-mobile text-headline-lg-mobile text-on-background mb-sm">Vérification de propriété</h2>
           <p className="font-body-md text-body-md text-on-surface-variant">

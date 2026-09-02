@@ -16,7 +16,7 @@ export default function QrConnectPage() {
 
   return (
     <div className="bg-background text-on-background font-body-md antialiased min-h-screen pb-28 md:pb-12">
-      <header className="glass-header fixed top-0 inset-x-0 z-50 flex items-center justify-between px-container-margin h-16 w-full shadow-[0_1px_0_rgba(0,0,0,0.05)]">
+      <header className="glass-header fixed top-0 inset-x-0 z-50 flex items-center justify-between px-container-margin min-h-16 pt-[env(safe-area-inset-top)] w-full shadow-[0_1px_0_rgba(0,0,0,0.05)]">
         <button type="button" onClick={() => router.back()} aria-label="Retour" className="w-10 h-10 flex items-center justify-center rounded-full text-primary hover:bg-surface-container-high/50 transition-colors -ml-2">
           <span className="material-symbols-outlined">arrow_back_ios</span>
         </button>
@@ -24,7 +24,7 @@ export default function QrConnectPage() {
         <div className="w-10 h-10" />
       </header>
 
-      <main className="pt-[88px] px-container-margin max-w-md mx-auto">
+      <main className="pt-[calc(88px+env(safe-area-inset-top))] px-container-margin max-w-md mx-auto">
         <div className="bg-surface-container-low rounded-full p-1 flex relative mb-lg">
           <div
             className="absolute inset-y-1 left-1 w-[calc(50%-4px)] bg-surface-container-lowest rounded-full shadow-sm transition-transform duration-300 ease-in-out"

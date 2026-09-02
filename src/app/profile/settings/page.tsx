@@ -36,7 +36,7 @@ function Section({ title, children }: { title: string; children: ReactNode }) {
 export default function SettingsPage() {
   return (
     <div className="bg-background text-on-surface antialiased min-h-screen pb-32">
-      <header className="fixed top-0 inset-x-0 z-50 flex items-center justify-between px-container-margin h-14 bg-surface/80 backdrop-blur-xl border-b border-outline-variant/30">
+      <header className="fixed top-0 inset-x-0 z-50 flex items-center justify-between px-container-margin min-h-14 pt-[env(safe-area-inset-top)] bg-surface/80 backdrop-blur-xl border-b border-outline-variant/30">
         <Link href="/profile" aria-label="Retour" className="w-10 h-10 flex items-center justify-center text-primary hover:opacity-70 transition-opacity active:scale-95">
           <span className="material-symbols-outlined">arrow_back_ios</span>
         </Link>
@@ -44,7 +44,7 @@ export default function SettingsPage() {
         <div className="w-10 h-10" />
       </header>
 
-      <main className="max-w-[800px] mx-auto pt-20 pb-8 px-container-margin flex flex-col gap-lg">
+      <main className="max-w-[800px] mx-auto pt-[calc(5rem+env(safe-area-inset-top))] pb-8 px-container-margin flex flex-col gap-lg">
         <Section title="Préférences">
           <Row icon="notifications" label="Notifications" href="/profile/notifications" />
           <Row icon="language" label="Langue" />

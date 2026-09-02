@@ -11,7 +11,7 @@ export default function QrScanPrivatePage() {
 
   return (
     <div className="bg-background text-on-background font-body-md antialiased min-h-screen flex flex-col">
-      <header className="glass-header fixed top-0 inset-x-0 z-50 flex items-center px-container-margin h-14 w-full shadow-[0_1px_0_rgba(0,0,0,0.05)]">
+      <header className="glass-header fixed top-0 inset-x-0 z-50 flex items-center px-container-margin min-h-14 pt-[env(safe-area-inset-top)] w-full shadow-[0_1px_0_rgba(0,0,0,0.05)]">
         <button type="button" onClick={() => router.back()} aria-label="Retour" className="w-10 h-10 flex items-center justify-center rounded-full text-primary hover:bg-surface-container-high/50 transition-colors -ml-2">
           <span className="material-symbols-outlined">arrow_back_ios</span>
         </button>
@@ -19,7 +19,7 @@ export default function QrScanPrivatePage() {
         <div className="w-10 h-10" />
       </header>
 
-      <main className="w-full max-w-md mx-auto pt-[104px] px-container-margin pb-xl flex-1 flex flex-col gap-md">
+      <main className="w-full max-w-md mx-auto pt-[calc(104px+env(safe-area-inset-top))] px-container-margin pb-xl flex-1 flex flex-col gap-md">
         <div className="bg-primary/5 rounded-xl soft-shadow p-lg flex flex-col items-center text-center gap-sm">
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img alt="Profil scanné" className="w-24 h-24 rounded-full object-cover border-4 border-surface shadow-sm mb-2" src={AVATAR} />

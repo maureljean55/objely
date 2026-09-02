@@ -69,7 +69,10 @@ function ProfileSummary() {
 export default function UserProfilePage() {
   return (
     <div className="bg-background text-on-surface antialiased pb-[100px]">
-      <header className="hidden md:flex justify-between items-center w-full px-container-margin py-base max-w-7xl mx-auto bg-background/80 backdrop-blur-md sticky top-0 z-50">
+      <header
+        className="hidden md:flex justify-between items-center w-full px-container-margin pb-base max-w-7xl mx-auto bg-background/80 backdrop-blur-md sticky top-0 z-50"
+        style={{ paddingTop: "calc(0.5rem + env(safe-area-inset-top))" }}
+      >
         <div className="font-display text-display text-primary">Objely</div>
         <div className="flex items-center gap-4">
           <div className="w-10 h-10 rounded-full bg-surface-variant overflow-hidden" />
@@ -81,11 +84,14 @@ export default function UserProfilePage() {
       </header>
 
       {/* Mobile: photo through stats stays pinned while the menu list below scrolls */}
-      <div className="md:hidden fixed top-0 inset-x-0 z-40 bg-background/95 backdrop-blur-md px-container-margin pb-4 shadow-sm">
+      <div
+        className="md:hidden fixed top-0 inset-x-0 z-40 bg-background/95 backdrop-blur-md px-container-margin pb-4 shadow-sm"
+        style={{ paddingTop: "env(safe-area-inset-top)" }}
+      >
         <ProfileSummary />
       </div>
 
-      <main className="max-w-2xl mx-auto md:mt-8 px-container-margin md:px-0 pt-[422px] md:pt-0">
+      <main className="max-w-2xl mx-auto md:mt-8 px-container-margin md:px-0 pt-[calc(422px+env(safe-area-inset-top))] md:pt-0">
         <div className="hidden md:block relative">
           <ProfileSummary />
         </div>

@@ -12,9 +12,12 @@ const STATUS_BADGE = {
 
 export default function SearchFiltersPage() {
   return (
-    <div className="bg-background text-on-background font-body-md min-h-screen pb-24 md:pb-0 pt-[176px] md:pt-[132px]">
+    <div className="bg-background text-on-background font-body-md min-h-screen pb-24 md:pb-0 pt-[calc(176px+env(safe-area-inset-top))] md:pt-[calc(132px+env(safe-area-inset-top))]">
       <header className="fixed top-0 inset-x-0 z-50 bg-surface/90 backdrop-blur-md shadow-sm">
-        <div className="max-w-[1140px] mx-auto px-container-margin py-sm">
+        <div
+          className="max-w-[1140px] mx-auto px-container-margin pb-sm"
+          style={{ paddingTop: "calc(0.75rem + env(safe-area-inset-top))" }}
+        >
           <div className="flex items-center justify-between">
             <Link href="/home" className="text-on-surface-variant hover:opacity-80 transition-opacity active:scale-95 hidden md:flex items-center justify-center">
               <span className="material-symbols-outlined text-[24px]">arrow_back</span>

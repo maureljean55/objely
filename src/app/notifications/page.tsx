@@ -136,7 +136,10 @@ export default function NotificationsPage() {
 
   return (
     <div className="bg-background text-on-background font-body-md antialiased min-h-screen pb-28 md:pb-12">
-      <header className="glass-header fixed top-0 inset-x-0 z-50 flex flex-col items-center px-container-margin py-2 w-full shadow-[0_1px_0_rgba(0,0,0,0.05)]">
+      <header
+        className="glass-header fixed top-0 inset-x-0 z-50 flex flex-col items-center px-container-margin pb-2 w-full shadow-[0_1px_0_rgba(0,0,0,0.05)]"
+        style={{ paddingTop: "calc(0.5rem + env(safe-area-inset-top))" }}
+      >
         <div className="flex items-center justify-between w-full h-11">
           <button type="button" onClick={() => router.back()} aria-label="Retour" className="text-primary hover:opacity-70 transition-opacity active:scale-95 p-2 -ml-2 rounded-full">
             <span className="material-symbols-outlined" style={{ fontVariationSettings: "'FILL' 0" }}>arrow_back_ios</span>
@@ -158,7 +161,7 @@ export default function NotificationsPage() {
         </div>
       </header>
 
-      <main className="pt-[92px] max-w-2xl mx-auto">
+      <main className="pt-[calc(92px+env(safe-area-inset-top))] max-w-2xl mx-auto">
         {SECTIONS.map((section) => {
           const items = notifications.filter((n) => n.section === section);
           if (items.length === 0) return null;

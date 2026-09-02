@@ -34,9 +34,12 @@ const RECENT_ITEMS = [
 
 export default function HomeDashboardPage() {
   return (
-    <div className="pt-[172px] pb-[120px] md:pt-[100px] md:pb-0">
+    <div className="pt-[calc(172px+env(safe-area-inset-top))] pb-[120px] md:pt-[calc(100px+env(safe-area-inset-top))] md:pb-0">
       {/* TopAppBar (mobile) — fixed, stays put while the body scrolls */}
-      <header className="md:hidden fixed top-0 inset-x-0 z-40 flex flex-col gap-md px-container-margin pt-3 pb-md bg-background/90 backdrop-blur-md">
+      <header
+        className="md:hidden fixed top-0 inset-x-0 z-40 flex flex-col gap-md px-container-margin pb-md bg-background/90 backdrop-blur-md"
+        style={{ paddingTop: "calc(0.75rem + env(safe-area-inset-top))" }}
+      >
         <div className="flex justify-between items-center">
           <Link href="/profile" className="relative">
             <div className="w-11 h-11 rounded-full overflow-hidden ring-2 ring-surface-container-lowest shadow-sm bg-surface-container-high">
@@ -76,7 +79,10 @@ export default function HomeDashboardPage() {
       </header>
 
       {/* TopAppBar (desktop) */}
-      <header className="hidden md:flex justify-between items-center w-full px-container-margin py-base max-w-7xl mx-auto fixed top-0 z-50 bg-background/80 backdrop-blur-md">
+      <header
+        className="hidden md:flex justify-between items-center w-full px-container-margin pb-base max-w-7xl mx-auto fixed top-0 z-50 bg-background/80 backdrop-blur-md"
+        style={{ paddingTop: "calc(0.5rem + env(safe-area-inset-top))" }}
+      >
         <div className="flex items-center gap-sm">
           <div className="px-3 py-1.5 rounded-xl bg-surface-container-lowest shadow-sm">
             <span className="font-headline-sm text-headline-sm text-on-surface">Objely</span>

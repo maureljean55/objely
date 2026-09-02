@@ -13,7 +13,10 @@ export default function SecureChatPage() {
 
   return (
     <div className="bg-background text-on-background font-body-md antialiased">
-      <header className="glass-header fixed top-0 inset-x-0 z-50 flex justify-between items-center w-full px-container-margin py-base shadow-[0_1px_0_rgba(0,0,0,0.05)]">
+      <header
+        className="glass-header fixed top-0 inset-x-0 z-50 flex justify-between items-center w-full px-container-margin pb-base shadow-[0_1px_0_rgba(0,0,0,0.05)]"
+        style={{ paddingTop: "calc(0.5rem + env(safe-area-inset-top))" }}
+      >
         <button type="button" onClick={() => router.back()} aria-label="Retour" className="text-primary p-2 -ml-2 rounded-full hover:bg-surface-container-high/50 transition-colors flex items-center">
           <span className="material-symbols-outlined" style={{ fontVariationSettings: "'FILL' 0" }}>arrow_back_ios</span>
         </button>
@@ -26,7 +29,7 @@ export default function SecureChatPage() {
         </button>
       </header>
 
-      <main className="min-h-screen px-container-margin py-md pt-[92px] pb-[120px] flex flex-col gap-md">
+      <main className="min-h-screen px-container-margin py-md pt-[calc(92px+env(safe-area-inset-top))] pb-[120px] flex flex-col gap-md">
         <div className="bg-surface-container-high rounded-xl p-3 flex items-start gap-3 shadow-sm mx-auto max-w-sm mt-2 mb-4">
           <span className="material-symbols-outlined text-tertiary mt-0.5" style={{ fontVariationSettings: "'FILL' 1" }}>security</span>
           <p className="font-label-md text-label-md text-on-surface-variant flex-1">

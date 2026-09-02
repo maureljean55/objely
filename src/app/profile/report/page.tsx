@@ -22,7 +22,7 @@ export default function ReportProblemPage() {
 
   return (
     <div className="bg-background text-on-surface antialiased min-h-screen pb-32">
-      <header className="fixed top-0 inset-x-0 z-50 flex items-center justify-between px-container-margin h-14 bg-surface/80 backdrop-blur-xl border-b border-outline-variant/30">
+      <header className="fixed top-0 inset-x-0 z-50 flex items-center justify-between px-container-margin min-h-14 pt-[env(safe-area-inset-top)] bg-surface/80 backdrop-blur-xl border-b border-outline-variant/30">
         <Link href="/profile" aria-label="Retour" className="p-2 -ml-2 text-primary hover:opacity-70 transition-opacity active:scale-95 flex items-center justify-center">
           <span className="material-symbols-outlined">arrow_back_ios</span>
         </Link>
@@ -30,7 +30,7 @@ export default function ReportProblemPage() {
         <div className="w-10" />
       </header>
 
-      <main className="pt-20 px-container-margin max-w-2xl mx-auto pb-8">
+      <main className="pt-[calc(5rem+env(safe-area-inset-top))] px-container-margin max-w-2xl mx-auto pb-8">
         {submitted ? (
           <div className="flex flex-col items-center text-center py-xl">
             <div className="w-16 h-16 rounded-full bg-emerald-100 flex items-center justify-center mb-4">

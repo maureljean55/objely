@@ -11,7 +11,7 @@ export default function HelpChatItemPage() {
   return (
     <div className="bg-background min-h-screen flex flex-col font-body-md antialiased text-on-surface">
       <header className="glass-header fixed top-0 inset-x-0 z-50 shadow-sm">
-        <div className="max-w-[800px] mx-auto flex items-center justify-between px-container-margin h-14 w-full">
+        <div className="max-w-[800px] mx-auto flex items-center justify-between px-container-margin min-h-14 pt-[env(safe-area-inset-top)] w-full">
           <Link href="/help/history" className="text-primary hover:opacity-70 transition-opacity active:scale-95 flex items-center justify-center p-2 -ml-2 rounded-full">
             <span className="material-symbols-outlined">arrow_back_ios</span>
           </Link>
@@ -27,7 +27,7 @@ export default function HelpChatItemPage() {
         </div>
       </header>
 
-      <main className="flex-1 max-w-[800px] w-full mx-auto flex flex-col px-container-margin pt-[76px] pb-[140px]">
+      <main className="flex-1 max-w-[800px] w-full mx-auto flex flex-col px-container-margin pt-[calc(76px+env(safe-area-inset-top))] pb-[140px]">
         {/* Item context card */}
         <div className="bg-surface-container-lowest rounded-xl p-md flex items-center justify-between shadow-sm mb-lg border border-outline-variant/30">
           <div className="flex items-center gap-md">

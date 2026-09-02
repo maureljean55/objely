@@ -24,7 +24,7 @@ export default function NotificationsPage() {
 
   return (
     <div className="bg-background text-on-surface antialiased min-h-screen pb-32">
-      <header className="fixed top-0 inset-x-0 z-50 flex items-center justify-between px-container-margin h-14 bg-surface/80 backdrop-blur-xl border-b border-outline-variant/30">
+      <header className="fixed top-0 inset-x-0 z-50 flex items-center justify-between px-container-margin min-h-14 pt-[env(safe-area-inset-top)] bg-surface/80 backdrop-blur-xl border-b border-outline-variant/30">
         <Link href="/profile" aria-label="Retour" className="flex items-center text-primary hover:opacity-70 transition-opacity active:scale-95">
           <span className="material-symbols-outlined">arrow_back_ios</span>
         </Link>
@@ -34,7 +34,7 @@ export default function NotificationsPage() {
         </Link>
       </header>
 
-      <main className="max-w-2xl mx-auto px-container-margin pt-20 pb-8 flex flex-col gap-xl">
+      <main className="max-w-2xl mx-auto px-container-margin pt-[calc(5rem+env(safe-area-inset-top))] pb-8 flex flex-col gap-xl">
         <section className="bg-surface-container-lowest rounded-xl soft-shadow p-4">
           <div className="flex justify-between items-center mb-2">
             <h2 className="font-body-lg text-body-lg font-semibold">Autoriser les notifications</h2>
