@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+
+<html class="light" lang="fr"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" name="viewport"/>
+<title>Recherche de correspondances - Objely</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@400;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "secondary-container": "#6664e4",
+                        "on-primary": "#ffffff",
+                        "on-surface": "#1a1b1f",
+                        "on-secondary-fixed-variant": "#3631b4",
+                        "on-secondary": "#ffffff",
+                        "tertiary-fixed": "#ffdbcf",
+                        "error-container": "#ffdad6",
+                        "primary": "#0040a1",
+                        "primary-fixed": "#dae2ff",
+                        "tertiary-fixed-dim": "#ffb59b",
+                        "outline": "#737785",
+                        "secondary": "#4c4aca",
+                        "inverse-on-surface": "#f1f0f5",
+                        "on-surface-variant": "#424654",
+                        "tertiary-container": "#a93802",
+                        "surface-bright": "#faf9fe",
+                        "surface": "#faf9fe",
+                        "on-primary-container": "#ccd8ff",
+                        "on-tertiary": "#ffffff",
+                        "primary-fixed-dim": "#b2c5ff",
+                        "inverse-surface": "#2f3034",
+                        "inverse-primary": "#b2c5ff",
+                        "surface-dim": "#dad9df",
+                        "outline-variant": "#c3c6d6",
+                        "on-error": "#ffffff",
+                        "surface-tint": "#0056d2",
+                        "surface-container-lowest": "#ffffff",
+                        "background": "#faf9fe",
+                        "on-secondary-container": "#fffbff",
+                        "on-primary-fixed-variant": "#0040a1",
+                        "on-background": "#1a1b1f",
+                        "on-error-container": "#93000a",
+                        "on-secondary-fixed": "#0c006a",
+                        "tertiary": "#822800",
+                        "surface-variant": "#e3e2e7",
+                        "secondary-fixed-dim": "#c2c1ff",
+                        "surface-container": "#eeedf3",
+                        "surface-container-low": "#f4f3f8",
+                        "primary-container": "#0056d2",
+                        "on-tertiary-container": "#ffcebd",
+                        "on-tertiary-fixed": "#380d00",
+                        "on-primary-fixed": "#001847",
+                        "surface-container-high": "#e9e7ed",
+                        "on-tertiary-fixed-variant": "#812800",
+                        "secondary-fixed": "#e2dfff",
+                        "error": "#ba1a1a",
+                        "surface-container-highest": "#e3e2e7"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "spacing": {
+                        "gutter": "12px",
+                        "stack-md": "16px",
+                        "margin-page": "16px",
+                        "stack-sm": "8px",
+                        "base": "4px",
+                        "stack-lg": "24px"
+                    },
+                    "fontFamily": {
+                        "headline-md": ["Hanken Grotesk"],
+                        "label-caps": ["Hanken Grotesk"],
+                        "body-sm": ["Hanken Grotesk"],
+                        "body-lg": ["Hanken Grotesk"],
+                        "headline-lg": ["Hanken Grotesk"],
+                        "headline-lg-mobile": ["Hanken Grotesk"]
+                    },
+                    "fontSize": {
+                        "headline-md": ["22px", { "lineHeight": "28px", "letterSpacing": "-0.2px", "fontWeight": "600" }],
+                        "label-caps": ["13px", { "lineHeight": "18px", "letterSpacing": "0.1px", "fontWeight": "600" }],
+                        "body-sm": ["15px", { "lineHeight": "20px", "letterSpacing": "-0.2px", "fontWeight": "400" }],
+                        "body-lg": ["17px", { "lineHeight": "22px", "letterSpacing": "-0.4px", "fontWeight": "400" }],
+                        "headline-lg": ["34px", { "lineHeight": "41px", "letterSpacing": "-0.4px", "fontWeight": "700" }],
+                        "headline-lg-mobile": ["28px", { "lineHeight": "34px", "letterSpacing": "-0.4px", "fontWeight": "700" }]
+                    }
+                }
+            }
+        }
+    </script>
+<style>
+        body { background-color: #F2F2F7; }
+        .material-symbols-outlined { font-variation-settings: 'FILL' 0; }
+        .material-symbols-outlined.fill { font-variation-settings: 'FILL' 1; }
+        .pulse-ring {
+            animation: pulse-ring 2s cubic-bezier(0.215, 0.61, 0.355, 1) infinite;
+        }
+        @keyframes pulse-ring {
+            0% { transform: scale(0.8); opacity: 0.5; }
+            100% { transform: scale(2.5); opacity: 0; }
+        }
+    </style>
+</head>
+<body class="antialiased text-on-surface bg-inverse-on-surface h-screen flex flex-col overflow-hidden">
+<!-- TopAppBar -->
+<header class="fixed top-0 w-full z-50 bg-surface border-b-[0.5px] border-outline-variant flat no shadows">
+<div class="flex justify-between items-center px-margin-page h-[44px] w-full">
+<button class="text-on-surface-variant hover:bg-surface-container-low transition-colors rounded-full p-1 active:opacity-70 transition-opacity flex items-center justify-center">
+<span class="material-symbols-outlined">arrow_back_ios</span>
+</button>
+<h1 class="font-headline-md text-headline-md text-primary">Déclarer un objet</h1>
+<span class="font-label-caps text-label-caps text-on-surface-variant">4 sur 4</span>
+</div>
+</header>
+<!-- Main Content Canvas -->
+<main class="flex-1 overflow-y-auto mt-[44px] mb-[100px] pt-stack-lg pb-stack-lg px-margin-page">
+<!-- Header Section -->
+<div class="text-center mb-stack-lg flex flex-col items-center justify-center">
+<div class="relative w-24 h-24 mb-stack-md flex items-center justify-center">
+<div class="absolute inset-0 rounded-full border-2 border-primary pulse-ring"></div>
+<div class="absolute inset-0 rounded-full border-2 border-primary pulse-ring" style="animation-delay: 0.5s;"></div>
+<div class="w-16 h-16 bg-primary-container rounded-full flex items-center justify-center relative z-10 shadow-sm">
+<span class="material-symbols-outlined text-on-primary fill" style="font-size: 32px;">radar</span>
+</div>
+</div>
+<h2 class="font-headline-lg-mobile text-headline-lg-mobile text-on-surface mb-stack-sm tracking-tight">Vérifions si quelqu'un le recherche</h2>
+<p class="font-body-lg text-body-lg text-on-surface-variant max-w-sm">Objely recherche les déclarations d'objets perdus qui pourraient correspondre à votre découverte.</p>
+</div>
+<!-- Progress Indicator -->
+<div class="w-full h-1 bg-surface-variant rounded-full mb-stack-lg overflow-hidden">
+<div class="h-full bg-primary rounded-full" style="width: 100%;"></div>
+</div>
+<!-- Match Result Card -->
+<div class="bg-surface rounded-xl shadow-sm border-[0.5px] border-outline-variant overflow-hidden">
+<!-- Match Header -->
+<div class="px-stack-md py-stack-md bg-surface-container-lowest border-b-[0.5px] border-outline-variant flex items-center justify-between">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-secondary fill">verified</span>
+<span class="font-headline-md text-headline-md text-on-surface">Correspondance possible</span>
+</div>
+<div class="bg-secondary/10 px-2 py-1 rounded-md">
+<span class="font-label-caps text-label-caps text-secondary">96% DE CORRESPONDANCE</span>
+</div>
+</div>
+<!-- Comparison Section -->
+<div class="p-stack-md grid grid-cols-2 gap-stack-md relative">
+<!-- Vertical Divider -->
+<div class="absolute left-1/2 top-stack-md bottom-stack-md w-[0.5px] bg-outline-variant transform -translate-x-1/2"></div>
+<!-- Found Object (User's) -->
+<div class="flex flex-col items-center text-center">
+<span class="font-label-caps text-label-caps text-on-surface-variant mb-stack-sm">OBJET TROUVÉ (VOUS)</span>
+<div class="w-24 h-24 rounded-lg overflow-hidden mb-stack-sm bg-surface-container-low border-[0.5px] border-outline-variant">
+<img class="w-full h-full object-cover" data-alt="A clean, highly detailed top-down photograph of a modern black leather wallet resting on a pristine white marble surface. The lighting is bright and even, casting soft shadows, typical of a high-end product shot. The aesthetic is minimalist and corporate, fitting an iOS utility application context. Colors are neutral blacks, whites, and subtle greys." src="https://lh3.googleusercontent.com/aida-public/AB6AXuC0soK0sW8aPoWV6WfFWvnU6nGdzk-4TLRlhGhts72MsmLLH0DTx8tJeWFp-GcAyGyRjHVkbB7iWl3JJU3MEbk-oGoFa3b6ZhfbOaV6de7AelVUI8KcmGtmG5jStSIbNbWjZwqL_FA_itivt1AHfAz5dy_e78AYOv27eddwpdXjd-6m4kmF31OTKNvlowDoRZX4ljRYsYlzt75zX2iX-IMj08H9C60J4696rqUfIFaTFTKNR1vDWseXeA"/>
+</div>
+<span class="font-body-sm text-body-sm text-on-surface">Portefeuille noir</span>
+</div>
+<!-- Lost Object (System Match) -->
+<div class="flex flex-col items-center text-center">
+<span class="font-label-caps text-label-caps text-on-surface-variant mb-stack-sm">DÉCLARATION DE PERTE</span>
+<div class="w-24 h-24 rounded-lg overflow-hidden mb-stack-sm bg-surface-container-low border-[0.5px] border-outline-variant relative">
+<div class="absolute inset-0 bg-secondary/10 rounded-lg"></div>
+<img class="w-full h-full object-cover mix-blend-multiply" data-alt="A slightly worn, realistic photograph of a black leather wallet sitting on a wooden table, resembling a reference photo uploaded by a user. The lighting is natural but clear. It closely matches the 'found' wallet but has minor distinct wear marks. The setting is neutral to ensure focus on the object, maintaining a clean, utilitarian aesthetic." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBVh_GHeUQtXLh5Y-1muIpdkNspE6VWG6RpnNMDmsBkAayeb_lvNjvKxm1uhUwBk6PqMWrwv7PsbD-_DZUPXMfKfTw4UUj3wBIkw0-U7saUTl9jNjk0srOwkacepzvqEKqTKzxkJAfKhDJ0bwUGqmzQW-kj57JfisPXKvBX9Iw51_VKT1w_kDCE7IVbEk-_KSS0dWDetFYtINKqTBFYbzMjG789Kei11sGFNUm_oHEPAovyW_xpE-C33A"/>
+</div>
+<span class="font-body-sm text-body-sm text-on-surface">Portefeuille en cuir noir</span>
+</div>
+</div>
+<!-- Validated Criteria Badges -->
+<div class="px-stack-md py-stack-md border-t-[0.5px] border-outline-variant bg-surface-container-lowest">
+<span class="font-label-caps text-label-caps text-on-surface-variant block mb-stack-sm">CRITÈRES VALIDÉS</span>
+<div class="flex flex-wrap gap-2">
+<div class="flex items-center gap-1 bg-surface-container-low border-[0.5px] border-outline-variant px-2 py-1 rounded-md">
+<span class="material-symbols-outlined text-[16px] text-primary">category</span>
+<span class="font-label-caps text-label-caps text-on-surface">Même catégorie</span>
+</div>
+<div class="flex items-center gap-1 bg-surface-container-low border-[0.5px] border-outline-variant px-2 py-1 rounded-md">
+<span class="material-symbols-outlined text-[16px] text-primary">palette</span>
+<span class="font-label-caps text-label-caps text-on-surface">Couleur</span>
+</div>
+<div class="flex items-center gap-1 bg-surface-container-low border-[0.5px] border-outline-variant px-2 py-1 rounded-md">
+<span class="material-symbols-outlined text-[16px] text-primary">branding_watermark</span>
+<span class="font-label-caps text-label-caps text-on-surface">Marque</span>
+</div>
+<div class="flex items-center gap-1 bg-surface-container-low border-[0.5px] border-outline-variant px-2 py-1 rounded-md">
+<span class="material-symbols-outlined text-[16px] text-primary">location_on</span>
+<span class="font-label-caps text-label-caps text-on-surface">Lieu proche</span>
+</div>
+<div class="flex items-center gap-1 bg-surface-container-low border-[0.5px] border-outline-variant px-2 py-1 rounded-md">
+<span class="material-symbols-outlined text-[16px] text-primary">calendar_today</span>
+<span class="font-label-caps text-label-caps text-on-surface">Date compatible</span>
+</div>
+</div>
+</div>
+</div>
+</main>
+<!-- Bottom Action Area -->
+<div class="fixed bottom-0 left-0 w-full px-margin-page py-stack-md bg-surface/80 backdrop-blur-md z-50 pb-safe">
+<div class="flex flex-col gap-stack-sm">
+<!-- Primary Action -->
+<button class="w-full bg-primary text-on-primary rounded-lg py-4 flex items-center justify-center font-bold hover:brightness-110 transition-all active:scale-[0.98] transition-transform">
+<span class="font-label-caps text-label-caps mr-2">Voir la correspondance</span>
+<span class="material-symbols-outlined text-[18px]">visibility</span>
+</button>
+<!-- Secondary Action -->
+<button class="w-full bg-transparent text-primary border-[0.5px] border-outline-variant rounded-lg py-4 flex items-center justify-center font-bold hover:bg-surface-container-low transition-all active:scale-[0.98] transition-transform">
+<span class="font-label-caps text-label-caps">Ce n'est pas le même objet</span>
+</button>
+</div>
+</div>
+</body></html>

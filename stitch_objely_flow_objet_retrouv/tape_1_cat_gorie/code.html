@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+
+<html class="light" lang="fr"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Déclarer un objet - Objely</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@400;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "secondary-container": "#6664e4",
+                        "on-primary": "#ffffff",
+                        "on-surface": "#1a1b1f",
+                        "on-secondary-fixed-variant": "#3631b4",
+                        "on-secondary": "#ffffff",
+                        "tertiary-fixed": "#ffdbcf",
+                        "error-container": "#ffdad6",
+                        "primary": "#0040a1",
+                        "primary-fixed": "#dae2ff",
+                        "tertiary-fixed-dim": "#ffb59b",
+                        "outline": "#737785",
+                        "secondary": "#4c4aca",
+                        "inverse-on-surface": "#f1f0f5",
+                        "on-surface-variant": "#424654",
+                        "tertiary-container": "#a93802",
+                        "surface-bright": "#faf9fe",
+                        "surface": "#faf9fe",
+                        "on-primary-container": "#ccd8ff",
+                        "on-tertiary": "#ffffff",
+                        "primary-fixed-dim": "#b2c5ff",
+                        "inverse-surface": "#2f3034",
+                        "inverse-primary": "#b2c5ff",
+                        "surface-dim": "#dad9df",
+                        "outline-variant": "#c3c6d6",
+                        "on-error": "#ffffff",
+                        "surface-tint": "#0056d2",
+                        "surface-container-lowest": "#ffffff",
+                        "background": "#faf9fe",
+                        "on-secondary-container": "#fffbff",
+                        "on-primary-fixed-variant": "#0040a1",
+                        "on-background": "#1a1b1f",
+                        "on-error-container": "#93000a",
+                        "on-secondary-fixed": "#0c006a",
+                        "tertiary": "#822800",
+                        "surface-variant": "#e3e2e7",
+                        "secondary-fixed-dim": "#c2c1ff",
+                        "surface-container": "#eeedf3",
+                        "surface-container-low": "#f4f3f8",
+                        "primary-container": "#0056d2",
+                        "on-tertiary-container": "#ffcebd",
+                        "on-tertiary-fixed": "#380d00",
+                        "on-primary-fixed": "#001847",
+                        "surface-container-high": "#e9e7ed",
+                        "on-tertiary-fixed-variant": "#812800",
+                        "secondary-fixed": "#e2dfff",
+                        "error": "#ba1a1a",
+                        "surface-container-highest": "#e3e2e7"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "spacing": {
+                        "gutter": "12px",
+                        "stack-md": "16px",
+                        "margin-page": "16px",
+                        "stack-sm": "8px",
+                        "base": "4px",
+                        "stack-lg": "24px"
+                    },
+                    "fontFamily": {
+                        "headline-md": ["Hanken Grotesk"],
+                        "label-caps": ["Hanken Grotesk"],
+                        "body-sm": ["Hanken Grotesk"],
+                        "body-lg": ["Hanken Grotesk"],
+                        "headline-lg": ["Hanken Grotesk"],
+                        "headline-lg-mobile": ["Hanken Grotesk"]
+                    },
+                    "fontSize": {
+                        "headline-md": ["22px", { "lineHeight": "28px", "letterSpacing": "-0.2px", "fontWeight": "600" }],
+                        "label-caps": ["13px", { "lineHeight": "18px", "letterSpacing": "0.1px", "fontWeight": "600" }],
+                        "body-sm": ["15px", { "lineHeight": "20px", "letterSpacing": "-0.2px", "fontWeight": "400" }],
+                        "body-lg": ["17px", { "lineHeight": "22px", "letterSpacing": "-0.4px", "fontWeight": "400" }],
+                        "headline-lg": ["34px", { "lineHeight": "41px", "letterSpacing": "-0.4px", "fontWeight": "700" }],
+                        "headline-lg-mobile": ["28px", { "lineHeight": "34px", "letterSpacing": "-0.4px", "fontWeight": "700" }]
+                    }
+                }
+            }
+        }
+    </script>
+<style>
+        body { font-family: 'Hanken Grotesk', sans-serif; }
+        .pb-safe { padding-bottom: env(safe-area-inset-bottom, 20px); }
+    </style>
+</head>
+<body class="bg-background text-on-background min-h-screen antialiased flex flex-col">
+<!-- TopAppBar from JSON -->
+<header class="fixed top-0 w-full z-50 flex justify-between items-center px-margin-page h-[44px] bg-surface dark:bg-on-background border-b-[0.5px] border-outline-variant dark:border-outline no-shadows">
+<button class="flex items-center justify-center w-8 h-8 -ml-2 text-primary dark:text-primary-fixed-dim hover:bg-surface-container-low dark:hover:bg-surface-container-highest transition-colors active:opacity-70 transition-opacity rounded-full">
+<span class="material-symbols-outlined text-[20px]" data-icon="arrow_back_ios">arrow_back_ios</span>
+</button>
+<h1 class="absolute left-1/2 -translate-x-1/2 font-headline-md text-headline-md-mobile text-on-surface">
+            Déclarer un objet
+        </h1>
+<div class="text-on-surface-variant dark:text-on-surface-variant font-body-sm text-body-sm">
+            1 sur 4
+        </div>
+</header>
+<!-- Main Content Canvas -->
+<main class="flex-grow pt-[70px] pb-[120px] px-margin-page flex flex-col gap-stack-lg">
+<!-- Header Section -->
+<section class="flex flex-col gap-stack-sm mt-stack-sm">
+<h2 class="font-headline-lg-mobile text-headline-lg-mobile text-on-surface tracking-tight">
+                Qu'avez-vous trouvé ?
+            </h2>
+<p class="font-body-sm text-body-sm text-on-surface-variant">
+                Sélectionnez la catégorie de l'objet que vous avez retrouvé.
+            </p>
+</section>
+<!-- Interactive Category Grid -->
+<section class="grid grid-cols-2 md:grid-cols-3 gap-gutter">
+<!-- Category: Téléphone -->
+<button class="flex flex-col items-center justify-center p-stack-md gap-stack-sm bg-surface border-[0.5px] border-outline-variant/50 rounded-lg hover:bg-surface-container-low active:scale-[0.98] transition-all">
+<span class="material-symbols-outlined text-primary text-[32px]" data-icon="smartphone">smartphone</span>
+<span class="font-body-sm text-body-sm text-on-surface">Téléphone</span>
+</button>
+<!-- Category: Portefeuille (Selected State) -->
+<button class="flex flex-col items-center justify-center p-stack-md gap-stack-sm bg-primary-fixed border border-primary text-on-primary-fixed rounded-lg active:scale-[0.98] transition-all relative overflow-hidden shadow-[0_2px_8px_rgba(0,86,210,0.15)]">
+<span class="absolute top-2 right-2 material-symbols-outlined text-primary text-[16px]" data-icon="check_circle" data-weight="fill" style="font-variation-settings: 'FILL' 1;">check_circle</span>
+<span class="material-symbols-outlined text-primary text-[32px]" data-icon="account_balance_wallet">account_balance_wallet</span>
+<span class="font-body-sm text-body-sm font-semibold text-primary">Portefeuille</span>
+</button>
+<!-- Category: Sac -->
+<button class="flex flex-col items-center justify-center p-stack-md gap-stack-sm bg-surface border-[0.5px] border-outline-variant/50 rounded-lg hover:bg-surface-container-low active:scale-[0.98] transition-all">
+<span class="material-symbols-outlined text-primary text-[32px]" data-icon="backpack">backpack</span>
+<span class="font-body-sm text-body-sm text-on-surface">Sac</span>
+</button>
+<!-- Category: Clés -->
+<button class="flex flex-col items-center justify-center p-stack-md gap-stack-sm bg-surface border-[0.5px] border-outline-variant/50 rounded-lg hover:bg-surface-container-low active:scale-[0.98] transition-all">
+<span class="material-symbols-outlined text-primary text-[32px]" data-icon="key">key</span>
+<span class="font-body-sm text-body-sm text-on-surface">Clés</span>
+</button>
+<!-- Category: Carte bancaire -->
+<button class="flex flex-col items-center justify-center p-stack-md gap-stack-sm bg-surface border-[0.5px] border-outline-variant/50 rounded-lg hover:bg-surface-container-low active:scale-[0.98] transition-all">
+<span class="material-symbols-outlined text-primary text-[32px]" data-icon="credit_card">credit_card</span>
+<span class="font-body-sm text-body-sm text-on-surface">Carte bancaire</span>
+</button>
+<!-- Category: Vêtement -->
+<button class="flex flex-col items-center justify-center p-stack-md gap-stack-sm bg-surface border-[0.5px] border-outline-variant/50 rounded-lg hover:bg-surface-container-low active:scale-[0.98] transition-all">
+<span class="material-symbols-outlined text-primary text-[32px]" data-icon="checkroom">checkroom</span>
+<span class="font-body-sm text-body-sm text-on-surface">Vêtement</span>
+</button>
+<!-- Category: Ordinateur -->
+<button class="flex flex-col items-center justify-center p-stack-md gap-stack-sm bg-surface border-[0.5px] border-outline-variant/50 rounded-lg hover:bg-surface-container-low active:scale-[0.98] transition-all">
+<span class="material-symbols-outlined text-primary text-[32px]" data-icon="computer">computer</span>
+<span class="font-body-sm text-body-sm text-on-surface">Ordinateur</span>
+</button>
+<!-- Category: Écouteurs -->
+<button class="flex flex-col items-center justify-center p-stack-md gap-stack-sm bg-surface border-[0.5px] border-outline-variant/50 rounded-lg hover:bg-surface-container-low active:scale-[0.98] transition-all">
+<span class="material-symbols-outlined text-primary text-[32px]" data-icon="headphones">headphones</span>
+<span class="font-body-sm text-body-sm text-on-surface">Écouteurs</span>
+</button>
+<!-- Category: Bijou -->
+<button class="flex flex-col items-center justify-center p-stack-md gap-stack-sm bg-surface border-[0.5px] border-outline-variant/50 rounded-lg hover:bg-surface-container-low active:scale-[0.98] transition-all">
+<span class="material-symbols-outlined text-primary text-[32px]" data-icon="diamond">diamond</span>
+<span class="font-body-sm text-body-sm text-on-surface">Bijou</span>
+</button>
+<!-- Category: Document -->
+<button class="flex flex-col items-center justify-center p-stack-md gap-stack-sm bg-surface border-[0.5px] border-outline-variant/50 rounded-lg hover:bg-surface-container-low active:scale-[0.98] transition-all">
+<span class="material-symbols-outlined text-primary text-[32px]" data-icon="description">description</span>
+<span class="font-body-sm text-body-sm text-on-surface">Document</span>
+</button>
+<!-- Category: Autre -->
+<button class="flex flex-col items-center justify-center p-stack-md gap-stack-sm bg-surface border-[0.5px] border-outline-variant/50 rounded-lg hover:bg-surface-container-low active:scale-[0.98] transition-all">
+<span class="material-symbols-outlined text-primary text-[32px]" data-icon="more_horiz">more_horiz</span>
+<span class="font-body-sm text-body-sm text-on-surface">Autre</span>
+</button>
+</section>
+</main>
+<!-- BottomNavBar from JSON -->
+<nav class="fixed bottom-0 left-0 w-full px-margin-page py-stack-md bg-surface/80 dark:bg-on-background/80 backdrop-blur-md pb-safe z-50">
+<button class="w-full bg-primary-container dark:bg-primary-container text-on-primary dark:text-on-primary-container rounded-lg py-4 flex items-center justify-center gap-2 hover:brightness-110 transition-all active:scale-[0.98]">
+<span class="font-label-caps text-label-caps font-bold">Continuer</span>
+<span class="material-symbols-outlined text-[18px]" data-icon="arrow_forward">arrow_forward</span>
+</button>
+</nav>
+</body></html>

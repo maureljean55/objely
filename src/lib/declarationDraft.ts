@@ -1,4 +1,5 @@
 export type DeclarationDraft = {
+  type?: "lost" | "found";
   categoryId?: string;
   categoryLabel?: string;
   categoryIcon?: string;
@@ -8,6 +9,9 @@ export type DeclarationDraft = {
   color?: string;
   location?: string;
   date?: string;
+  time?: string;
+  privateDetail?: string;
+  hideExactLocation?: boolean;
 };
 
 const KEY = "objely-declaration-draft";

@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+
+<html class="light" lang="fr"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" name="viewport"/>
+<title>Délcarer un objet - Étape 2</title>
+<!-- Tailwind CSS -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<!-- Material Symbols -->
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@100..900&display=swap" rel="stylesheet"/>
+<!-- Tailwind Theme Config -->
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "secondary-container": "#6664e4",
+                    "on-primary": "#ffffff",
+                    "on-surface": "#1a1b1f",
+                    "on-secondary-fixed-variant": "#3631b4",
+                    "on-secondary": "#ffffff",
+                    "tertiary-fixed": "#ffdbcf",
+                    "error-container": "#ffdad6",
+                    "primary": "#0040a1",
+                    "primary-fixed": "#dae2ff",
+                    "tertiary-fixed-dim": "#ffb59b",
+                    "outline": "#737785",
+                    "secondary": "#4c4aca",
+                    "inverse-on-surface": "#f1f0f5",
+                    "on-surface-variant": "#424654",
+                    "tertiary-container": "#a93802",
+                    "surface-bright": "#faf9fe",
+                    "surface": "#faf9fe",
+                    "on-primary-container": "#ccd8ff",
+                    "on-tertiary": "#ffffff",
+                    "primary-fixed-dim": "#b2c5ff",
+                    "inverse-surface": "#2f3034",
+                    "inverse-primary": "#b2c5ff",
+                    "surface-dim": "#dad9df",
+                    "outline-variant": "#c3c6d6",
+                    "on-error": "#ffffff",
+                    "surface-tint": "#0056d2",
+                    "surface-container-lowest": "#ffffff",
+                    "background": "#faf9fe",
+                    "on-secondary-container": "#fffbff",
+                    "on-primary-fixed-variant": "#0040a1",
+                    "on-background": "#1a1b1f",
+                    "on-error-container": "#93000a",
+                    "on-secondary-fixed": "#0c006a",
+                    "tertiary": "#822800",
+                    "surface-variant": "#e3e2e7",
+                    "secondary-fixed-dim": "#c2c1ff",
+                    "surface-container": "#eeedf3",
+                    "surface-container-low": "#f4f3f8",
+                    "primary-container": "#0056d2",
+                    "on-tertiary-container": "#ffcebd",
+                    "on-tertiary-fixed": "#380d00",
+                    "on-primary-fixed": "#001847",
+                    "surface-container-high": "#e9e7ed",
+                    "on-tertiary-fixed-variant": "#812800",
+                    "secondary-fixed": "#e2dfff",
+                    "error": "#ba1a1a",
+                    "surface-container-highest": "#e3e2e7"
+            },
+            "borderRadius": {
+                    "DEFAULT": "0.25rem",
+                    "lg": "0.5rem",
+                    "xl": "0.75rem",
+                    "full": "9999px"
+            },
+            "spacing": {
+                    "gutter": "12px",
+                    "stack-md": "16px",
+                    "margin-page": "16px",
+                    "stack-sm": "8px",
+                    "base": "4px",
+                    "stack-lg": "24px"
+            },
+            "fontFamily": {
+                    "headline-md": ["Hanken Grotesk"],
+                    "label-caps": ["Hanken Grotesk"],
+                    "body-sm": ["Hanken Grotesk"],
+                    "body-lg": ["Hanken Grotesk"],
+                    "headline-lg": ["Hanken Grotesk"],
+                    "headline-lg-mobile": ["Hanken Grotesk"]
+            },
+            "fontSize": {
+                    "headline-md": ["22px", {"lineHeight": "28px", "letterSpacing": "-0.2px", "fontWeight": "600"}],
+                    "label-caps": ["13px", {"lineHeight": "18px", "letterSpacing": "0.1px", "fontWeight": "600"}],
+                    "body-sm": ["15px", {"lineHeight": "20px", "letterSpacing": "-0.2px", "fontWeight": "400"}],
+                    "body-lg": ["17px", {"lineHeight": "22px", "letterSpacing": "-0.4px", "fontWeight": "400"}],
+                    "headline-lg": ["34px", {"lineHeight": "41px", "letterSpacing": "-0.4px", "fontWeight": "700"}],
+                    "headline-lg-mobile": ["28px", {"lineHeight": "34px", "letterSpacing": "-0.4px", "fontWeight": "700"}]
+            }
+          }
+        }
+      }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        
+        /* Custom scrollbar for webkit */
+        ::-webkit-scrollbar { width: 0px; background: transparent; }
+        
+        /* iOS input reset */
+        input, textarea {
+            -webkit-appearance: none;
+            -moz-appearance: none;
+            appearance: none;
+        }
+    </style>
+</head>
+<body class="bg-background text-on-background font-body-lg antialiased overflow-x-hidden selection:bg-primary-fixed selection:text-on-primary-fixed">
+<!-- TopAppBar -->
+<header class="fixed top-0 w-full z-50 bg-surface dark:bg-on-background flex justify-between items-center px-margin-page h-[44px] border-b-[0.5px] border-outline-variant dark:border-outline">
+<button class="flex items-center justify-center p-2 -ml-2 text-primary dark:text-primary-fixed-dim hover:bg-surface-container-low dark:hover:bg-surface-container-highest transition-colors active:opacity-70 rounded-full">
+<span class="material-symbols-outlined text-[20px]" data-icon="arrow_back_ios">arrow_back_ios</span>
+</button>
+<h1 class="font-headline-md text-[17px] font-semibold text-on-surface dark:text-on-background absolute left-1/2 -translate-x-1/2">
+            Déclarer un objet
+        </h1>
+<span class="font-body-sm text-body-sm text-on-surface-variant dark:text-on-surface-variant">
+            2 sur 4
+        </span>
+</header>
+<!-- Main Canvas -->
+<main class="pt-[80px] pb-[120px] px-margin-page max-w-md mx-auto flex flex-col gap-stack-lg">
+<!-- Header Text -->
+<section class="flex flex-col gap-base">
+<h2 class="font-headline-lg-mobile text-headline-lg-mobile text-on-surface">Décrivez l'objet</h2>
+<p class="font-body-sm text-body-sm text-on-surface-variant">Donnez suffisamment de détails pour aider son propriétaire à le reconnaître.</p>
+</section>
+<!-- Photo Upload Area -->
+<section class="relative w-full h-[180px] rounded-xl border-[1.5px] border-dashed border-outline-variant bg-surface-container-low overflow-hidden flex flex-col items-center justify-center cursor-pointer group hover:bg-surface-container transition-colors">
+<!-- Realistic Placeholder Background -->
+<img class="absolute inset-0 w-full h-full object-cover opacity-30 mix-blend-multiply filter blur-[2px]" data-alt="A high-quality, evenly lit studio photograph of a premium black leather wallet resting on a clean, light grey surface. The lighting is soft and modern, highlighting the subtle texture of the leather and a small gold zipper detail. The aesthetic is highly professional, clean, and utilitarian, perfectly suited for an inventory or lost-and-found application." src="https://lh3.googleusercontent.com/aida-public/AB6AXuC1xznokogG3LPo5pdYItKAQt-BUldR3qF7arVhtrfuwksF7w0Jzeb4hhpn5OmtlL9ScrYDYoH65DxFVIAOWY1sQt1iPebh2XEKDkU74cRTnCP__m5FCSirEF00vmxoSA30QWjIkK8NocHUQvKxq9ObNj5SdO-V-dQfcDErebSxDfVxVU_a7iNnHgMw6LP2Dwqcx0hHoTxLrKtqZWp3oSwczDdApEiMWWRaJnxvvH1_gvykkAKq2hUqoA"/>
+<div class="z-10 flex flex-col items-center gap-stack-sm text-primary">
+<div class="w-12 h-12 rounded-full bg-surface shadow-sm flex items-center justify-center group-hover:scale-105 transition-transform">
+<span class="material-symbols-outlined text-[24px]" data-icon="add_a_photo" data-weight="fill" style="font-variation-settings: 'FILL' 1;">add_a_photo</span>
+</div>
+<span class="font-label-caps text-label-caps text-on-surface-variant bg-surface/80 backdrop-blur-sm px-3 py-1 rounded-full">Ajouter une photo</span>
+</div>
+</section>
+<!-- Form: Standard Info (Grouped List Style) -->
+<section class="bg-surface rounded-[10px] border-[0.5px] border-outline-variant overflow-hidden flex flex-col">
+<!-- Nom -->
+<div class="relative px-margin-page py-[12px] border-b-[0.5px] border-outline-variant flex flex-col focus-within:bg-surface-container-lowest transition-colors">
+<label class="font-label-caps text-[11px] uppercase tracking-wider text-outline mb-1" for="object_name">Nom de l'objet</label>
+<input class="w-full bg-transparent border-none p-0 font-body-lg text-body-lg text-on-surface focus:ring-0 placeholder:text-outline-variant" id="object_name" placeholder="Ex: Portefeuille noir" type="text" value="Portefeuille noir"/>
+</div>
+<!-- Marque -->
+<div class="relative px-margin-page py-[12px] border-b-[0.5px] border-outline-variant flex flex-col focus-within:bg-surface-container-lowest transition-colors">
+<label class="font-label-caps text-[11px] uppercase tracking-wider text-outline mb-1" for="object_brand">Marque</label>
+<input class="w-full bg-transparent border-none p-0 font-body-lg text-body-lg text-on-surface focus:ring-0 placeholder:text-outline-variant" id="object_brand" placeholder="Ex: Lacoste" type="text" value="Lacoste"/>
+</div>
+<!-- Couleur -->
+<div class="relative px-margin-page py-[12px] border-b-[0.5px] border-outline-variant flex flex-col focus-within:bg-surface-container-lowest transition-colors">
+<label class="font-label-caps text-[11px] uppercase tracking-wider text-outline mb-1" for="object_color">Couleur principale</label>
+<div class="flex items-center gap-2">
+<div class="w-4 h-4 rounded-full bg-[#1A1A1A] border-[0.5px] border-outline"></div>
+<input class="w-full bg-transparent border-none p-0 font-body-lg text-body-lg text-on-surface focus:ring-0 placeholder:text-outline-variant" id="object_color" placeholder="Ex: Noir" type="text" value="Noir"/>
+</div>
+</div>
+<!-- Description -->
+<div class="relative px-margin-page py-[12px] flex flex-col focus-within:bg-surface-container-lowest transition-colors">
+<label class="font-label-caps text-[11px] uppercase tracking-wider text-outline mb-1" for="object_desc">Description visible</label>
+<textarea class="w-full bg-transparent border-none p-0 font-body-lg text-body-lg text-on-surface focus:ring-0 placeholder:text-outline-variant resize-none" id="object_desc" placeholder="Décrivez l'état, le contenu..." rows="3">Portefeuille noir en cuir avec une petite fermeture dorée.</textarea>
+</div>
+</section>
+<!-- Form: Private Info (Distinct Styling) -->
+<section class="flex flex-col gap-stack-sm mt-stack-sm">
+<div class="flex items-center gap-2 text-secondary px-2">
+<span class="material-symbols-outlined text-[18px]" data-icon="lock" data-weight="fill" style="font-variation-settings: 'FILL' 1;">lock</span>
+<h3 class="font-label-caps text-label-caps uppercase tracking-wider">Information Privée</h3>
+</div>
+<div class="bg-surface rounded-[10px] border-[0.5px] border-secondary-fixed-dim shadow-sm overflow-hidden flex flex-col relative">
+<!-- Decorative indicator -->
+<div class="absolute left-0 top-0 bottom-0 w-1 bg-secondary"></div>
+<div class="relative pl-[20px] pr-margin-page py-[12px] flex flex-col focus-within:bg-surface-container-lowest transition-colors">
+<label class="font-label-caps text-[11px] uppercase tracking-wider text-outline mb-1" for="private_detail">Détail particulier (Facultatif)</label>
+<textarea class="w-full bg-transparent border-none p-0 font-body-lg text-body-lg text-on-surface focus:ring-0 placeholder:text-outline-variant resize-none" id="private_detail" placeholder="Un détail visible uniquement par le propriétaire..." rows="2"></textarea>
+<p class="font-body-sm text-[12px] text-on-surface-variant mt-2 leading-tight">Cette information servira à vérifier l'identité du propriétaire lors de la réclamation.</p>
+</div>
+</div>
+</section>
+</main>
+<!-- BottomNavBar -->
+<nav class="fixed bottom-0 w-full z-50 pb-safe bg-surface dark:bg-on-background backdrop-blur-md pt-stack-sm pb-margin-page border-t-[0.5px] border-transparent shadow-[0_-4px_24px_-8px_rgba(0,0,0,0.05)]">
+<div class="max-w-md mx-auto px-margin-page">
+<button class="w-full bg-primary dark:bg-primary-container text-on-primary dark:text-on-primary-container rounded-lg py-[16px] flex items-center justify-center gap-2 font-bold hover:brightness-110 active:scale-[0.98] transition-all">
+<span class="font-label-caps text-[16px]">Continuer</span>
+<span class="material-symbols-outlined" data-icon="arrow_forward">arrow_forward</span>
+</button>
+</div>
+</nav>
+</body></html>
