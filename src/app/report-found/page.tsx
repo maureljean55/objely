@@ -6,17 +6,73 @@ import Link from "next/link";
 import { saveDraft } from "@/lib/declarationDraft";
 
 const CATEGORIES = [
-  { id: "phone", label: "Téléphone", icon: "smartphone" },
-  { id: "wallet", label: "Portefeuille", icon: "account_balance_wallet" },
-  { id: "bag", label: "Sac", icon: "backpack" },
-  { id: "keys", label: "Clés", icon: "key" },
-  { id: "card", label: "Carte bancaire", icon: "credit_card" },
-  { id: "clothes", label: "Vêtement", icon: "checkroom" },
-  { id: "computer", label: "Ordinateur", icon: "computer" },
-  { id: "headphones", label: "Écouteurs", icon: "headphones" },
-  { id: "jewelry", label: "Bijou", icon: "diamond" },
-  { id: "document", label: "Document", icon: "description" },
-  { id: "other", label: "Autre", icon: "more_horiz" },
+  {
+    id: "phone",
+    label: "Téléphone",
+    icon: "smartphone",
+    image: "https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?w=400&h=400&fit=crop",
+  },
+  {
+    id: "wallet",
+    label: "Portefeuille",
+    icon: "account_balance_wallet",
+    image: "https://images.unsplash.com/photo-1627123424574-724758594e93?w=400&h=400&fit=crop",
+  },
+  {
+    id: "bag",
+    label: "Sac",
+    icon: "backpack",
+    image: "https://images.unsplash.com/photo-1553062407-98eeb64c6a62?w=400&h=400&fit=crop",
+  },
+  {
+    id: "keys",
+    label: "Clés",
+    icon: "key",
+    image: "https://upload.wikimedia.org/wikipedia/commons/3/3c/House_key.jpg",
+  },
+  {
+    id: "card",
+    label: "Carte bancaire",
+    icon: "credit_card",
+    image: "https://images.unsplash.com/photo-1563013544-824ae1b704d3?w=400&h=400&fit=crop",
+  },
+  {
+    id: "clothes",
+    label: "Vêtement",
+    icon: "checkroom",
+    image: "https://images.unsplash.com/photo-1489987707025-afc232f7ea0f?w=400&h=400&fit=crop",
+  },
+  {
+    id: "computer",
+    label: "Ordinateur",
+    icon: "computer",
+    image: "https://images.unsplash.com/photo-1496181133206-80ce9b88a853?w=400&h=400&fit=crop",
+  },
+  {
+    id: "headphones",
+    label: "Écouteurs",
+    icon: "headphones",
+    image: "https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=400&h=400&fit=crop",
+  },
+  {
+    id: "jewelry",
+    label: "Bijou",
+    icon: "diamond",
+    image: "https://images.unsplash.com/photo-1515562141207-7a88fb7ce338?w=400&h=400&fit=crop",
+  },
+  {
+    id: "document",
+    label: "Document",
+    icon: "description",
+    image: "https://images.unsplash.com/photo-1450101499163-c8848c66ca85?w=400&h=400&fit=crop",
+  },
+  {
+    id: "other",
+    label: "Autre objet",
+    icon: "more_horiz",
+    image: "https://images.unsplash.com/photo-1607166452427-7e4477079cb9?w=400&h=400&fit=crop",
+    mystery: true,
+  },
 ] as const;
 
 export default function ReportFoundCategoryPage() {
@@ -48,7 +104,7 @@ export default function ReportFoundCategoryPage() {
           <p className="font-body-md text-body-md text-on-surface-variant">Sélectionnez la catégorie de l&apos;objet que vous avez retrouvé.</p>
         </div>
 
-        <div className="grid grid-cols-2 md:grid-cols-3 gap-md">
+        <div className="grid grid-cols-2 md:grid-cols-3 gap-md grow content-start">
           {CATEGORIES.map((category) => {
             const isSelected = selected === category.id;
             return (
@@ -56,19 +112,38 @@ export default function ReportFoundCategoryPage() {
                 key={category.id}
                 type="button"
                 onClick={() => setSelected(category.id)}
-                className={`relative flex flex-col items-center justify-center gap-2 p-lg rounded-2xl border transition-all active:scale-[0.98] ${
-                  isSelected
-                    ? "bg-primary-fixed border-primary shadow-[0px_4px_14px_rgba(0,88,188,0.15)]"
-                    : "bg-surface-container-lowest border-outline-variant/40 hover:bg-surface-container-low"
+                className={`category-card relative rounded-2xl overflow-hidden aspect-square border-2 transition-all group focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 ${
+                  isSelected ? "border-primary shadow-lg" : "border-transparent hover:border-surface-container-high"
                 }`}
               >
-                {isSelected && (
-                  <span className="absolute top-2 right-2 material-symbols-outlined text-primary text-[18px]" style={{ fontVariationSettings: "'FILL' 1" }}>
-                    check_circle
-                  </span>
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img
+                  src={category.image}
+                  alt={category.label}
+                  className={`absolute inset-0 w-full h-full object-cover transition-transform duration-300 group-hover:scale-105 ${
+                    "mystery" in category && category.mystery ? "blur-md scale-110" : ""
+                  }`}
+                />
+                <div
+                  className={`absolute inset-0 transition-colors ${
+                    isSelected ? "bg-primary/25" : "bg-black/15 group-hover:bg-black/5"
+                  }`}
+                />
+                {"mystery" in category && category.mystery && (
+                  <div className="absolute inset-0 flex items-center justify-center">
+                    <span className="material-symbols-outlined text-white text-5xl drop-shadow-md" style={{ fontVariationSettings: "'FILL' 1" }}>
+                      help
+                    </span>
+                  </div>
                 )}
-                <span className={`material-symbols-outlined text-[32px] ${isSelected ? "text-primary" : "text-primary-container"}`}>{category.icon}</span>
-                <span className={`font-body-md text-body-md text-center ${isSelected ? "text-primary font-semibold" : "text-on-surface"}`}>{category.label}</span>
+                {isSelected && (
+                  <div className="absolute top-2 right-2 w-7 h-7 rounded-full bg-primary flex items-center justify-center shadow-md">
+                    <span className="material-symbols-outlined text-white text-[18px]">check</span>
+                  </div>
+                )}
+                <div className="absolute bottom-0 inset-x-0 bg-gradient-to-t from-black/75 via-black/20 to-transparent px-3 pt-8 pb-2.5">
+                  <span className="font-label-md text-label-md text-white">{category.label}</span>
+                </div>
               </button>
             );
           })}
