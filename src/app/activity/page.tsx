@@ -6,12 +6,8 @@ const FILTERS = ["Tout", "Correspondances", "Messages", "Restitutions"];
 export default function ActivityPage() {
   return (
     <div className="bg-background text-on-background font-body-md antialiased min-h-screen pb-28 md:pb-12">
-      <header className="glass-header fixed top-0 inset-x-0 z-50 flex items-center justify-between px-container-margin h-16 w-full shadow-[0_1px_0_rgba(0,0,0,0.05)]">
+      <header className="glass-header fixed top-0 inset-x-0 z-50 flex items-center px-container-margin h-16 w-full shadow-[0_1px_0_rgba(0,0,0,0.05)]">
         <h1 className="font-display text-headline-lg-mobile text-headline-lg-mobile text-primary">Activité</h1>
-        <button aria-label="Notifications" className="relative p-2 text-on-surface-variant hover:text-primary transition-colors">
-          <span className="material-symbols-outlined text-[24px]">notifications</span>
-          <span className="absolute top-2 right-2 w-2.5 h-2.5 rounded-full bg-error ring-2 ring-surface" />
-        </button>
       </header>
 
       <main className="pt-[88px] max-w-2xl mx-auto">
