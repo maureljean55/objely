@@ -51,7 +51,7 @@ export default function HomeDashboardPage() {
           </Link>
           <div className="flex items-center gap-2">
             <Link
-              href="/activity"
+              href="/notifications"
               aria-label="Notifications"
               className="relative w-11 h-11 rounded-full bg-surface-container-lowest shadow-sm flex items-center justify-center text-on-surface-variant hover:text-primary transition-colors"
             >
