@@ -1,5 +1,4 @@
 import Link from "next/link";
-import HelpNav from "@/components/HelpNav";
 
 const CONVERSATIONS = [
   {
@@ -43,7 +42,7 @@ export default function HelpHistoryPage() {
         </div>
       </header>
 
-      <main className="flex-1 w-full max-w-[800px] mx-auto px-container-margin pt-lg pb-40">
+      <main className="flex-1 w-full max-w-[800px] mx-auto px-container-margin pt-lg pb-xl">
         <div className="mb-lg">
           <h2 className="font-headline-lg-mobile md:font-headline-lg text-headline-lg-mobile md:text-headline-lg text-on-surface mb-2">Historique</h2>
           <p className="font-body-md text-body-md text-on-surface-variant">Retrouvez toutes vos demandes d&apos;assistance Objely.</p>
@@ -80,20 +79,6 @@ export default function HelpHistoryPage() {
           ))}
         </ul>
       </main>
-
-      <div className="fixed bottom-24 left-0 w-full px-container-margin flex justify-center z-40 pointer-events-none">
-        <div className="w-full max-w-[800px] pointer-events-auto shadow-[0px_8px_24px_rgba(0,0,0,0.12)] rounded-full">
-          <Link
-            href="/help/chat"
-            className="w-full bg-primary text-on-primary py-4 px-6 rounded-full font-headline-sm text-headline-sm hover:opacity-90 active:scale-95 transition-all flex items-center justify-center gap-2"
-          >
-            <span className="material-symbols-outlined text-xl" style={{ fontVariationSettings: "'FILL' 1" }}>add_comment</span>
-            Commencer une nouvelle conversation
-          </Link>
-        </div>
-      </div>
-
-      <HelpNav active="history" />
     </div>
   );
 }
