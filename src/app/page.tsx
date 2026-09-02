@@ -52,7 +52,7 @@ export default function SplashPage() {
           <img
             src="/illustrations/splash/magnifier.png"
             alt=""
-            className="magnifier-pulse relative w-40 select-none pointer-events-none"
+            className="magnifier-pulse relative w-32 select-none pointer-events-none"
             draggable={false}
           />
         </div>
