@@ -23,22 +23,20 @@ export default function LoginPage() {
 
   return (
     <div className="relative min-h-[100dvh] bg-background overflow-hidden">
-      <div className="fixed top-0 inset-x-0 z-20 bg-background" style={{ height: HEADER_HEIGHT }}>
-        <div
-          className="absolute inset-x-0 top-0 h-full -z-10 rounded-b-[100%]"
-          style={{ background: "radial-gradient(circle at 50% 0%, #cfe0fb 0%, rgb(var(--color-background)) 72%)" }}
-        />
-
+      <div
+        className="fixed top-0 inset-x-0 z-20"
+        style={{ height: HEADER_HEIGHT, background: "linear-gradient(180deg, #141f38 0%, #223250 45%, #4d6683 100%)" }}
+      >
         <div
           className="w-full max-w-md mx-auto px-container-margin pb-6 flex flex-col"
           style={{ paddingTop: "calc(4rem + env(safe-area-inset-top))" }}
         >
-          <h1 className="font-headline-lg-mobile font-bold text-[38px] leading-[1.12] tracking-[-0.01em] text-on-surface text-center mb-3">
+          <h1 className="font-headline-lg-mobile font-bold text-[38px] leading-[1.12] tracking-[-0.01em] text-white text-center mb-3">
             Content de
             <br />
             vous revoir !
           </h1>
-          <p className="font-body-md text-body-md text-on-surface-variant text-center mb-6">
+          <p className="font-body-md text-body-md text-blue-200/80 text-center mb-6">
             Connectez-vous pour retrouver ce qui compte.
           </p>
 

@@ -120,7 +120,7 @@ body {
   left: 0;
   width: 100%;
   height: 50vh;
-  background: radial-gradient(circle at 50% 50%, rgba(216, 226, 255, 0.4) 0%, rgba(249, 249, 254, 0) 70%);
+  background: radial-gradient(circle at 50% 50%, rgba(34, 50, 80, 0.35) 0%, rgba(249, 249, 254, 0) 70%);
   z-index: -1;
 }
 
