@@ -22,10 +22,10 @@ export default function SplashPage() {
 
   return (
     <div
-      className="relative min-h-[100dvh] flex flex-col items-center justify-center pb-24 overflow-hidden"
+      className="relative min-h-[100dvh] flex flex-col overflow-hidden"
       style={{ background: "linear-gradient(180deg, #141f38 0%, #223250 45%, #4d6683 100%)" }}
     >
-      <div className="relative flex flex-col items-center">
+      <div className="flex-1 flex items-center justify-center">
         <div className="relative w-[280px] h-[280px] flex items-center justify-center">
           {/* Radar pings behind the magnifier */}
           <span className="absolute w-24 h-24 rounded-full border border-blue-200/40 radar-ping" />
@@ -56,11 +56,14 @@ export default function SplashPage() {
             draggable={false}
           />
         </div>
+      </div>
 
-        <div className="splash-fade-up flex flex-col items-center mt-20" style={{ animationDelay: "0.15s" }}>
-          <h1 className="font-headline-lg text-headline-lg text-white tracking-tight">Objely</h1>
-          <p className="font-body-md text-body-md text-blue-200/80 mt-1">Perdu. Trouvé. Retrouvé.</p>
-        </div>
+      <div
+        className="splash-fade-up flex flex-col items-center pb-12"
+        style={{ animationDelay: "0.15s", paddingBottom: "calc(3rem + env(safe-area-inset-bottom))" }}
+      >
+        <h1 className="font-headline-lg text-headline-lg text-white tracking-tight">Objely</h1>
+        <p className="font-body-md text-body-md text-blue-200/80 mt-1">Perdu. Trouvé. Retrouvé.</p>
       </div>
     </div>
   );
