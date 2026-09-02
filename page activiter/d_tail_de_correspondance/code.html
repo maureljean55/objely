@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+
+<html class="light" lang="fr"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" name="viewport"/>
+<title>Correspondance - Objely</title>
+<!-- Tailwind CSS -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<!-- Material Symbols -->
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<!-- Google Fonts -->
+<link href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@400;600;700;800&amp;family=Inter:wght@600&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<!-- Tailwind Config -->
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "on-primary": "#ffffff",
+                        "secondary-fixed-dim": "#d1bcff",
+                        "on-secondary-fixed-variant": "#5700c9",
+                        "outline-variant": "#c3c5d9",
+                        "outline": "#737688",
+                        "error-container": "#ffdad6",
+                        "surface-dim": "#d8dadf",
+                        "primary-container": "#0055ff",
+                        "on-error": "#ffffff",
+                        "on-surface-variant": "#434656",
+                        "surface-container-highest": "#e1e2e7",
+                        "inverse-on-surface": "#eff0f5",
+                        "surface-bright": "#f8f9fe",
+                        "surface-container-low": "#f2f3f8",
+                        "tertiary-container": "#007751",
+                        "on-tertiary-fixed": "#002113",
+                        "surface-container-lowest": "#ffffff",
+                        "primary": "#0041c8",
+                        "surface-tint": "#004dea",
+                        "on-secondary-container": "#ddcdff",
+                        "on-background": "#191c1f",
+                        "on-secondary": "#ffffff",
+                        "surface-container-high": "#e7e8ed",
+                        "tertiary-fixed": "#6ffbbe",
+                        "background": "#f8f9fe",
+                        "on-surface": "#191c1f",
+                        "tertiary-fixed-dim": "#4edea3",
+                        "inverse-surface": "#2e3134",
+                        "on-tertiary-container": "#83ffc6",
+                        "on-tertiary": "#ffffff",
+                        "error": "#ba1a1a",
+                        "inverse-primary": "#b6c4ff",
+                        "tertiary": "#005c3e",
+                        "on-tertiary-fixed-variant": "#005236",
+                        "on-secondary-fixed": "#23005b",
+                        "on-primary-container": "#e3e6ff",
+                        "primary-fixed-dim": "#b6c4ff",
+                        "on-primary-fixed": "#001551",
+                        "secondary": "#5400c3",
+                        "on-primary-fixed-variant": "#0039b3",
+                        "surface-variant": "#e1e2e7",
+                        "surface": "#f8f9fe",
+                        "on-error-container": "#93000a",
+                        "surface-container": "#eceef3",
+                        "secondary-container": "#7000ff",
+                        "primary-fixed": "#dce1ff",
+                        "secondary-fixed": "#e9ddff"
+                    },
+                    borderRadius: {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "2xl": "1.5rem",
+                        "full": "9999px"
+                    },
+                    spacing: {
+                        "safe-bottom": "34px",
+                        "stack-sm": "8px",
+                        "gutter-mobile": "12px",
+                        "stack-md": "16px",
+                        "margin-mobile": "20px",
+                        "stack-lg": "24px"
+                    },
+                    fontFamily: {
+                        "headline-sm": ["Hanken Grotesk"],
+                        "display-lg": ["Hanken Grotesk"],
+                        "label-caps": ["Inter"],
+                        "headline-md": ["Hanken Grotesk"],
+                        "body-lg": ["Hanken Grotesk"],
+                        "body-sm": ["Hanken Grotesk"],
+                        "button-text": ["Hanken Grotesk"]
+                    },
+                    fontSize: {
+                        "headline-sm": ["20px", { "lineHeight": "25px", "fontWeight": "600" }],
+                        "display-lg": ["34px", { "lineHeight": "41px", "letterSpacing": "-0.02em", "fontWeight": "800" }],
+                        "label-caps": ["12px", { "lineHeight": "16px", "letterSpacing": "0.05em", "fontWeight": "600" }],
+                        "headline-md": ["24px", { "lineHeight": "30px", "letterSpacing": "-0.01em", "fontWeight": "700" }],
+                        "body-lg": ["17px", { "lineHeight": "24px", "fontWeight": "400" }],
+                        "body-sm": ["15px", { "lineHeight": "20px", "fontWeight": "400" }],
+                        "button-text": ["16px", { "lineHeight": "20px", "fontWeight": "600" }]
+                    },
+                    boxShadow: {
+                        'soft-1': '0px 4px 20px rgba(0, 0, 0, 0.04)',
+                        'soft-2': '0px 10px 30px rgba(0, 85, 255, 0.08)',
+                    }
+                }
+            }
+        }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .material-symbols-outlined.filled {
+            font-variation-settings: 'FILL' 1;
+        }
+        
+        /* Glassmorphism utilities */
+        .glass-nav {
+            background-color: rgba(248, 249, 254, 0.8);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+        }
+        
+        .glass-bottom-bar {
+            background-color: rgba(255, 255, 255, 0.85);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+        }
+
+        /* Match animation */
+        @keyframes pulse-ring {
+            0% { transform: scale(0.8); opacity: 0.5; }
+            100% { transform: scale(1.3); opacity: 0; }
+        }
+        .match-pulse::before {
+            content: '';
+            position: absolute;
+            inset: -8px;
+            border-radius: 50%;
+            background-color: #0055ff;
+            animation: pulse-ring 2s cubic-bezier(0.215, 0.61, 0.355, 1) infinite;
+            z-index: -1;
+        }
+    </style>
+</head>
+<body class="bg-background text-on-background min-h-screen pb-[140px] font-body-lg">
+<!-- Top Navigation (Modified from JSON TopAppBar for back functionality) -->
+<header class="docked full-width top-0 sticky z-50 flex items-center justify-between px-margin-mobile h-16 w-full glass-nav flat no shadows">
+<button class="w-10 h-10 flex items-center justify-center text-primary dark:text-inverse-primary hover:opacity-70 transition-opacity Active: scale-95 duration-150">
+<span class="material-symbols-outlined">arrow_back</span>
+</button>
+<h1 class="font-headline-sm text-headline-sm text-on-surface dark:text-inverse-on-surface text-center flex-1">Correspondance</h1>
+<div class="w-10 h-10"></div> <!-- Spacer for centering -->
+</header>
+<main class="px-margin-mobile pt-stack-md flex flex-col gap-stack-lg">
+<!-- Header Section -->
+<section class="text-center">
+<h2 class="font-headline-md text-headline-md text-on-surface mb-stack-sm">🎉 Une correspondance possible !</h2>
+<p class="font-body-lg text-body-lg text-on-surface-variant">Nous avons trouvé un objet qui pourrait être le vôtre.</p>
+</section>
+<!-- Comparison Cards -->
+<section class="relative">
+<!-- Center Match Badge -->
+<div class="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 z-10 flex flex-col items-center">
+<div class="relative match-pulse flex items-center justify-center w-[72px] h-[72px] bg-primary text-on-primary rounded-full shadow-soft-2 border-4 border-surface-container-lowest">
+<span class="font-headline-sm text-headline-sm">96%</span>
+</div>
+</div>
+<div class="grid grid-cols-2 gap-gutter-mobile">
+<!-- Lost Object (Left) -->
+<div class="bg-surface-container-lowest rounded-2xl shadow-soft-1 flex flex-col overflow-hidden">
+<div class="px-3 py-2 bg-surface-container-low border-b border-surface-variant text-center">
+<span class="font-label-caps text-label-caps text-on-surface-variant opacity-60 uppercase">MON OBJET PERDU</span>
+</div>
+<div class="h-32 bg-surface-variant">
+<img alt="Portefeuille marron perdu" class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida/AEtjO1WnE9cPRiefp85qLCpw8wiKBNyQvUoaq1iVytOu_3ibUt9GNQ1Njc6AzdUIREf0jfhbf0r8KyTu5zRr3UEY57hrBebbl8P_S0wpeJOF0sNSPDkUgwj03zR-Wz121g-wSHRVAr0wmQgpdstAGg_cT2zLrAGyZ7fB7m-oE9kdqQzNjJ9JF8y3PFnQnesjn2apw4oN2puWMut1_EQdgaBUOHUcndD9FGCY-Ez4a1LYgojfldGdDfDTfpozrnHi"/>
+</div>
+<div class="p-3 flex flex-col gap-1">
+<h3 class="font-button-text text-button-text text-on-surface line-clamp-1">Portefeuille marron</h3>
+<div class="flex items-center gap-1 text-on-surface-variant mt-1">
+<span class="material-symbols-outlined text-[16px]">calendar_today</span>
+<span class="font-body-sm text-body-sm text-[13px] line-clamp-1">Perdu le 12 oct.</span>
+</div>
+<div class="flex items-center gap-1 text-on-surface-variant">
+<span class="material-symbols-outlined text-[16px]">location_on</span>
+<span class="font-body-sm text-body-sm text-[13px] line-clamp-1">Paris 10e</span>
+</div>
+</div>
+</div>
+<!-- Found Object (Right) -->
+<div class="bg-surface-container-lowest rounded-2xl shadow-soft-1 flex flex-col overflow-hidden ring-2 ring-primary ring-offset-2 ring-offset-background">
+<div class="px-3 py-2 bg-primary/10 border-b border-primary/20 text-center">
+<span class="font-label-caps text-label-caps text-primary uppercase">OBJET TROUVÉ</span>
+</div>
+<div class="h-32 bg-surface-variant">
+<img alt="Portefeuille marron trouvé" class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida/AEtjO1WnE9cPRiefp85qLCpw8wiKBNyQvUoaq1iVytOu_3ibUt9GNQ1Njc6AzdUIREf0jfhbf0r8KyTu5zRr3UEY57hrBebbl8P_S0wpeJOF0sNSPDkUgwj03zR-Wz121g-wSHRVAr0wmQgpdstAGg_cT2zLrAGyZ7fB7m-oE9kdqQzNjJ9JF8y3PFnQnesjn2apw4oN2puWMut1_EQdgaBUOHUcndD9FGCY-Ez4a1LYgojfldGdDfDTfpozrnHi"/>
+</div>
+<div class="p-3 flex flex-col gap-1">
+<h3 class="font-button-text text-button-text text-on-surface line-clamp-1">Portefeuille marron</h3>
+<div class="flex items-center gap-1 text-primary mt-1">
+<span class="material-symbols-outlined text-[16px]">schedule</span>
+<span class="font-body-sm text-body-sm text-[13px] font-medium line-clamp-1">Trouvé aujourd'hui</span>
+</div>
+<div class="flex items-center gap-1 text-on-surface-variant">
+<span class="material-symbols-outlined text-[16px]">location_on</span>
+<span class="font-body-sm text-body-sm text-[13px] line-clamp-1">Gare du Nord</span>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- Match Criteria List -->
+<section class="bg-surface-container-lowest rounded-2xl p-stack-md shadow-soft-1">
+<h3 class="font-button-text text-button-text text-on-surface mb-stack-sm">Détails de la correspondance</h3>
+<ul class="flex flex-col gap-3">
+<li class="flex items-center gap-3">
+<div class="w-6 h-6 rounded-full bg-primary/10 flex items-center justify-center text-primary">
+<span class="material-symbols-outlined text-[16px] filled">check_circle</span>
+</div>
+<span class="font-body-sm text-body-sm text-on-surface">Même catégorie</span>
+</li>
+<li class="flex items-center gap-3">
+<div class="w-6 h-6 rounded-full bg-primary/10 flex items-center justify-center text-primary">
+<span class="material-symbols-outlined text-[16px] filled">check_circle</span>
+</div>
+<span class="font-body-sm text-body-sm text-on-surface">Couleur similaire</span>
+</li>
+<li class="flex items-center gap-3">
+<div class="w-6 h-6 rounded-full bg-primary/10 flex items-center justify-center text-primary">
+<span class="material-symbols-outlined text-[16px] filled">check_circle</span>
+</div>
+<span class="font-body-sm text-body-sm text-on-surface">Zone proche</span>
+</li>
+<li class="flex items-center gap-3">
+<div class="w-6 h-6 rounded-full bg-surface-variant flex items-center justify-center text-on-surface-variant">
+<span class="material-symbols-outlined text-[16px]">check_circle</span>
+</div>
+<span class="font-body-sm text-body-sm text-on-surface-variant">Description similaire</span>
+</li>
+</ul>
+</section>
+</main>
+<!-- Bottom Action Area -->
+<div class="fixed bottom-0 left-0 w-full z-50 glass-bottom-bar px-margin-mobile py-stack-md pb-safe-bottom shadow-[0_-4px_20px_rgba(0,0,0,0.05)] border-t border-surface-variant">
+<div class="flex flex-col gap-stack-sm">
+<button class="w-full h-[56px] bg-primary text-on-primary rounded-[16px] font-button-text text-button-text flex items-center justify-center gap-2 hover:brightness-110 active:scale-[0.98] transition-all shadow-soft-2">
+<span class="material-symbols-outlined">forum</span>
+                Contacter le déclarant
+            </button>
+<button class="w-full h-[48px] bg-[#EBF2FF] text-primary rounded-[16px] font-button-text text-button-text flex items-center justify-center hover:brightness-95 active:scale-[0.98] transition-all">
+                Ce n'est pas mon objet
+            </button>
+</div>
+</div>
+</body></html>

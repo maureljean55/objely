@@ -51,7 +51,7 @@ export default function HomeDashboardPage() {
           </Link>
           <div className="flex items-center gap-2">
             <Link
-              href="/chat"
+              href="/activity"
               aria-label="Notifications"
               className="relative w-11 h-11 rounded-full bg-surface-container-lowest shadow-sm flex items-center justify-center text-on-surface-variant hover:text-primary transition-colors"
             >
@@ -91,7 +91,7 @@ export default function HomeDashboardPage() {
             <span className="material-symbols-outlined mb-1">search</span>
             Recherche
           </Link>
-          <Link className="text-on-surface-variant font-label-md text-label-md hover:opacity-80 transition-opacity flex flex-col items-center" href="/chat">
+          <Link className="text-on-surface-variant font-label-md text-label-md hover:opacity-80 transition-opacity flex flex-col items-center" href="/activity">
             <span className="material-symbols-outlined mb-1">explore</span>
             Activité
           </Link>

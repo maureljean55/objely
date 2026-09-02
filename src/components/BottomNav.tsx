@@ -5,7 +5,7 @@ type NavKey = "home" | "search" | "activity" | "profile";
 const ITEMS: { key: NavKey; href: string; icon: string; label: string }[] = [
   { key: "home", href: "/", icon: "home", label: "Accueil" },
   { key: "search", href: "/search", icon: "search", label: "Recherche" },
-  { key: "activity", href: "/chat", icon: "explore", label: "Activité" },
+  { key: "activity", href: "/activity", icon: "explore", label: "Activité" },
   { key: "profile", href: "/profile", icon: "person", label: "Profil" },
 ];
 
