@@ -4,10 +4,10 @@ import { useEffect } from "react";
 import { useRouter } from "next/navigation";
 
 const ORBIT_OBJECTS = [
-  { id: "wallet", src: "/illustrations/splash/wallet.jpg", alt: "Portefeuille", angle: 0 },
-  { id: "phone", src: "/illustrations/splash/phone.jpg", alt: "Téléphone", angle: 90 },
-  { id: "keys", src: "/illustrations/splash/keys.jpg", alt: "Clés", angle: 180 },
-  { id: "earbuds", src: "/illustrations/splash/earbuds.jpg", alt: "Écouteurs", angle: 270 },
+  { id: "wallet", src: "/illustrations/splash/wallet.png", alt: "Portefeuille", angle: 0 },
+  { id: "phone", src: "/illustrations/splash/phone.png", alt: "Téléphone", angle: 90 },
+  { id: "keys", src: "/illustrations/splash/keys.png", alt: "Clés", angle: 180 },
+  { id: "earbuds", src: "/illustrations/splash/earbuds.png", alt: "Écouteurs", angle: 270 },
 ] as const;
 
 const ORBIT_RADIUS = 120;
@@ -23,7 +23,7 @@ export default function SplashPage() {
   return (
     <div
       className="relative min-h-screen flex flex-col items-center justify-center overflow-hidden"
-      style={{ background: "radial-gradient(circle at 50% 38%, #4a7bfa 0%, #2f5de8 45%, #1230a8 100%)" }}
+      style={{ background: "linear-gradient(180deg, #141f38 0%, #223250 45%, #4d6683 100%)" }}
     >
       <div className="relative flex flex-col items-center">
         <div className="relative w-[280px] h-[280px] flex items-center justify-center">
@@ -39,9 +39,9 @@ export default function SplashPage() {
                 className="absolute top-1/2 left-1/2 w-14 h-14 -mt-7 -ml-7"
                 style={{ transform: `rotate(${obj.angle}deg) translate(${ORBIT_RADIUS}px) rotate(-${obj.angle}deg)` }}
               >
-                <div className="orbit-item-inner w-full h-full rounded-full overflow-hidden ring-2 ring-white/70 shadow-[0_6px_20px_rgba(0,0,0,0.35)]">
+                <div className="orbit-item-inner w-full h-full flex items-center justify-center drop-shadow-[0_6px_14px_rgba(0,0,0,0.45)]">
                   {/* eslint-disable-next-line @next/next/no-img-element */}
-                  <img src={obj.src} alt={obj.alt} className="w-full h-full object-cover" />
+                  <img src={obj.src} alt={obj.alt} className="max-w-full max-h-full object-contain" />
                 </div>
               </div>
             ))}
