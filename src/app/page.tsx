@@ -57,7 +57,7 @@ export default function SplashPage() {
           />
         </div>
 
-        <div className="splash-fade-up flex flex-col items-center mt-10" style={{ animationDelay: "0.15s" }}>
+        <div className="splash-fade-up flex flex-col items-center mt-20" style={{ animationDelay: "0.15s" }}>
           <h1 className="font-headline-lg text-headline-lg text-white tracking-tight">Objely</h1>
           <p className="font-body-md text-body-md text-blue-200/80 mt-1">Perdu. Trouvé. Retrouvé.</p>
         </div>
