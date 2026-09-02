@@ -5,7 +5,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 
 const ACCENT = "#3A5CF9";
-const HEADER_HEIGHT = "calc(440px + env(safe-area-inset-top))";
+const HEADER_HEIGHT = "calc(340px + env(safe-area-inset-top))";
 
 export default function LoginPage() {
   const router = useRouter();
@@ -30,21 +30,21 @@ export default function LoginPage() {
         />
 
         <div
-          className="w-full max-w-md mx-auto px-container-margin pb-6 flex flex-col"
-          style={{ paddingTop: "calc(4rem + env(safe-area-inset-top))" }}
+          className="w-full max-w-md mx-auto px-container-margin pb-4 flex flex-col"
+          style={{ paddingTop: "calc(2rem + env(safe-area-inset-top))" }}
         >
-          <h1 className="font-headline-lg-mobile font-bold text-[38px] leading-[1.12] tracking-[-0.01em] text-on-surface text-center mb-3">
+          <h1 className="font-headline-lg-mobile font-bold text-[32px] leading-[1.12] tracking-[-0.01em] text-on-surface text-center mb-2">
             Content de
             <br />
             vous revoir !
           </h1>
-          <p className="font-body-md text-body-md text-on-surface-variant text-center mb-6">
+          <p className="font-body-md text-body-md text-on-surface-variant text-center mb-4">
             Connectez-vous pour retrouver ce qui compte.
           </p>
 
-          <div className="relative w-56 mx-auto">
-            <CloudShape className="absolute -left-10 top-6 w-14 opacity-80 -z-10" />
-            <CloudShape className="absolute -right-8 top-0 w-20 opacity-70 -z-10" />
+          <div className="relative w-40 mx-auto">
+            <CloudShape className="absolute -left-8 top-4 w-10 opacity-80 -z-10" />
+            <CloudShape className="absolute -right-6 top-0 w-14 opacity-70 -z-10" />
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img
               src="/illustrations/login-mascot.png"
