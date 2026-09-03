@@ -4,10 +4,32 @@ import { useState, type FormEvent } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 
+const HEADER_HEIGHT = "calc(112px + env(safe-area-inset-top))";
+const FOOTER_HEIGHT = "calc(64px + env(safe-area-inset-bottom))";
+
+const COUNTRIES = [
+  { code: "FR", dial: "+33", flag: "🇫🇷", name: "France" },
+  { code: "CI", dial: "+225", flag: "🇨🇮", name: "Côte d'Ivoire" },
+  { code: "SN", dial: "+221", flag: "🇸🇳", name: "Sénégal" },
+  { code: "ML", dial: "+223", flag: "🇲🇱", name: "Mali" },
+  { code: "CM", dial: "+237", flag: "🇨🇲", name: "Cameroun" },
+  { code: "BE", dial: "+32", flag: "🇧🇪", name: "Belgique" },
+  { code: "CH", dial: "+41", flag: "🇨🇭", name: "Suisse" },
+  { code: "CA", dial: "+1", flag: "🇨🇦", name: "Canada" },
+  { code: "US", dial: "+1", flag: "🇺🇸", name: "États-Unis" },
+  { code: "GB", dial: "+44", flag: "🇬🇧", name: "Royaume-Uni" },
+  { code: "DE", dial: "+49", flag: "🇩🇪", name: "Allemagne" },
+  { code: "ES", dial: "+34", flag: "🇪🇸", name: "Espagne" },
+  { code: "MA", dial: "+212", flag: "🇲🇦", name: "Maroc" },
+  { code: "DZ", dial: "+213", flag: "🇩🇿", name: "Algérie" },
+  { code: "TN", dial: "+216", flag: "🇹🇳", name: "Tunisie" },
+] as const;
+
 export default function RegisterPage() {
   const router = useRouter();
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
+  const [countryDial, setCountryDial] = useState("+33");
   const [phone, setPhone] = useState("");
   const [address, setAddress] = useState("");
   const [password, setPassword] = useState("");
@@ -25,28 +47,23 @@ export default function RegisterPage() {
 
   return (
     <div className="font-body-md text-on-surface antialiased min-h-[100dvh] flex flex-col bg-background">
-      <header
-        className="w-full px-container-margin pb-base flex items-center justify-end sticky top-0 z-50 bg-background/80 backdrop-blur-md"
-        style={{ paddingTop: "calc(0.5rem + env(safe-area-inset-top))" }}
+      <div
+        className="fixed top-0 inset-x-0 z-20 bg-background/95 backdrop-blur-md border-b border-outline-variant/20"
+        style={{ paddingTop: "env(safe-area-inset-top)" }}
       >
-        <Link
-          href="/home"
-          aria-label="Fermer"
-          className="w-10 h-10 flex items-center justify-center rounded-full hover:bg-surface-container-high/50 transition-colors"
-        >
-          <span className="material-symbols-outlined text-on-surface-variant">close</span>
-        </Link>
-      </header>
-
-      <main className="grow w-full max-w-md mx-auto px-container-margin pt-md pb-16 flex flex-col">
-        <div className="mb-xl">
+        <div className="w-full max-w-md mx-auto px-container-margin py-lg">
           <h1 className="font-headline-lg-mobile text-headline-lg-mobile text-on-surface mb-2">Créer un compte</h1>
           <p className="font-body-md text-body-md text-on-surface-variant">
             Rejoignez Objely pour déclarer et retrouver vos objets.
           </p>
         </div>
+      </div>
 
-        <form onSubmit={handleSubmit} className="flex flex-col gap-lg">
+      <main
+        className="grow w-full max-w-md mx-auto px-container-margin flex flex-col"
+        style={{ paddingTop: HEADER_HEIGHT, paddingBottom: FOOTER_HEIGHT }}
+      >
+        <form onSubmit={handleSubmit} className="flex flex-col gap-lg py-lg">
           <div>
             <label htmlFor="name" className="block font-label-md text-[11px] text-outline uppercase tracking-wider mb-2">
               Nom complet
@@ -81,15 +98,34 @@ export default function RegisterPage() {
             <label htmlFor="phone" className="block font-label-md text-[11px] text-outline uppercase tracking-wider mb-2">
               Numéro de téléphone
             </label>
-            <input
-              id="phone"
-              type="tel"
-              value={phone}
-              onChange={(e) => setPhone(e.target.value)}
-              placeholder="06 12 34 56 78"
-              autoComplete="tel"
-              className="w-full bg-surface-container-lowest border border-surface-container-highest rounded-[16px] px-4 py-4 font-body-lg text-body-lg text-on-surface soft-shadow focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all"
-            />
+            <div className="flex gap-2">
+              <div className="relative shrink-0">
+                <select
+                  value={countryDial}
+                  onChange={(e) => setCountryDial(e.target.value)}
+                  aria-label="Indicatif du pays"
+                  className="h-full w-[92px] appearance-none bg-surface-container-lowest border border-surface-container-highest rounded-[16px] pl-3 pr-7 py-4 font-body-lg text-body-lg text-on-surface soft-shadow focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all"
+                >
+                  {COUNTRIES.map((c) => (
+                    <option key={c.code} value={c.dial}>
+                      {c.flag} {c.dial}
+                    </option>
+                  ))}
+                </select>
+                <span className="material-symbols-outlined absolute right-1.5 top-1/2 -translate-y-1/2 text-on-surface-variant text-[18px] pointer-events-none">
+                  expand_more
+                </span>
+              </div>
+              <input
+                id="phone"
+                type="tel"
+                value={phone}
+                onChange={(e) => setPhone(e.target.value)}
+                placeholder="06 12 34 56 78"
+                autoComplete="tel"
+                className="flex-1 min-w-0 bg-surface-container-lowest border border-surface-container-highest rounded-[16px] px-4 py-4 font-body-lg text-body-lg text-on-surface soft-shadow focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all"
+              />
+            </div>
           </div>
 
           <div>
@@ -160,14 +196,19 @@ export default function RegisterPage() {
             Créer un compte
           </button>
         </form>
+      </main>
 
-        <p className="font-body-md text-body-md text-on-surface-variant text-center mt-lg">
+      <div
+        className="fixed bottom-0 inset-x-0 z-20 bg-background/90 backdrop-blur-xl border-t border-surface-container-highest"
+        style={{ paddingBottom: "env(safe-area-inset-bottom)" }}
+      >
+        <p className="w-full max-w-md mx-auto px-container-margin py-4 font-body-md text-body-md text-on-surface-variant text-center">
           Déjà un compte ?{" "}
           <Link href="/login" className="text-primary font-semibold">
             Se connecter
           </Link>
         </p>
-      </main>
+      </div>
     </div>
   );
 }
