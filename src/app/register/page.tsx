@@ -29,7 +29,8 @@ export default function RegisterPage() {
   const router = useRouter();
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
-  const [countryDial, setCountryDial] = useState("+33");
+  const [countryCode, setCountryCode] = useState<(typeof COUNTRIES)[number]["code"]>("FR");
+  const selectedCountry = COUNTRIES.find((c) => c.code === countryCode) ?? COUNTRIES[0];
   const [phone, setPhone] = useState("");
   const [address, setAddress] = useState("");
   const [password, setPassword] = useState("");
@@ -101,30 +102,33 @@ export default function RegisterPage() {
             <div className="flex gap-2">
               <div className="relative shrink-0">
                 <select
-                  value={countryDial}
-                  onChange={(e) => setCountryDial(e.target.value)}
-                  aria-label="Indicatif du pays"
-                  className="h-full w-[92px] appearance-none bg-surface-container-lowest border border-surface-container-highest rounded-[16px] pl-3 pr-7 py-4 font-body-lg text-body-lg text-on-surface soft-shadow focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all"
+                  value={countryCode}
+                  onChange={(e) => setCountryCode(e.target.value as (typeof COUNTRIES)[number]["code"])}
+                  aria-label="Pays"
+                  className="h-full w-[64px] appearance-none bg-surface-container-lowest border border-surface-container-highest rounded-[16px] pl-3 pr-6 py-4 font-body-lg text-body-lg text-on-surface soft-shadow focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all"
                 >
                   {COUNTRIES.map((c) => (
-                    <option key={c.code} value={c.dial}>
-                      {c.flag} {c.dial}
+                    <option key={c.code} value={c.code}>
+                      {c.flag} {c.name}
                     </option>
                   ))}
                 </select>
-                <span className="material-symbols-outlined absolute right-1.5 top-1/2 -translate-y-1/2 text-on-surface-variant text-[18px] pointer-events-none">
+                <span className="material-symbols-outlined absolute right-1 top-1/2 -translate-y-1/2 text-on-surface-variant text-[18px] pointer-events-none">
                   expand_more
                 </span>
               </div>
-              <input
-                id="phone"
-                type="tel"
-                value={phone}
-                onChange={(e) => setPhone(e.target.value)}
-                placeholder="06 12 34 56 78"
-                autoComplete="tel"
-                className="flex-1 min-w-0 bg-surface-container-lowest border border-surface-container-highest rounded-[16px] px-4 py-4 font-body-lg text-body-lg text-on-surface soft-shadow focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all"
-              />
+              <div className="flex-1 min-w-0 flex items-center gap-2 bg-surface-container-lowest border border-surface-container-highest rounded-[16px] px-4 py-4 soft-shadow focus-within:ring-2 focus-within:ring-primary/20 focus-within:border-primary transition-all">
+                <span className="font-body-lg text-body-lg text-on-surface-variant shrink-0">{selectedCountry.dial}</span>
+                <input
+                  id="phone"
+                  type="tel"
+                  value={phone}
+                  onChange={(e) => setPhone(e.target.value)}
+                  placeholder="6 12 34 56 78"
+                  autoComplete="tel"
+                  className="flex-1 min-w-0 bg-transparent font-body-lg text-body-lg text-on-surface focus:outline-none"
+                />
+              </div>
             </div>
           </div>
 

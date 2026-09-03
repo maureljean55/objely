@@ -24,7 +24,8 @@ function ProfileSummary() {
       <Link
         href="/profile/settings"
         aria-label="Paramètres du compte"
-        className="absolute top-4 right-container-margin md:right-0 w-10 h-10 rounded-full bg-surface-container-lowest shadow-sm flex items-center justify-center text-on-surface-variant hover:text-primary transition-colors"
+        className="absolute right-container-margin md:right-0 w-10 h-10 rounded-full bg-surface-container-lowest shadow-sm flex items-center justify-center text-on-surface-variant hover:text-primary transition-colors"
+        style={{ top: "calc(1rem + env(safe-area-inset-top))" }}
       >
         <span className="material-symbols-outlined text-[20px]">settings</span>
       </Link>

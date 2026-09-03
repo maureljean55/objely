@@ -7,7 +7,7 @@ export default function ActivityPage() {
   return (
     <div className="bg-background text-on-background font-body-md antialiased min-h-screen pb-28 md:pb-12">
       <header className="glass-header fixed top-0 inset-x-0 z-50 flex items-center px-container-margin min-h-16 pt-[env(safe-area-inset-top)] w-full shadow-[0_1px_0_rgba(0,0,0,0.05)]">
-        <h1 className="font-display text-headline-lg-mobile text-headline-lg-mobile text-primary">Activité</h1>
+        <h1 className="font-display text-headline-lg-mobile text-headline-lg-mobile text-on-surface">Activité</h1>
       </header>
 
       <main className="pt-[calc(88px+env(safe-area-inset-top))] max-w-2xl mx-auto">
