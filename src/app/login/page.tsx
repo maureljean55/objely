@@ -12,6 +12,7 @@ export default function LoginPage() {
   const [identifier, setIdentifier] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
+  const [rememberMe, setRememberMe] = useState(true);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -23,7 +24,7 @@ export default function LoginPage() {
     setIsSubmitting(true);
     setError(null);
 
-    const { error: signInError } = await signInWithPassword(identifier.trim(), password);
+    const { error: signInError } = await signInWithPassword(identifier.trim(), password, rememberMe);
 
     if (signInError) {
       setError(
@@ -118,7 +119,16 @@ export default function LoginPage() {
                 </span>
               </button>
             </div>
-            <div className="flex justify-end mt-2">
+            <div className="flex items-center justify-between mt-3">
+              <label className="flex items-center gap-2 cursor-pointer">
+                <input
+                  type="checkbox"
+                  checked={rememberMe}
+                  onChange={(e) => setRememberMe(e.target.checked)}
+                  className="w-[18px] h-[18px] rounded border-outline-variant text-primary focus:ring-primary/30"
+                />
+                <span className="font-body-md text-body-md text-[14px] text-on-surface-variant">Se souvenir de moi</span>
+              </label>
               <button type="button" className="font-body-md text-body-md text-[14px] font-semibold text-primary">
                 Mot de passe oublié ?
               </button>

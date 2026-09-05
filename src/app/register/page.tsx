@@ -41,6 +41,7 @@ export default function RegisterPage() {
   const [phone, setPhone] = useState("");
   const [address, setAddress] = useState("");
   const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [acceptedTerms, setAcceptedTerms] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -58,12 +59,14 @@ export default function RegisterPage() {
   );
   const score = Object.values(criteria).filter(Boolean).length;
   const strength = STRENGTH_LEVELS[Math.max(score - 1, 0)];
+  const passwordsMatch = confirmPassword.length > 0 && password === confirmPassword;
 
   const canSubmit =
     name.trim().length > 0 &&
     email.trim().length > 0 &&
     phone.trim().length > 0 &&
     password.length >= 8 &&
+    passwordsMatch &&
     acceptedTerms &&
     !isSubmitting;
 
@@ -297,6 +300,25 @@ export default function RegisterPage() {
                   <PasswordCriterion met={criteria.symbol} label="1 symbole" />
                 </div>
               </div>
+            )}
+          </div>
+
+          <div>
+            <label htmlFor="confirm-password" className="block font-label-md text-[11px] text-outline uppercase tracking-wider mb-2">
+              Confirmer le mot de passe
+            </label>
+            <input
+              id="confirm-password"
+              type={showPassword ? "text" : "password"}
+              value={confirmPassword}
+              onChange={(e) => setConfirmPassword(e.target.value)}
+              placeholder="Confirmez votre mot de passe"
+              autoComplete="new-password"
+              required
+              className="w-full bg-surface-container-lowest border border-surface-container-highest rounded-[16px] px-4 py-4 font-body-lg text-body-lg text-on-surface soft-shadow focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all"
+            />
+            {confirmPassword.length > 0 && !passwordsMatch && (
+              <p className="font-body-md text-[12px] text-error mt-2">Les mots de passe ne correspondent pas.</p>
             )}
           </div>
 
