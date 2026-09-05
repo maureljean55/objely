@@ -1,38 +1,32 @@
 import Link from "next/link";
 import BottomNav from "@/components/BottomNav";
 import NotificationTicker from "@/components/NotificationTicker";
+import { createClient } from "@/lib/supabase/server";
+import type { Item } from "@/lib/supabase/items";
 
-const RECENT_ITEMS = [
-  {
-    id: "cles-voiture-audi",
-    title: "Clés de voiture Audi",
-    location: "Paris 11e",
-    dotColor: "#5952af",
-    time: "il y a 2 heures",
-    image:
-      "https://lh3.googleusercontent.com/aida-public/AB6AXuDRK6RucXPJII7ghVP1FXYAI2ytBS__UWmYa2iiETABeSVJqpxj3iWXUCwWBCV5Sz_p6NBL4CYb6QkyBCp1p4CRyPouWdW6rxgy-MKt-KYY04jPEwwNFU6uGwS7TD6z698rbVfMumjyyrOtMNvzQDsb3MwaBO5W7pnuiWW3A-h-Czp_KEL39k9CvRZmq-fCKY2UEwdOgwHZBVybPVuVSNEJaFyhJ3zZRK4buS_1LriA6D8G7pp7uEwl",
-  },
-  {
-    id: "portefeuille-cuir",
-    title: "Portefeuille en cuir",
-    location: "Paris 10e",
-    dotColor: "#455d80",
-    time: "hier",
-    image:
-      "https://lh3.googleusercontent.com/aida-public/AB6AXuAVZe46M5x8qXC3h2DOyPoXkYVWeSoWvUI435nRmzIEN1--7pMtaNWlk5Q1VgJPLx5-9u1tGeX6RXZVid3X_lCQXQXvJ4RONcKjQgHs1xyix2HmYk3xP2Q_6HqqILnEqmy7OYiTPFbfsmrEDqLL_A5nESIp-crOQwnTx7lX1jycLQKt2M4SCAdqpKh8mf_5vnYQeena3JPsC1iX82LLXIUKK838cpHi4nelFNdi4dimAk59ayExXFzs",
-  },
-  {
-    id: "iphone-14-pro",
-    title: "iPhone 14 Pro Noir",
-    location: "Paris 8e",
-    dotColor: "#0058bc",
-    time: "lun. 14 oct",
-    image:
-      "https://lh3.googleusercontent.com/aida-public/AB6AXuDcKlnzfvaN-bmeuUIGJ4gfRF2ko9IvqtgDqtgdYkukq_BDKZFzXLxulEcuYXV1uhmP-PsSG0byBv4dxCPU5alrDsE7J2eVzRGXpQk8MVoRdo-vRhfWbNSFrvVqgViJTsa6T8mQvVRjNkmobZ8V7D9tRwz8IxlkQE6OgEjxpTd4-Urlfx01o0aeIadJDQEYUPyI_WQ4Zian0mW4_5w-pN4eOWdUyZjNnHBhzM11Zka02iKlUM1y2qru",
-  },
-];
+function timeAgo(dateStr: string) {
+  const diffMs = Date.now() - new Date(dateStr).getTime();
+  const mins = Math.floor(diffMs / 60000);
+  if (mins < 1) return "à l'instant";
+  if (mins < 60) return `il y a ${mins} min`;
+  const hours = Math.floor(mins / 60);
+  if (hours < 24) return `il y a ${hours} h`;
+  const days = Math.floor(hours / 24);
+  if (days === 1) return "hier";
+  if (days < 7) return `il y a ${days} j`;
+  return new Date(dateStr).toLocaleDateString("fr-FR");
+}
 
-export default function HomeDashboardPage() {
+export default async function HomeDashboardPage() {
+  const supabase = await createClient();
+  const { data: recentFinds } = await supabase
+    .from("items")
+    .select("*")
+    .eq("type", "found")
+    .order("created_at", { ascending: false })
+    .limit(6)
+    .returns<Item[]>();
+
   return (
     <div className="pt-[calc(172px+env(safe-area-inset-top))] pb-[120px] md:pt-[calc(100px+env(safe-area-inset-top))] md:pb-0">
       {/* TopAppBar (mobile) — fixed, stays put while the body scrolls */}
@@ -155,22 +149,34 @@ export default function HomeDashboardPage() {
         {/* Recent Finds — community notifications, not links to a specific item */}
         <section className="space-y-md pt-2">
           <h3 className="font-headline-sm text-headline-sm text-on-background">Objets récemment trouvés près de vous</h3>
-          <div className="flex overflow-x-auto md:grid md:grid-cols-3 gap-md pb-md hide-scrollbar -mx-container-margin px-container-margin md:mx-0 md:px-0">
-            {RECENT_ITEMS.map((item) => (
-              <div key={item.id} className="flex flex-col min-w-[200px] max-w-[200px] md:min-w-0 md:max-w-none shrink-0">
-                <div className="flex items-center gap-1.5 mb-2">
-                  <span className="w-2 h-2 rounded-full" style={{ backgroundColor: item.dotColor }} />
-                  <span className="font-label-md text-label-md text-on-surface-variant">{item.location}</span>
+          {recentFinds && recentFinds.length > 0 ? (
+            <div className="flex overflow-x-auto md:grid md:grid-cols-3 gap-md pb-md hide-scrollbar -mx-container-margin px-container-margin md:mx-0 md:px-0">
+              {recentFinds.map((item) => (
+                <div key={item.id} className="flex flex-col min-w-[200px] max-w-[200px] md:min-w-0 md:max-w-none shrink-0">
+                  <div className="flex items-center gap-1.5 mb-2">
+                    <span className="w-2 h-2 rounded-full bg-primary" />
+                    <span className="font-label-md text-label-md text-on-surface-variant">{item.location || "Lieu non précisé"}</span>
+                  </div>
+                  <div className="relative h-32 rounded-2xl overflow-hidden bg-surface-container-high mb-2 flex items-center justify-center text-primary">
+                    {item.photos?.[0] ? (
+                      // eslint-disable-next-line @next/next/no-img-element
+                      <img alt={item.title} className="w-full h-full object-cover" src={item.photos[0]} />
+                    ) : (
+                      <span className="material-symbols-outlined text-4xl">{item.category_icon || "inventory_2"}</span>
+                    )}
+                  </div>
+                  <h4 className="font-headline-sm text-headline-sm text-on-background line-clamp-1 mb-0.5">{item.title}</h4>
+                  <p className="font-body-md text-body-md text-on-surface-variant">Trouvé {timeAgo(item.created_at)}</p>
                 </div>
-                <div className="relative h-32 rounded-2xl overflow-hidden bg-surface-container-high mb-2">
-                  {/* eslint-disable-next-line @next/next/no-img-element */}
-                  <img alt={item.title} className="w-full h-full object-cover" src={item.image} />
-                </div>
-                <h4 className="font-headline-sm text-headline-sm text-on-background line-clamp-1 mb-0.5">{item.title}</h4>
-                <p className="font-body-md text-body-md text-on-surface-variant">Trouvé {item.time}</p>
-              </div>
-            ))}
-          </div>
+              ))}
+            </div>
+          ) : (
+            <div className="rounded-2xl bg-surface-container-lowest soft-shadow p-lg text-center">
+              <p className="font-body-md text-body-md text-on-surface-variant">
+                Aucun objet trouvé signalé pour le moment. Revenez bientôt !
+              </p>
+            </div>
+          )}
         </section>
       </main>
 

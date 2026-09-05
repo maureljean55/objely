@@ -5,13 +5,10 @@ import Link from "next/link";
 import BottomNav from "@/components/BottomNav";
 import ThemeToggle from "@/components/ThemeToggle";
 import { getCurrentUser } from "@/lib/auth";
+import { getMyItemStats, type MyItemStats } from "@/lib/supabase/items";
 import type { User } from "@supabase/supabase-js";
 
-const STATS = [
-  { value: "3", label: "Objets\nsignalés", color: "text-primary" },
-  { value: "2", label: "Objets\ntrouvés", color: "text-secondary" },
-  { value: "2", label: "Retrouvés", color: "text-tertiary" },
-];
+const EMPTY_STATS: MyItemStats = { signaled: 0, found: 0, recovered: 0 };
 
 const MENU_ITEMS_TOP = [
   { icon: "lock", label: "Confidentialité & Sécurité", bg: "bg-tertiary-fixed/30", color: "text-tertiary", href: "/profile/privacy" },
@@ -23,7 +20,7 @@ const MENU_ITEMS_BOTTOM = [
   { icon: "flag", label: "Signaler un problème", bg: "bg-surface-variant/50", color: "text-on-surface-variant", href: "/profile/report" },
 ];
 
-function ProfileSummary({ user }: { user: User | null }) {
+function ProfileSummary({ user, stats }: { user: User | null; stats: MyItemStats }) {
   const authenticated = !!user;
   const displayName = (user?.user_metadata?.full_name as string | undefined) || user?.email || "";
 
@@ -66,7 +63,11 @@ function ProfileSummary({ user }: { user: User | null }) {
           </section>
 
           <section className="grid grid-cols-3 gap-3 animate-slideUp">
-            {STATS.map((stat) => (
+            {[
+              { value: stats.signaled, label: "Objets\nsignalés", color: "text-primary" },
+              { value: stats.found, label: "Objets\ntrouvés", color: "text-secondary" },
+              { value: stats.recovered, label: "Retrouvés", color: "text-tertiary" },
+            ].map((stat) => (
               <div key={stat.label} className="bg-surface-container-lowest rounded-[24px] p-4 flex flex-col items-center justify-center soft-shadow inner-stroke">
                 <span className={`font-headline-lg-mobile text-headline-lg-mobile mb-1 ${stat.color}`}>{stat.value}</span>
                 <span className="font-label-md text-label-md text-on-surface-variant text-center leading-tight whitespace-pre-line">{stat.label}</span>
@@ -103,6 +104,7 @@ function ProfileSummary({ user }: { user: User | null }) {
 
 export default function UserProfilePage() {
   const [user, setUser] = useState<User | null>(null);
+  const [stats, setStats] = useState<MyItemStats>(EMPTY_STATS);
   const authenticated = !!user;
 
   useEffect(() => {
@@ -111,6 +113,7 @@ export default function UserProfilePage() {
     // warn about a mismatch; there's no session to read during SSR anyway.
     getCurrentUser().then((u) => {
       setUser(u);
+      if (u) getMyItemStats(u.id).then(setStats);
     });
   }, []);
 
@@ -135,7 +138,7 @@ export default function UserProfilePage() {
         className="md:hidden fixed top-0 inset-x-0 z-40 bg-background/95 backdrop-blur-md px-container-margin pb-4 shadow-sm"
         style={{ paddingTop: "env(safe-area-inset-top)" }}
       >
-        <ProfileSummary user={user} />
+        <ProfileSummary user={user} stats={stats} />
       </div>
 
       <main
@@ -144,7 +147,7 @@ export default function UserProfilePage() {
         }`}
       >
         <div className="hidden md:block relative">
-          <ProfileSummary user={user} />
+          <ProfileSummary user={user} stats={stats} />
         </div>
 
         <section className="bg-surface-container-lowest rounded-[32px] soft-shadow inner-stroke overflow-hidden mb-8 animate-slideUp">

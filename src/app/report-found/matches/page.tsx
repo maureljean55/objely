@@ -3,7 +3,8 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
-import { loadDraft, saveDraft, type DeclarationDraft } from "@/lib/declarationDraft";
+import { loadDraft, type DeclarationDraft } from "@/lib/declarationDraft";
+import { createItemFromDraft } from "@/lib/supabase/items";
 
 const STATUS_TEXTS = ["Analyse des déclarations...", "Comparaison des informations...", "Recherche de correspondances..."];
 
@@ -32,6 +33,8 @@ export default function ReportFoundMatchesPage() {
   const [draft, setDraft] = useState<DeclarationDraft>({});
   const [phase, setPhase] = useState<"checking" | "match" | "no-match">("checking");
   const [statusIndex, setStatusIndex] = useState(0);
+  const [isPublishing, setIsPublishing] = useState(false);
+  const [publishError, setPublishError] = useState<string | null>(null);
 
   useEffect(() => {
     const d = loadDraft();
@@ -164,14 +167,27 @@ export default function ReportFoundMatchesPage() {
 
       {phase === "no-match" && (
         <div className="fixed bottom-0 left-0 w-full z-50 flex flex-col gap-2 px-container-margin py-md pb-8 bg-surface/90 backdrop-blur-xl shadow-[0_-4px_20px_rgba(0,0,0,0.05)] rounded-t-2xl">
+          {publishError && (
+            <p className="font-body-md text-[13px] text-error bg-error-container/40 rounded-xl px-4 py-2 text-center">
+              {publishError}
+            </p>
+          )}
           <button
-            onClick={() => {
-              saveDraft({});
+            disabled={isPublishing}
+            onClick={async () => {
+              setIsPublishing(true);
+              setPublishError(null);
+              const { error } = await createItemFromDraft(draft, "found");
+              if (error) {
+                setPublishError("Une erreur est survenue, réessayez.");
+                setIsPublishing(false);
+                return;
+              }
               router.push("/report-found/confirmation");
             }}
-            className="w-full h-14 bg-primary btn-gradient text-on-primary font-headline-sm text-headline-sm rounded-2xl flex items-center justify-center hover:opacity-90 transition-opacity"
+            className="w-full h-14 bg-primary btn-gradient text-on-primary font-headline-sm text-headline-sm rounded-2xl flex items-center justify-center hover:opacity-90 transition-opacity disabled:opacity-50 disabled:cursor-not-allowed"
           >
-            Publier mon objet trouvé
+            {isPublishing ? "Publication…" : "Publier mon objet trouvé"}
           </button>
           <Link
             href="/report-found/details"

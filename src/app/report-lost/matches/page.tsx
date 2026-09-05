@@ -3,7 +3,8 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
-import { loadDraft, saveDraft, type DeclarationDraft } from "@/lib/declarationDraft";
+import { loadDraft, type DeclarationDraft } from "@/lib/declarationDraft";
+import { createItemFromDraft } from "@/lib/supabase/items";
 
 const RADIUS = 40;
 const CIRCUMFERENCE = RADIUS * 2 * Math.PI;
@@ -17,6 +18,8 @@ export default function DeclarationMatchesPage() {
   const [phase, setPhase] = useState<"checking" | "match" | "no-match">("checking");
   const [ringOffset, setRingOffset] = useState(CIRCUMFERENCE);
   const [surveillance, setSurveillance] = useState(true);
+  const [isPublishing, setIsPublishing] = useState(false);
+  const [publishError, setPublishError] = useState<string | null>(null);
 
   useEffect(() => {
     const d = loadDraft();
@@ -227,14 +230,27 @@ export default function DeclarationMatchesPage() {
 
       {phase === "no-match" && (
         <div className="fixed bottom-0 left-0 w-full z-50 flex flex-col gap-2 px-container-margin py-md pb-8 bg-surface/90 backdrop-blur-xl shadow-[0_-4px_20px_rgba(0,0,0,0.05)] rounded-t-2xl">
+          {publishError && (
+            <p className="font-body-md text-[13px] text-error bg-error-container/40 rounded-xl px-4 py-2 text-center">
+              {publishError}
+            </p>
+          )}
           <button
-            onClick={() => {
-              saveDraft({});
+            disabled={isPublishing}
+            onClick={async () => {
+              setIsPublishing(true);
+              setPublishError(null);
+              const { error } = await createItemFromDraft(draft, "lost");
+              if (error) {
+                setPublishError("Une erreur est survenue, réessayez.");
+                setIsPublishing(false);
+                return;
+              }
               router.push("/report-lost/confirmation");
             }}
-            className="w-full h-14 bg-primary btn-gradient text-on-primary font-headline-sm text-headline-sm rounded-2xl flex items-center justify-center hover:opacity-90 transition-opacity"
+            className="w-full h-14 bg-primary btn-gradient text-on-primary font-headline-sm text-headline-sm rounded-2xl flex items-center justify-center hover:opacity-90 transition-opacity disabled:opacity-50 disabled:cursor-not-allowed"
           >
-            Publier mon objet perdu
+            {isPublishing ? "Publication…" : "Publier mon objet perdu"}
           </button>
           <Link
             href="/report-lost/details"

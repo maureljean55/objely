@@ -1,16 +1,40 @@
 import Link from "next/link";
 import BottomNav from "@/components/BottomNav";
-import { MY_ITEMS } from "@/lib/myItems";
+import { createClient } from "@/lib/supabase/server";
+import type { Item } from "@/lib/supabase/items";
 
 const FILTERS = ["Tous", "Téléphones", "Sacs", "Clés", "Portefeuilles", "Ordinateurs", "Autres"];
 
 const STATUS_BADGE = {
   searching: { label: "Recherche active", icon: "radar", className: "bg-error-container text-on-error-container" },
+  matched: { label: "Correspondance trouvée", icon: "task_alt", className: "bg-primary-fixed text-primary" },
   recovered: { label: "Retrouvé", icon: "check_circle", className: "bg-[#e8f5e9] text-[#2e7d32]" },
   returned: { label: "Restitué", icon: "check_circle", className: "bg-[#e8f5e9] text-[#2e7d32]" },
 } as const;
 
-export default function SearchFiltersPage() {
+function declaredDateLabel(item: Item) {
+  const verb = item.type === "lost" ? "Perdu" : "Trouvé";
+  if (!item.occurred_on) return verb;
+  return `${verb} le ${new Date(item.occurred_on).toLocaleDateString("fr-FR")}`;
+}
+
+export default async function SearchFiltersPage() {
+  const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  const { data: myItems } = user
+    ? await supabase
+        .from("items")
+        .select("*")
+        .eq("user_id", user.id)
+        .order("created_at", { ascending: false })
+        .returns<Item[]>()
+    : { data: [] as Item[] };
+
+  const items = myItems ?? [];
+
   return (
     <div className="bg-background text-on-background font-body-md min-h-screen pb-24 md:pb-0 pt-[calc(176px+env(safe-area-inset-top))] md:pt-[calc(132px+env(safe-area-inset-top))]">
       <header className="fixed top-0 inset-x-0 z-50 bg-surface/90 backdrop-blur-md shadow-sm">
@@ -61,7 +85,7 @@ export default function SearchFiltersPage() {
       </header>
 
       <main className="max-w-[1140px] mx-auto px-container-margin pt-lg">
-        {MY_ITEMS.length === 0 ? (
+        {items.length === 0 ? (
           <div className="flex flex-col items-center justify-center py-xl text-center">
             <div className="w-32 h-32 mb-lg bg-surface-container-low rounded-full flex items-center justify-center">
               <span className="material-symbols-outlined text-primary text-[56px]">search_off</span>
@@ -73,7 +97,7 @@ export default function SearchFiltersPage() {
           </div>
         ) : (
           <section className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-md mb-xl">
-            {MY_ITEMS.map((item) => {
+            {items.map((item) => {
               const badge = STATUS_BADGE[item.status];
               return (
                 <Link
@@ -81,9 +105,13 @@ export default function SearchFiltersPage() {
                   href={`/search/${item.id}`}
                   className="bg-surface rounded-lg shadow-soft-bloom overflow-hidden relative group border border-black/5 hover:scale-[1.02] transition-transform duration-300"
                 >
-                  <div className="h-48 w-full relative">
-                    {/* eslint-disable-next-line @next/next/no-img-element */}
-                    <img alt={item.title} className="w-full h-full object-cover rounded-t-lg" src={item.image} />
+                  <div className="h-48 w-full relative bg-surface-container-high flex items-center justify-center text-primary">
+                    {item.photos?.[0] ? (
+                      // eslint-disable-next-line @next/next/no-img-element
+                      <img alt={item.title} className="w-full h-full object-cover rounded-t-lg" src={item.photos[0]} />
+                    ) : (
+                      <span className="material-symbols-outlined text-5xl">{item.category_icon || "inventory_2"}</span>
+                    )}
                     <div
                       className={`absolute top-sm right-sm px-3 py-1 rounded-full font-label-md flex items-center gap-1 shadow-sm backdrop-blur-md bg-opacity-90 ${badge.className}`}
                     >
@@ -101,11 +129,11 @@ export default function SearchFiltersPage() {
                     <div className="flex flex-col gap-1 text-on-surface-variant font-label-md">
                       <div className="flex items-center gap-2">
                         <span className="material-symbols-outlined text-[16px]">calendar_today</span>
-                        <span>{item.declaredDateLabel}</span>
+                        <span>{declaredDateLabel(item)}</span>
                       </div>
                       <div className="flex items-center gap-2">
                         <span className="material-symbols-outlined text-[16px]">location_on</span>
-                        <span>{item.location}</span>
+                        <span>{item.location || "Lieu non précisé"}</span>
                       </div>
                     </div>
                   </div>
