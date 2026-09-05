@@ -5,6 +5,8 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { setAuthenticated } from "@/lib/auth";
 
+const HEADER_HEIGHT = "calc(172px + env(safe-area-inset-top))";
+
 export default function LoginPage() {
   const router = useRouter();
   const [identifier, setIdentifier] = useState("");
@@ -23,30 +25,37 @@ export default function LoginPage() {
   return (
     <div className="min-h-[100dvh] bg-background flex flex-col">
       <div
-        className="w-full max-w-md mx-auto px-container-margin pb-16 flex flex-col grow"
-        style={{ paddingTop: "calc(1rem + env(safe-area-inset-top))" }}
+        className="fixed top-0 inset-x-0 z-20 bg-background/95 backdrop-blur-md border-b border-outline-variant/20"
+        style={{ paddingTop: "env(safe-area-inset-top)" }}
       >
-        <Link
-          href="/home"
-          aria-label="Retour"
-          className="-ml-2 w-10 h-10 flex items-center justify-center rounded-full hover:bg-surface-container-high/60 transition-colors text-on-surface mb-lg"
-        >
-          <span className="material-symbols-outlined">arrow_back</span>
-        </Link>
+        <div className="w-full max-w-md mx-auto px-container-margin pt-4 pb-4 flex flex-col">
+          <Link
+            href="/home"
+            aria-label="Retour"
+            className="-ml-2 w-10 h-10 flex items-center justify-center rounded-full hover:bg-surface-container-high/60 transition-colors text-on-surface"
+          >
+            <span className="material-symbols-outlined">arrow_back</span>
+          </Link>
 
-        <div className="flex flex-col items-center mb-lg">
-          <div className="flex items-center gap-2 mb-4">
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img src="/logo/objely-mark.png" alt="" className="w-9 h-9" />
-            <span className="font-headline-sm text-headline-sm font-bold text-on-surface">Objely</span>
-          </div>
-          <div className="flex items-center gap-1.5 bg-primary/10 text-primary px-3 py-1.5 rounded-full">
-            <span className="material-symbols-outlined text-[16px]">lock</span>
-            <span className="font-label-md text-label-md">Vos données sont protégées</span>
+          <div className="flex flex-col items-center mt-2">
+            <div className="flex items-center gap-2 mb-4">
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img src="/logo/objely-mark.png" alt="" className="w-9 h-9" />
+              <span className="font-headline-sm text-headline-sm font-bold text-on-surface">Objely</span>
+            </div>
+            <div className="flex items-center gap-1.5 bg-primary/10 text-primary px-3 py-1.5 rounded-full">
+              <span className="material-symbols-outlined text-[16px]">lock</span>
+              <span className="font-label-md text-label-md">Vos données sont protégées</span>
+            </div>
           </div>
         </div>
+      </div>
 
-        <h1 className="font-headline-lg-mobile text-headline-lg-mobile text-on-surface mb-2">Connectez-vous à Objely</h1>
+      <main
+        className="w-full max-w-md mx-auto px-container-margin pb-16 flex flex-col grow"
+        style={{ paddingTop: HEADER_HEIGHT }}
+      >
+        <h1 className="font-headline-lg-mobile text-headline-lg-mobile text-on-surface mb-2 mt-lg">Connectez-vous à Objely</h1>
         <p className="font-body-md text-body-md text-on-surface-variant mb-xl">
           Retrouvez vos objets et gérez vos déclarations en toute simplicité.
         </p>
@@ -142,7 +151,7 @@ export default function LoginPage() {
           En continuant, vous acceptez les <span className="text-primary font-medium">Conditions d&apos;utilisation</span> et la{" "}
           <span className="text-primary font-medium">Politique de confidentialité</span> d&apos;Objely.
         </p>
-      </div>
+      </main>
     </div>
   );
 }
