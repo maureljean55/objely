@@ -5,16 +5,13 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { setAuthenticated } from "@/lib/auth";
 
-const ACCENT = "#3A5CF9";
-const HEADER_HEIGHT = "calc(260px + env(safe-area-inset-top))";
-
 export default function LoginPage() {
   const router = useRouter();
-  const [email, setEmail] = useState("");
+  const [identifier, setIdentifier] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
 
-  const canSubmit = email.trim().length > 0 && password.length > 0;
+  const canSubmit = identifier.trim().length > 0 && password.length > 0;
 
   const handleSubmit = (e: FormEvent) => {
     e.preventDefault();
@@ -24,63 +21,50 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="relative min-h-[100dvh] bg-background overflow-hidden">
-      <div className="fixed top-0 inset-x-0 z-20 bg-background" style={{ height: HEADER_HEIGHT }}>
-        <div
-          className="absolute inset-x-0 top-0 h-full -z-10 rounded-b-[100%]"
-          style={{ background: "radial-gradient(circle at 50% 0%, #cfe0fb 0%, rgb(var(--color-background)) 72%)" }}
-        />
-
-        <div
-          className="w-full max-w-md mx-auto px-container-margin pb-2 flex flex-col"
-          style={{ paddingTop: "calc(0.75rem + env(safe-area-inset-top))" }}
+    <div className="min-h-[100dvh] bg-background flex flex-col">
+      <div
+        className="w-full max-w-md mx-auto px-container-margin pb-16 flex flex-col grow"
+        style={{ paddingTop: "calc(1rem + env(safe-area-inset-top))" }}
+      >
+        <Link
+          href="/home"
+          aria-label="Retour"
+          className="-ml-2 w-10 h-10 flex items-center justify-center rounded-full hover:bg-surface-container-high/60 transition-colors text-on-surface mb-lg"
         >
-          <h1 className="font-headline-lg-mobile font-bold text-[32px] leading-[1.12] tracking-[-0.01em] text-on-surface text-center mb-1">
-            Content de
-            <br />
-            vous revoir !
-          </h1>
-          <p className="font-body-md text-body-md text-on-surface-variant text-center mb-2">
-            Connectez-vous pour retrouver ce qui compte.
-          </p>
+          <span className="material-symbols-outlined">arrow_back</span>
+        </Link>
 
-          <div className="relative w-40 mx-auto">
-            <CloudShape className="absolute -left-8 top-4 w-10 opacity-80 -z-10" />
-            <CloudShape className="absolute -right-6 top-0 w-14 opacity-70 -z-10" />
+        <div className="flex flex-col items-center mb-lg">
+          <div className="flex items-center gap-2 mb-4">
             {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img
-              src="/illustrations/login-mascot.png"
-              alt=""
-              className="w-full select-none pointer-events-none"
-              draggable={false}
-            />
+            <img src="/logo/objely-mark.png" alt="" className="w-9 h-9" />
+            <span className="font-headline-sm text-headline-sm font-bold text-on-surface">Objely</span>
+          </div>
+          <div className="flex items-center gap-1.5 bg-primary/10 text-primary px-3 py-1.5 rounded-full">
+            <span className="material-symbols-outlined text-[16px]">lock</span>
+            <span className="font-label-md text-label-md">Vos données sont protégées</span>
           </div>
         </div>
-      </div>
 
-      <main
-        className="relative z-10 w-full max-w-md mx-auto px-container-margin pb-16 flex flex-col"
-        style={{ paddingTop: HEADER_HEIGHT }}
-      >
+        <h1 className="font-headline-lg-mobile text-headline-lg-mobile text-on-surface mb-2">Connectez-vous à Objely</h1>
+        <p className="font-body-md text-body-md text-on-surface-variant mb-xl">
+          Retrouvez vos objets et gérez vos déclarations en toute simplicité.
+        </p>
+
         <form onSubmit={handleSubmit} className="flex flex-col gap-lg">
           <div>
-            <label htmlFor="email" className="block font-body-md text-body-md font-semibold text-on-surface mb-2">
-              Adresse e-mail
+            <label htmlFor="identifier" className="block font-body-md text-body-md font-semibold text-on-surface mb-2">
+              E-mail ou numéro de téléphone
             </label>
-            <div className="relative">
-              <span className="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-on-surface-variant text-[20px]">
-                mail
-              </span>
-              <input
-                id="email"
-                type="email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                placeholder="votre@email.com"
-                autoComplete="email"
-                className="w-full pl-12 pr-4 py-4 rounded-2xl border border-outline-variant/60 bg-surface-container-lowest font-body-lg text-body-lg text-on-surface soft-shadow focus:outline-none focus:ring-2 focus:ring-[#3A5CF9]/20 focus:border-[#3A5CF9] transition-all"
-              />
-            </div>
+            <input
+              id="identifier"
+              type="text"
+              value={identifier}
+              onChange={(e) => setIdentifier(e.target.value)}
+              placeholder="Votre e-mail ou numéro de téléphone"
+              autoComplete="username"
+              className="w-full px-4 py-4 rounded-2xl border border-outline-variant/60 bg-surface-container-lowest font-body-lg text-body-lg text-on-surface soft-shadow focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all"
+            />
           </div>
 
           <div>
@@ -88,9 +72,6 @@ export default function LoginPage() {
               Mot de passe
             </label>
             <div className="relative">
-              <span className="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-on-surface-variant text-[20px]">
-                lock
-              </span>
               <input
                 id="password"
                 type={showPassword ? "text" : "password"}
@@ -98,7 +79,7 @@ export default function LoginPage() {
                 onChange={(e) => setPassword(e.target.value)}
                 placeholder="Votre mot de passe"
                 autoComplete="current-password"
-                className="w-full pl-12 pr-12 py-4 rounded-2xl border border-outline-variant/60 bg-surface-container-lowest font-body-lg text-body-lg text-on-surface soft-shadow focus:outline-none focus:ring-2 focus:ring-[#3A5CF9]/20 focus:border-[#3A5CF9] transition-all"
+                className="w-full pr-12 px-4 py-4 rounded-2xl border border-outline-variant/60 bg-surface-container-lowest font-body-lg text-body-lg text-on-surface soft-shadow focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all"
               />
               <button
                 type="button"
@@ -112,7 +93,7 @@ export default function LoginPage() {
               </button>
             </div>
             <div className="flex justify-end mt-2">
-              <button type="button" className="font-body-md text-body-md text-[14px] font-semibold" style={{ color: ACCENT }}>
+              <button type="button" className="font-body-md text-body-md text-[14px] font-semibold text-primary">
                 Mot de passe oublié ?
               </button>
             </div>
@@ -121,8 +102,7 @@ export default function LoginPage() {
           <button
             type="submit"
             disabled={!canSubmit}
-            className="btn-gradient w-full py-4 rounded-2xl text-white font-headline-sm text-headline-sm shadow-[0px_10px_30px_rgba(58,92,249,0.3)] hover:opacity-90 transition-opacity disabled:opacity-50 disabled:cursor-not-allowed"
-            style={{ backgroundColor: ACCENT }}
+            className="btn-gradient w-full py-4 rounded-2xl bg-primary text-on-primary font-headline-sm text-headline-sm shadow-[0px_10px_30px_rgba(0,88,188,0.25)] hover:opacity-90 transition-opacity disabled:opacity-50 disabled:cursor-not-allowed"
           >
             Se connecter
           </button>
@@ -130,7 +110,7 @@ export default function LoginPage() {
 
         <div className="flex items-center gap-3 my-6">
           <div className="h-px flex-1 bg-outline-variant/50" />
-          <span className="font-body-md text-[13px] text-on-surface-variant whitespace-nowrap">ou continuer avec</span>
+          <span className="font-body-md text-[13px] text-on-surface-variant whitespace-nowrap">ou</span>
           <div className="h-px flex-1 bg-outline-variant/50" />
         </div>
 
@@ -139,38 +119,31 @@ export default function LoginPage() {
             type="button"
             className="w-full flex items-center justify-center gap-2 py-4 rounded-2xl border border-outline-variant/60 bg-surface-container-lowest font-headline-sm text-headline-sm text-on-surface hover:bg-surface-container-low transition-colors"
           >
-            <AppleIcon className="w-5 h-5" />
-            Continuer avec Apple
+            <GoogleIcon className="w-5 h-5" />
+            Continuer avec Google
           </button>
           <button
             type="button"
-            className="w-full flex items-center justify-center gap-2 py-4 rounded-2xl border border-outline-variant/60 bg-surface-container-lowest font-headline-sm text-headline-sm text-on-surface hover:bg-surface-container-low transition-colors"
+            className="w-full flex items-center justify-center gap-2 py-4 rounded-2xl bg-black text-white font-headline-sm text-headline-sm hover:opacity-90 transition-opacity"
           >
-            <GoogleIcon className="w-5 h-5" />
-            Continuer avec Google
+            <AppleIcon className="w-5 h-5" />
+            Continuer avec Apple
           </button>
         </div>
 
         <p className="font-body-md text-body-md text-on-surface-variant text-center mt-6">
-          Pas encore de compte ?{" "}
-          <Link href="/register" className="font-semibold" style={{ color: ACCENT }}>
+          Vous n&apos;avez pas encore de compte ?{" "}
+          <Link href="/register" className="text-primary font-semibold">
             Créer un compte
           </Link>
         </p>
 
-        <p className="font-body-md text-[12px] text-outline text-center mt-8">Perdu. Trouvé. Retrouvé.</p>
-      </main>
+        <p className="font-body-md text-[12px] text-on-surface-variant text-center mt-8 leading-relaxed">
+          En continuant, vous acceptez les <span className="text-primary font-medium">Conditions d&apos;utilisation</span> et la{" "}
+          <span className="text-primary font-medium">Politique de confidentialité</span> d&apos;Objely.
+        </p>
+      </div>
     </div>
-  );
-}
-
-function CloudShape({ className }: { className?: string }) {
-  return (
-    <svg viewBox="0 0 64 40" fill="none" xmlns="http://www.w3.org/2000/svg" className={className}>
-      <ellipse cx="20" cy="24" rx="16" ry="12" fill="#B9D3FB" />
-      <ellipse cx="36" cy="18" rx="14" ry="11" fill="#B9D3FB" />
-      <ellipse cx="48" cy="26" rx="12" ry="9" fill="#B9D3FB" />
-    </svg>
   );
 }
 

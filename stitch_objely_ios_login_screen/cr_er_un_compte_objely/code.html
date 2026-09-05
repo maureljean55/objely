@@ -1,0 +1,391 @@
+<!DOCTYPE html>
+
+<html lang="fr"><head><meta charset="utf-8"/><meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" name="viewport"/><title>Objely</title><link href="https://fonts.googleapis.com" rel="preconnect"/><link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/><link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/><link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/><style>@layer base{html,body{width:100%;margin:0;padding:0;background-color:#faf8ff;}body{overscroll-behavior:none;-webkit-tap-highlight-color:transparent;}.pb-safe{padding-bottom:env(safe-area-inset-bottom,0px);}.pt-safe{padding-top:env(safe-area-inset-top,0px);}}::-webkit-scrollbar{display:none;}</style><script src="https://cdn.tailwindcss.com"></script><script id="tailwind-config">tailwind.config = { darkMode: "class", theme: { extend: { colors: { "tertiary": "#5311bc", "surface-container-lowest": "#ffffff", "secondary": "#0058be", "secondary-container": "#2170e4", "surface-dim": "#d2d9f4", "error-container": "#ffdad6", "on-primary-fixed-variant": "#0039b5", "tertiary-container": "#6b38d4", "background": "#faf8ff", "on-tertiary-fixed-variant": "#5516be", "on-surface": "#131b2e", "error": "#ba1a1a", "surface-container-high": "#e2e7ff", "primary-fixed": "#dce1ff", "secondary-fixed-dim": "#adc6ff", "on-tertiary-container": "#ddcdff", "on-tertiary-fixed": "#23005c", "on-secondary-fixed": "#001a42", "primary": "#0037b0", "secondary-fixed": "#d8e2ff", "on-tertiary": "#ffffff", "on-secondary": "#ffffff", "on-primary": "#ffffff", "on-primary-fixed": "#001551", "surface-bright": "#faf8ff", "inverse-on-surface": "#eef0ff", "outline": "#747686", "inverse-primary": "#b7c4ff", "on-background": "#131b2e", "surface-container": "#eaedff", "on-error": "#ffffff", "on-secondary-container": "#fefcff", "primary-container": "#1d4ed8", "tertiary-fixed": "#e9ddff", "inverse-surface": "#283044", "surface-variant": "#dae2fd", "on-surface-variant": "#434655", "surface-tint": "#2151da", "surface": "#faf8ff", "on-primary-container": "#cad3ff", "on-error-container": "#93000a", "surface-container-highest": "#dae2fd", "tertiary-fixed-dim": "#d0bcff", "outline-variant": "#c4c5d7", "surface-container-low": "#f2f3ff", "on-secondary-fixed-variant": "#004395", "primary-fixed-dim": "#b7c4ff" }, borderRadius: { "DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px" }, spacing: { "space-lg": "1.25rem", "space-xs": "0.25rem", "gutter-mobile": "0.75rem", "space-4xl": "3rem", "space-xl": "1.5rem", "container-padding-compact": "0.875rem", "space-2xs": "0.125rem", "space-base": "1rem", "space-md": "0.75rem", "space-3xl": "2.5rem", "screen-edge-mobile": "1rem", "space-sm": "0.5rem", "space-2xl": "2rem" }, fontFamily: { "label-md": ["Inter"], "headline-md": ["Inter"], "headline-sm": ["Inter"], "display-lg": ["Inter"], "body-sm": ["Inter"], "headline-lg": ["Inter"], "caption": ["Inter"], "headline-lg-mobile": ["Inter"], "body-lg": ["Inter"], "body-md": ["Inter"], "title": ["Inter"], "label-sm": ["Inter"] }, fontSize: { "label-md": ["13px", { "lineHeight": "18px", "letterSpacing": "-0.005em", "fontWeight": "600" }], "headline-md": ["22px", { "lineHeight": "28px", "letterSpacing": "-0.018em", "fontWeight": "600" }], "headline-sm": ["20px", { "lineHeight": "25px", "letterSpacing": "-0.015em", "fontWeight": "600" }], "display-lg": ["34px", { "lineHeight": "41px", "letterSpacing": "-0.022em", "fontWeight": "700" }], "body-sm": ["13px", { "lineHeight": "18px", "letterSpacing": "-0.005em", "fontWeight": "400" }], "headline-lg": ["28px", { "lineHeight": "34px", "letterSpacing": "-0.020em", "fontWeight": "700" }], "caption": ["12px", { "lineHeight": "16px", "letterSpacing": "0em", "fontWeight": "400" }], "headline-lg-mobile": ["24px", { "lineHeight": "30px", "letterSpacing": "-0.018em", "fontWeight": "700" }], "body-lg": ["17px", { "lineHeight": "22px", "letterSpacing": "-0.014em", "fontWeight": "400" }], "body-md": ["15px", { "lineHeight": "20px", "letterSpacing": "-0.010em", "fontWeight": "400" }], "title": ["17px", { "lineHeight": "22px", "letterSpacing": "-0.016em", "fontWeight": "600" }], "label-sm": ["11px", { "lineHeight": "13px", "letterSpacing": "0.005em", "fontWeight": "500" }] } } } }</script></head><body class="bg-surface text-on-surface min-h-screen relative flex flex-col font-body-md text-body-md"><div class="pointer-events-none fixed top-0 left-0 right-0 h-96 z-0 bg-[radial-gradient(ellipse_at_top,_rgba(29,78,216,0.05)_0%,_rgba(139,92,246,0.04)_45%,_transparent_75%)]"></div><main class="relative z-10 flex-1 flex flex-col w-full bg-surface pt-safe pb-safe"><div class="flex flex-col w-full">
+<div class="w-full max-w-md mx-auto px-space-base pb-space-2xl flex flex-col">
+<!-- Top Navigation Bar -->
+<div class="flex items-center justify-between py-space-sm mb-space-xs">
+<button aria-label="Retourner à la connexion" class="w-11 h-11 flex items-center justify-center rounded-full bg-surface-container-low text-on-surface active:scale-95 transition-transform" type="button">
+<span class="material-symbols-outlined text-[22px]">arrow_back_ios_new</span>
+</button>
+<div class="flex items-center gap-1.5 px-3 py-1 bg-surface-container-low rounded-full">
+<span class="w-1.5 h-1.5 rounded-full bg-primary animate-pulse"></span>
+<span class="font-label-sm text-label-sm text-on-surface-variant font-medium">Inscription sécurisée</span>
+</div>
+<div class="w-11 h-11"></div>
+</div>
+<!-- Brand Identity & Trust Indicator -->
+<div class="flex flex-col items-center text-center mt-space-xs mb-space-lg">
+<div class="relative flex items-center justify-center mb-space-sm">
+<img alt="Objely Logo" class="h-9 w-auto object-contain" src="https://lh3.googleusercontent.com/aida/AEtjO1XjCDshx2oC9UPTc08M76OufDdPzsuhzxaJZ3L3FnNNHcvJD-Fwxf2RSFmAZccCxH6wp9AQdXnlYRcDHovl80uMSe2L8I17v-Rk6I60Kk-qy6kVtPdOEejvsZJdWvW0l41XFujOnZoGBDoQTar-lRqDzJGvR9wqZiwB6N_9dvSdmMIbl48tekmxz7RkQHJc2v-AnXZw7jQpVXF4Z1Nu_XTRHLoV6O0DL1-J5bwAuGMNnYVaCZvV9rxSGw"/>
+</div>
+<div class="inline-flex items-center gap-1.5 px-3 py-1 bg-surface-container rounded-full text-on-surface-variant">
+<span class="material-symbols-outlined text-[15px] text-primary" style="font-variation-settings: 'FILL' 1;">lock</span>
+<span class="font-label-sm text-label-sm font-medium">Vos données sont sécurisées et chiffrées</span>
+</div>
+</div>
+<!-- Screen Title & Narrative -->
+<div class="mb-space-lg text-left">
+<h1 class="font-headline-lg-mobile text-headline-lg-mobile text-on-surface font-bold tracking-tight mb-1">
+        Créer un compte
+      </h1>
+<p class="font-body-md text-body-md text-on-surface-variant leading-relaxed">
+        Rejoignez Objely pour sécuriser, inventorier et retrouver tous vos objets en un instant.
+      </p>
+</div>
+<!-- Quick Social Sign-Up -->
+<div class="flex flex-col gap-2.5 mb-space-lg">
+<!-- Apple Button -->
+<button class="w-full h-[50px] bg-black text-white rounded-xl font-label-md text-label-md flex items-center justify-center gap-2.5 shadow-sm active:scale-[0.98] transition-all" type="button">
+<svg class="w-4 h-4 fill-current mb-0.5" viewbox="0 0 170 170">
+<path d="M150.37 130.25c-2.45 5.66-5.35 10.87-8.71 15.66-4.58 6.53-8.33 11.05-11.22 13.56-4.48 4.12-9.28 6.23-14.42 6.35-3.69 0-8.14-1.05-13.32-3.18-5.19-2.12-9.97-3.17-14.34-3.17-4.58 0-9.49 1.05-14.75 3.17-5.26 2.13-9.5 3.24-12.74 3.35-4.35.13-9.16-1.9-14.42-6.08-3.69-3.08-7.7-7.94-12.04-14.58-6.19-9.52-11.07-20.73-14.65-33.64-3.58-12.91-5.37-25.13-5.37-36.67 0-16.14 4.09-29.6 12.27-40.39 8.18-10.79 18.66-16.29 31.44-16.51 5.34 0 11.23 1.48 17.67 4.44 6.44 2.96 10.4 4.5 11.89 4.62 1.83-.24 6.01-1.84 12.54-4.81 6.53-2.97 12.37-4.32 17.51-4.06 13.91.73 24.96 5.86 33.15 15.39-11.85 7.18-17.65 17.2-17.41 30.06.24 10.01 4.18 18.36 11.82 25.04 7.64 6.69 16.7 10.51 27.18 11.48-2.32 7.27-5.18 14.88-8.58 22.84zM119.22 33.02c0-7.73 2.76-15.11 8.28-22.14 5.53-7.03 12.38-11.97 20.55-14.82.24 1.1.36 2.08.36 2.94 0 7.85-2.92 15.32-8.77 22.41-5.85 7.09-12.74 11.96-20.67 14.61-.12-.98-.18-2-.18-3.04z"></path>
+</svg>
+<span>Continuer avec Apple</span>
+</button>
+<!-- Google Button -->
+<button class="w-full h-[50px] bg-surface-container-lowest text-on-surface rounded-xl font-label-md text-label-md flex items-center justify-center gap-2.5 shadow-sm active:scale-[0.98] transition-all" type="button">
+<svg class="w-4 h-4" viewbox="0 0 24 24">
+<path d="M23.745 12.27c0-.7-.06-1.4-.19-2.07H12v4.51h6.6c-.29 1.52-1.14 2.82-2.4 3.68v3.05h3.88c2.27-2.09 3.66-5.17 3.66-9.17z" fill="#4285F4"></path>
+<path d="M12 24c3.24 0 5.95-1.08 7.93-2.91l-3.88-3.05c-1.08.72-2.45 1.16-4.05 1.16-3.12 0-5.77-2.1-6.72-4.93H1.25v3.15C3.26 21.36 7.33 24 12 24z" fill="#34A853"></path>
+<path d="M5.28 14.27c-.25-.72-.38-1.49-.38-2.27s.13-1.55.38-2.27V6.58H1.25C.45 8.16 0 9.94 0 12s.45 3.84 1.25 5.42l4.03-3.15z" fill="#FBBC05"></path>
+<path d="M12 4.75c1.77 0 3.35.61 4.6 1.8l3.42-3.42C17.95 1.19 15.24 0 12 0 7.33 0 3.26 2.64 1.25 6.58l4.03 3.15c.95-2.83 3.6-4.98 6.72-4.98z" fill="#EA4335"></path>
+</svg>
+<span>Continuer avec Google</span>
+</button>
+</div>
+<!-- Divider -->
+<div class="relative flex items-center justify-center my-space-sm mb-space-lg">
+<div class="w-full h-px bg-surface-variant"></div>
+<span class="absolute px-3 bg-surface text-on-surface-variant font-caption text-caption">
+        ou inscrivez-vous avec votre e-mail
+      </span>
+</div>
+<!-- Registration Form -->
+<form class="flex flex-col gap-space-md" id="signupForm" onsubmit="handleSignup(event)">
+<!-- Name Field -->
+<div class="flex flex-col gap-1.5">
+<label class="font-label-md text-label-md text-on-surface font-medium flex items-center justify-between" for="fullName">
+<span>Prénom et Nom</span>
+<span class="material-symbols-outlined text-[16px] text-primary transition-opacity opacity-0" id="nameCheck" style="font-variation-settings: 'FILL' 1;">check_circle</span>
+</label>
+<div class="relative w-full">
+<input class="w-full h-[52px] px-4 rounded-xl bg-surface-container-low text-on-surface placeholder:text-outline font-body-md text-body-md focus:bg-surface-container-lowest focus:outline-none transition-all shadow-sm" id="fullName" oninput="validateName(this.value)" placeholder="ex. Alex Dupont" required="" type="text"/>
+</div>
+</div>
+<!-- Email Field -->
+<div class="flex flex-col gap-1.5">
+<label class="font-label-md text-label-md text-on-surface font-medium flex items-center justify-between" for="email">
+<span>Adresse e-mail</span>
+<span class="material-symbols-outlined text-[16px] text-primary transition-opacity opacity-0" id="emailCheck" style="font-variation-settings: 'FILL' 1;">check_circle</span>
+</label>
+<div class="relative w-full">
+<input class="w-full h-[52px] px-4 rounded-xl bg-surface-container-low text-on-surface placeholder:text-outline font-body-md text-body-md focus:bg-surface-container-lowest focus:outline-none transition-all shadow-sm" id="email" oninput="validateEmail(this.value)" placeholder="votre@email.com" required="" type="email"/>
+</div>
+</div>
+<!-- Phone Number Field -->
+<div class="flex flex-col gap-1.5">
+<label class="font-label-md text-label-md text-on-surface font-medium" for="phone">
+          Numéro de mobile <span class="font-caption text-caption text-on-surface-variant font-normal">(pour les alertes d'objets)</span>
+</label>
+<div class="flex items-center gap-2 w-full">
+<div class="h-[52px] px-3.5 rounded-xl bg-surface-container-low text-on-surface font-label-md text-label-md flex items-center gap-1.5 shrink-0 shadow-sm">
+<span class="text-base">🇫🇷</span>
+<span>+33</span>
+<span class="material-symbols-outlined text-[16px] text-outline">expand_more</span>
+</div>
+<input class="flex-1 min-w-0 h-[52px] px-4 rounded-xl bg-surface-container-low text-on-surface placeholder:text-outline font-body-md text-body-md focus:bg-surface-container-lowest focus:outline-none transition-all shadow-sm" id="phone" placeholder="06 12 34 56 78" type="tel"/>
+</div>
+</div>
+<!-- Password Field -->
+<div class="flex flex-col gap-1.5">
+<label class="font-label-md text-label-md text-on-surface font-medium" for="password">
+          Mot de passe
+        </label>
+<div class="relative w-full">
+<input class="w-full h-[52px] pl-4 pr-12 rounded-xl bg-surface-container-low text-on-surface placeholder:text-outline font-body-md text-body-md focus:bg-surface-container-lowest focus:outline-none transition-all shadow-sm" id="password" oninput="evaluatePassword(this.value)" placeholder="Créez un mot de passe sécurisé" required="" type="password"/>
+<button aria-label="Afficher ou masquer le mot de passe" class="absolute right-0 top-0 bottom-0 w-12 flex items-center justify-center text-outline hover:text-on-surface transition-colors" id="passwordToggleBtn" onclick="togglePasswordVisibility()" type="button">
+<span class="material-symbols-outlined text-[20px]" id="eyeIcon">visibility</span>
+</button>
+</div>
+<!-- Password Strength Meter -->
+<div class="mt-2 p-3 bg-surface-container-low rounded-xl flex flex-col gap-2">
+<div class="flex items-center justify-between font-caption text-caption">
+<span class="text-on-surface-variant font-medium">Sécurité du mot de passe :</span>
+<span class="font-label-sm text-label-sm font-semibold text-outline" id="strengthLabel">Très faible</span>
+</div>
+<div class="grid grid-cols-4 gap-1.5 w-full h-1.5">
+<div class="rounded-full bg-surface-variant transition-all duration-300" id="bar1"></div>
+<div class="rounded-full bg-surface-variant transition-all duration-300" id="bar2"></div>
+<div class="rounded-full bg-surface-variant transition-all duration-300" id="bar3"></div>
+<div class="rounded-full bg-surface-variant transition-all duration-300" id="bar4"></div>
+</div>
+<div class="grid grid-cols-2 gap-x-2 gap-y-1 mt-1">
+<div class="flex items-center gap-1.5 font-label-sm text-label-sm text-outline" id="ruleLength">
+<span class="material-symbols-outlined text-[14px]">circle</span>
+<span>8+ caractères</span>
+</div>
+<div class="flex items-center gap-1.5 font-label-sm text-label-sm text-outline" id="ruleUpper">
+<span class="material-symbols-outlined text-[14px]">circle</span>
+<span>1 majuscule</span>
+</div>
+<div class="flex items-center gap-1.5 font-label-sm text-label-sm text-outline" id="ruleNumber">
+<span class="material-symbols-outlined text-[14px]">circle</span>
+<span>1 chiffre</span>
+</div>
+<div class="flex items-center gap-1.5 font-label-sm text-label-sm text-outline" id="ruleSpecial">
+<span class="material-symbols-outlined text-[14px]">circle</span>
+<span>1 symbole</span>
+</div>
+</div>
+</div>
+</div>
+<!-- Legal Consent Checkbox -->
+<div class="flex items-start gap-3 mt-1 cursor-pointer" onclick="toggleCheckbox()">
+<div class="w-5 h-5 mt-0.5 rounded-lg bg-surface-container flex items-center justify-center transition-colors shrink-0" id="termsCheckbox">
+<span class="material-symbols-outlined text-[16px] text-white opacity-0 transition-opacity" id="checkIcon">check</span>
+</div>
+<p class="font-caption text-caption text-on-surface-variant leading-relaxed">
+          J'accepte les <a class="text-primary font-medium hover:underline" href="#" onclick="event.stopPropagation()">Conditions Générales</a> et la <a class="text-primary font-medium hover:underline" href="#" onclick="event.stopPropagation()">Politique de Confidentialité</a> d'Objely.
+        </p>
+</div>
+<!-- Submit Button -->
+<button class="w-full h-[52px] mt-space-xs rounded-xl bg-primary-container text-on-primary font-label-md text-label-md font-semibold flex items-center justify-center gap-2 shadow-lg shadow-primary-container/20 active:scale-[0.98] transition-all" id="submitBtn" type="submit">
+<span id="submitBtnText">Créer mon compte</span>
+<span class="hidden animate-spin material-symbols-outlined text-[20px]" id="submitSpinner">progress_activity</span>
+</button>
+</form>
+<!-- Success Feedback Panel (Hidden initially) -->
+<div class="hidden mt-space-md p-space-md rounded-2xl bg-surface-container text-on-surface flex flex-col items-center text-center animate-fade-in shadow-sm" id="successPanel">
+<div class="w-12 h-12 rounded-full bg-primary flex items-center justify-center text-white mb-2">
+<span class="material-symbols-outlined text-[24px]">verified_user</span>
+</div>
+<span class="font-headline-sm text-headline-sm font-semibold mb-1">Bienvenue sur Objely !</span>
+<p class="font-body-sm text-body-sm text-on-surface-variant">
+        Votre espace sécurisé a été configuré avec succès. Vous allez être redirigé vers l'inventaire.
+      </p>
+</div>
+<!-- Login Link Footer -->
+<div class="flex items-center justify-center gap-1.5 mt-space-xl text-center">
+<span class="font-body-md text-body-md text-on-surface-variant">Vous avez déjà un compte ?</span>
+<button class="font-label-md text-label-md text-primary font-semibold hover:underline" type="button">
+        Se connecter
+      </button>
+</div>
+<!-- Interactive State Demo Switcher -->
+<div class="mt-space-2xl p-space-sm bg-surface-container rounded-2xl flex flex-col gap-2">
+<div class="flex items-center justify-between px-1">
+<span class="font-label-sm text-label-sm font-semibold text-on-surface-variant uppercase tracking-wider">Aperçu interactif des états UI</span>
+<span class="font-caption text-caption text-outline">Prototypes UX</span>
+</div>
+<div class="grid grid-cols-3 gap-1.5">
+<button class="py-2 px-3 rounded-lg bg-surface-container-lowest text-on-surface font-label-sm text-label-sm font-medium shadow-sm hover:bg-surface-bright active:scale-95 transition-all text-center" onclick="applyState('normal')" type="button">
+          Normal
+        </button>
+<button class="py-2 px-3 rounded-lg bg-surface-container-lowest text-on-surface font-label-sm text-label-sm font-medium shadow-sm hover:bg-surface-bright active:scale-95 transition-all text-center" onclick="applyState('validated')" type="button">
+          Formulaire Valide
+        </button>
+<button class="py-2 px-3 rounded-lg bg-primary text-on-primary font-label-sm text-label-sm font-medium shadow-sm active:scale-95 transition-all text-center" onclick="applyState('success')" type="button">
+          Compte Créé
+        </button>
+</div>
+</div>
+</div>
+</div>
+<script>
+  let isTermsAccepted = false;
+
+  function toggleCheckbox() {
+    isTermsAccepted = !isTermsAccepted;
+    updateCheckboxUI();
+  }
+
+  function updateCheckboxUI() {
+    const box = document.getElementById('termsCheckbox');
+    const icon = document.getElementById('checkIcon');
+    if (isTermsAccepted) {
+      box.classList.remove('bg-surface-container');
+      box.classList.add('bg-primary');
+      icon.classList.remove('opacity-0');
+      icon.classList.add('opacity-100');
+    } else {
+      box.classList.remove('bg-primary');
+      box.classList.add('bg-surface-container');
+      icon.classList.remove('opacity-100');
+      icon.classList.add('opacity-0');
+    }
+  }
+
+  function togglePasswordVisibility() {
+    const input = document.getElementById('password');
+    const icon = document.getElementById('eyeIcon');
+    if (input.type === 'password') {
+      input.type = 'text';
+      icon.textContent = 'visibility_off';
+    } else {
+      input.type = 'password';
+      icon.textContent = 'visibility';
+    }
+  }
+
+  function validateName(val) {
+    const icon = document.getElementById('nameCheck');
+    if (val.trim().length >= 3) {
+      icon.classList.remove('opacity-0');
+      icon.classList.add('opacity-100');
+    } else {
+      icon.classList.remove('opacity-100');
+      icon.classList.add('opacity-0');
+    }
+  }
+
+  function validateEmail(val) {
+    const icon = document.getElementById('emailCheck');
+    const regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (regex.test(val)) {
+      icon.classList.remove('opacity-0');
+      icon.classList.add('opacity-100');
+    } else {
+      icon.classList.remove('opacity-100');
+      icon.classList.add('opacity-0');
+    }
+  }
+
+  function evaluatePassword(pwd) {
+    const hasLen = pwd.length >= 8;
+    const hasUpper = /[A-Z]/.test(pwd);
+    const hasNum = /[0-9]/.test(pwd);
+    const hasSpec = /[^A-Za-z0-9]/.test(pwd);
+
+    updateRule('ruleLength', hasLen);
+    updateRule('ruleUpper', hasUpper);
+    updateRule('ruleNumber', hasNum);
+    updateRule('ruleSpecial', hasSpec);
+
+    let score = 0;
+    if (hasLen) score++;
+    if (hasUpper) score++;
+    if (hasNum) score++;
+    if (hasSpec) score++;
+
+    const label = document.getElementById('strengthLabel');
+    const bars = [
+      document.getElementById('bar1'),
+      document.getElementById('bar2'),
+      document.getElementById('bar3'),
+      document.getElementById('bar4')
+    ];
+
+    bars.forEach(b => {
+      b.className = 'rounded-full bg-surface-variant transition-all duration-300';
+    });
+
+    if (score === 0) {
+      label.textContent = 'Très faible';
+      label.className = 'font-label-sm text-label-sm font-semibold text-outline';
+    } else if (score === 1) {
+      label.textContent = 'Faible';
+      label.className = 'font-label-sm text-label-sm font-semibold text-error';
+      bars[0].className = 'rounded-full bg-error transition-all duration-300';
+    } else if (score === 2) {
+      label.textContent = 'Moyen';
+      label.className = 'font-label-sm text-label-sm font-semibold text-secondary-container';
+      bars[0].className = 'rounded-full bg-secondary-container transition-all duration-300';
+      bars[1].className = 'rounded-full bg-secondary-container transition-all duration-300';
+    } else if (score === 3) {
+      label.textContent = 'Bon';
+      label.className = 'font-label-sm text-label-sm font-semibold text-primary';
+      bars[0].className = 'rounded-full bg-primary transition-all duration-300';
+      bars[1].className = 'rounded-full bg-primary transition-all duration-300';
+      bars[2].className = 'rounded-full bg-primary transition-all duration-300';
+    } else if (score === 4) {
+      label.textContent = 'Excellent';
+      label.className = 'font-label-sm text-label-sm font-semibold text-primary';
+      bars.forEach(b => b.className = 'rounded-full bg-primary transition-all duration-300');
+    }
+  }
+
+  function updateRule(elementId, isValid) {
+    const el = document.getElementById(elementId);
+    const icon = el.querySelector('.material-symbols-outlined');
+    if (isValid) {
+      el.classList.remove('text-outline');
+      el.classList.add('text-primary');
+      icon.textContent = 'check_circle';
+      icon.style.fontVariationSettings = "'FILL' 1";
+    } else {
+      el.classList.remove('text-primary');
+      el.classList.add('text-outline');
+      icon.textContent = 'circle';
+      icon.style.fontVariationSettings = "'FILL' 0";
+    }
+  }
+
+  function handleSignup(e) {
+    e.preventDefault();
+    const btn = document.getElementById('submitBtn');
+    const txt = document.getElementById('submitBtnText');
+    const spin = document.getElementById('submitSpinner');
+    const success = document.getElementById('successPanel');
+
+    txt.textContent = 'Sécurisation du profil...';
+    spin.classList.remove('hidden');
+    btn.disabled = true;
+
+    setTimeout(() => {
+      spin.classList.add('hidden');
+      txt.textContent = 'Compte créé !';
+      btn.classList.remove('bg-primary-container');
+      btn.classList.add('bg-secondary');
+      success.classList.remove('hidden');
+    }, 1200);
+  }
+
+  function applyState(state) {
+    const name = document.getElementById('fullName');
+    const email = document.getElementById('email');
+    const phone = document.getElementById('phone');
+    const pwd = document.getElementById('password');
+    const success = document.getElementById('successPanel');
+    const btn = document.getElementById('submitBtn');
+    const txt = document.getElementById('submitBtnText');
+    const spin = document.getElementById('submitSpinner');
+
+    if (state === 'normal') {
+      name.value = '';
+      email.value = '';
+      phone.value = '';
+      pwd.value = '';
+      isTermsAccepted = false;
+      validateName('');
+      validateEmail('');
+      evaluatePassword('');
+      updateCheckboxUI();
+      success.classList.add('hidden');
+      btn.disabled = false;
+      btn.className = 'w-full h-[52px] mt-space-xs rounded-xl bg-primary-container text-on-primary font-label-md text-label-md font-semibold flex items-center justify-center gap-2 shadow-lg shadow-primary-container/20 active:scale-[0.98] transition-all';
+      txt.textContent = 'Créer mon compte';
+      spin.classList.add('hidden');
+    } else if (state === 'validated') {
+      name.value = 'Sophie Mercier';
+      email.value = 'sophie.mercier@objely.fr';
+      phone.value = '06 45 89 12 30';
+      pwd.value = 'Protection2025!';
+      isTermsAccepted = true;
+      validateName(name.value);
+      validateEmail(email.value);
+      evaluatePassword(pwd.value);
+      updateCheckboxUI();
+      success.classList.add('hidden');
+      btn.disabled = false;
+      btn.className = 'w-full h-[52px] mt-space-xs rounded-xl bg-primary-container text-on-primary font-label-md text-label-md font-semibold flex items-center justify-center gap-2 shadow-lg shadow-primary-container/20 active:scale-[0.98] transition-all';
+      txt.textContent = 'Créer mon compte';
+      spin.classList.add('hidden');
+    } else if (state === 'success') {
+      applyState('validated');
+      txt.textContent = 'Compte créé !';
+      btn.classList.remove('bg-primary-container');
+      btn.classList.add('bg-secondary');
+      success.classList.remove('hidden');
+    }
+  }
+</script></main></body></html>
