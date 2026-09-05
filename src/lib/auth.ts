@@ -1,16 +1,23 @@
-const AUTH_KEY = "objely-authenticated";
+import { createClient } from "@/lib/supabase/client";
+import type { User } from "@supabase/supabase-js";
 
-export function isAuthenticated(): boolean {
-  if (typeof window === "undefined") return false;
-  try {
-    return localStorage.getItem(AUTH_KEY) === "true";
-  } catch {
-    return false;
-  }
+export async function signInWithPassword(email: string, password: string) {
+  const supabase = createClient();
+  return supabase.auth.signInWithPassword({ email, password });
 }
 
-export function setAuthenticated() {
-  try {
-    localStorage.setItem(AUTH_KEY, "true");
-  } catch {}
+export async function signUpWithPassword(email: string, password: string, metadata: Record<string, unknown>) {
+  const supabase = createClient();
+  return supabase.auth.signUp({ email, password, options: { data: metadata } });
+}
+
+export async function signOut() {
+  const supabase = createClient();
+  return supabase.auth.signOut();
+}
+
+export async function getCurrentUser(): Promise<User | null> {
+  const supabase = createClient();
+  const { data } = await supabase.auth.getUser();
+  return data.user;
 }

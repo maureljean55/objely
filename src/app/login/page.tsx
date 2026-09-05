@@ -3,7 +3,7 @@
 import { useState, type FormEvent } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { setAuthenticated } from "@/lib/auth";
+import { signInWithPassword } from "@/lib/auth";
 
 const HEADER_HEIGHT = "calc(172px + env(safe-area-inset-top))";
 
@@ -12,14 +12,31 @@ export default function LoginPage() {
   const [identifier, setIdentifier] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
-  const canSubmit = identifier.trim().length > 0 && password.length > 0;
+  const canSubmit = identifier.trim().length > 0 && password.length > 0 && !isSubmitting;
 
-  const handleSubmit = (e: FormEvent) => {
+  const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
     if (!canSubmit) return;
-    setAuthenticated();
+    setIsSubmitting(true);
+    setError(null);
+
+    const { error: signInError } = await signInWithPassword(identifier.trim(), password);
+
+    if (signInError) {
+      setError(
+        signInError.message === "Invalid login credentials"
+          ? "E-mail ou mot de passe incorrect."
+          : signInError.message,
+      );
+      setIsSubmitting(false);
+      return;
+    }
+
     router.push("/home");
+    router.refresh();
   };
 
   return (
@@ -108,12 +125,16 @@ export default function LoginPage() {
             </div>
           </div>
 
+          {error && (
+            <p className="font-body-md text-body-md text-error bg-error-container/40 rounded-xl px-4 py-3">{error}</p>
+          )}
+
           <button
             type="submit"
             disabled={!canSubmit}
             className="btn-gradient w-full py-4 rounded-2xl bg-primary text-on-primary font-headline-sm text-headline-sm shadow-[0px_10px_30px_rgba(0,88,188,0.25)] hover:opacity-90 transition-opacity disabled:opacity-50 disabled:cursor-not-allowed"
           >
-            Se connecter
+            {isSubmitting ? "Connexion…" : "Se connecter"}
           </button>
         </form>
 

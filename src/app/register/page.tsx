@@ -3,7 +3,7 @@
 import { useMemo, useState, type FormEvent } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { setAuthenticated } from "@/lib/auth";
+import { signUpWithPassword } from "@/lib/auth";
 
 const COUNTRIES = [
   { code: "FR", dial: "+33", flag: "🇫🇷", name: "France" },
@@ -43,6 +43,9 @@ export default function RegisterPage() {
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [acceptedTerms, setAcceptedTerms] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [confirmationSent, setConfirmationSent] = useState(false);
 
   const criteria = useMemo(
     () => ({
@@ -61,14 +64,59 @@ export default function RegisterPage() {
     email.trim().length > 0 &&
     phone.trim().length > 0 &&
     password.length >= 8 &&
-    acceptedTerms;
+    acceptedTerms &&
+    !isSubmitting;
 
-  const handleSubmit = (e: FormEvent) => {
+  const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
     if (!canSubmit) return;
-    setAuthenticated();
+    setIsSubmitting(true);
+    setError(null);
+
+    const { data, error: signUpError } = await signUpWithPassword(email.trim(), password, {
+      full_name: name.trim(),
+      phone: `${selectedCountry.dial} ${phone.trim()}`,
+      address: address.trim() || null,
+    });
+
+    if (signUpError) {
+      setError(
+        signUpError.message === "User already registered"
+          ? "Un compte existe déjà avec cet e-mail."
+          : signUpError.message,
+      );
+      setIsSubmitting(false);
+      return;
+    }
+
+    if (!data.session) {
+      // Email confirmation is required before a session is created.
+      setConfirmationSent(true);
+      setIsSubmitting(false);
+      return;
+    }
+
     router.push("/home");
+    router.refresh();
   };
+
+  if (confirmationSent) {
+    return (
+      <div className="min-h-[100dvh] bg-background flex flex-col items-center justify-center px-container-margin text-center">
+        <div className="w-16 h-16 rounded-full bg-primary/10 text-primary flex items-center justify-center mb-6">
+          <span className="material-symbols-outlined text-[32px]">mark_email_read</span>
+        </div>
+        <h1 className="font-headline-lg-mobile text-headline-lg-mobile text-on-surface mb-2">Vérifiez votre e-mail</h1>
+        <p className="font-body-md text-body-md text-on-surface-variant max-w-xs mb-6">
+          Nous avons envoyé un lien de confirmation à <span className="font-semibold text-on-surface">{email}</span>.
+          Cliquez dessus pour activer votre compte.
+        </p>
+        <Link href="/login" className="text-primary font-semibold">
+          Retour à la connexion
+        </Link>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-[100dvh] bg-background flex flex-col">
@@ -265,12 +313,16 @@ export default function RegisterPage() {
             </span>
           </label>
 
+          {error && (
+            <p className="font-body-md text-body-md text-error bg-error-container/40 rounded-xl px-4 py-3">{error}</p>
+          )}
+
           <button
             type="submit"
             disabled={!canSubmit}
             className="btn-gradient w-full py-4 rounded-2xl bg-primary text-on-primary font-headline-sm text-headline-sm shadow-[0px_10px_30px_rgba(0,88,188,0.25)] hover:opacity-90 transition-opacity disabled:opacity-50 disabled:cursor-not-allowed"
           >
-            Créer mon compte
+            {isSubmitting ? "Création…" : "Créer mon compte"}
           </button>
         </form>
 

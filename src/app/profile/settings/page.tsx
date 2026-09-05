@@ -1,6 +1,10 @@
+"use client";
+
 import type { ReactNode } from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import BottomNav from "@/components/BottomNav";
+import { signOut } from "@/lib/auth";
 
 function Row({ icon, label, href }: { icon: string; label: string; href?: string }) {
   const content = (
@@ -34,6 +38,14 @@ function Section({ title, children }: { title: string; children: ReactNode }) {
 }
 
 export default function SettingsPage() {
+  const router = useRouter();
+
+  const handleSignOut = async () => {
+    await signOut();
+    router.push("/login");
+    router.refresh();
+  };
+
   return (
     <div className="bg-background text-on-surface antialiased min-h-screen pb-32">
       <header className="fixed top-0 inset-x-0 z-50 flex items-center justify-between px-container-margin min-h-14 pt-[env(safe-area-inset-top)] bg-surface/80 backdrop-blur-xl border-b border-outline-variant/30">
@@ -68,7 +80,10 @@ export default function SettingsPage() {
         </Section>
 
         <div className="flex flex-col items-center gap-4">
-          <button className="w-full py-4 px-6 rounded-xl bg-error-container/30 text-error font-body-lg text-body-lg font-semibold active:scale-95 transition-transform">
+          <button
+            onClick={handleSignOut}
+            className="w-full py-4 px-6 rounded-xl bg-error-container/30 text-error font-body-lg text-body-lg font-semibold active:scale-95 transition-transform"
+          >
             Déconnexion
           </button>
           <button className="font-label-md text-label-md text-outline hover:text-error transition-colors underline decoration-outline/30 underline-offset-4">
