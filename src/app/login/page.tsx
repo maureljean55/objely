@@ -3,6 +3,7 @@
 import { useState, type FormEvent } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import { setAuthenticated } from "@/lib/auth";
 
 const ACCENT = "#3A5CF9";
 const HEADER_HEIGHT = "calc(260px + env(safe-area-inset-top))";
@@ -18,6 +19,7 @@ export default function LoginPage() {
   const handleSubmit = (e: FormEvent) => {
     e.preventDefault();
     if (!canSubmit) return;
+    setAuthenticated();
     router.push("/home");
   };
 

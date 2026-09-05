@@ -3,6 +3,7 @@
 import { useState, type FormEvent } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import { setAuthenticated } from "@/lib/auth";
 
 const HEADER_HEIGHT = "calc(112px + env(safe-area-inset-top))";
 const FOOTER_HEIGHT = "calc(64px + env(safe-area-inset-bottom))";
@@ -43,6 +44,7 @@ export default function RegisterPage() {
   const handleSubmit = (e: FormEvent) => {
     e.preventDefault();
     if (!canSubmit) return;
+    setAuthenticated();
     router.push("/home");
   };
 
