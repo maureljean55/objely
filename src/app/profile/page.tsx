@@ -73,23 +73,23 @@ function ProfileSummary({ authenticated }: { authenticated: boolean }) {
       ) : (
         <section className="flex flex-col items-center pt-8 pb-6 animate-fadeIn">
           <Link
-            href="/register"
-            aria-label="Créer un compte"
+            href="/login"
+            aria-label="Se connecter"
             className="w-28 h-28 rounded-full border-2 border-dashed border-primary/40 bg-primary-fixed/20 flex items-center justify-center mb-4 hover:bg-primary-fixed/30 transition-colors"
           >
-            <span className="material-symbols-outlined text-primary text-[36px]">person_add</span>
+            <span className="material-symbols-outlined text-primary text-[36px]">login</span>
           </Link>
           <Link
-            href="/register"
+            href="/login"
             className="font-headline-lg-mobile md:font-headline-lg text-headline-lg-mobile md:text-headline-lg text-primary mb-1 hover:underline"
           >
-            Créer un compte
+            Se connecter
           </Link>
           <p className="font-body-md text-body-md text-on-surface-variant text-center max-w-xs mt-1">
-            Inscrivez-vous pour déclarer vos objets et suivre vos retrouvailles.
+            Connectez-vous pour déclarer vos objets et suivre vos retrouvailles.
           </p>
-          <Link href="/login" className="font-label-md text-label-md text-primary mt-3 hover:underline">
-            Déjà un compte ? Se connecter
+          <Link href="/register" className="font-label-md text-label-md text-primary mt-3 hover:underline">
+            Pas de compte ? Créer un compte
           </Link>
         </section>
       )}
