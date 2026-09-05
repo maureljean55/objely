@@ -38,7 +38,7 @@ export default function RegisterPage() {
   const [showPassword, setShowPassword] = useState(false);
 
   const passwordsMatch = password.length > 0 && password === confirmPassword;
-  const canSubmit = name.trim().length > 0 && email.trim().length > 0 && passwordsMatch;
+  const canSubmit = name.trim().length > 0 && email.trim().length > 0 && phone.trim().length > 0 && passwordsMatch;
 
   const handleSubmit = (e: FormEvent) => {
     e.preventDefault();
@@ -76,6 +76,7 @@ export default function RegisterPage() {
               onChange={(e) => setName(e.target.value)}
               placeholder="Votre nom"
               autoComplete="name"
+              required
               className="w-full bg-surface-container-lowest border border-surface-container-highest rounded-[16px] px-4 py-4 font-body-lg text-body-lg text-on-surface soft-shadow focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all"
             />
           </div>
@@ -91,6 +92,7 @@ export default function RegisterPage() {
               onChange={(e) => setEmail(e.target.value)}
               placeholder="votre@email.com"
               autoComplete="email"
+              required
               className="w-full bg-surface-container-lowest border border-surface-container-highest rounded-[16px] px-4 py-4 font-body-lg text-body-lg text-on-surface soft-shadow focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all"
             />
           </div>
@@ -105,7 +107,7 @@ export default function RegisterPage() {
                   value={countryCode}
                   onChange={(e) => setCountryCode(e.target.value as (typeof COUNTRIES)[number]["code"])}
                   aria-label="Pays"
-                  className="h-full w-[64px] appearance-none bg-surface-container-lowest border border-surface-container-highest rounded-[16px] pl-3 pr-6 py-4 font-body-lg text-body-lg text-on-surface soft-shadow focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all"
+                  className="h-full w-[64px] appearance-none bg-none bg-surface-container-lowest border border-surface-container-highest rounded-[16px] pl-3 pr-6 py-4 font-body-lg text-body-lg text-on-surface soft-shadow focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all"
                 >
                   {COUNTRIES.map((c) => (
                     <option key={c.code} value={c.code}>
@@ -126,7 +128,8 @@ export default function RegisterPage() {
                   onChange={(e) => setPhone(e.target.value)}
                   placeholder="6 12 34 56 78"
                   autoComplete="tel"
-                  className="flex-1 min-w-0 bg-transparent font-body-lg text-body-lg text-on-surface focus:outline-none"
+                  required
+                  className="flex-1 min-w-0 bg-transparent border-0 font-body-lg text-body-lg text-on-surface focus:outline-none focus:ring-0 p-0"
                 />
               </div>
             </div>
@@ -134,7 +137,7 @@ export default function RegisterPage() {
 
           <div>
             <label htmlFor="address" className="block font-label-md text-[11px] text-outline uppercase tracking-wider mb-2">
-              Adresse
+              Adresse (optionnel)
             </label>
             <input
               id="address"
@@ -159,6 +162,7 @@ export default function RegisterPage() {
                 onChange={(e) => setPassword(e.target.value)}
                 placeholder="Votre mot de passe"
                 autoComplete="new-password"
+                required
                 className="w-full bg-surface-container-lowest border border-surface-container-highest rounded-[16px] px-4 py-4 pr-12 font-body-lg text-body-lg text-on-surface soft-shadow focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all"
               />
               <button
@@ -185,6 +189,7 @@ export default function RegisterPage() {
               onChange={(e) => setConfirmPassword(e.target.value)}
               placeholder="Confirmez votre mot de passe"
               autoComplete="new-password"
+              required
               className="w-full bg-surface-container-lowest border border-surface-container-highest rounded-[16px] px-4 py-4 font-body-lg text-body-lg text-on-surface soft-shadow focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all"
             />
             {confirmPassword.length > 0 && !passwordsMatch && (
