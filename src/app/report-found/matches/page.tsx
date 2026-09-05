@@ -5,16 +5,17 @@ import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { loadDraft, type DeclarationDraft } from "@/lib/declarationDraft";
 import { createItemFromDraft } from "@/lib/supabase/items";
+import { createMatch, explainMatch, findBestMatch, type MatchCandidate } from "@/lib/supabase/matching";
 
 const STATUS_TEXTS = ["Analyse des déclarations...", "Comparaison des informations...", "Recherche de correspondances..."];
 
-const CRITERIA = [
-  { icon: "category", label: "Même catégorie" },
-  { icon: "palette", label: "Couleur" },
-  { icon: "branding_watermark", label: "Marque" },
-  { icon: "location_on", label: "Lieu proche" },
-  { icon: "calendar_today", label: "Date compatible" },
-];
+const CRITERION_ICONS: Record<string, string> = {
+  "Même catégorie": "category",
+  "Couleur similaire": "palette",
+  "Marque similaire": "branding_watermark",
+  "Zone proche": "location_on",
+  "Date compatible": "calendar_today",
+};
 
 function RadarPulse() {
   return (
@@ -32,6 +33,7 @@ export default function ReportFoundMatchesPage() {
   const router = useRouter();
   const [draft, setDraft] = useState<DeclarationDraft>({});
   const [phase, setPhase] = useState<"checking" | "match" | "no-match">("checking");
+  const [candidate, setCandidate] = useState<MatchCandidate | null>(null);
   const [statusIndex, setStatusIndex] = useState(0);
   const [isPublishing, setIsPublishing] = useState(false);
   const [publishError, setPublishError] = useState<string | null>(null);
@@ -42,9 +44,16 @@ export default function ReportFoundMatchesPage() {
     // during render without risking an SSR/hydration mismatch.
     // eslint-disable-next-line react-hooks/set-state-in-effect
     setDraft(d);
-    const hasMatch = d.categoryId === "wallet";
-    const timer = setTimeout(() => setPhase(hasMatch ? "match" : "no-match"), 2600);
-    return () => clearTimeout(timer);
+
+    let cancelled = false;
+    findBestMatch(d, "lost").then((best) => {
+      if (cancelled) return;
+      setCandidate(best);
+      setPhase(best ? "match" : "no-match");
+    });
+    return () => {
+      cancelled = true;
+    };
   }, []);
 
   useEffect(() => {
@@ -52,6 +61,20 @@ export default function ReportFoundMatchesPage() {
     const id = setInterval(() => setStatusIndex((i) => (i + 1) % STATUS_TEXTS.length), 1300);
     return () => clearInterval(id);
   }, [phase]);
+
+  const confirmMatch = async () => {
+    if (!candidate) return;
+    setIsPublishing(true);
+    setPublishError(null);
+    const { data: item, error } = await createItemFromDraft(draft, "found");
+    if (error || !item) {
+      setPublishError("Une erreur est survenue, réessayez.");
+      setIsPublishing(false);
+      return;
+    }
+    await createMatch(candidate.item.id, item.id, candidate.score);
+    router.push("/activity/verification");
+  };
 
   return (
     <div className="bg-background text-on-background antialiased min-h-screen flex flex-col font-body-md">
@@ -82,7 +105,7 @@ export default function ReportFoundMatchesPage() {
           <div className={`h-1 flex-1 rounded-full ${phase === "checking" ? "progress-gradient" : "bg-primary-container"}`} />
         </div>
 
-        {phase === "match" && (
+        {phase === "match" && candidate && (
           <>
             <div className="bg-surface-container-lowest rounded-2xl soft-shadow overflow-hidden mb-lg">
               <div className="px-md py-md bg-surface-container-low border-b border-surface-variant flex items-center justify-between">
@@ -90,49 +113,54 @@ export default function ReportFoundMatchesPage() {
                   <span className="material-symbols-outlined text-secondary" style={{ fontVariationSettings: "'FILL' 1" }}>verified</span>
                   <span className="font-headline-sm text-headline-sm text-on-surface">Correspondance possible</span>
                 </div>
-                <span className="font-label-md text-[11px] text-secondary bg-secondary/10 px-2 py-1 rounded-md uppercase">96% de correspondance</span>
+                <span className="font-label-md text-[11px] text-secondary bg-secondary/10 px-2 py-1 rounded-md uppercase">
+                  {candidate.score}% de correspondance
+                </span>
               </div>
 
               <div className="p-md grid grid-cols-2 gap-md relative">
                 <div className="absolute left-1/2 top-md bottom-md w-px bg-outline-variant -translate-x-1/2" />
                 <div className="flex flex-col items-center text-center">
                   <span className="font-label-md text-[11px] text-on-surface-variant uppercase mb-2">Objet trouvé (vous)</span>
-                  <div className="w-24 h-24 rounded-xl overflow-hidden mb-2 bg-surface-container-high border border-outline-variant/30">
-                    {/* eslint-disable-next-line @next/next/no-img-element */}
-                    <img
-                      alt="Votre objet trouvé"
-                      className="w-full h-full object-cover"
-                      src="https://lh3.googleusercontent.com/aida-public/AB6AXuC0soK0sW8aPoWV6WfFWvnU6nGdzk-4TLRlhGhts72MsmLLH0DTx8tJeWFp-GcAyGyRjHVkbB7iWl3JJU3MEbk-oGoFa3b6ZhfbOaV6de7AelVUI8KcmGtmG5jStSIbNbWjZwqL_FA_itivt1AHfAz5dy_e78AYOv27eddwpdXjd-6m4kmF31OTKNvlowDoRZX4ljRYsYlzt75zX2iX-IMj08H9C60J4696rqUfIFaTFTKNR1vDWseXeA"
-                    />
+                  <div className="w-24 h-24 rounded-xl overflow-hidden mb-2 bg-surface-container-high border border-outline-variant/30 flex items-center justify-center text-primary">
+                    <span className="material-symbols-outlined text-4xl">{draft.categoryIcon || "inventory_2"}</span>
                   </div>
-                  <span className="font-body-md text-body-md text-on-surface">{draft.objectName || "Portefeuille noir"}</span>
+                  <span className="font-body-md text-body-md text-on-surface">{draft.objectName || draft.categoryLabel}</span>
                 </div>
                 <div className="flex flex-col items-center text-center">
                   <span className="font-label-md text-[11px] text-on-surface-variant uppercase mb-2">Déclaration de perte</span>
-                  <div className="w-24 h-24 rounded-xl overflow-hidden mb-2 bg-surface-container-high border border-outline-variant/30">
-                    {/* eslint-disable-next-line @next/next/no-img-element */}
-                    <img
-                      alt="Objet déclaré perdu"
-                      className="w-full h-full object-cover"
-                      src="https://lh3.googleusercontent.com/aida-public/AB6AXuBVh_GHeUQtXLh5Y-1muIpdkNspE6VWG6RpnNMDmsBkAayeb_lvNjvKxm1uhUwBk6PqMWrwv7PsbD-_DZUPXMfKfTw4UUj3wBIkw0-U7saUTl9jNjk0srOwkacepzvqEKqTKzxkJAfKhDJ0bwUGqmzQW-kj57JfisPXKvBX9Iw51_VKT1w_kDCE7IVbEk-_KSS0dWDetFYtINKqTBFYbzMjG789Kei11sGFNUm_oHEPAovyW_xpE-C33A"
-                    />
+                  <div className="w-24 h-24 rounded-xl overflow-hidden mb-2 bg-surface-container-high border border-outline-variant/30 flex items-center justify-center text-primary">
+                    {candidate.item.photos?.[0] ? (
+                      // eslint-disable-next-line @next/next/no-img-element
+                      <img alt={candidate.item.title} className="w-full h-full object-cover" src={candidate.item.photos[0]} />
+                    ) : (
+                      <span className="material-symbols-outlined text-4xl">{candidate.item.category_icon || "inventory_2"}</span>
+                    )}
                   </div>
-                  <span className="font-body-md text-body-md text-on-surface">Portefeuille en cuir noir</span>
+                  <span className="font-body-md text-body-md text-on-surface">{candidate.item.title}</span>
                 </div>
               </div>
 
               <div className="px-md py-md border-t border-surface-variant bg-surface-container-low">
                 <span className="font-label-md text-[11px] text-on-surface-variant uppercase block mb-2">Critères validés</span>
                 <div className="flex flex-wrap gap-2">
-                  {CRITERIA.map((c) => (
-                    <div key={c.label} className="flex items-center gap-1 bg-surface-container-lowest border border-outline-variant/40 px-2 py-1 rounded-md">
-                      <span className="material-symbols-outlined text-[16px] text-primary">{c.icon}</span>
-                      <span className="font-label-md text-[11px] text-on-surface">{c.label}</span>
-                    </div>
-                  ))}
+                  {explainMatch(draft, candidate.item)
+                    .filter((c) => c.matched)
+                    .map((c) => (
+                      <div key={c.label} className="flex items-center gap-1 bg-surface-container-lowest border border-outline-variant/40 px-2 py-1 rounded-md">
+                        <span className="material-symbols-outlined text-[16px] text-primary">{CRITERION_ICONS[c.label] ?? "check"}</span>
+                        <span className="font-label-md text-[11px] text-on-surface">{c.label}</span>
+                      </div>
+                    ))}
                 </div>
               </div>
             </div>
+
+            {publishError && (
+              <p className="font-body-md text-[13px] text-error bg-error-container/40 rounded-xl px-4 py-2 text-center mb-2">
+                {publishError}
+              </p>
+            )}
           </>
         )}
 
@@ -147,15 +175,16 @@ export default function ReportFoundMatchesPage() {
         )}
       </main>
 
-      {phase === "match" && (
+      {phase === "match" && candidate && (
         <div className="fixed bottom-0 left-0 w-full z-50 flex flex-col gap-3 px-container-margin py-md pb-8 bg-surface/80 backdrop-blur-xl shadow-[0_-4px_20px_rgba(0,0,0,0.05)] rounded-t-2xl">
-          <Link
-            href="/activity/verification"
-            className="w-full h-14 bg-primary btn-gradient text-on-primary rounded-2xl flex items-center justify-center gap-2 font-headline-sm text-headline-sm hover:opacity-90 active:scale-95 transition-all"
+          <button
+            disabled={isPublishing}
+            onClick={confirmMatch}
+            className="w-full h-14 bg-primary btn-gradient text-on-primary rounded-2xl flex items-center justify-center gap-2 font-headline-sm text-headline-sm hover:opacity-90 active:scale-95 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
           >
-            Voir la correspondance
-            <span className="material-symbols-outlined text-[20px]">visibility</span>
-          </Link>
+            {isPublishing ? "Chargement…" : "Voir la correspondance"}
+            {!isPublishing && <span className="material-symbols-outlined text-[20px]">visibility</span>}
+          </button>
           <button
             onClick={() => setPhase("no-match")}
             className="w-full h-14 bg-primary-fixed text-primary rounded-2xl flex items-center justify-center font-headline-sm text-headline-sm hover:opacity-90 active:scale-95 transition-all"

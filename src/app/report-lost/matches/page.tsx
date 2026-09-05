@@ -5,17 +5,16 @@ import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { loadDraft, type DeclarationDraft } from "@/lib/declarationDraft";
 import { createItemFromDraft } from "@/lib/supabase/items";
+import { createMatch, explainMatch, findBestMatch, type MatchCandidate } from "@/lib/supabase/matching";
 
 const RADIUS = 40;
 const CIRCUMFERENCE = RADIUS * 2 * Math.PI;
-const MATCH_PERCENT = 96;
-
-const CRITERIA = ["Même catégorie", "Couleur similaire", "Marque similaire", "Zone proche", "Description similaire"];
 
 export default function DeclarationMatchesPage() {
   const router = useRouter();
   const [draft, setDraft] = useState<DeclarationDraft>({});
   const [phase, setPhase] = useState<"checking" | "match" | "no-match">("checking");
+  const [candidate, setCandidate] = useState<MatchCandidate | null>(null);
   const [ringOffset, setRingOffset] = useState(CIRCUMFERENCE);
   const [surveillance, setSurveillance] = useState(true);
   const [isPublishing, setIsPublishing] = useState(false);
@@ -27,16 +26,37 @@ export default function DeclarationMatchesPage() {
     // during render without risking an SSR/hydration mismatch.
     // eslint-disable-next-line react-hooks/set-state-in-effect
     setDraft(d);
-    const hasMatch = d.categoryId === "wallet";
-    const timer = setTimeout(() => setPhase(hasMatch ? "match" : "no-match"), 1100);
-    return () => clearTimeout(timer);
+
+    let cancelled = false;
+    findBestMatch(d, "found").then((best) => {
+      if (cancelled) return;
+      setCandidate(best);
+      setPhase(best ? "match" : "no-match");
+    });
+    return () => {
+      cancelled = true;
+    };
   }, []);
 
   useEffect(() => {
-    if (phase !== "match") return;
-    const timer = setTimeout(() => setRingOffset(CIRCUMFERENCE - (MATCH_PERCENT / 100) * CIRCUMFERENCE), 200);
+    if (phase !== "match" || !candidate) return;
+    const timer = setTimeout(() => setRingOffset(CIRCUMFERENCE - (candidate.score / 100) * CIRCUMFERENCE), 200);
     return () => clearTimeout(timer);
-  }, [phase]);
+  }, [phase, candidate]);
+
+  const confirmMatch = async () => {
+    if (!candidate) return;
+    setIsPublishing(true);
+    setPublishError(null);
+    const { data: item, error } = await createItemFromDraft(draft, "lost");
+    if (error || !item) {
+      setPublishError("Une erreur est survenue, réessayez.");
+      setIsPublishing(false);
+      return;
+    }
+    await createMatch(item.id, candidate.item.id, candidate.score);
+    router.push("/ownership-verification");
+  };
 
   return (
     <div className="bg-background text-on-background antialiased min-h-screen flex flex-col font-body-md">
@@ -73,7 +93,7 @@ export default function DeclarationMatchesPage() {
           </div>
         )}
 
-        {phase === "match" && (
+        {phase === "match" && candidate && (
           <>
             <div className="flex flex-col items-center justify-center py-lg mb-lg">
               <div className="relative flex items-center justify-center w-24 h-24 mb-md">
@@ -97,7 +117,7 @@ export default function DeclarationMatchesPage() {
                 </div>
               </div>
               <h3 className="font-headline-sm text-headline-sm text-primary mb-1">Une correspondance possible !</h3>
-              <p className="font-label-md text-label-md text-primary bg-primary-fixed px-3 py-1 rounded-full">{MATCH_PERCENT}% de correspondance</p>
+              <p className="font-label-md text-label-md text-primary bg-primary-fixed px-3 py-1 rounded-full">{candidate.score}% de correspondance</p>
             </div>
 
             <div className="grid grid-cols-2 gap-3 mb-lg">
@@ -105,23 +125,18 @@ export default function DeclarationMatchesPage() {
                 <div className="bg-surface-variant px-3 py-2 border-b border-surface-container-high">
                   <span className="font-label-md text-[10px] text-on-surface-variant uppercase">Votre objet</span>
                 </div>
-                <div className="aspect-square w-full relative">
-                  {/* eslint-disable-next-line @next/next/no-img-element */}
-                  <img
-                    alt="Votre portefeuille"
-                    className="absolute inset-0 w-full h-full object-cover"
-                    src="https://lh3.googleusercontent.com/aida-public/AB6AXuABkokfB-6YcPQUUtsM0pA1Pa6HZ13v6ZxMAAXI5_aqG-eGKPWWWVZCGB-cWIiJcKSWJAmaqI3LelDhhjzb3VnCf1KcNqB0mM2YZ_p2MCnWDE6hPsKSR3l6aqURBjMWvOm3PvspKMbBE5y_tC3IIeGHIr2DPXnBQl8pIDSd3GMwW_FjnM2hU-Tz4cTIUbv7WwsaN_ECxtteDsuKmmn3P2L8wPNX0VEZu3jy8Xd4zHZAQX4EEV6ViEw7"
-                  />
+                <div className="aspect-square w-full relative bg-surface-container-high flex items-center justify-center text-primary">
+                  <span className="material-symbols-outlined text-5xl">{draft.categoryIcon || "inventory_2"}</span>
                 </div>
                 <div className="p-3 grow flex flex-col gap-1">
-                  <h4 className="font-headline-sm text-headline-sm text-on-surface line-clamp-1">{draft.objectName || "Portefeuille"}</h4>
+                  <h4 className="font-headline-sm text-headline-sm text-on-surface line-clamp-1">{draft.objectName || draft.categoryLabel}</h4>
                   <div className="flex items-center text-on-surface-variant gap-1 mt-auto">
                     <span className="material-symbols-outlined text-[16px]">calendar_today</span>
-                    <span className="font-body-md text-[13px] truncate">Perdu le {draft.date ? new Date(draft.date).toLocaleDateString("fr-FR") : "12 oct."}</span>
+                    <span className="font-body-md text-[13px] truncate">Perdu le {draft.date ? new Date(draft.date).toLocaleDateString("fr-FR") : "—"}</span>
                   </div>
                   <div className="flex items-center text-on-surface-variant gap-1">
                     <span className="material-symbols-outlined text-[16px]">location_on</span>
-                    <span className="font-body-md text-[13px] truncate">{draft.location || "Paris 10e"}</span>
+                    <span className="font-body-md text-[13px] truncate">{draft.location || "Lieu non précisé"}</span>
                   </div>
                 </div>
               </div>
@@ -130,23 +145,25 @@ export default function DeclarationMatchesPage() {
                 <div className="bg-primary-fixed px-3 py-2 border-b border-primary-fixed-dim">
                   <span className="font-label-md text-[10px] text-primary-container uppercase">Objet trouvé</span>
                 </div>
-                <div className="aspect-square w-full relative">
-                  {/* eslint-disable-next-line @next/next/no-img-element */}
-                  <img
-                    alt="Portefeuille trouvé"
-                    className="absolute inset-0 w-full h-full object-cover"
-                    src="https://lh3.googleusercontent.com/aida-public/AB6AXuAuycBra52OqhjZjU2k7xhPsKCf8iRng8QTztYHnbpxk5qHviFrqjM_EvKxCVUYjddBZRzrnqPDKC4V5i6fhdRJUPYl3gOJ-t5neDyrGVI3_VAvRBHJTmxa1FpZvAiXbrXCOH3xpLv6aYqmUnCzOhf0PaCLISinlxe6lOswy4Xokn_j8x2rqeP2e_h5oQ0jWnynp9KtT9E6Gja5cfF0PhxEMzIeyh-RGVqyI7AgBDTGWPj_l6ceRno_"
-                  />
+                <div className="aspect-square w-full relative bg-surface-container-high flex items-center justify-center text-primary">
+                  {candidate.item.photos?.[0] ? (
+                    // eslint-disable-next-line @next/next/no-img-element
+                    <img alt={candidate.item.title} className="absolute inset-0 w-full h-full object-cover" src={candidate.item.photos[0]} />
+                  ) : (
+                    <span className="material-symbols-outlined text-5xl">{candidate.item.category_icon || "inventory_2"}</span>
+                  )}
                 </div>
                 <div className="p-3 grow flex flex-col gap-1">
-                  <h4 className="font-headline-sm text-headline-sm text-on-surface line-clamp-1">Portefeuille marron</h4>
+                  <h4 className="font-headline-sm text-headline-sm text-on-surface line-clamp-1">{candidate.item.title}</h4>
                   <div className="flex items-center text-primary gap-1 mt-auto">
                     <span className="material-symbols-outlined text-[16px]">schedule</span>
-                    <span className="font-body-md text-[13px] truncate font-semibold">Trouvé aujourd&apos;hui</span>
+                    <span className="font-body-md text-[13px] truncate font-semibold">
+                      Trouvé le {new Date(candidate.item.created_at).toLocaleDateString("fr-FR")}
+                    </span>
                   </div>
                   <div className="flex items-center text-on-surface-variant gap-1">
                     <span className="material-symbols-outlined text-[16px]">location_on</span>
-                    <span className="font-body-md text-[13px] truncate">Gare du Nord</span>
+                    <span className="font-body-md text-[13px] truncate">{candidate.item.location || "Lieu non précisé"}</span>
                   </div>
                 </div>
               </div>
@@ -155,14 +172,25 @@ export default function DeclarationMatchesPage() {
             <div className="bg-surface-container-lowest rounded-2xl p-md soft-shadow mb-lg">
               <h4 className="font-label-md text-[11px] text-on-surface-variant uppercase mb-3">Critères de correspondance</h4>
               <ul className="space-y-3">
-                {CRITERIA.map((c) => (
-                  <li key={c} className="flex items-center gap-3 text-on-surface">
-                    <span className="material-symbols-outlined text-primary text-[20px]" style={{ fontVariationSettings: "'FILL' 1" }}>check</span>
-                    <span className="font-body-lg text-body-lg">{c}</span>
+                {explainMatch(draft, candidate.item).map((c) => (
+                  <li key={c.label} className="flex items-center gap-3 text-on-surface">
+                    <span
+                      className={`material-symbols-outlined text-[20px] ${c.matched ? "text-primary" : "text-outline-variant"}`}
+                      style={{ fontVariationSettings: c.matched ? "'FILL' 1" : "'FILL' 0" }}
+                    >
+                      {c.matched ? "check" : "close"}
+                    </span>
+                    <span className={`font-body-lg text-body-lg ${c.matched ? "" : "text-on-surface-variant"}`}>{c.label}</span>
                   </li>
                 ))}
               </ul>
             </div>
+
+            {publishError && (
+              <p className="font-body-md text-[13px] text-error bg-error-container/40 rounded-xl px-4 py-2 text-center mb-2">
+                {publishError}
+              </p>
+            )}
           </>
         )}
 
@@ -183,11 +211,11 @@ export default function DeclarationMatchesPage() {
               <div className="flex-1 overflow-hidden">
                 <h4 className="font-headline-sm text-headline-sm text-on-surface truncate">{draft.objectName || draft.categoryLabel || "Votre objet"}</h4>
                 <p className="font-body-md text-[13px] text-on-surface-variant truncate">
-                  {draft.color ? `${draft.color} • ` : ""}Perdu le {draft.date ? new Date(draft.date).toLocaleDateString("fr-FR") : "12 octobre"}
+                  {draft.color ? `${draft.color} • ` : ""}Perdu le {draft.date ? new Date(draft.date).toLocaleDateString("fr-FR") : "—"}
                 </p>
                 <div className="flex items-center gap-1 mt-1 text-on-surface-variant">
                   <span className="material-symbols-outlined text-[16px]">location_on</span>
-                  <span className="font-body-md text-[13px]">{draft.location || "Paris"}</span>
+                  <span className="font-body-md text-[13px]">{draft.location || "Lieu non précisé"}</span>
                 </div>
               </div>
             </div>
@@ -207,18 +235,25 @@ export default function DeclarationMatchesPage() {
               </div>
               <p className="font-body-md text-body-md text-on-surface-variant">Objely continuera à rechercher automatiquement des correspondances.</p>
             </div>
+
+            {publishError && (
+              <p className="font-body-md text-[13px] text-error bg-error-container/40 rounded-xl px-4 py-2 text-center mb-2">
+                {publishError}
+              </p>
+            )}
           </>
         )}
       </main>
 
-      {phase === "match" && (
+      {phase === "match" && candidate && (
         <div className="fixed bottom-0 left-0 w-full z-50 flex flex-col gap-3 px-container-margin py-md pb-8 bg-surface/80 backdrop-blur-xl shadow-[0_-4px_20px_rgba(0,0,0,0.05)] rounded-t-2xl">
-          <Link
-            href="/ownership-verification"
-            className="w-full h-14 bg-primary btn-gradient text-on-primary rounded-2xl flex items-center justify-center font-headline-sm text-headline-sm hover:opacity-90 active:scale-95 transition-all"
+          <button
+            disabled={isPublishing}
+            onClick={confirmMatch}
+            className="w-full h-14 bg-primary btn-gradient text-on-primary rounded-2xl flex items-center justify-center font-headline-sm text-headline-sm hover:opacity-90 active:scale-95 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
           >
-            Voir la correspondance
-          </Link>
+            {isPublishing ? "Chargement…" : "Voir la correspondance"}
+          </button>
           <button
             onClick={() => setPhase("no-match")}
             className="w-full h-14 bg-primary-fixed text-primary rounded-2xl flex items-center justify-center font-headline-sm text-headline-sm hover:opacity-90 active:scale-95 transition-all"
@@ -230,11 +265,6 @@ export default function DeclarationMatchesPage() {
 
       {phase === "no-match" && (
         <div className="fixed bottom-0 left-0 w-full z-50 flex flex-col gap-2 px-container-margin py-md pb-8 bg-surface/90 backdrop-blur-xl shadow-[0_-4px_20px_rgba(0,0,0,0.05)] rounded-t-2xl">
-          {publishError && (
-            <p className="font-body-md text-[13px] text-error bg-error-container/40 rounded-xl px-4 py-2 text-center">
-              {publishError}
-            </p>
-          )}
           <button
             disabled={isPublishing}
             onClick={async () => {
