@@ -17,7 +17,12 @@ function timeAgo(dateStr: string) {
   return new Date(dateStr).toLocaleDateString("fr-FR");
 }
 
-export default async function HomeDashboardPage() {
+export default async function HomeDashboardPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ welcome?: string }>;
+}) {
+  const { welcome } = await searchParams;
   const supabase = await createClient();
   const { data: recentFinds } = await supabase
     .from("items")
@@ -123,6 +128,17 @@ export default async function HomeDashboardPage() {
       </header>
 
       <main className="max-w-7xl mx-auto px-container-margin md:px-lg pt-lg md:pt-xl space-y-lg">
+        {welcome === "1" && (
+          <div className="flex items-center gap-3 rounded-2xl bg-emerald-50 border border-emerald-200/60 px-4 py-3 animate-fadeIn">
+            <span className="material-symbols-outlined text-emerald-600" style={{ fontVariationSettings: "'FILL' 1" }}>
+              check_circle
+            </span>
+            <p className="font-body-md text-body-md text-emerald-800">
+              Compte confirmé, bienvenue sur Objely !
+            </p>
+          </div>
+        )}
+
         {/* Greeting (desktop only — mobile shows this pinned in the fixed header above) */}
         <div className="hidden md:block">
           <h1 className="font-headline-lg text-headline-lg text-on-background">Quelque chose à retrouver ?</h1>
