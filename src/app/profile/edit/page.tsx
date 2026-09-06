@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import Link from "next/link";
 import BottomNav from "@/components/BottomNav";
 import { getMyProfile, updateAvatarUrl, uploadAvatarPhoto } from "@/lib/supabase/profile";
-import { PRESET_AVATARS } from "@/lib/presetAvatars";
+import { AVATAR_CATEGORIES } from "@/lib/presetAvatars";
 
 function FieldGroup({ children }: { children: ReactNode }) {
   return <div className="bg-surface-container-lowest rounded-[20px] soft-shadow divide-y divide-outline-variant/30 overflow-hidden">{children}</div>;
@@ -33,6 +33,7 @@ export default function EditProfilePage() {
 
   const [avatarUrl, setAvatarUrl] = useState<string | null>(null);
   const [pickerOpen, setPickerOpen] = useState(false);
+  const [activeCategory, setActiveCategory] = useState(AVATAR_CATEGORIES[0].id);
   const [isUploading, setIsUploading] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -128,8 +129,25 @@ export default function EditProfilePage() {
               </button>
 
               <p className="font-label-md text-[11px] text-outline uppercase tracking-wider mb-3">Ou choisissez un avatar</p>
-              <div className="grid grid-cols-4 gap-3">
-                {PRESET_AVATARS.map((avatar) => {
+
+              <div className="flex gap-2 mb-4">
+                {AVATAR_CATEGORIES.map((category) => (
+                  <button
+                    key={category.id}
+                    onClick={() => setActiveCategory(category.id)}
+                    className={`px-4 py-1.5 rounded-full font-label-md text-label-md transition-colors ${
+                      activeCategory === category.id
+                        ? "bg-primary text-on-primary"
+                        : "bg-surface-container text-on-surface-variant hover:bg-surface-variant"
+                    }`}
+                  >
+                    {category.label}
+                  </button>
+                ))}
+              </div>
+
+              <div className="grid grid-cols-4 gap-3 max-h-[280px] overflow-y-auto pr-1">
+                {AVATAR_CATEGORIES.find((c) => c.id === activeCategory)?.avatars.map((avatar) => {
                   const isSelected = avatarUrl === avatar.url;
                   return (
                     <button
