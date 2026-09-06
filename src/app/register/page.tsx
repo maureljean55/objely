@@ -83,11 +83,13 @@ export default function RegisterPage() {
     });
 
     if (signUpError) {
-      setError(
-        signUpError.message === "User already registered"
-          ? "Un compte existe déjà avec cet e-mail."
-          : signUpError.message,
-      );
+      if (signUpError.message === "User already registered") {
+        setError("Un compte existe déjà avec cet e-mail.");
+      } else if (/rate limit/i.test(signUpError.message)) {
+        setError("Trop d'e-mails envoyés récemment, réessayez dans quelques minutes.");
+      } else {
+        setError(signUpError.message);
+      }
       setIsSubmitting(false);
       return;
     }
