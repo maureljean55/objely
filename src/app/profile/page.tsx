@@ -6,6 +6,7 @@ import BottomNav from "@/components/BottomNav";
 import ThemeToggle from "@/components/ThemeToggle";
 import { getCurrentUser } from "@/lib/auth";
 import { getMyItemStats, type MyItemStats } from "@/lib/supabase/items";
+import { getMyProfile } from "@/lib/supabase/profile";
 import type { User } from "@supabase/supabase-js";
 
 const EMPTY_STATS: MyItemStats = { signaled: 0, found: 0, recovered: 0 };
@@ -20,9 +21,18 @@ const MENU_ITEMS_BOTTOM = [
   { icon: "flag", label: "Signaler un problème", bg: "bg-surface-variant/50", color: "text-on-surface-variant", href: "/profile/report" },
 ];
 
-function ProfileSummary({ user, stats }: { user: User | null; stats: MyItemStats }) {
+function ProfileSummary({
+  user,
+  stats,
+  avatarUrl,
+  displayName,
+}: {
+  user: User | null;
+  stats: MyItemStats;
+  avatarUrl: string | null;
+  displayName: string;
+}) {
   const authenticated = !!user;
-  const displayName = (user?.user_metadata?.full_name as string | undefined) || user?.email || "";
 
   return (
     <>
@@ -39,13 +49,13 @@ function ProfileSummary({ user, stats }: { user: User | null; stats: MyItemStats
         <>
           <section className="flex flex-col items-center pt-8 pb-6 animate-fadeIn">
             <div className="relative mb-4">
-              <div className="w-28 h-28 rounded-full overflow-hidden soft-shadow ring-4 ring-surface-container-lowest bg-surface-container-high">
-                {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img
-                  className="w-full h-full object-cover"
-                  alt={displayName}
-                  src="https://lh3.googleusercontent.com/aida-public/AB6AXuCZfuwmAGmqsioZXn2vl0S5TeziGs1iRvYxOAMNX1PWzii9KRcgCccoERwU1Dj76e0-cAN4M1_1ws_bjeZmtSxzXtieAa2J7ngwaqInqx_rnuPJJ3W5dj_MCvXoNG0YdF_6oyDqnRm6zIuhi6ii40MgIjkG5rsKX0XWiP40a5Eu8sK6GuUecMT6pJPUQbKbX9MSI_u1c4V0_o8xVv6hlzkKug9iRIUbUXwp-O7ITLOaaSCSmax9QdFC"
-                />
+              <div className="w-28 h-28 rounded-full overflow-hidden soft-shadow ring-4 ring-surface-container-lowest bg-surface-container-high flex items-center justify-center text-on-surface-variant">
+                {avatarUrl ? (
+                  // eslint-disable-next-line @next/next/no-img-element
+                  <img className="w-full h-full object-cover" alt={displayName} src={avatarUrl} />
+                ) : (
+                  <span className="material-symbols-outlined text-[52px]">person</span>
+                )}
               </div>
               <Link href="/profile/edit" className="absolute bottom-0 right-0 w-8 h-8 bg-surface-container-lowest rounded-full shadow-md flex items-center justify-center text-primary hover:bg-surface-variant transition-colors border border-surface-container">
                 <span className="material-symbols-outlined text-[18px]">edit</span>
@@ -105,7 +115,10 @@ function ProfileSummary({ user, stats }: { user: User | null; stats: MyItemStats
 export default function UserProfilePage() {
   const [user, setUser] = useState<User | null>(null);
   const [stats, setStats] = useState<MyItemStats>(EMPTY_STATS);
+  const [avatarUrl, setAvatarUrl] = useState<string | null>(null);
+  const [profileName, setProfileName] = useState<string | null>(null);
   const authenticated = !!user;
+  const displayName = profileName || (user?.user_metadata?.full_name as string | undefined) || user?.email || "";
 
   useEffect(() => {
     // Read after mount (not as a lazy initial state) so the server-rendered
@@ -113,7 +126,13 @@ export default function UserProfilePage() {
     // warn about a mismatch; there's no session to read during SSR anyway.
     getCurrentUser().then((u) => {
       setUser(u);
-      if (u) getMyItemStats(u.id).then(setStats);
+      if (u) {
+        getMyItemStats(u.id).then(setStats);
+        getMyProfile().then(({ data }) => {
+          setAvatarUrl(data?.avatar_url ?? null);
+          setProfileName(data?.full_name ?? null);
+        });
+      }
     });
   }, []);
 
@@ -138,7 +157,7 @@ export default function UserProfilePage() {
         className="md:hidden fixed top-0 inset-x-0 z-40 bg-background/95 backdrop-blur-md px-container-margin pb-4 shadow-sm"
         style={{ paddingTop: "env(safe-area-inset-top)" }}
       >
-        <ProfileSummary user={user} stats={stats} />
+        <ProfileSummary user={user} stats={stats} avatarUrl={avatarUrl} displayName={displayName} />
       </div>
 
       <main
@@ -147,7 +166,7 @@ export default function UserProfilePage() {
         }`}
       >
         <div className="hidden md:block relative">
-          <ProfileSummary user={user} stats={stats} />
+          <ProfileSummary user={user} stats={stats} avatarUrl={avatarUrl} displayName={displayName} />
         </div>
 
         <section className="bg-surface-container-lowest rounded-[32px] soft-shadow inner-stroke overflow-hidden mb-8 animate-slideUp">

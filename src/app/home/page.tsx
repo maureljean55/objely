@@ -33,6 +33,9 @@ export default async function HomeDashboardPage() {
   const { count: unreadCount } = user
     ? await supabase.from("notifications").select("id", { count: "exact", head: true }).eq("user_id", user.id).eq("read", false)
     : { count: 0 };
+  const { data: profile } = user
+    ? await supabase.from("profiles").select("avatar_url").eq("id", user.id).maybeSingle<{ avatar_url: string | null }>()
+    : { data: null };
 
   return (
     <div className="pt-[calc(172px+env(safe-area-inset-top))] pb-[120px] md:pt-[calc(100px+env(safe-area-inset-top))] md:pb-0">
@@ -43,13 +46,13 @@ export default async function HomeDashboardPage() {
       >
         <div className="flex justify-between items-center">
           <Link href="/profile" className="relative">
-            <div className="w-11 h-11 rounded-full overflow-hidden ring-2 ring-surface-container-lowest shadow-sm bg-surface-container-high">
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img
-                alt="Profil"
-                className="w-full h-full object-cover"
-                src="https://lh3.googleusercontent.com/aida-public/AB6AXuCZfuwmAGmqsioZXn2vl0S5TeziGs1iRvYxOAMNX1PWzii9KRcgCccoERwU1Dj76e0-cAN4M1_1ws_bjeZmtSxzXtieAa2J7ngwaqInqx_rnuPJJ3W5dj_MCvXoNG0YdF_6oyDqnRm6zIuhi6ii40MgIjkG5rsKX0XWiP40a5Eu8sK6GuUecMT6pJPUQbKbX9MSI_u1c4V0_o8xVv6hlzkKug9iRIUbUXwp-O7ITLOaaSCSmax9QdFC"
-              />
+            <div className="w-11 h-11 rounded-full overflow-hidden ring-2 ring-surface-container-lowest shadow-sm bg-surface-container-high flex items-center justify-center text-on-surface-variant">
+              {profile?.avatar_url ? (
+                // eslint-disable-next-line @next/next/no-img-element
+                <img alt="Profil" className="w-full h-full object-cover" src={profile.avatar_url} />
+              ) : (
+                <span className="material-symbols-outlined text-[22px]">person</span>
+              )}
             </div>
             <span className="absolute -bottom-0.5 -right-0.5 w-3.5 h-3.5 rounded-full bg-emerald-500 ring-2 ring-surface-container-lowest" />
           </Link>
@@ -109,13 +112,13 @@ export default async function HomeDashboardPage() {
             Profil
           </Link>
         </nav>
-        <Link href="/profile" className="w-10 h-10 flex items-center justify-center rounded-full surface-card overflow-hidden bg-surface-container-high">
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img
-            alt="Profil"
-            className="w-full h-full object-cover"
-            src="https://lh3.googleusercontent.com/aida-public/AB6AXuCZfuwmAGmqsioZXn2vl0S5TeziGs1iRvYxOAMNX1PWzii9KRcgCccoERwU1Dj76e0-cAN4M1_1ws_bjeZmtSxzXtieAa2J7ngwaqInqx_rnuPJJ3W5dj_MCvXoNG0YdF_6oyDqnRm6zIuhi6ii40MgIjkG5rsKX0XWiP40a5Eu8sK6GuUecMT6pJPUQbKbX9MSI_u1c4V0_o8xVv6hlzkKug9iRIUbUXwp-O7ITLOaaSCSmax9QdFC"
-          />
+        <Link href="/profile" className="w-10 h-10 flex items-center justify-center rounded-full surface-card overflow-hidden bg-surface-container-high text-on-surface-variant">
+          {profile?.avatar_url ? (
+            // eslint-disable-next-line @next/next/no-img-element
+            <img alt="Profil" className="w-full h-full object-cover" src={profile.avatar_url} />
+          ) : (
+            <span className="material-symbols-outlined text-[20px]">person</span>
+          )}
         </Link>
       </header>
 
