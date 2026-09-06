@@ -1,5 +1,6 @@
 import { createClient } from "@/lib/supabase/client";
 import type { Item } from "@/lib/supabase/items";
+import { createNotification } from "@/lib/supabase/notifications";
 
 export type Message = {
   id: string;
@@ -42,9 +43,19 @@ export async function sendMessage(matchId: string, body: string) {
   const user = userData.user;
   if (!user) return { data: null, error: new Error("Vous devez être connecté.") };
 
-  return supabase
+  const result = await supabase
     .from("messages")
     .insert({ match_id: matchId, sender_id: user.id, body })
     .select()
     .single<Message>();
+
+  if (!result.error) {
+    const { data: match } = await getMatch(matchId);
+    if (match) {
+      const recipientId = match.lost_item.user_id === user.id ? match.found_item.user_id : match.lost_item.user_id;
+      await createNotification(recipientId, "message", "Nouveau message", body.slice(0, 120), matchId);
+    }
+  }
+
+  return result;
 }

@@ -54,7 +54,7 @@ export default function DeclarationMatchesPage() {
       setIsPublishing(false);
       return;
     }
-    const { data: match, error: matchError } = await createMatch(item.id, candidate.item.id, candidate.score);
+    const { data: match, error: matchError } = await createMatch(item, candidate.item, candidate.score);
     if (matchError || !match) {
       setPublishError("Une erreur est survenue, réessayez.");
       setIsPublishing(false);

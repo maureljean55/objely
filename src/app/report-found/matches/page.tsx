@@ -72,7 +72,7 @@ export default function ReportFoundMatchesPage() {
       setIsPublishing(false);
       return;
     }
-    const { data: match, error: matchError } = await createMatch(candidate.item.id, item.id, candidate.score);
+    const { data: match, error: matchError } = await createMatch(candidate.item, item, candidate.score);
     if (matchError || !match) {
       setPublishError("Une erreur est survenue, réessayez.");
       setIsPublishing(false);

@@ -1,6 +1,7 @@
 import { createClient } from "@/lib/supabase/client";
 import type { DeclarationDraft } from "@/lib/declarationDraft";
 import type { Item, ItemType } from "@/lib/supabase/items";
+import { notifyMatchParticipants } from "@/lib/supabase/notifications";
 
 const MATCH_THRESHOLD = 45;
 
@@ -105,25 +106,36 @@ export async function findBestMatch(draft: DraftLike, oppositeType: ItemType): P
   return best;
 }
 
+type MatchParty = Pick<Item, "id" | "user_id" | "title">;
+
 /**
- * Records a match between a lost item and a found item, and flips both to
- * "matched" status. Safe to call more than once for the same pair (the
- * unique constraint on the table makes the insert a no-op via upsert).
+ * Records a match between a lost item and a found item, flips both to
+ * "matched" status, and notifies both owners. Safe to call more than once
+ * for the same pair (the unique constraint on the table makes the insert a
+ * no-op via upsert).
  */
-export async function createMatch(lostItemId: string, foundItemId: string, matchPercent: number) {
+export async function createMatch(lostItem: MatchParty, foundItem: MatchParty, matchPercent: number) {
   const supabase = createClient();
 
   const { data: match, error } = await supabase
     .from("matches")
     .upsert(
-      { lost_item_id: lostItemId, found_item_id: foundItemId, match_percent: matchPercent },
+      { lost_item_id: lostItem.id, found_item_id: foundItem.id, match_percent: matchPercent },
       { onConflict: "lost_item_id,found_item_id" },
     )
     .select()
     .single<{ id: string; lost_item_id: string; found_item_id: string; match_percent: number }>();
 
-  if (!error) {
-    await supabase.from("items").update({ status: "matched" }).in("id", [lostItemId, foundItemId]);
+  if (!error && match) {
+    await supabase.from("items").update({ status: "matched" }).in("id", [lostItem.id, foundItem.id]);
+    await notifyMatchParticipants(
+      lostItem.user_id,
+      foundItem.user_id,
+      "match",
+      "Une correspondance a été trouvée !",
+      `"${lostItem.title}" pourrait correspondre à "${foundItem.title}".`,
+      match.id,
+    );
   }
 
   return { data: match, error };

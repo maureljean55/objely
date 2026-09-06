@@ -27,6 +27,13 @@ export default async function HomeDashboardPage() {
     .limit(6)
     .returns<Item[]>();
 
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  const { count: unreadCount } = user
+    ? await supabase.from("notifications").select("id", { count: "exact", head: true }).eq("user_id", user.id).eq("read", false)
+    : { count: 0 };
+
   return (
     <div className="pt-[calc(172px+env(safe-area-inset-top))] pb-[120px] md:pt-[calc(100px+env(safe-area-inset-top))] md:pb-0">
       {/* TopAppBar (mobile) — fixed, stays put while the body scrolls */}
@@ -53,7 +60,9 @@ export default async function HomeDashboardPage() {
               className="relative w-11 h-11 rounded-full bg-surface-container-lowest shadow-sm flex items-center justify-center text-on-surface-variant hover:text-primary transition-colors"
             >
               <span className="material-symbols-outlined text-[22px]">notifications</span>
-              <span className="absolute top-2.5 right-3 w-2 h-2 rounded-full bg-error ring-2 ring-surface-container-lowest" />
+              {!!unreadCount && (
+                <span className="absolute top-2.5 right-3 w-2 h-2 rounded-full bg-error ring-2 ring-surface-container-lowest" />
+              )}
             </Link>
             <Link
               href="/qr"

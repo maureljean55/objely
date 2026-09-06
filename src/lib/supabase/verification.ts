@@ -1,4 +1,6 @@
 import { createClient } from "@/lib/supabase/client";
+import { notifyMatchParticipants } from "@/lib/supabase/notifications";
+import type { Item } from "@/lib/supabase/items";
 
 export type MatchVerification = {
   id: string;
@@ -39,12 +41,30 @@ export async function resolveMatch(matchId: string, approved: boolean) {
     .from("matches")
     .update({ status: approved ? "confirmed" : "rejected" })
     .eq("id", matchId)
-    .select("lost_item_id, found_item_id")
-    .single();
+    .select("lost_item_id, found_item_id, lost_item:items!matches_lost_item_id_fkey(user_id, title), found_item:items!matches_found_item_id_fkey(user_id, title)")
+    .single<{
+      lost_item_id: string;
+      found_item_id: string;
+      lost_item: Pick<Item, "user_id" | "title">;
+      found_item: Pick<Item, "user_id" | "title">;
+    }>();
 
-  if (!error && match && approved) {
-    await supabase.from("items").update({ status: "recovered" }).eq("id", match.lost_item_id);
-    await supabase.from("items").update({ status: "returned" }).eq("id", match.found_item_id);
+  if (!error && match) {
+    if (approved) {
+      await supabase.from("items").update({ status: "recovered" }).eq("id", match.lost_item_id);
+      await supabase.from("items").update({ status: "returned" }).eq("id", match.found_item_id);
+    }
+
+    await notifyMatchParticipants(
+      match.lost_item.user_id,
+      match.found_item.user_id,
+      approved ? "verification_confirmed" : "verification_rejected",
+      approved ? "Correspondance confirmée !" : "Correspondance refusée",
+      approved
+        ? `La restitution de "${match.found_item.title}" a été confirmée.`
+        : `La correspondance pour "${match.lost_item.title}" a été refusée.`,
+      matchId,
+    );
   }
 
   return { error };
