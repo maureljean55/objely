@@ -4,6 +4,7 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { saveDraft } from "@/lib/declarationDraft";
+import PhotoPicker from "@/components/PhotoPicker";
 
 const COLORS = ["Noir", "Blanc", "Gris", "Bleu", "Rouge", "Vert", "Marron", "Autre"];
 
@@ -14,6 +15,7 @@ export default function DeclarationDetailsPage() {
   const [brand, setBrand] = useState("");
   const [color, setColor] = useState<string | null>(null);
   const [distinctive, setDistinctive] = useState("");
+  const [photos, setPhotos] = useState<string[]>([]);
 
   const canContinue = name.trim().length > 0;
 
@@ -47,14 +49,7 @@ export default function DeclarationDetailsPage() {
 
         <div className="mb-lg">
           <label className="block font-label-md text-label-md text-outline uppercase tracking-wider mb-2">Photos</label>
-          <button
-            type="button"
-            className="w-full h-48 bg-surface-container-lowest rounded-[24px] border border-dashed border-outline-variant flex flex-col items-center justify-center p-6 text-center soft-shadow hover:bg-surface-container-low transition-colors"
-          >
-            <span className="material-symbols-outlined text-4xl text-primary mb-3">photo_camera</span>
-            <span className="font-headline-sm text-headline-sm text-primary mb-1">Ajouter une photo</span>
-            <span className="font-body-md text-body-md text-on-surface-variant">Prenez une photo ou choisissez-en une depuis votre galerie</span>
-          </button>
+          <PhotoPicker photos={photos} onChange={setPhotos} />
         </div>
 
         <form
@@ -62,7 +57,7 @@ export default function DeclarationDetailsPage() {
           onSubmit={(e) => {
             e.preventDefault();
             if (!canContinue) return;
-            saveDraft({ objectName: name, description, brand, color: color ?? undefined, privateDetail: distinctive });
+            saveDraft({ objectName: name, description, brand, color: color ?? undefined, privateDetail: distinctive, photos });
             router.push("/report-lost/location");
           }}
         >
@@ -150,7 +145,7 @@ export default function DeclarationDetailsPage() {
             type="button"
             disabled={!canContinue}
             onClick={() => {
-              saveDraft({ objectName: name, description, brand, color: color ?? undefined, privateDetail: distinctive });
+              saveDraft({ objectName: name, description, brand, color: color ?? undefined, privateDetail: distinctive, photos });
               router.push("/report-lost/location");
             }}
             className="btn-gradient bg-primary text-on-primary rounded-xl px-6 py-3 flex items-center justify-center gap-2 font-headline-sm text-headline-sm shadow-[0px_10px_30px_rgba(0,88,188,0.15)] hover:opacity-90 transition-opacity disabled:opacity-50 disabled:cursor-not-allowed"

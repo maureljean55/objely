@@ -4,6 +4,7 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { saveDraft } from "@/lib/declarationDraft";
+import PhotoPicker from "@/components/PhotoPicker";
 
 const COLORS = ["Noir", "Blanc", "Gris", "Bleu", "Rouge", "Vert", "Marron", "Autre"];
 
@@ -14,12 +15,13 @@ export default function ReportFoundDetailsPage() {
   const [color, setColor] = useState<string | null>(null);
   const [description, setDescription] = useState("");
   const [privateDetail, setPrivateDetail] = useState("");
+  const [photos, setPhotos] = useState<string[]>([]);
 
   const canContinue = name.trim().length > 0;
 
   const goNext = () => {
     if (!canContinue) return;
-    saveDraft({ objectName: name, brand, color: color ?? undefined, description, privateDetail });
+    saveDraft({ objectName: name, brand, color: color ?? undefined, description, privateDetail, photos });
     router.push("/report-found/location");
   };
 
@@ -49,15 +51,9 @@ export default function ReportFoundDetailsPage() {
           <p className="font-body-md text-body-md text-on-surface-variant">Donnez suffisamment de détails pour aider son propriétaire à le reconnaître.</p>
         </div>
 
-        <button
-          type="button"
-          className="w-full h-44 mb-lg bg-surface-container-low rounded-2xl border-2 border-dashed border-outline-variant flex flex-col items-center justify-center gap-2 hover:bg-surface-container transition-colors"
-        >
-          <span className="w-12 h-12 rounded-full bg-surface-container-lowest shadow-sm flex items-center justify-center text-primary">
-            <span className="material-symbols-outlined" style={{ fontVariationSettings: "'FILL' 1" }}>add_a_photo</span>
-          </span>
-          <span className="font-label-md text-label-md text-on-surface-variant bg-surface-container-lowest/80 px-3 py-1 rounded-full">Ajouter une photo</span>
-        </button>
+        <div className="mb-lg">
+          <PhotoPicker photos={photos} onChange={setPhotos} />
+        </div>
 
         <div className="flex flex-col gap-lg">
           <div>

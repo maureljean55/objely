@@ -12,6 +12,7 @@ export type DeclarationDraft = {
   time?: string;
   privateDetail?: string;
   hideExactLocation?: boolean;
+  photos?: string[];
 };
 
 const KEY = "objely-declaration-draft";

@@ -52,6 +52,7 @@ export async function createItemFromDraft(draft: DeclarationDraft, type: ItemTyp
       location: draft.location || null,
       hide_exact_location: draft.hideExactLocation ?? false,
       occurred_on: draft.date || null,
+      photos: draft.photos ?? [],
     })
     .select()
     .single<Item>();
@@ -105,6 +106,25 @@ export async function getItemSecret(itemId: string) {
 export async function getItem(id: string) {
   const supabase = createClient();
   return supabase.from("items").select("*").eq("id", id).single<Item>();
+}
+
+/** Uploads a photo to the "item-photos" bucket under the user's own folder and returns its public URL. */
+export async function uploadItemPhoto(file: File) {
+  const supabase = createClient();
+  const { data: userData } = await supabase.auth.getUser();
+  const user = userData.user;
+  if (!user) return { url: null, error: new Error("Vous devez être connecté.") };
+
+  const ext = file.name.split(".").pop() || "jpg";
+  const path = `${user.id}/${Date.now()}-${Math.random().toString(36).slice(2, 8)}.${ext}`;
+
+  const { error: uploadError } = await supabase.storage.from("item-photos").upload(path, file, {
+    contentType: file.type || "image/jpeg",
+  });
+  if (uploadError) return { url: null, error: uploadError };
+
+  const { data } = supabase.storage.from("item-photos").getPublicUrl(path);
+  return { url: data.publicUrl, error: null };
 }
 
 export type MyItemStats = { signaled: number; found: number; recovered: number };
