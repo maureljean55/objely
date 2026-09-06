@@ -8,6 +8,7 @@ const FILTERS = ["Tout", "Correspondances", "Messages", "Restitutions"];
 type MatchRow = {
   id: string;
   match_percent: number;
+  status: "pending" | "confirmed" | "rejected";
   created_at: string;
   lost_item: Item;
   found_item: Item;
@@ -32,7 +33,7 @@ export default async function ActivityPage() {
   const { data: matches } = user
     ? await supabase
         .from("matches")
-        .select("id, match_percent, created_at, lost_item:items!matches_lost_item_id_fkey(*), found_item:items!matches_found_item_id_fkey(*)")
+        .select("id, match_percent, status, created_at, lost_item:items!matches_lost_item_id_fkey(*), found_item:items!matches_found_item_id_fkey(*)")
         .order("created_at", { ascending: false })
         .returns<MatchRow[]>()
     : { data: [] as MatchRow[] };
@@ -96,12 +97,18 @@ export default async function ActivityPage() {
                     </div>
                   </div>
                 </div>
-                <div className="p-md">
+                <div className="p-md flex gap-sm">
                   <Link
                     href="/activity/match"
-                    className="w-full h-14 bg-primary text-on-primary rounded-xl font-headline-sm text-headline-sm hover:opacity-90 active:scale-[0.98] transition-all flex items-center justify-center"
+                    className="flex-1 h-14 bg-surface-container-lowest border border-outline-variant text-on-surface rounded-xl font-headline-sm text-headline-sm hover:bg-surface-container-low transition-all flex items-center justify-center"
                   >
-                    Voir la correspondance
+                    Détails
+                  </Link>
+                  <Link
+                    href={`/chat/${match.id}`}
+                    className="flex-1 h-14 bg-primary text-on-primary rounded-xl font-headline-sm text-headline-sm hover:opacity-90 active:scale-[0.98] transition-all flex items-center justify-center"
+                  >
+                    Discuter
                   </Link>
                 </div>
               </article>
@@ -116,53 +123,32 @@ export default async function ActivityPage() {
             </div>
           )}
 
-          {/* Message */}
-          <article className="bg-surface-container-lowest rounded-2xl soft-shadow inner-stroke p-md">
-            <div className="flex gap-3 mb-md">
-              <div className="w-10 h-10 rounded-full bg-secondary-container/10 flex items-center justify-center shrink-0 text-secondary-container">
-                <span className="material-symbols-outlined">chat</span>
-              </div>
-              <div className="flex-1">
-                <div className="flex items-center justify-between gap-2 mb-0.5">
-                  <h2 className="font-headline-sm text-headline-sm text-on-surface">Nouveau message</h2>
-                  <span className="font-label-md text-label-md text-on-surface-variant shrink-0">Il y a 12 min</span>
+          {(matches ?? [])
+            .filter((match) => match.status === "pending" && match.found_item.user_id === user!.id)
+            .map((match) => (
+              <article key={`verif-${match.id}`} className="bg-surface-container-lowest rounded-2xl soft-shadow inner-stroke p-md">
+                <div className="flex gap-3 mb-md">
+                  <div className="w-10 h-10 rounded-full bg-error-container/60 flex items-center justify-center shrink-0 text-error">
+                    <span className="material-symbols-outlined">lock_open</span>
+                  </div>
+                  <div className="flex-1">
+                    <div className="flex items-center justify-between gap-2 mb-0.5">
+                      <h2 className="font-headline-sm text-headline-sm text-on-surface">Vérification de propriété</h2>
+                      <span className="font-label-md text-label-md text-on-surface-variant shrink-0">{timeAgo(match.created_at)}</span>
+                    </div>
+                    <p className="font-body-md text-body-md text-on-surface-variant">
+                      Une vérification est nécessaire avant la restitution de {match.found_item.title}.
+                    </p>
+                  </div>
                 </div>
-                <p className="font-body-md text-body-md text-on-surface-variant">
-                  Jean D. vous a envoyé un message concernant votre objet.
-                </p>
-              </div>
-            </div>
-            <Link
-              href="/chat"
-              className="w-full h-14 bg-[#EBF2FF] text-primary rounded-xl font-headline-sm text-headline-sm hover:brightness-95 transition-all flex items-center justify-center"
-            >
-              Continuer la discussion
-            </Link>
-          </article>
-
-          {/* Verification */}
-          <article className="bg-surface-container-lowest rounded-2xl soft-shadow inner-stroke p-md">
-            <div className="flex gap-3 mb-md">
-              <div className="w-10 h-10 rounded-full bg-error-container/60 flex items-center justify-center shrink-0 text-error">
-                <span className="material-symbols-outlined">lock_open</span>
-              </div>
-              <div className="flex-1">
-                <div className="flex items-center justify-between gap-2 mb-0.5">
-                  <h2 className="font-headline-sm text-headline-sm text-on-surface">Vérification de propriété</h2>
-                  <span className="font-label-md text-label-md text-on-surface-variant shrink-0">Il y a 20 min</span>
-                </div>
-                <p className="font-body-md text-body-md text-on-surface-variant">
-                  Une vérification est nécessaire avant la restitution.
-                </p>
-              </div>
-            </div>
-            <Link
-              href="/activity/verification"
-              className="w-full h-14 bg-surface-container-lowest border-2 border-outline-variant text-on-surface rounded-xl font-headline-sm text-headline-sm hover:bg-surface-container-low transition-all flex items-center justify-center"
-            >
-              Voir la demande
-            </Link>
-          </article>
+                <Link
+                  href={`/activity/verification?match=${match.id}`}
+                  className="w-full h-14 bg-surface-container-lowest border-2 border-outline-variant text-on-surface rounded-xl font-headline-sm text-headline-sm hover:bg-surface-container-low transition-all flex items-center justify-center"
+                >
+                  Voir la demande
+                </Link>
+              </article>
+            ))}
         </div>
       </main>
 

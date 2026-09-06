@@ -120,7 +120,7 @@ export async function createMatch(lostItemId: string, foundItemId: string, match
       { onConflict: "lost_item_id,found_item_id" },
     )
     .select()
-    .single();
+    .single<{ id: string; lost_item_id: string; found_item_id: string; match_percent: number }>();
 
   if (!error) {
     await supabase.from("items").update({ status: "matched" }).in("id", [lostItemId, foundItemId]);

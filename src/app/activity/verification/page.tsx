@@ -1,15 +1,70 @@
 "use client";
 
-import { useRouter } from "next/navigation";
+import { Suspense, useEffect, useState } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
+import { getMatch, type MatchWithItems } from "@/lib/supabase/messages";
+import { getItemSecret } from "@/lib/supabase/items";
+import { getLatestVerification, resolveMatch, type MatchVerification } from "@/lib/supabase/verification";
 
-const ANSWERS = [
-  { question: "Marque exacte ?", answer: "Montblanc" },
-  { question: "Quel détail particulier se trouve à l'intérieur ?", answer: "Une ancienne carte de fidélité rouge." },
-  { question: "Quel élément distinctif possède l'objet ?", answer: "Une petite rayure sur le coin gauche." },
-];
-
-export default function VerificationReviewPage() {
+function VerificationReviewContent() {
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const matchId = searchParams.get("match");
+
+  const [match, setMatch] = useState<MatchWithItems | null>(null);
+  const [verification, setVerification] = useState<MatchVerification | null>(null);
+  const [knownDetail, setKnownDetail] = useState<string | null>(null);
+  const [loadError, setLoadError] = useState(false);
+  const [isResolving, setIsResolving] = useState(false);
+
+  useEffect(() => {
+    if (!matchId) return;
+    getMatch(matchId).then(async ({ data, error }) => {
+      if (error || !data) {
+        setLoadError(true);
+        return;
+      }
+      setMatch(data);
+      const [verificationRes, secretRes] = await Promise.all([
+        getLatestVerification(matchId),
+        getItemSecret(data.found_item.id),
+      ]);
+      setVerification(verificationRes.data ?? null);
+      setKnownDetail(secretRes.data?.private_detail ?? null);
+    });
+  }, [matchId]);
+
+  const handleResolve = async (approved: boolean) => {
+    if (!matchId) return;
+    setIsResolving(true);
+    await resolveMatch(matchId, approved);
+    router.push(approved ? "/schedule-return" : "/activity");
+  };
+
+  if (loadError || !matchId) {
+    return (
+      <div className="bg-background text-on-background antialiased min-h-screen flex flex-col items-center justify-center px-container-margin text-center">
+        <p className="font-body-md text-body-md text-on-surface-variant">Correspondance introuvable.</p>
+        <button type="button" onClick={() => router.push("/activity")} className="text-primary font-semibold mt-4">
+          Retour à l&apos;activité
+        </button>
+      </div>
+    );
+  }
+
+  const foundItem = match?.found_item;
+  const answers = [
+    {
+      question: "Marque exacte ?",
+      answer: verification?.brand_answer || "Aucune réponse fournie.",
+      known: foundItem?.brand,
+    },
+    {
+      question: "Quel détail particulier se trouve à l'intérieur / sur l'objet ?",
+      answer: verification?.detail_answer || "Aucune réponse fournie.",
+      known: knownDetail,
+    },
+  ];
 
   return (
     <div className="bg-background text-on-background font-body-md antialiased min-h-screen pb-[180px]">
@@ -31,8 +86,16 @@ export default function VerificationReviewPage() {
           </p>
         </div>
 
+        {!verification && (
+          <div className="bg-surface-container-lowest rounded-2xl p-lg soft-shadow text-center mb-md">
+            <p className="font-body-md text-body-md text-on-surface-variant">
+              Le déclarant n&apos;a pas encore soumis ses réponses de vérification.
+            </p>
+          </div>
+        )}
+
         <div className="flex flex-col gap-md">
-          {ANSWERS.map((item) => (
+          {answers.map((item) => (
             <div key={item.question} className="bg-surface-container-lowest rounded-2xl p-lg soft-shadow">
               <div className="flex items-start gap-md">
                 <div className="w-10 h-10 rounded-full bg-surface-container flex items-center justify-center shrink-0 text-on-surface-variant">
@@ -45,6 +108,12 @@ export default function VerificationReviewPage() {
                     <span className="font-label-md text-label-md text-on-surface-variant uppercase block mb-1">Réponse du déclarant</span>
                     <p className="font-body-lg text-body-lg text-on-background font-medium">{item.answer}</p>
                   </div>
+                  {item.known && (
+                    <div className="bg-primary-fixed/20 p-md rounded-xl border border-primary-fixed mt-2">
+                      <span className="font-label-md text-label-md text-primary uppercase block mb-1">Ce que vous avez déclaré</span>
+                      <p className="font-body-lg text-body-lg text-on-background font-medium">{item.known}</p>
+                    </div>
+                  )}
                 </div>
               </div>
             </div>
@@ -56,16 +125,18 @@ export default function VerificationReviewPage() {
         <div className="max-w-2xl mx-auto flex flex-col gap-sm">
           <button
             type="button"
-            onClick={() => router.push("/schedule-return")}
-            className="w-full h-14 bg-tertiary text-on-tertiary rounded-xl font-headline-sm text-headline-sm flex items-center justify-center gap-2 hover:brightness-110 active:scale-[0.98] transition-all"
+            disabled={isResolving || !verification}
+            onClick={() => handleResolve(true)}
+            className="w-full h-14 bg-tertiary text-on-tertiary rounded-xl font-headline-sm text-headline-sm flex items-center justify-center gap-2 hover:brightness-110 active:scale-[0.98] transition-all disabled:opacity-50 disabled:cursor-not-allowed"
           >
             <span className="material-symbols-outlined">check_circle</span>
             Les informations correspondent
           </button>
           <button
             type="button"
-            onClick={() => router.back()}
-            className="w-full h-14 bg-[#EBF2FF] text-primary rounded-xl font-headline-sm text-headline-sm flex items-center justify-center gap-2 hover:brightness-95 active:scale-[0.98] transition-all"
+            disabled={isResolving || !verification}
+            onClick={() => handleResolve(false)}
+            className="w-full h-14 bg-[#EBF2FF] text-primary rounded-xl font-headline-sm text-headline-sm flex items-center justify-center gap-2 hover:brightness-95 active:scale-[0.98] transition-all disabled:opacity-50 disabled:cursor-not-allowed"
           >
             <span className="material-symbols-outlined">cancel</span>
             Je ne suis pas convaincu
@@ -73,5 +144,13 @@ export default function VerificationReviewPage() {
         </div>
       </div>
     </div>
+  );
+}
+
+export default function VerificationReviewPage() {
+  return (
+    <Suspense>
+      <VerificationReviewContent />
+    </Suspense>
   );
 }

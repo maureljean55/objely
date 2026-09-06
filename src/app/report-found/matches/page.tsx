@@ -72,8 +72,13 @@ export default function ReportFoundMatchesPage() {
       setIsPublishing(false);
       return;
     }
-    await createMatch(candidate.item.id, item.id, candidate.score);
-    router.push("/activity/verification");
+    const { data: match, error: matchError } = await createMatch(candidate.item.id, item.id, candidate.score);
+    if (matchError || !match) {
+      setPublishError("Une erreur est survenue, réessayez.");
+      setIsPublishing(false);
+      return;
+    }
+    router.push(`/activity/verification?match=${match.id}`);
   };
 
   return (

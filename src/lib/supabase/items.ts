@@ -92,6 +92,16 @@ export async function listMyItems() {
     .returns<Item[]>();
 }
 
+/** Only returns a row when the caller owns the item — enforced by RLS. */
+export async function getItemSecret(itemId: string) {
+  const supabase = createClient();
+  return supabase
+    .from("item_secrets")
+    .select("private_detail")
+    .eq("item_id", itemId)
+    .maybeSingle<{ private_detail: string }>();
+}
+
 export async function getItem(id: string) {
   const supabase = createClient();
   return supabase.from("items").select("*").eq("id", id).single<Item>();

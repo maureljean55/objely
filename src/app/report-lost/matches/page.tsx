@@ -54,8 +54,13 @@ export default function DeclarationMatchesPage() {
       setIsPublishing(false);
       return;
     }
-    await createMatch(item.id, candidate.item.id, candidate.score);
-    router.push("/ownership-verification");
+    const { data: match, error: matchError } = await createMatch(item.id, candidate.item.id, candidate.score);
+    if (matchError || !match) {
+      setPublishError("Une erreur est survenue, réessayez.");
+      setIsPublishing(false);
+      return;
+    }
+    router.push(`/ownership-verification?match=${match.id}`);
   };
 
   return (

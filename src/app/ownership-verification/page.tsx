@@ -1,9 +1,58 @@
 "use client";
 
-import { useRouter } from "next/navigation";
+import { Suspense, useEffect, useState } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
+import { getMatch, type MatchWithItems } from "@/lib/supabase/messages";
+import { submitVerificationAnswers } from "@/lib/supabase/verification";
 
-export default function OwnershipVerificationPage() {
+function OwnershipVerificationContent() {
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const matchId = searchParams.get("match");
+
+  const [match, setMatch] = useState<MatchWithItems | null>(null);
+  const [loadError, setLoadError] = useState(false);
+  const [brand, setBrand] = useState("");
+  const [detail, setDetail] = useState("");
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [submitError, setSubmitError] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (!matchId) return;
+    getMatch(matchId).then(({ data, error }) => {
+      if (error || !data) {
+        setLoadError(true);
+        return;
+      }
+      setMatch(data);
+    });
+  }, [matchId]);
+
+  const handleSubmit = async () => {
+    if (!matchId) return;
+    setIsSubmitting(true);
+    setSubmitError(null);
+    const { error } = await submitVerificationAnswers(matchId, brand, detail);
+    if (error) {
+      setSubmitError("Une erreur est survenue, réessayez.");
+      setIsSubmitting(false);
+      return;
+    }
+    router.push(`/chat/${matchId}`);
+  };
+
+  if (loadError || !matchId) {
+    return (
+      <div className="bg-background text-on-surface antialiased min-h-screen flex flex-col items-center justify-center px-container-margin text-center">
+        <p className="font-body-md text-body-md text-on-surface-variant">Correspondance introuvable.</p>
+        <button type="button" onClick={() => router.push("/home")} className="text-primary font-semibold mt-4">
+          Retour à l&apos;accueil
+        </button>
+      </div>
+    );
+  }
+
+  const foundItem = match?.found_item;
 
   return (
     <div className="bg-background text-on-surface antialiased min-h-screen flex flex-col pb-24 md:pb-0">
@@ -21,9 +70,7 @@ export default function OwnershipVerificationPage() {
             <span className="material-symbols-outlined" style={{ fontVariationSettings: "'FILL' 0" }}>arrow_back</span>
           </button>
           <h1 className="font-display text-headline-sm font-bold text-on-surface flex-1 text-center truncate px-2">Vérification</h1>
-          <button className="w-10 h-10 flex items-center justify-center rounded-full hover:opacity-80 transition-opacity active:scale-95 text-on-surface-variant focus:outline-none focus:ring-2 focus:ring-primary/20">
-            <span className="material-symbols-outlined" style={{ fontVariationSettings: "'FILL' 0" }}>info</span>
-          </button>
+          <div className="w-10 h-10" />
         </div>
       </header>
 
@@ -39,31 +86,39 @@ export default function OwnershipVerificationPage() {
 
         <div className="grid grid-cols-1 md:grid-cols-12 gap-xl">
           <div className="md:col-span-5 md:col-start-1 flex flex-col gap-lg">
-            <div className="bg-surface-container-lowest rounded-xl soft-shadow inner-stroke overflow-hidden flex flex-col">
-              <div className="relative h-48 w-full bg-surface-container-high">
-                {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img
-                  alt="Objet trouvé - portefeuille (photo floutée)"
-                  className="w-full h-full object-cover filter blur-sm scale-110 opacity-90 transition-all duration-500 hover:blur-md"
-                  src="https://lh3.googleusercontent.com/aida-public/AB6AXuD9uwELYpCAg-H2lwfgw6zwBhEWCfYnsqaKo5hOlNVY5RWyoG7ikbvy2H_AS59f383yydhPI6sf2kypKog-HtW-gnyAsI_DlcRjjilULCAu8XCRJ8OLeYJZgU3WaqREQpH1ZcRxucTu9u2u6FaBZUU7B1VbaY23jvsHM32b0aAaSvl6iHJln7sqip57Lxdi265_sR6di47mOUKNueY75YPNSfkD5L-migV8RzBADRGIlzKgTa-xmenk"
-                />
-                <div className="absolute top-md right-md bg-surface-container-lowest/90 backdrop-blur-md px-3 py-1 rounded-full border border-surface-variant flex items-center gap-2 shadow-sm">
-                  <span className="w-2 h-2 rounded-full bg-primary-container animate-pulse" />
-                  <span className="font-label-md text-label-md text-on-surface">Trouvé le 12 Oct</span>
-                </div>
-              </div>
-              <div className="p-md flex items-center justify-between bg-surface-container-lowest">
-                <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 rounded-full bg-secondary-fixed/30 flex items-center justify-center text-on-secondary-fixed">
-                    <span className="material-symbols-outlined text-[20px]">wallet</span>
-                  </div>
-                  <div>
-                    <h3 className="font-headline-sm text-headline-sm text-on-surface">Portefeuille en cuir</h3>
-                    <p className="font-body-md text-body-md text-on-surface-variant text-sm">Paris 10e, Métro Gare du Nord</p>
+            {foundItem && (
+              <div className="bg-surface-container-lowest rounded-xl soft-shadow inner-stroke overflow-hidden flex flex-col">
+                <div className="relative h-48 w-full bg-surface-container-high flex items-center justify-center text-primary">
+                  {foundItem.photos?.[0] ? (
+                    // eslint-disable-next-line @next/next/no-img-element
+                    <img
+                      alt="Objet trouvé (photo floutée)"
+                      className="w-full h-full object-cover filter blur-sm scale-110 opacity-90 transition-all duration-500 hover:blur-md"
+                      src={foundItem.photos[0]}
+                    />
+                  ) : (
+                    <span className="material-symbols-outlined text-6xl opacity-60">{foundItem.category_icon || "inventory_2"}</span>
+                  )}
+                  <div className="absolute top-md right-md bg-surface-container-lowest/90 backdrop-blur-md px-3 py-1 rounded-full border border-surface-variant flex items-center gap-2 shadow-sm">
+                    <span className="w-2 h-2 rounded-full bg-primary-container animate-pulse" />
+                    <span className="font-label-md text-label-md text-on-surface">
+                      Trouvé le {new Date(foundItem.created_at).toLocaleDateString("fr-FR")}
+                    </span>
                   </div>
                 </div>
+                <div className="p-md flex items-center justify-between bg-surface-container-lowest">
+                  <div className="flex items-center gap-3">
+                    <div className="w-10 h-10 rounded-full bg-secondary-fixed/30 flex items-center justify-center text-on-secondary-fixed">
+                      <span className="material-symbols-outlined text-[20px]">{foundItem.category_icon || "inventory_2"}</span>
+                    </div>
+                    <div>
+                      <h3 className="font-headline-sm text-headline-sm text-on-surface">{foundItem.title}</h3>
+                      <p className="font-body-md text-body-md text-on-surface-variant text-sm">{foundItem.location || "Lieu non précisé"}</p>
+                    </div>
+                  </div>
+                </div>
               </div>
-            </div>
+            )}
 
             <div className="bg-surface-container-low rounded-xl p-md flex items-start gap-md border border-surface-variant/50">
               <div className="mt-1 shrink-0 text-primary-container">
@@ -80,7 +135,7 @@ export default function OwnershipVerificationPage() {
               className="flex flex-col gap-lg bg-surface-container-lowest rounded-[32px] p-lg md:p-xl soft-shadow inner-stroke"
               onSubmit={(e) => {
                 e.preventDefault();
-                router.push("/chat");
+                handleSubmit();
               }}
             >
               <div className="flex items-center gap-2 mb-2">
@@ -100,6 +155,8 @@ export default function OwnershipVerificationPage() {
                   className="w-full h-14 bg-surface-container-low border-transparent rounded-[16px] px-md font-body-lg text-body-lg text-on-surface focus:border-primary-container focus:bg-surface-container-lowest focus:ring-1 focus:ring-primary-container transition-all placeholder:text-outline-variant"
                   id="q-brand"
                   name="brand"
+                  value={brand}
+                  onChange={(e) => setBrand(e.target.value)}
                   placeholder="Ex: Montblanc, Le Tanneur..."
                   type="text"
                 />
@@ -118,18 +175,25 @@ export default function OwnershipVerificationPage() {
                   className="w-full bg-surface-container-low border-transparent rounded-[16px] p-md font-body-lg text-body-lg text-on-surface focus:border-primary-container focus:bg-surface-container-lowest focus:ring-1 focus:ring-primary-container transition-all placeholder:text-outline-variant resize-none"
                   id="q-details"
                   name="details"
+                  value={detail}
+                  onChange={(e) => setDetail(e.target.value)}
                   placeholder="Ex: Il y a une carte de fidélité Monoprix rouge, et une vieille photo d'identité pliée dans la pochette gauche..."
                   rows={4}
                 />
               </div>
 
+              {submitError && (
+                <p className="font-body-md text-[13px] text-error bg-error-container/40 rounded-xl px-4 py-2 text-center">{submitError}</p>
+              )}
+
               <div className="pt-sm flex flex-col sm:flex-row-reverse gap-sm mt-md">
                 <button
                   type="submit"
-                  className="btn-primary-gradient min-h-[56px] px-lg rounded-[16px] flex-1 flex items-center justify-center gap-2 text-on-primary font-headline-sm text-headline-sm hover:opacity-90 active:scale-[0.98] transition-all shadow-md shadow-primary/20"
+                  disabled={isSubmitting || !matchId}
+                  className="btn-primary-gradient min-h-[56px] px-lg rounded-[16px] flex-1 flex items-center justify-center gap-2 text-on-primary font-headline-sm text-headline-sm hover:opacity-90 active:scale-[0.98] transition-all shadow-md shadow-primary/20 disabled:opacity-50 disabled:cursor-not-allowed"
                 >
-                  Vérifier la propriété
-                  <span className="material-symbols-outlined text-[20px]">arrow_forward</span>
+                  {isSubmitting ? "Envoi…" : "Vérifier la propriété"}
+                  {!isSubmitting && <span className="material-symbols-outlined text-[20px]">arrow_forward</span>}
                 </button>
                 <button
                   type="button"
@@ -144,5 +208,13 @@ export default function OwnershipVerificationPage() {
         </div>
       </main>
     </div>
+  );
+}
+
+export default function OwnershipVerificationPage() {
+  return (
+    <Suspense>
+      <OwnershipVerificationContent />
+    </Suspense>
   );
 }
