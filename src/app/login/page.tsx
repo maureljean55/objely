@@ -1,20 +1,34 @@
 "use client";
 
-import { useState, type FormEvent } from "react";
+import { Suspense, useState, type FormEvent } from "react";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { signInWithPassword } from "@/lib/auth";
 
 const HEADER_HEIGHT = "calc(172px + env(safe-area-inset-top))";
 
-export default function LoginPage() {
+// Supabase's own error messages for expired/reused confirmation links are in
+// English and not very reassuring — swap in a friendlier French message that
+// tells the user what to actually do next.
+function friendlyAuthError(message: string) {
+  if (/expired|invalid/i.test(message)) {
+    return "Ce lien de confirmation n'est plus valable (déjà utilisé ou expiré). Réinscrivez-vous ou reconnectez-vous pour recevoir un nouveau lien.";
+  }
+  return message;
+}
+
+function LoginForm() {
   const router = useRouter();
+  const searchParams = useSearchParams();
   const [identifier, setIdentifier] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [rememberMe, setRememberMe] = useState(true);
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [error, setError] = useState<string | null>(null);
+  const [error, setError] = useState<string | null>(() => {
+    const fromLink = searchParams.get("error");
+    return fromLink ? friendlyAuthError(fromLink) : null;
+  });
 
   const canSubmit = identifier.trim().length > 0 && password.length > 0 && !isSubmitting;
 
@@ -184,6 +198,14 @@ export default function LoginPage() {
         </p>
       </main>
     </div>
+  );
+}
+
+export default function LoginPage() {
+  return (
+    <Suspense fallback={null}>
+      <LoginForm />
+    </Suspense>
   );
 }
 

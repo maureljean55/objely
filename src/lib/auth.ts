@@ -25,7 +25,11 @@ export async function signInWithPassword(email: string, password: string, rememb
 
 export async function signUpWithPassword(email: string, password: string, metadata: Record<string, unknown>) {
   const supabase = createClient();
-  return supabase.auth.signUp({ email, password, options: { data: metadata } });
+  return supabase.auth.signUp({
+    email,
+    password,
+    options: { data: metadata, emailRedirectTo: `${window.location.origin}/auth/callback` },
+  });
 }
 
 export async function signOut() {
