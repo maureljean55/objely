@@ -3,6 +3,7 @@ import "./globals.css";
 import ServiceWorkerRegister from "@/components/ServiceWorkerRegister";
 import SessionGuard from "@/components/SessionGuard";
 import { LanguageProvider } from "@/components/LanguageProvider";
+import { getServerLanguage } from "@/lib/i18n/server";
 
 export const metadata: Metadata = {
   applicationName: "Objely",
@@ -42,9 +43,10 @@ const THEME_INIT_SCRIPT = `
 })();
 `;
 
-export default function RootLayout({ children }: LayoutProps<"/">) {
+export default async function RootLayout({ children }: LayoutProps<"/">) {
+  const language = await getServerLanguage();
   return (
-    <html lang="fr" suppressHydrationWarning>
+    <html lang={language} suppressHydrationWarning>
       <head>
         {/* Runs before paint so the stored/system theme applies with no flash. */}
         <script dangerouslySetInnerHTML={{ __html: THEME_INIT_SCRIPT }} />
@@ -62,7 +64,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
         />
       </head>
       <body className="min-h-screen bg-background font-body-md text-on-background antialiased">
-        <LanguageProvider>
+        <LanguageProvider initialLanguage={language}>
           {children}
           <ServiceWorkerRegister />
           <SessionGuard />

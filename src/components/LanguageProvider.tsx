@@ -4,6 +4,7 @@ import { createContext, useContext, useEffect, useState, type ReactNode } from "
 import { translations, type Language, type TranslationDict } from "@/lib/i18n/translations";
 
 const STORAGE_KEY = "objely-language";
+const COOKIE_NAME = "objely-language";
 
 type LanguageContextValue = {
   language: Language;
@@ -13,26 +14,34 @@ type LanguageContextValue = {
 
 const LanguageContext = createContext<LanguageContextValue | null>(null);
 
-export function LanguageProvider({ children }: { children: ReactNode }) {
-  const [language, setLanguageState] = useState<Language>("fr");
+function writeCookie(language: Language) {
+  // Readable by server components (home, activity, search...) via
+  // next/headers cookies() — localStorage alone can't cross that boundary.
+  document.cookie = `${COOKIE_NAME}=${language}; path=/; max-age=31536000; SameSite=Lax`;
+}
+
+export function LanguageProvider({ children, initialLanguage }: { children: ReactNode; initialLanguage: Language }) {
+  const [language, setLanguageState] = useState<Language>(initialLanguage);
 
   useEffect(() => {
     let stored: string | null = null;
     try {
       stored = localStorage.getItem(STORAGE_KEY);
     } catch {}
-    if (stored === "en" || stored === "fr") {
-      // Reading a per-viewer preference from localStorage can only happen
-      // client-side, so the default above is used for the first paint.
+    if ((stored === "en" || stored === "fr") && stored !== initialLanguage) {
+      // localStorage can disagree with the cookie (e.g. cookie cleared) —
+      // reconcile once on mount, client-only so this can't run during SSR.
       // eslint-disable-next-line react-hooks/set-state-in-effect
       setLanguageState(stored);
-      document.documentElement.lang = stored;
+      writeCookie(stored);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const setLanguage = (next: Language) => {
     setLanguageState(next);
     document.documentElement.lang = next;
+    writeCookie(next);
     try {
       localStorage.setItem(STORAGE_KEY, next);
     } catch {}
