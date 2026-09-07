@@ -56,7 +56,7 @@ export default function NotificationTicker() {
   const current = PREVENTION_MESSAGES[index];
 
   return (
-    <div ref={containerRef} className="bg-surface-container-lowest rounded-full shadow-sm px-4 py-2.5 overflow-hidden">
+    <div ref={containerRef} className="inline-flex self-start max-w-full bg-surface-container-lowest rounded-full shadow-sm px-4 py-2.5 overflow-hidden">
       <span
         key={index}
         ref={textRef}
