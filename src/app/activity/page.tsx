@@ -104,12 +104,18 @@ export default async function ActivityPage() {
                   >
                     Détails
                   </Link>
-                  <Link
-                    href={`/chat/${match.id}`}
-                    className="flex-1 h-14 bg-primary text-on-primary rounded-xl font-headline-sm text-headline-sm hover:opacity-90 active:scale-[0.98] transition-all flex items-center justify-center"
-                  >
-                    Discuter
-                  </Link>
+                  {match.status === "confirmed" ? (
+                    <Link
+                      href={`/chat/${match.id}`}
+                      className="flex-1 h-14 bg-primary text-on-primary rounded-xl font-headline-sm text-headline-sm hover:opacity-90 active:scale-[0.98] transition-all flex items-center justify-center"
+                    >
+                      Discuter
+                    </Link>
+                  ) : (
+                    <div className="flex-1 h-14 bg-surface-container text-on-surface-variant rounded-xl font-label-md text-label-md flex items-center justify-center text-center px-2">
+                      En attente de vérification
+                    </div>
+                  )}
                 </div>
               </article>
             );

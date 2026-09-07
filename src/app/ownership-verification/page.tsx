@@ -16,6 +16,7 @@ function OwnershipVerificationContent() {
   const [detail, setDetail] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitError, setSubmitError] = useState<string | null>(null);
+  const [submitted, setSubmitted] = useState(false);
 
   useEffect(() => {
     if (!matchId) return;
@@ -38,7 +39,7 @@ function OwnershipVerificationContent() {
       setIsSubmitting(false);
       return;
     }
-    router.push(`/chat/${matchId}`);
+    setSubmitted(true);
   };
 
   if (loadError || !matchId) {
@@ -47,6 +48,23 @@ function OwnershipVerificationContent() {
         <p className="font-body-md text-body-md text-on-surface-variant">Correspondance introuvable.</p>
         <button type="button" onClick={() => router.push("/home")} className="text-primary font-semibold mt-4">
           Retour à l&apos;accueil
+        </button>
+      </div>
+    );
+  }
+
+  if (submitted) {
+    return (
+      <div className="bg-background text-on-surface antialiased min-h-screen flex flex-col items-center justify-center px-container-margin text-center gap-3">
+        <div className="w-16 h-16 rounded-full bg-primary/10 text-primary flex items-center justify-center mb-2">
+          <span className="material-symbols-outlined text-[32px]" style={{ fontVariationSettings: "'FILL' 1" }}>mark_email_read</span>
+        </div>
+        <h1 className="font-headline-lg-mobile text-headline-lg-mobile text-on-surface">Vérification envoyée</h1>
+        <p className="font-body-md text-body-md text-on-surface-variant max-w-sm">
+          Vous recevrez une notification si le trouveur confirme que les informations sont correctes. Si elles le sont, vous aurez le droit d&apos;écrire à la personne qui a trouvé votre objet.
+        </p>
+        <button type="button" onClick={() => router.push("/activity")} className="text-primary font-semibold mt-2">
+          Retour à l&apos;activité
         </button>
       </div>
     );
@@ -192,7 +210,7 @@ function OwnershipVerificationContent() {
                   disabled={isSubmitting || !matchId}
                   className="btn-primary-gradient min-h-[56px] px-lg rounded-[16px] flex-1 flex items-center justify-center gap-2 text-on-primary font-headline-sm text-headline-sm hover:opacity-90 active:scale-[0.98] transition-all shadow-md shadow-primary/20 disabled:opacity-50 disabled:cursor-not-allowed"
                 >
-                  {isSubmitting ? "Envoi…" : "Vérifier la propriété"}
+                  {isSubmitting ? "Envoi…" : "Envoyer la vérification"}
                   {!isSubmitting && <span className="material-symbols-outlined text-[20px]">arrow_forward</span>}
                 </button>
                 <button

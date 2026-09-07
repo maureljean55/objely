@@ -84,6 +84,27 @@ export default function SecureChatPage() {
     );
   }
 
+  // The message thread only opens once the finder has confirmed the
+  // owner's verification answers — before that, neither side has "le droit
+  // d'écrire" yet.
+  if (match && match.status !== "confirmed") {
+    return (
+      <div className="bg-background text-on-background antialiased min-h-screen flex flex-col items-center justify-center px-container-margin text-center gap-2">
+        <div className="w-14 h-14 rounded-full bg-surface-container text-on-surface-variant flex items-center justify-center mb-2">
+          <span className="material-symbols-outlined text-[26px]">lock_clock</span>
+        </div>
+        <p className="font-body-md text-body-md text-on-surface-variant max-w-sm">
+          {match.status === "rejected"
+            ? "Cette correspondance a été refusée, la conversation n'est pas disponible."
+            : "La conversation s'ouvrira une fois la vérification de propriété confirmée."}
+        </p>
+        <button type="button" onClick={() => router.push("/activity")} className="text-primary font-semibold mt-2">
+          Retour à l&apos;activité
+        </button>
+      </div>
+    );
+  }
+
   const isLostSide = match && currentUserId ? match.lost_item.user_id === currentUserId : true;
   const otherItem: Item | undefined = match ? (isLostSide ? match.found_item : match.lost_item) : undefined;
 
