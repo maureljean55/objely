@@ -136,15 +136,17 @@ export async function createMatch(lostItem: MatchParty, foundItem: MatchParty, m
     .single<{ id: string; lost_item_id: string; found_item_id: string; match_percent: number }>();
 
   if (!error && match) {
-    await supabase.from("items").update({ status: "matched" }).in("id", [lostItem.id, foundItem.id]);
-    await notifyMatchParticipants(
-      lostItem.user_id,
-      foundItem.user_id,
-      "match",
-      "Une correspondance a été trouvée !",
-      `"${lostItem.title}" pourrait correspondre à "${foundItem.title}".`,
-      match.id,
-    );
+    await Promise.all([
+      supabase.from("items").update({ status: "matched" }).in("id", [lostItem.id, foundItem.id]),
+      notifyMatchParticipants(
+        lostItem.user_id,
+        foundItem.user_id,
+        "match",
+        "Une correspondance a été trouvée !",
+        `"${lostItem.title}" pourrait correspondre à "${foundItem.title}".`,
+        match.id,
+      ),
+    ]);
   }
 
   return { data: match, error };

@@ -70,13 +70,12 @@ export async function createItemFromDraft(draft: DeclarationDraft, type: ItemTyp
     return { data: null, error };
   }
 
-  if (draft.privateDetail && draft.privateDetail.trim().length > 0) {
-    await supabase.from("item_secrets").insert({ item_id: item.id, private_detail: draft.privateDetail.trim() });
-  }
-
-  if (type === "found") {
-    await incrementTrustScore(FOUND_ITEM_TRUST_BONUS);
-  }
+  await Promise.all([
+    draft.privateDetail && draft.privateDetail.trim().length > 0
+      ? supabase.from("item_secrets").insert({ item_id: item.id, private_detail: draft.privateDetail.trim() })
+      : null,
+    type === "found" ? incrementTrustScore(FOUND_ITEM_TRUST_BONUS) : null,
+  ]);
 
   return { data: item, error: null };
 }

@@ -56,9 +56,11 @@ export async function resolveMatch(matchId: string, approved: boolean) {
 
   if (!error && match) {
     if (approved) {
-      await supabase.from("items").update({ status: "recovered" }).eq("id", match.lost_item_id);
-      await supabase.from("items").update({ status: "returned" }).eq("id", match.found_item_id);
-      await incrementTrustScore(RESTITUTION_TRUST_BONUS);
+      await Promise.all([
+        supabase.from("items").update({ status: "recovered" }).eq("id", match.lost_item_id),
+        supabase.from("items").update({ status: "returned" }).eq("id", match.found_item_id),
+        incrementTrustScore(RESTITUTION_TRUST_BONUS),
+      ]);
     }
 
     await notifyMatchParticipants(

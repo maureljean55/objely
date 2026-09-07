@@ -33,28 +33,30 @@ export default function SecureChatPage() {
     const supabase = createClient();
 
     (async () => {
-      const { data: userData } = await supabase.auth.getUser();
+      // Neither call depends on the other's result, so run them together
+      // instead of waiting for auth before even starting the match fetch.
+      const [{ data: userData }, { data: matchData, error: matchErr }] = await Promise.all([
+        supabase.auth.getUser(),
+        getMatch(matchId),
+      ]);
       const user = userData.user;
-      if (!user) {
+      if (!user || matchErr || !matchData) {
         setLoadError(true);
         return;
       }
       setCurrentUserId(user.id);
-
-      const { data: matchData, error: matchErr } = await getMatch(matchId);
-      if (matchErr || !matchData) {
-        setLoadError(true);
-        return;
-      }
       setMatch(matchData);
 
       const isLostSide = matchData.lost_item.user_id === user.id;
       const otherUserId = isLostSide ? matchData.found_item.user_id : matchData.lost_item.user_id;
 
-      const { data: profile } = await supabase.from("profiles").select("full_name").eq("id", otherUserId).maybeSingle<{ full_name: string | null }>();
+      // Same here: the other party's name and the message history are
+      // independent of each other.
+      const [{ data: profile }, { data: messageData }] = await Promise.all([
+        supabase.from("profiles").select("full_name").eq("id", otherUserId).maybeSingle<{ full_name: string | null }>(),
+        listMessages(matchId),
+      ]);
       if (profile?.full_name) setOtherName(profile.full_name);
-
-      const { data: messageData } = await listMessages(matchId);
       setMessages(messageData ?? []);
     })();
   }, [matchId]);
