@@ -1,16 +1,81 @@
 "use client";
 
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 
 const SUGGESTIONS = [
   { icon: "search", label: "Problème avec une correspondance" },
   { icon: "package_2", label: "Problème avec un objet" },
+  { icon: "help", label: "Comment déclarer un objet ?" },
 ];
 
+type SupportMessage = {
+  id: string;
+  sender: "user" | "bot" | "admin";
+  body: string;
+  created_at: string;
+};
+
+function formatTime(dateStr: string) {
+  return new Date(dateStr).toLocaleTimeString("fr-FR", { hour: "2-digit", minute: "2-digit" });
+}
+
 export default function HelpChatPage() {
+  const [conversationId, setConversationId] = useState<string | null>(null);
+  const [status, setStatus] = useState<"bot" | "escalated" | "closed">("bot");
+  const [messages, setMessages] = useState<SupportMessage[]>([]);
   const [draft, setDraft] = useState("");
+  const [isSending, setIsSending] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
+  const bottomRef = useRef<HTMLDivElement>(null);
+  const pendingIdRef = useRef(0);
+
+  useEffect(() => {
+    fetch("/api/support-chat")
+      .then((res) => res.json())
+      .then((data) => {
+        if (data.conversation) {
+          setConversationId(data.conversation.id);
+          setStatus(data.conversation.status);
+        }
+        setMessages(data.messages ?? []);
+        setIsLoading(false);
+      });
+  }, []);
+
+  useEffect(() => {
+    bottomRef.current?.scrollIntoView({ behavior: "smooth" });
+  }, [messages]);
+
+  const send = async (body: string) => {
+    if (!body.trim() || isSending || !conversationId) return;
+    setIsSending(true);
+    setDraft("");
+    pendingIdRef.current += 1;
+    const optimisticUser: SupportMessage = {
+      id: `pending-${pendingIdRef.current}`,
+      sender: "user",
+      body: body.trim(),
+      created_at: new Date().toISOString(),
+    };
+    setMessages((prev) => [...prev, optimisticUser]);
+
+    const res = await fetch("/api/support-chat", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ conversationId, message: body.trim() }),
+    });
+    const data = await res.json();
+    setMessages((prev) => {
+      const withoutOptimistic = prev.filter((m) => m.id !== optimisticUser.id);
+      return [...withoutOptimistic, ...(data.userMessage ? [data.userMessage] : [optimisticUser]), ...(data.botMessage ? [data.botMessage] : [])];
+    });
+    if (data.escalated) setStatus("escalated");
+    setIsSending(false);
+  };
+
+  const showSuggestions = !isLoading && messages.length <= 1 && status === "bot";
 
   return (
     <div className="bg-background text-on-background font-body-md antialiased">
@@ -21,65 +86,76 @@ export default function HelpChatPage() {
         <div className="flex items-center gap-3">
           <div className="relative">
             <div className="w-10 h-10 rounded-full overflow-hidden bg-surface-variant flex items-center justify-center text-primary">
-              <span className="material-symbols-outlined" style={{ fontVariationSettings: "'FILL' 1" }}>support_agent</span>
+              <span className="material-symbols-outlined" style={{ fontVariationSettings: "'FILL' 1" }}>
+                {status === "escalated" ? "support_agent" : "smart_toy"}
+              </span>
             </div>
             <span className="absolute bottom-0 right-0 w-3 h-3 bg-emerald-500 border-2 border-surface rounded-full" />
           </div>
           <div className="flex flex-col">
-            <h1 className="font-headline-sm text-headline-sm text-on-surface">Service client</h1>
-            <span className="font-label-md text-[11px] text-outline">Répond généralement en quelques minutes</span>
+            <h1 className="font-headline-sm text-headline-sm text-on-surface">{status === "escalated" ? "Conseiller Objely" : "Assistant Objely"}</h1>
+            <span className="font-label-md text-[11px] text-outline">
+              {status === "escalated" ? "Un conseiller va vous répondre" : "Répond instantanément"}
+            </span>
           </div>
         </div>
-        <button className="text-on-surface-variant hover:opacity-70 transition-opacity active:scale-95 w-10 h-10 flex items-center justify-center">
-          <span className="material-symbols-outlined">more_vert</span>
-        </button>
+        <div className="w-10" />
       </header>
 
       <main className="min-h-screen max-w-[800px] mx-auto px-container-margin py-md pt-[calc(92px+env(safe-area-inset-top))] pb-[140px] flex flex-col gap-md">
-        <div className="text-center">
-          <span className="font-label-md text-[11px] text-outline-variant uppercase tracking-wider">Aujourd&apos;hui, 10:42</span>
-        </div>
+        {isLoading && (
+          <div className="flex justify-center py-xl">
+            <span className="w-8 h-8 border-4 border-primary-container/30 border-t-primary rounded-full animate-spin" />
+          </div>
+        )}
 
-        <div className="flex flex-col items-start gap-1 max-w-[85%]">
-          <div className="bg-surface-container rounded-2xl message-in px-4 py-2.5 text-on-surface shadow-sm">
-            <p className="font-body-md text-body-md">Bonjour 👋 Comment pouvons-nous vous aider aujourd&apos;hui ?</p>
-          </div>
-          <span className="font-label-md text-[11px] text-outline-variant ml-2">10:42</span>
-        </div>
+        {messages.map((message) => {
+          const isMine = message.sender === "user";
+          return (
+            <div key={message.id} className={`flex flex-col gap-1 max-w-[85%] ${isMine ? "items-end self-end" : "items-start self-start"}`}>
+              <div
+                className={`rounded-2xl px-4 py-2.5 shadow-sm whitespace-pre-line ${
+                  isMine ? "message-out text-on-primary" : "bg-surface-container message-in text-on-surface"
+                }`}
+              >
+                <p className="font-body-md text-body-md">{message.body}</p>
+              </div>
+              <span className={`font-label-md text-[11px] text-outline-variant ${isMine ? "mr-2" : "ml-2"}`}>{formatTime(message.created_at)}</span>
+            </div>
+          );
+        })}
 
-        <div className="flex flex-col items-end self-end gap-1 max-w-[85%]">
-          <div className="rounded-2xl message-out px-4 py-2.5 text-on-primary shadow-sm">
-            <p className="font-body-md text-body-md">Bonjour, j&apos;ai perdu mon portefeuille et j&apos;ai trouvé une correspondance.</p>
+        {status === "escalated" && (
+          <div className="bg-secondary/10 text-secondary rounded-2xl px-4 py-3 text-center font-body-md text-[13px] mx-auto">
+            Un conseiller humain a été prévenu et prendra le relais ici dès que possible.
           </div>
-          <div className="flex items-center gap-1 mr-2">
-            <span className="font-label-md text-[11px] text-outline-variant">10:45</span>
-            <span className="font-label-md text-[11px] text-primary">Vu</span>
-            <span className="material-symbols-outlined text-[14px] text-primary" style={{ fontVariationSettings: "'FILL' 1" }}>done_all</span>
-          </div>
-        </div>
+        )}
 
-        <div className="flex flex-col items-start gap-1 max-w-[85%]">
-          <div className="bg-surface-container rounded-2xl px-4 py-2.5 text-on-surface shadow-sm">
-            <p className="font-body-md text-body-md">Pas d&apos;inquiétude. Nous allons vous aider à vérifier la correspondance et à organiser la restitution.</p>
+        {showSuggestions && (
+          <div className="flex flex-col gap-2 items-start">
+            {SUGGESTIONS.map((s) => (
+              <button
+                key={s.label}
+                onClick={() => send(s.label)}
+                disabled={isSending}
+                className="bg-surface-container-lowest text-primary border border-outline-variant/40 rounded-full px-4 py-2 flex items-center gap-2 hover:bg-primary/5 active:scale-95 transition-all shadow-sm disabled:opacity-50"
+              >
+                <span className="material-symbols-outlined text-[18px]">{s.icon}</span>
+                <span className="font-label-md text-label-md">{s.label}</span>
+              </button>
+            ))}
           </div>
-          <div className="bg-surface-container rounded-2xl message-in px-4 py-2.5 text-on-surface shadow-sm">
-            <p className="font-body-md text-body-md">Pouvez-vous nous préciser le problème que vous rencontrez ?</p>
-          </div>
-          <span className="font-label-md text-[11px] text-outline-variant ml-2">10:46</span>
-        </div>
+        )}
 
-        <div className="flex flex-col gap-2 items-start">
-          {SUGGESTIONS.map((s) => (
-            <button
-              key={s.label}
-              onClick={() => setDraft(s.label)}
-              className="bg-surface-container-lowest text-primary border border-outline-variant/40 rounded-full px-4 py-2 flex items-center gap-2 hover:bg-primary/5 active:scale-95 transition-all shadow-sm"
-            >
-              <span className="material-symbols-outlined text-[18px]">{s.icon}</span>
-              <span className="font-label-md text-label-md">{s.label}</span>
-            </button>
-          ))}
-        </div>
+        {isSending && (
+          <div className="flex items-center gap-1 self-start bg-surface-container rounded-2xl px-4 py-2.5">
+            <span className="w-1.5 h-1.5 rounded-full bg-on-surface-variant animate-bounce" style={{ animationDelay: "0ms" }} />
+            <span className="w-1.5 h-1.5 rounded-full bg-on-surface-variant animate-bounce" style={{ animationDelay: "150ms" }} />
+            <span className="w-1.5 h-1.5 rounded-full bg-on-surface-variant animate-bounce" style={{ animationDelay: "300ms" }} />
+          </div>
+        )}
+
+        <div ref={bottomRef} />
       </main>
 
       <footer className="glass-input fixed bottom-0 inset-x-0 z-50 p-3 safe-area-pb">
@@ -94,6 +170,7 @@ export default function HelpChatPage() {
               placeholder="Écrire un message..."
               rows={1}
               value={draft}
+              disabled={isLoading}
               onChange={(e) => {
                 setDraft(e.target.value);
                 const el = textareaRef.current;
@@ -102,9 +179,20 @@ export default function HelpChatPage() {
                   el.style.height = `${el.scrollHeight}px`;
                 }
               }}
+              onKeyDown={(e) => {
+                if (e.key === "Enter" && !e.shiftKey) {
+                  e.preventDefault();
+                  send(draft);
+                }
+              }}
             />
           </div>
-          <button className="p-2 bg-primary text-on-primary rounded-full hover:opacity-90 transition-opacity shrink-0 shadow-sm flex items-center justify-center h-11 w-11">
+          <button
+            type="button"
+            onClick={() => send(draft)}
+            disabled={!draft.trim() || isSending || isLoading}
+            className="p-2 bg-primary text-on-primary rounded-full hover:opacity-90 transition-opacity shrink-0 shadow-sm flex items-center justify-center h-11 w-11 disabled:opacity-50"
+          >
             <span className="material-symbols-outlined ml-1" style={{ fontVariationSettings: "'FILL' 1" }}>send</span>
           </button>
         </div>
