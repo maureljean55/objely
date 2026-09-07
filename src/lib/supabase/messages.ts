@@ -37,6 +37,47 @@ export async function listMessages(matchId: string) {
     .returns<Message[]>();
 }
 
+export type Conversation = { match: MatchWithItems; lastMessage: Message | null };
+
+/** Every confirmed match the current user is part of, newest activity first. */
+export async function listMyConversations() {
+  const supabase = createClient();
+  const { data: userData } = await supabase.auth.getUser();
+  const user = userData.user;
+  if (!user) return { data: [] as Conversation[], error: null };
+
+  const { data: matches, error } = await supabase
+    .from("matches")
+    .select("id, match_percent, status, lost_item:items!matches_lost_item_id_fkey(*), found_item:items!matches_found_item_id_fkey(*)")
+    .eq("status", "confirmed")
+    .returns<MatchWithItems[]>();
+
+  if (error || !matches || matches.length === 0) return { data: [], error };
+
+  const matchIds = matches.map((m) => m.id);
+  const { data: recentMessages } = await supabase
+    .from("messages")
+    .select("*")
+    .in("match_id", matchIds)
+    .order("created_at", { ascending: false })
+    .returns<Message[]>();
+
+  const lastByMatch = new Map<string, Message>();
+  for (const message of recentMessages ?? []) {
+    if (!lastByMatch.has(message.match_id)) lastByMatch.set(message.match_id, message);
+  }
+
+  const conversations: Conversation[] = matches.map((match) => ({ match, lastMessage: lastByMatch.get(match.id) ?? null }));
+  conversations.sort((a, b) => {
+    if (a.lastMessage && b.lastMessage) return b.lastMessage.created_at.localeCompare(a.lastMessage.created_at);
+    if (a.lastMessage) return -1;
+    if (b.lastMessage) return 1;
+    return 0;
+  });
+
+  return { data: conversations, error: null };
+}
+
 export async function sendMessage(matchId: string, body: string) {
   const supabase = createClient();
   const { data: userData } = await supabase.auth.getUser();
