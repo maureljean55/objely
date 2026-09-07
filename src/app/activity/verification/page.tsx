@@ -38,7 +38,7 @@ function VerificationReviewContent() {
     if (!matchId) return;
     setIsResolving(true);
     await resolveMatch(matchId, approved);
-    router.push(approved ? "/schedule-return" : "/activity");
+    router.push(approved ? `/chat/${matchId}` : "/activity");
   };
 
   if (loadError || !matchId) {
