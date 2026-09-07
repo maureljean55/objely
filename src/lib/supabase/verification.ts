@@ -1,5 +1,5 @@
 import { createClient } from "@/lib/supabase/client";
-import { createNotification, notifyMatchParticipants } from "@/lib/supabase/notifications";
+import { createNotification } from "@/lib/supabase/notifications";
 import { incrementTrustScore } from "@/lib/supabase/profile";
 import { getMatch } from "@/lib/supabase/messages";
 import type { Item } from "@/lib/supabase/items";
@@ -79,9 +79,10 @@ export async function resolveMatch(matchId: string, approved: boolean) {
       ]);
     }
 
-    await notifyMatchParticipants(
+    // Only the person who lost the item needs telling — the finder is the
+    // one who just took this action, so notifying them back would be noise.
+    await createNotification(
       match.lost_item.user_id,
-      match.found_item.user_id,
       approved ? "verification_confirmed" : "verification_rejected",
       approved ? "Correspondance confirmée !" : "Correspondance refusée",
       approved
