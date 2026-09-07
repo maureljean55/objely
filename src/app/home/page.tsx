@@ -1,6 +1,7 @@
 import Link from "next/link";
 import BottomNav from "@/components/BottomNav";
 import NotificationTicker from "@/components/NotificationTicker";
+import MessagesFab from "@/components/MessagesFab";
 import { createClient } from "@/lib/supabase/server";
 import type { Item } from "@/lib/supabase/items";
 
@@ -41,12 +42,18 @@ export default async function HomeDashboardPage({
     supabase.auth.getUser(),
   ]);
 
-  const [{ count: unreadCount }, { data: profile }] = user
+  const [{ count: unreadCount }, { count: unreadMessageCount }, { data: profile }] = user
     ? await Promise.all([
         supabase.from("notifications").select("id", { count: "exact", head: true }).eq("user_id", user.id).eq("read", false),
+        supabase
+          .from("notifications")
+          .select("id", { count: "exact", head: true })
+          .eq("user_id", user.id)
+          .eq("type", "message")
+          .eq("read", false),
         supabase.from("profiles").select("avatar_url").eq("id", user.id).maybeSingle<{ avatar_url: string | null }>(),
       ])
-    : [{ count: 0 }, { data: null }];
+    : [{ count: 0 }, { count: 0 }, { data: null }];
 
   return (
     <div className="pt-[calc(172px+env(safe-area-inset-top))] pb-[120px] md:pt-[calc(100px+env(safe-area-inset-top))] md:pb-0">
@@ -213,6 +220,8 @@ export default async function HomeDashboardPage({
           )}
         </section>
       </main>
+
+      {user && <MessagesFab unreadCount={unreadMessageCount ?? 0} />}
 
       <BottomNav active="home" />
     </div>
