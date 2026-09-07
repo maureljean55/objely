@@ -1,6 +1,6 @@
 import { createClient } from "@/lib/supabase/client";
 
-export type NotificationType = "match" | "message" | "verification_confirmed" | "verification_rejected";
+export type NotificationType = "match" | "message" | "verification_submitted" | "verification_confirmed" | "verification_rejected";
 
 export type AppNotification = {
   id: string;

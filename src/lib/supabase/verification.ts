@@ -1,6 +1,7 @@
 import { createClient } from "@/lib/supabase/client";
-import { notifyMatchParticipants } from "@/lib/supabase/notifications";
+import { createNotification, notifyMatchParticipants } from "@/lib/supabase/notifications";
 import { incrementTrustScore } from "@/lib/supabase/profile";
+import { getMatch } from "@/lib/supabase/messages";
 import type { Item } from "@/lib/supabase/items";
 
 // Bigger than the found-item bonus (see items.ts) — this is the finder
@@ -22,11 +23,26 @@ export async function submitVerificationAnswers(matchId: string, brandAnswer: st
   const user = userData.user;
   if (!user) return { data: null, error: new Error("Vous devez être connecté.") };
 
-  return supabase
+  const result = await supabase
     .from("match_verifications")
     .insert({ match_id: matchId, submitted_by: user.id, brand_answer: brandAnswer, detail_answer: detailAnswer })
     .select()
     .single<MatchVerification>();
+
+  if (!result.error) {
+    const { data: match } = await getMatch(matchId);
+    if (match) {
+      await createNotification(
+        match.found_item.user_id,
+        "verification_submitted",
+        "Réponses de vérification reçues",
+        `Le déclarant a répondu aux questions pour "${match.found_item.title}". Vérifiez ses réponses.`,
+        matchId,
+      );
+    }
+  }
+
+  return result;
 }
 
 export async function getLatestVerification(matchId: string) {

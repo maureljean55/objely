@@ -8,6 +8,7 @@ import { listMyNotifications, markAllAsRead, markAsRead, type AppNotification } 
 const ICONS: Record<AppNotification["type"], { icon: string; bg: string; color: string; filled?: boolean }> = {
   match: { icon: "search", bg: "bg-primary/10", color: "text-primary", filled: true },
   message: { icon: "chat_bubble", bg: "bg-surface-container-high", color: "text-on-surface" },
+  verification_submitted: { icon: "lock_open", bg: "bg-secondary/10", color: "text-secondary", filled: true },
   verification_confirmed: { icon: "check_circle", bg: "bg-[#e8f5e9]", color: "text-[#2e7d32]", filled: true },
   verification_rejected: { icon: "cancel", bg: "bg-error-container", color: "text-error" },
 };
