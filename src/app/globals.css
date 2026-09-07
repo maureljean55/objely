@@ -211,6 +211,19 @@ body {
   animation: radar-ping 2.6s cubic-bezier(0.2, 0.6, 0.4, 1) infinite;
 }
 
+@keyframes fab-bounce {
+  0%,
+  100% {
+    transform: scale(1) rotate(0deg);
+  }
+  50% {
+    transform: scale(1.08) rotate(-4deg);
+  }
+}
+.fab-bounce {
+  animation: fab-bounce 2.4s ease-in-out infinite;
+}
+
 @keyframes splash-fade-up {
   from {
     opacity: 0;
