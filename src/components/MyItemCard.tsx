@@ -5,18 +5,21 @@ import { useRouter } from "next/navigation";
 import Link from "next/link";
 import type { Item } from "@/lib/supabase/items";
 import { softDeleteItem } from "@/lib/supabase/items";
+import type { TranslationDict } from "@/lib/i18n/translations";
 
-const STATUS_BADGE = {
-  searching: { label: "Recherche active", icon: "radar", className: "bg-error-container text-on-error-container" },
-  matched: { label: "Correspondance trouvée", icon: "task_alt", className: "bg-primary-fixed text-primary" },
-  recovered: { label: "Retrouvé", icon: "check_circle", className: "bg-[#e8f5e9] text-[#2e7d32]" },
-  returned: { label: "Restitué", icon: "check_circle", className: "bg-[#e8f5e9] text-[#2e7d32]" },
-} as const;
+function statusBadge(t: TranslationDict) {
+  return {
+    searching: { label: t.myItemCard.statusSearching, icon: "radar", className: "bg-error-container text-on-error-container" },
+    matched: { label: t.myItemCard.statusMatched, icon: "task_alt", className: "bg-primary-fixed text-primary" },
+    recovered: { label: t.myItemCard.statusRecovered, icon: "check_circle", className: "bg-[#e8f5e9] text-[#2e7d32]" },
+    returned: { label: t.myItemCard.statusReturned, icon: "check_circle", className: "bg-[#e8f5e9] text-[#2e7d32]" },
+  } as const;
+}
 
-function declaredDateLabel(item: Item) {
-  const verb = item.type === "lost" ? "Perdu" : "Trouvé";
+function declaredDateLabel(item: Item, t: TranslationDict, locale: string) {
+  const verb = item.type === "lost" ? t.myItemCard.lostVerb : t.myItemCard.foundVerb;
   if (!item.occurred_on) return verb;
-  return `${verb} le ${new Date(item.occurred_on).toLocaleDateString("fr-FR")}`;
+  return `${verb} ${new Date(item.occurred_on).toLocaleDateString(locale)}`;
 }
 
 type Step = "closed" | "resolved" | "confirm" | "reason" | "deleting";
@@ -29,18 +32,17 @@ function DialogShell({ children }: { children: React.ReactNode }) {
   );
 }
 
-export default function MyItemCard({ item }: { item: Item }) {
+export default function MyItemCard({ item, t }: { item: Item; t: TranslationDict }) {
   const router = useRouter();
   const [step, setStep] = useState<Step>("closed");
   const [reason, setReason] = useState("");
   const [hidden, setHidden] = useState(false);
-  const badge = STATUS_BADGE[item.status];
+  const badge = statusBadge(t)[item.status];
 
   if (hidden) return null;
 
-  const resolvedQuestion =
-    item.type === "lost" ? "Avez-vous retrouvé votre objet ?" : "Avez-vous restitué l'objet à son propriétaire ?";
-  const notResolvedPhrase = item.type === "lost" ? "retrouvé votre objet" : "restitué l'objet";
+  const resolvedQuestion = item.type === "lost" ? t.myItemCard.resolvedQuestionLost : t.myItemCard.resolvedQuestionFound;
+  const notResolvedPhrase = item.type === "lost" ? t.myItemCard.notResolvedLost : t.myItemCard.notResolvedFound;
 
   const finalizeDelete = async (resolved: boolean, deletionReason?: string) => {
     setStep("deleting");
@@ -74,17 +76,17 @@ export default function MyItemCard({ item }: { item: Item }) {
             <div className="flex justify-between items-start">
               <h2 className="font-headline-sm text-on-surface font-semibold line-clamp-1">{item.title}</h2>
               <span className="text-outline text-[12px] font-label-md whitespace-nowrap">
-                {item.type === "lost" ? "Perdu par moi" : "Trouvé par moi"}
+                {item.type === "lost" ? t.myItemCard.lostByMe : t.myItemCard.foundByMe}
               </span>
             </div>
             <div className="flex flex-col gap-1 text-on-surface-variant font-label-md">
               <div className="flex items-center gap-2">
                 <span className="material-symbols-outlined text-[16px]">calendar_today</span>
-                <span>{declaredDateLabel(item)}</span>
+                <span>{declaredDateLabel(item, t, t.common.locale)}</span>
               </div>
               <div className="flex items-center gap-2">
                 <span className="material-symbols-outlined text-[16px]">location_on</span>
-                <span>{item.location || "Lieu non précisé"}</span>
+                <span>{item.location || t.myItemCard.noLocation}</span>
               </div>
             </div>
           </div>
@@ -93,7 +95,7 @@ export default function MyItemCard({ item }: { item: Item }) {
         <button
           type="button"
           onClick={() => setStep("resolved")}
-          aria-label="Supprimer la déclaration"
+          aria-label={t.myItemCard.deleteAria}
           className="absolute top-sm left-sm w-8 h-8 rounded-full bg-black/50 text-white flex items-center justify-center hover:bg-black/70 transition-colors z-10"
         >
           <span className="material-symbols-outlined text-[18px]">delete</span>
@@ -111,14 +113,14 @@ export default function MyItemCard({ item }: { item: Item }) {
               onClick={() => finalizeDelete(true)}
               className="w-full py-3 text-center border-b border-surface-variant/50 text-primary font-headline-sm text-headline-sm active:bg-surface-variant/50 transition-colors"
             >
-              Oui
+              {t.myItemCard.yes}
             </button>
             <button
               type="button"
               onClick={() => setStep("confirm")}
               className="w-full py-3 text-center text-on-surface-variant font-body-lg text-body-lg active:bg-surface-variant/50 transition-colors"
             >
-              Non
+              {t.myItemCard.no}
             </button>
           </div>
         </DialogShell>
@@ -127,9 +129,9 @@ export default function MyItemCard({ item }: { item: Item }) {
       {step === "confirm" && (
         <DialogShell>
           <div className="pt-lg pb-md px-md text-center border-b border-surface-variant/50">
-            <h3 className="font-headline-sm text-headline-sm text-on-surface mb-1">Confirmer la suppression</h3>
+            <h3 className="font-headline-sm text-headline-sm text-on-surface mb-1">{t.myItemCard.confirmDeleteTitle}</h3>
             <p className="font-body-md text-body-md text-[13px] text-on-surface-variant leading-tight">
-              Êtes-vous sûr de vouloir supprimer la déclaration sans avoir {notResolvedPhrase} ?
+              {t.myItemCard.confirmDeleteBody.replace("{phrase}", notResolvedPhrase)}
             </p>
           </div>
           <div className="flex flex-col w-full">
@@ -138,14 +140,14 @@ export default function MyItemCard({ item }: { item: Item }) {
               onClick={() => setStep("reason")}
               className="w-full py-3 text-center border-b border-surface-variant/50 text-error font-headline-sm text-headline-sm active:bg-surface-variant/50 transition-colors"
             >
-              Oui, supprimer
+              {t.myItemCard.yesDelete}
             </button>
             <button
               type="button"
               onClick={() => setStep("closed")}
               className="w-full py-3 text-center text-on-surface-variant font-body-lg text-body-lg active:bg-surface-variant/50 transition-colors"
             >
-              Annuler
+              {t.myItemCard.cancel}
             </button>
           </div>
         </DialogShell>
@@ -156,20 +158,20 @@ export default function MyItemCard({ item }: { item: Item }) {
           <button
             type="button"
             onClick={() => finalizeDelete(false)}
-            aria-label="Ignorer"
+            aria-label={t.myItemCard.dismissAria}
             className="absolute top-2 right-2 w-8 h-8 flex items-center justify-center text-on-surface-variant hover:text-on-surface transition-colors"
           >
             <span className="material-symbols-outlined text-[20px]">close</span>
           </button>
           <div className="pt-lg pb-md px-md text-center">
             <h3 className="font-headline-sm text-headline-sm text-on-surface mb-3 pr-4">
-              Pourquoi avez-vous supprimé votre déclaration ?
+              {t.myItemCard.whyDeleted}
             </h3>
             <textarea
               value={reason}
               onChange={(e) => setReason(e.target.value)}
               rows={3}
-              placeholder="Votre réponse (facultatif)..."
+              placeholder={t.myItemCard.reasonPlaceholder}
               className="w-full bg-surface-container border border-outline-variant/40 rounded-xl p-3 font-body-md text-body-md text-on-surface focus:outline-none focus:ring-2 focus:ring-primary/20 resize-none"
             />
           </div>
@@ -178,7 +180,7 @@ export default function MyItemCard({ item }: { item: Item }) {
             onClick={() => finalizeDelete(false, reason)}
             className="w-full py-3 text-center border-t border-surface-variant/50 text-primary font-headline-sm text-headline-sm active:bg-surface-variant/50 transition-colors"
           >
-            Envoyer
+            {t.myItemCard.send}
           </button>
         </DialogShell>
       )}

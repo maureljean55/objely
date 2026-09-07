@@ -2,12 +2,14 @@ import Link from "next/link";
 import BottomNav from "@/components/BottomNav";
 import MyItemCard from "@/components/MyItemCard";
 import { createClient } from "@/lib/supabase/server";
+import { getServerTranslations } from "@/lib/i18n/server";
 import type { Item } from "@/lib/supabase/items";
 
 const FILTERS = ["Tous", "Téléphones", "Sacs", "Clés", "Portefeuilles", "Ordinateurs", "Autres"];
 
 export default async function SearchFiltersPage() {
   const supabase = await createClient();
+  const t = await getServerTranslations();
   const {
     data: { user },
   } = await supabase.auth.getUser();
@@ -35,7 +37,7 @@ export default async function SearchFiltersPage() {
             <Link href="/home" className="text-on-surface-variant hover:opacity-80 transition-opacity active:scale-95 hidden md:flex items-center justify-center">
               <span className="material-symbols-outlined text-[24px]">arrow_back</span>
             </Link>
-            <h1 className="font-display text-headline-sm font-bold text-on-surface text-center flex-1">Mes objets</h1>
+            <h1 className="font-display text-headline-sm font-bold text-on-surface text-center flex-1">{t.search.title}</h1>
             <button className="text-on-surface-variant hover:opacity-80 transition-opacity active:scale-95 flex items-center justify-center">
               <span className="material-symbols-outlined text-[24px]">info</span>
             </button>
@@ -46,13 +48,13 @@ export default async function SearchFiltersPage() {
               <span className="material-symbols-outlined absolute left-sm top-1/2 -translate-y-1/2 text-outline">search</span>
               <input
                 className="w-full bg-surface text-on-surface placeholder:text-outline rounded border-none focus:ring-1 focus:ring-primary pl-[44px] pr-sm h-[56px] font-body-md transition-all shadow-sm"
-                placeholder="Rechercher parmi mes objets"
+                placeholder={t.search.searchPlaceholder}
                 type="text"
               />
             </div>
             <button className="shrink-0 flex items-center justify-center gap-2 bg-surface text-primary border border-primary rounded px-md h-[56px] font-headline-sm hover:opacity-80 transition-opacity whitespace-nowrap shadow-sm">
               <span className="material-symbols-outlined">tune</span>
-              <span className="hidden sm:inline">Filtres</span>
+              <span className="hidden sm:inline">{t.search.filters}</span>
             </button>
           </div>
 
@@ -79,15 +81,15 @@ export default async function SearchFiltersPage() {
             <div className="w-32 h-32 mb-lg bg-surface-container-low rounded-full flex items-center justify-center">
               <span className="material-symbols-outlined text-primary text-[56px]">search_off</span>
             </div>
-            <h3 className="font-headline-sm text-headline-sm text-on-surface mb-2">Vous n&apos;avez déclaré aucun objet</h3>
+            <h3 className="font-headline-sm text-headline-sm text-on-surface mb-2">{t.search.emptyTitle}</h3>
             <p className="font-body-md text-body-md text-on-surface-variant mb-lg px-6 max-w-sm">
-              Déclarez un objet perdu ou trouvé depuis l&apos;accueil pour le suivre ici.
+              {t.search.emptySubtitle}
             </p>
           </div>
         ) : (
           <section className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-md mb-xl">
             {items.map((item) => (
-              <MyItemCard key={item.id} item={item} />
+              <MyItemCard key={item.id} item={item} t={t} />
             ))}
           </section>
         )}
