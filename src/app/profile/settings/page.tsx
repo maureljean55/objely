@@ -72,7 +72,6 @@ export default function SettingsPage() {
         </Section>
 
         <Section title="Assistance">
-          <Row icon="help" label="Aide" href="/help" />
           <Row icon="report" label="Signaler un problème" href="/profile/report" />
         </Section>
 
