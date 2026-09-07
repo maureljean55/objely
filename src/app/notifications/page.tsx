@@ -59,7 +59,15 @@ export default function NotificationsPage() {
       await markAsRead(item.id);
     }
     if (!item.match_id) return;
-    router.push(item.type === "message" ? `/chat/${item.match_id}` : "/activity");
+    if (item.type === "message") {
+      router.push(`/chat/${item.match_id}`);
+    } else if (item.type === "verification_submitted") {
+      // The finder should land straight on the review screen to see the
+      // owner's answers and confirm or reject the match.
+      router.push(`/activity/verification?match=${item.match_id}`);
+    } else {
+      router.push("/activity");
+    }
   };
 
   return (
