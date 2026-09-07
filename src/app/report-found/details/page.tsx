@@ -12,7 +12,7 @@ export default function ReportFoundDetailsPage() {
   const router = useRouter();
   const [name, setName] = useState("");
   const [brand, setBrand] = useState("");
-  const [color, setColor] = useState<string | null>(null);
+  const [colors, setColors] = useState<string[]>([]);
   const [description, setDescription] = useState("");
   const [privateDetail, setPrivateDetail] = useState("");
   const [photos, setPhotos] = useState<string[]>([]);
@@ -22,7 +22,7 @@ export default function ReportFoundDetailsPage() {
 
   const goNext = () => {
     if (!canContinue) return;
-    saveDraft({ objectName: name, brand, color: color ?? undefined, description, privateDetail, photos });
+    saveDraft({ objectName: name, brand, color: colors.length > 0 ? colors.join(", ") : undefined, description, privateDetail, photos });
     router.push("/report-found/location");
   };
 
@@ -84,22 +84,25 @@ export default function ReportFoundDetailsPage() {
           </div>
 
           <div>
-            <span className="block font-label-md text-[11px] text-outline uppercase tracking-wider mb-2">Couleur principale</span>
+            <span className="block font-label-md text-[11px] text-outline uppercase tracking-wider mb-2">Couleur(s)</span>
             <div className="flex flex-wrap gap-3">
-              {COLORS.map((c) => (
-                <button
-                  key={c}
-                  type="button"
-                  onClick={() => setColor(c)}
-                  className={`px-4 py-2 rounded-[16px] border font-body-md text-body-md transition-all ${
-                    color === c
-                      ? "bg-primary text-on-primary border-primary shadow-sm"
-                      : "bg-surface-container-lowest text-on-surface border-surface-container-highest hover:bg-surface-container-low"
-                  }`}
-                >
-                  {c}
-                </button>
-              ))}
+              {COLORS.map((c) => {
+                const isSelected = colors.includes(c);
+                return (
+                  <button
+                    key={c}
+                    type="button"
+                    onClick={() => setColors((prev) => (prev.includes(c) ? prev.filter((x) => x !== c) : [...prev, c]))}
+                    className={`px-4 py-2 rounded-[16px] border font-body-md text-body-md transition-all ${
+                      isSelected
+                        ? "bg-primary text-on-primary border-primary shadow-sm"
+                        : "bg-surface-container-lowest text-on-surface border-surface-container-highest hover:bg-surface-container-low"
+                    }`}
+                  >
+                    {c}
+                  </button>
+                );
+              })}
             </div>
           </div>
 

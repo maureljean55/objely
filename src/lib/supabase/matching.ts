@@ -19,7 +19,7 @@ export function scoreMatch(draft: DraftLike, item: Item): number {
 
   let score = 40; // same category
 
-  if (draft.color && item.color && draft.color.trim().toLowerCase() === item.color.trim().toLowerCase()) {
+  if (colorsOverlap(draft.color, item.color)) {
     score += 15;
   }
 
@@ -41,6 +41,15 @@ export function scoreMatch(draft: DraftLike, item: Item): number {
   return Math.min(score, 100);
 }
 
+// Both sides can now be a "Noir, Bleu"-style comma list (multi-color
+// selection) rather than a single value, so a match means any shared color.
+function colorsOverlap(a: string | null | undefined, b: string | null | undefined): boolean {
+  if (!a || !b) return false;
+  const setA = new Set(a.split(",").map((c) => c.trim().toLowerCase()).filter(Boolean));
+  const setB = b.split(",").map((c) => c.trim().toLowerCase()).filter(Boolean);
+  return setB.some((c) => setA.has(c));
+}
+
 function normalizeWords(text: string): string[] {
   return text
     .toLowerCase()
@@ -54,7 +63,7 @@ export type MatchCriterion = { label: string; matched: boolean };
 
 /** Human-readable breakdown of why (or why not) a draft matches an item. */
 export function explainMatch(draft: DraftLike, item: Item): MatchCriterion[] {
-  const colorMatch = !!(draft.color && item.color && draft.color.trim().toLowerCase() === item.color.trim().toLowerCase());
+  const colorMatch = colorsOverlap(draft.color, item.color);
   const brandMatch = !!(draft.brand && item.brand && draft.brand.trim().toLowerCase() === item.brand.trim().toLowerCase());
   const locationMatch = !!(
     draft.location &&

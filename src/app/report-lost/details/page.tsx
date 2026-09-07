@@ -13,7 +13,7 @@ export default function DeclarationDetailsPage() {
   const [name, setName] = useState("");
   const [description, setDescription] = useState("");
   const [brand, setBrand] = useState("");
-  const [color, setColor] = useState<string | null>(null);
+  const [colors, setColors] = useState<string[]>([]);
   const [distinctive, setDistinctive] = useState("");
   const [photos, setPhotos] = useState<string[]>([]);
   const [isUploadingPhotos, setIsUploadingPhotos] = useState(false);
@@ -58,7 +58,7 @@ export default function DeclarationDetailsPage() {
           onSubmit={(e) => {
             e.preventDefault();
             if (!canContinue) return;
-            saveDraft({ objectName: name, description, brand, color: color ?? undefined, privateDetail: distinctive, photos });
+            saveDraft({ objectName: name, description, brand, color: colors.length > 0 ? colors.join(", ") : undefined, privateDetail: distinctive, photos });
             router.push("/report-lost/location");
           }}
         >
@@ -103,22 +103,25 @@ export default function DeclarationDetailsPage() {
           </div>
 
           <div>
-            <label className="block font-label-md text-label-md text-outline uppercase tracking-wider mb-2">Couleur principale</label>
+            <label className="block font-label-md text-label-md text-outline uppercase tracking-wider mb-2">Couleur(s)</label>
             <div className="flex flex-wrap gap-3">
-              {COLORS.map((c) => (
-                <button
-                  key={c}
-                  type="button"
-                  onClick={() => setColor(c)}
-                  className={`px-4 py-2 rounded-[16px] border font-body-md text-body-md transition-all ${
-                    color === c
-                      ? "bg-primary text-on-primary border-primary shadow-sm"
-                      : "bg-surface-container-lowest text-on-surface border-surface-container-highest hover:bg-surface-container-low"
-                  }`}
-                >
-                  {c}
-                </button>
-              ))}
+              {COLORS.map((c) => {
+                const isSelected = colors.includes(c);
+                return (
+                  <button
+                    key={c}
+                    type="button"
+                    onClick={() => setColors((prev) => (prev.includes(c) ? prev.filter((x) => x !== c) : [...prev, c]))}
+                    className={`px-4 py-2 rounded-[16px] border font-body-md text-body-md transition-all ${
+                      isSelected
+                        ? "bg-primary text-on-primary border-primary shadow-sm"
+                        : "bg-surface-container-lowest text-on-surface border-surface-container-highest hover:bg-surface-container-low"
+                    }`}
+                  >
+                    {c}
+                  </button>
+                );
+              })}
             </div>
           </div>
 
@@ -146,7 +149,7 @@ export default function DeclarationDetailsPage() {
             type="button"
             disabled={!canContinue}
             onClick={() => {
-              saveDraft({ objectName: name, description, brand, color: color ?? undefined, privateDetail: distinctive, photos });
+              saveDraft({ objectName: name, description, brand, color: colors.length > 0 ? colors.join(", ") : undefined, privateDetail: distinctive, photos });
               router.push("/report-lost/location");
             }}
             className="btn-gradient bg-primary text-on-primary rounded-xl px-6 py-3 flex items-center justify-center gap-2 font-headline-sm text-headline-sm shadow-[0px_10px_30px_rgba(0,88,188,0.15)] hover:opacity-90 transition-opacity disabled:opacity-50 disabled:cursor-not-allowed"
