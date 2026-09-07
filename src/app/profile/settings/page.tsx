@@ -5,6 +5,8 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import BottomNav from "@/components/BottomNav";
 import { signOut } from "@/lib/auth";
+import { useLanguage } from "@/components/LanguageProvider";
+import type { Language } from "@/lib/i18n/translations";
 
 function Row({ icon, label, href }: { icon: string; label: string; href?: string }) {
   const content = (
@@ -39,6 +41,7 @@ function Section({ title, children }: { title: string; children: ReactNode }) {
 
 export default function SettingsPage() {
   const router = useRouter();
+  const { language, setLanguage, t } = useLanguage();
 
   const handleSignOut = async () => {
     await signOut();
@@ -52,27 +55,41 @@ export default function SettingsPage() {
         <Link href="/profile" aria-label="Retour" className="w-10 h-10 flex items-center justify-center text-primary hover:opacity-70 transition-opacity active:scale-95">
           <span className="material-symbols-outlined">arrow_back_ios</span>
         </Link>
-        <h1 className="font-headline-sm text-headline-sm text-on-surface absolute left-1/2 -translate-x-1/2">Paramètres</h1>
+        <h1 className="font-headline-sm text-headline-sm text-on-surface absolute left-1/2 -translate-x-1/2">{t.settings.title}</h1>
         <div className="w-10 h-10" />
       </header>
 
       <main className="max-w-[800px] mx-auto pt-[calc(5rem+env(safe-area-inset-top))] pb-8 px-container-margin flex flex-col gap-lg">
-        <Section title="Préférences">
-          <Row icon="language" label="Langue" />
+        <Section title={t.settings.preferences}>
+          <div className="w-full flex items-center justify-between p-md">
+            <div className="flex items-center gap-3">
+              <span className="material-symbols-outlined text-outline">language</span>
+              <span className="font-body-lg text-body-lg text-on-surface">{t.settings.language}</span>
+            </div>
+            <select
+              value={language}
+              onChange={(e) => setLanguage(e.target.value as Language)}
+              aria-label={t.settings.language}
+              className="bg-transparent border-none py-1 pl-2 pr-1 rounded-lg font-body-lg text-body-lg text-on-surface-variant focus:ring-2 focus:ring-primary/20 outline-none cursor-pointer hover:bg-surface-container-low transition-colors"
+            >
+              <option value="fr">Français</option>
+              <option value="en">English</option>
+            </select>
+          </div>
         </Section>
 
-        <Section title="Sécurité">
-          <Row icon="key" label="Mot de passe" />
-          <Row icon="devices" label="Connexion et appareils" />
+        <Section title={t.settings.security}>
+          <Row icon="key" label={t.settings.password} />
+          <Row icon="devices" label={t.settings.devices} />
         </Section>
 
-        <Section title="Confidentialité">
-          <Row icon="lock" label="Confidentialité & Sécurité" href="/profile/privacy" />
-          <Row icon="assignment_turned_in" label="Autorisations" />
+        <Section title={t.settings.confidentiality}>
+          <Row icon="lock" label={t.settings.privacySecurity} href="/profile/privacy" />
+          <Row icon="assignment_turned_in" label={t.settings.permissions} />
         </Section>
 
-        <Section title="Assistance">
-          <Row icon="report" label="Signaler un problème" href="/profile/report" />
+        <Section title={t.settings.assistance}>
+          <Row icon="report" label={t.settings.reportProblem} href="/profile/report" />
         </Section>
 
         <div className="flex flex-col items-center gap-4">
@@ -80,10 +97,10 @@ export default function SettingsPage() {
             onClick={handleSignOut}
             className="w-full py-4 px-6 rounded-xl bg-error-container/30 text-error font-body-lg text-body-lg font-semibold active:scale-95 transition-transform"
           >
-            Déconnexion
+            {t.settings.logout}
           </button>
           <button className="font-label-md text-label-md text-outline hover:text-error transition-colors underline decoration-outline/30 underline-offset-4">
-            Supprimer mon compte
+            {t.settings.deleteAccount}
           </button>
         </div>
       </main>

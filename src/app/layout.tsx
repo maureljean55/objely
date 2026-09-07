@@ -2,6 +2,7 @@ import type { Metadata, Viewport } from "next";
 import "./globals.css";
 import ServiceWorkerRegister from "@/components/ServiceWorkerRegister";
 import SessionGuard from "@/components/SessionGuard";
+import { LanguageProvider } from "@/components/LanguageProvider";
 
 export const metadata: Metadata = {
   applicationName: "Objely",
@@ -61,9 +62,11 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
         />
       </head>
       <body className="min-h-screen bg-background font-body-md text-on-background antialiased">
-        {children}
-        <ServiceWorkerRegister />
-        <SessionGuard />
+        <LanguageProvider>
+          {children}
+          <ServiceWorkerRegister />
+          <SessionGuard />
+        </LanguageProvider>
       </body>
     </html>
   );
