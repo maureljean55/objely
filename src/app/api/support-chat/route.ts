@@ -3,6 +3,7 @@ import { createClient } from "@/lib/supabase/server";
 
 const ESCALATE_MARKER = "[ESCALATE]";
 const GEMINI_MODEL = "gemini-3.6-flash";
+const INACTIVITY_ARCHIVE_MS = 10 * 60 * 1000;
 
 function greeting() {
   const hour = new Date().getHours();
@@ -123,7 +124,7 @@ export async function POST(request: Request) {
   return NextResponse.json({ userMessage, botMessage, escalated });
 }
 
-export async function GET() {
+export async function GET(request: Request) {
   const supabase = await createClient();
   const {
     data: { user },
@@ -132,18 +133,58 @@ export async function GET() {
     return NextResponse.json({ error: "Vous devez être connecté." }, { status: 401 });
   }
 
-  // Reuse the user's latest open conversation, or start a fresh one with the
-  // bot's time-of-day greeting as its first message.
-  const { data: existing } = await supabase
-    .from("support_conversations")
-    .select("id, status")
-    .eq("user_id", user.id)
-    .neq("status", "closed")
-    .order("created_at", { ascending: false })
-    .limit(1)
-    .maybeSingle<{ id: string; status: string }>();
+  const requestedId = new URL(request.url).searchParams.get("conversation");
+  let conversationId: string | undefined;
 
-  let conversationId = existing?.id;
+  if (requestedId) {
+    // Resuming a specific conversation from Historique — must belong to the
+    // caller (RLS enforces this too) and, if it had been auto-archived for
+    // inactivity, reopen it so the bot replies again.
+    const { data: requested } = await supabase
+      .from("support_conversations")
+      .select("id, status")
+      .eq("id", requestedId)
+      .eq("user_id", user.id)
+      .maybeSingle<{ id: string; status: "bot" | "escalated" | "closed" }>();
+    if (requested) {
+      conversationId = requested.id;
+      if (requested.status === "closed") {
+        await supabase.from("support_conversations").update({ status: "bot" }).eq("id", requested.id);
+      }
+    }
+  }
+
+  if (!conversationId) {
+    // Reuse the latest conversation only while it's still "fresh": escalated
+    // ones stay open indefinitely (a human hasn't answered yet), bot ones
+    // get archived to Historique after 10 minutes of inactivity.
+    const { data: latest } = await supabase
+      .from("support_conversations")
+      .select("id, status")
+      .eq("user_id", user.id)
+      .order("created_at", { ascending: false })
+      .limit(1)
+      .maybeSingle<{ id: string; status: "bot" | "escalated" | "closed" }>();
+
+    if (latest?.status === "escalated") {
+      conversationId = latest.id;
+    } else if (latest?.status === "bot") {
+      const { data: lastMessage } = await supabase
+        .from("support_messages")
+        .select("created_at")
+        .eq("conversation_id", latest.id)
+        .order("created_at", { ascending: false })
+        .limit(1)
+        .maybeSingle<{ created_at: string }>();
+      const lastActivity = lastMessage ? new Date(lastMessage.created_at).getTime() : 0;
+      if (Date.now() - lastActivity < INACTIVITY_ARCHIVE_MS) {
+        conversationId = latest.id;
+      } else {
+        await supabase.from("support_conversations").update({ status: "closed" }).eq("id", latest.id);
+      }
+    }
+  }
+
   if (!conversationId) {
     const { data: created, error } = await supabase
       .from("support_conversations")

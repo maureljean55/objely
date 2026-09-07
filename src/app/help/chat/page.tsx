@@ -1,7 +1,8 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { Suspense, useEffect, useRef, useState } from "react";
 import Link from "next/link";
+import { useSearchParams } from "next/navigation";
 
 const SUGGESTIONS = [
   { icon: "search", label: "Problème avec une correspondance" },
@@ -20,7 +21,10 @@ function formatTime(dateStr: string) {
   return new Date(dateStr).toLocaleTimeString("fr-FR", { hour: "2-digit", minute: "2-digit" });
 }
 
-export default function HelpChatPage() {
+function HelpChatContent() {
+  const searchParams = useSearchParams();
+  const resumeId = searchParams.get("conversation");
+
   const [conversationId, setConversationId] = useState<string | null>(null);
   const [status, setStatus] = useState<"bot" | "escalated" | "closed">("bot");
   const [messages, setMessages] = useState<SupportMessage[]>([]);
@@ -32,7 +36,8 @@ export default function HelpChatPage() {
   const pendingIdRef = useRef(0);
 
   useEffect(() => {
-    fetch("/api/support-chat")
+    const url = resumeId ? `/api/support-chat?conversation=${resumeId}` : "/api/support-chat";
+    fetch(url)
       .then((res) => res.json())
       .then((data) => {
         if (data.conversation) {
@@ -42,7 +47,7 @@ export default function HelpChatPage() {
         setMessages(data.messages ?? []);
         setIsLoading(false);
       });
-  }, []);
+  }, [resumeId]);
 
   useEffect(() => {
     bottomRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -198,5 +203,13 @@ export default function HelpChatPage() {
         </div>
       </footer>
     </div>
+  );
+}
+
+export default function HelpChatPage() {
+  return (
+    <Suspense fallback={null}>
+      <HelpChatContent />
+    </Suspense>
   );
 }

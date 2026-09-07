@@ -36,11 +36,11 @@ export default async function HelpCenterPage() {
       </section>
 
       <main className="max-w-2xl mx-auto px-container-margin flex flex-col gap-lg">
-        {/* Messages / Aide */}
+        {/* Historique / Aide */}
         <section className="bg-surface-container-lowest rounded-[28px] soft-shadow overflow-hidden">
           <Link href="/help/history" className="flex items-center justify-between px-lg py-5 border-b border-surface-variant/50 hover:bg-black/[0.02] transition-colors">
-            <span className="font-headline-md text-headline-md text-on-surface font-bold">Messages</span>
-            <span className="material-symbols-outlined text-primary" style={{ fontVariationSettings: "'FILL' 1" }}>chat_bubble</span>
+            <span className="font-headline-md text-headline-md text-on-surface font-bold">Historique</span>
+            <span className="material-symbols-outlined text-primary" style={{ fontVariationSettings: "'FILL' 1" }}>history</span>
           </Link>
           <a href="#faq" className="flex items-center justify-between px-lg py-5 hover:bg-black/[0.02] transition-colors">
             <span className="font-headline-md text-headline-md text-on-surface font-bold">Aide</span>
