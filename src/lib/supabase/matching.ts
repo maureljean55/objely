@@ -84,6 +84,26 @@ export function explainMatch(draft: DraftLike, item: Item): MatchCriterion[] {
   ];
 }
 
+/** Same breakdown as explainMatch, but for two already-declared items (e.g. an existing match). */
+export function explainItemMatch(a: Item, b: Item): MatchCriterion[] {
+  const colorMatch = colorsOverlap(a.colors, b.colors);
+  const brandMatch = !!(a.brand && b.brand && a.brand.trim().toLowerCase() === b.brand.trim().toLowerCase());
+  const locationMatch = !!(a.location && b.location && normalizeWords(a.location).some((word) => normalizeWords(b.location!).includes(word)));
+  const dateMatch = !!(
+    a.occurred_on &&
+    b.occurred_on &&
+    Math.abs(new Date(a.occurred_on).getTime() - new Date(b.occurred_on).getTime()) / 86_400_000 <= 14
+  );
+
+  return [
+    { label: "Même catégorie", matched: a.category_id === b.category_id },
+    { label: "Couleur similaire", matched: colorMatch },
+    { label: "Marque similaire", matched: brandMatch },
+    { label: "Zone proche", matched: locationMatch },
+    { label: "Date compatible", matched: dateMatch },
+  ];
+}
+
 export type MatchCandidate = { item: Item; score: number };
 
 /**

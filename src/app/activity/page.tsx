@@ -99,7 +99,7 @@ export default async function ActivityPage() {
                 </div>
                 <div className="p-md flex gap-sm">
                   <Link
-                    href="/activity/match"
+                    href={`/activity/match?match=${match.id}`}
                     className="flex-1 h-14 bg-surface-container-lowest border border-outline-variant text-on-surface rounded-xl font-headline-sm text-headline-sm hover:bg-surface-container-low transition-all flex items-center justify-center"
                   >
                     Détails
