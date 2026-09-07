@@ -6,14 +6,19 @@ import Link from "next/link";
 import { loadDraft, type DeclarationDraft } from "@/lib/declarationDraft";
 import { createItemFromDraft } from "@/lib/supabase/items";
 import { createMatch, explainMatch, findBestMatch, type MatchCandidate } from "@/lib/supabase/matching";
+import BlinkingDots from "@/components/BlinkingDots";
 
 const RADIUS = 40;
 const CIRCUMFERENCE = RADIUS * 2 * Math.PI;
+// Real matching query is near-instant; hold the "searching" state for a
+// minimum time so it reads as a genuine verification rather than a flash.
+const MIN_CHECKING_MS = 6000;
+const VERIFIED_FLASH_MS = 900;
 
 export default function DeclarationMatchesPage() {
   const router = useRouter();
   const [draft, setDraft] = useState<DeclarationDraft>({});
-  const [phase, setPhase] = useState<"checking" | "match" | "no-match">("checking");
+  const [phase, setPhase] = useState<"checking" | "verified" | "match" | "no-match">("checking");
   const [candidate, setCandidate] = useState<MatchCandidate | null>(null);
   const [ringOffset, setRingOffset] = useState(CIRCUMFERENCE);
   const [surveillance, setSurveillance] = useState(true);
@@ -28,13 +33,27 @@ export default function DeclarationMatchesPage() {
     setDraft(d);
 
     let cancelled = false;
+    const start = Date.now();
+    const timers: ReturnType<typeof setTimeout>[] = [];
     findBestMatch(d, "found").then((best) => {
       if (cancelled) return;
-      setCandidate(best);
-      setPhase(best ? "match" : "no-match");
+      const remaining = Math.max(0, MIN_CHECKING_MS - (Date.now() - start));
+      timers.push(
+        setTimeout(() => {
+          if (cancelled) return;
+          setCandidate(best);
+          setPhase("verified");
+          timers.push(
+            setTimeout(() => {
+              if (!cancelled) setPhase(best ? "match" : "no-match");
+            }, VERIFIED_FLASH_MS),
+          );
+        }, remaining),
+      );
     });
     return () => {
       cancelled = true;
+      timers.forEach(clearTimeout);
     };
   }, []);
 
@@ -94,7 +113,21 @@ export default function DeclarationMatchesPage() {
         {phase === "checking" && (
           <div className="flex flex-col items-center justify-center py-xl gap-4">
             <div className="w-16 h-16 rounded-full border-4 border-primary-container/30 border-t-primary-container animate-spin" />
-            <p className="font-body-md text-body-md text-on-surface-variant">Recherche en cours...</p>
+            <p className="font-body-md text-body-md text-on-surface-variant flex items-center">
+              Veuillez patienter, nous recherchons votre objet
+              <BlinkingDots />
+            </p>
+          </div>
+        )}
+
+        {phase === "verified" && (
+          <div className="flex flex-col items-center justify-center py-xl gap-4 animate-fadeIn">
+            <div className="w-16 h-16 rounded-full bg-primary/10 text-primary flex items-center justify-center">
+              <span className="material-symbols-outlined text-4xl" style={{ fontVariationSettings: "'FILL' 1" }}>
+                check_circle
+              </span>
+            </div>
+            <p className="font-body-md text-body-md text-on-surface">Vérification terminée</p>
           </div>
         )}
 

@@ -8,6 +8,10 @@ import { createItemFromDraft } from "@/lib/supabase/items";
 import { createMatch, explainMatch, findBestMatch, type MatchCandidate } from "@/lib/supabase/matching";
 
 const STATUS_TEXTS = ["Analyse des déclarations...", "Comparaison des informations...", "Recherche de correspondances..."];
+// Real matching query is near-instant; hold the "searching" state for a
+// minimum time so it reads as a genuine verification rather than a flash.
+const MIN_CHECKING_MS = 6000;
+const VERIFIED_FLASH_MS = 900;
 
 const CRITERION_ICONS: Record<string, string> = {
   "Même catégorie": "category",
@@ -32,7 +36,7 @@ function RadarPulse() {
 export default function ReportFoundMatchesPage() {
   const router = useRouter();
   const [draft, setDraft] = useState<DeclarationDraft>({});
-  const [phase, setPhase] = useState<"checking" | "match" | "no-match">("checking");
+  const [phase, setPhase] = useState<"checking" | "verified" | "match" | "no-match">("checking");
   const [candidate, setCandidate] = useState<MatchCandidate | null>(null);
   const [statusIndex, setStatusIndex] = useState(0);
   const [isPublishing, setIsPublishing] = useState(false);
@@ -46,13 +50,27 @@ export default function ReportFoundMatchesPage() {
     setDraft(d);
 
     let cancelled = false;
+    const start = Date.now();
+    const timers: ReturnType<typeof setTimeout>[] = [];
     findBestMatch(d, "lost").then((best) => {
       if (cancelled) return;
-      setCandidate(best);
-      setPhase(best ? "match" : "no-match");
+      const remaining = Math.max(0, MIN_CHECKING_MS - (Date.now() - start));
+      timers.push(
+        setTimeout(() => {
+          if (cancelled) return;
+          setCandidate(best);
+          setPhase("verified");
+          timers.push(
+            setTimeout(() => {
+              if (!cancelled) setPhase(best ? "match" : "no-match");
+            }, VERIFIED_FLASH_MS),
+          );
+        }, remaining),
+      );
     });
     return () => {
       cancelled = true;
+      timers.forEach(clearTimeout);
     };
   }, []);
 
@@ -92,22 +110,33 @@ export default function ReportFoundMatchesPage() {
       </header>
 
       <main className="grow px-container-margin pt-lg pb-[200px] max-w-2xl mx-auto w-full">
-        <div className="flex flex-col items-center text-center mb-lg">
-          <RadarPulse />
-          {phase === "checking" && (
-            <span className="font-label-md text-label-md text-primary uppercase tracking-wider mb-2">{STATUS_TEXTS[statusIndex]}</span>
-          )}
-          <h2 className="font-headline-lg-mobile text-headline-lg-mobile text-on-surface mb-2">Vérifions si quelqu&apos;un le recherche</h2>
-          <p className="font-body-lg text-body-lg text-on-surface-variant max-w-sm">
-            Objely recherche les déclarations d&apos;objets perdus qui pourraient correspondre à votre découverte.
-          </p>
-        </div>
+        {phase === "verified" ? (
+          <div className="flex flex-col items-center text-center mb-lg animate-fadeIn">
+            <div className="w-24 h-24 mb-md rounded-full bg-primary/10 text-primary flex items-center justify-center">
+              <span className="material-symbols-outlined text-5xl" style={{ fontVariationSettings: "'FILL' 1" }}>
+                check_circle
+              </span>
+            </div>
+            <h2 className="font-headline-lg-mobile text-headline-lg-mobile text-on-surface mb-2">Vérification terminée</h2>
+          </div>
+        ) : (
+          <div className="flex flex-col items-center text-center mb-lg">
+            <RadarPulse />
+            {phase === "checking" && (
+              <span className="font-label-md text-label-md text-primary uppercase tracking-wider mb-2">{STATUS_TEXTS[statusIndex]}</span>
+            )}
+            <h2 className="font-headline-lg-mobile text-headline-lg-mobile text-on-surface mb-2">Vérifions si quelqu&apos;un le recherche</h2>
+            <p className="font-body-lg text-body-lg text-on-surface-variant max-w-sm">
+              Objely recherche les déclarations d&apos;objets perdus qui pourraient correspondre à votre découverte.
+            </p>
+          </div>
+        )}
 
         <div className="flex gap-1 mb-lg">
           <div className="h-1 flex-1 rounded-full bg-primary-container" />
           <div className="h-1 flex-1 rounded-full bg-primary-container" />
           <div className="h-1 flex-1 rounded-full bg-primary-container" />
-          <div className={`h-1 flex-1 rounded-full ${phase === "checking" ? "progress-gradient" : "bg-primary-container"}`} />
+          <div className={`h-1 flex-1 rounded-full ${phase === "checking" || phase === "verified" ? "progress-gradient" : "bg-primary-container"}`} />
         </div>
 
         {phase === "match" && candidate && (
