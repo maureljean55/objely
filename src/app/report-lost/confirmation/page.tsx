@@ -30,9 +30,14 @@ export default function DeclarationConfirmationPage() {
 
         <div className="w-full bg-surface-container-lowest rounded-2xl soft-shadow overflow-hidden">
           <div className="h-48 w-full bg-surface-variant relative overflow-hidden">
-            <div className="w-full h-full flex items-center justify-center bg-surface-container-high text-primary">
-              <span className="material-symbols-outlined text-6xl">{draft.categoryIcon || "inventory_2"}</span>
-            </div>
+            {draft.photos?.[0] ? (
+              // eslint-disable-next-line @next/next/no-img-element
+              <img alt={draft.objectName || ""} className="absolute inset-0 w-full h-full object-cover" src={draft.photos[0]} />
+            ) : (
+              <div className="w-full h-full flex items-center justify-center bg-surface-container-high text-primary">
+                <span className="material-symbols-outlined text-6xl">{draft.categoryIcon || "inventory_2"}</span>
+              </div>
+            )}
             <div className="absolute top-4 right-4 bg-surface-container-lowest/90 backdrop-blur-md px-3 py-1.5 rounded-full flex items-center gap-2 shadow-sm border border-surface-container-highest">
               <div className="w-2.5 h-2.5 rounded-full bg-primary animate-pulse" />
               <span className="font-label-md text-[11px] text-on-surface uppercase tracking-wider">Recherche active</span>
