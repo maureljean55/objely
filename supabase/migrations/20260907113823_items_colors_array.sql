@@ -9,5 +9,5 @@ alter table items
   alter column colors type text[]
   using case
     when colors is null or trim(colors) = '' then null
-    else (select array_agg(trim(c)) from unnest(string_to_array(colors, ',')) as c)
+    else regexp_split_to_array(trim(colors), '\s*,\s*')
   end;
