@@ -99,6 +99,7 @@ export async function findBestMatch(draft: DraftLike, oppositeType: ItemType): P
     .eq("type", oppositeType)
     .eq("category_id", draft.categoryId ?? "__none__")
     .in("status", ["searching", "matched"])
+    .is("deleted_at", null)
     .returns<Item[]>();
 
   if (!candidates || candidates.length === 0) return null;

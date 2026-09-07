@@ -26,6 +26,9 @@ export type Item = {
   hide_exact_location: boolean;
   photos: string[];
   occurred_on: string | null;
+  deleted_at: string | null;
+  resolved_before_deletion: boolean | null;
+  deletion_reason: string | null;
   created_at: string;
   updated_at: string;
 };
@@ -84,6 +87,7 @@ export async function listFoundItems(limit = 10) {
     .from("items")
     .select("*")
     .eq("type", "found")
+    .is("deleted_at", null)
     .order("created_at", { ascending: false })
     .limit(limit)
     .returns<Item[]>();
@@ -99,8 +103,26 @@ export async function listMyItems() {
     .from("items")
     .select("*")
     .eq("user_id", user.id)
+    .is("deleted_at", null)
     .order("created_at", { ascending: false })
     .returns<Item[]>();
+}
+
+/**
+ * Soft-deletes a declaration: the row is kept (matches/messages still
+ * reference it, and it stays available for an admin review page later) but
+ * excluded from the owner's list, matching candidates, and the home feed.
+ */
+export async function softDeleteItem(itemId: string, resolvedBeforeDeletion: boolean, reason?: string) {
+  const supabase = createClient();
+  return supabase
+    .from("items")
+    .update({
+      deleted_at: new Date().toISOString(),
+      resolved_before_deletion: resolvedBeforeDeletion,
+      deletion_reason: reason?.trim() || null,
+    })
+    .eq("id", itemId);
 }
 
 /** Only returns a row when the caller owns the item — enforced by RLS. */
@@ -142,13 +164,14 @@ export type MyItemStats = { signaled: number; found: number; recovered: number }
 export async function getMyItemStats(userId: string): Promise<MyItemStats> {
   const supabase = createClient();
   const [signaled, found, recovered] = await Promise.all([
-    supabase.from("items").select("id", { count: "exact", head: true }).eq("user_id", userId).eq("type", "lost"),
-    supabase.from("items").select("id", { count: "exact", head: true }).eq("user_id", userId).eq("type", "found"),
+    supabase.from("items").select("id", { count: "exact", head: true }).eq("user_id", userId).eq("type", "lost").is("deleted_at", null),
+    supabase.from("items").select("id", { count: "exact", head: true }).eq("user_id", userId).eq("type", "found").is("deleted_at", null),
     supabase
       .from("items")
       .select("id", { count: "exact", head: true })
       .eq("user_id", userId)
-      .in("status", ["recovered", "returned"]),
+      .in("status", ["recovered", "returned"])
+      .is("deleted_at", null),
   ]);
 
   return {

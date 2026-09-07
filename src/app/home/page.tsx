@@ -28,6 +28,7 @@ export default async function HomeDashboardPage({
     .from("items")
     .select("*")
     .eq("type", "found")
+    .is("deleted_at", null)
     .order("created_at", { ascending: false })
     .limit(6)
     .returns<Item[]>();
@@ -106,7 +107,7 @@ export default async function HomeDashboardPage({
           </Link>
           <Link className="text-on-surface-variant font-label-md text-label-md hover:opacity-80 transition-opacity flex flex-col items-center" href="/search">
             <span className="material-symbols-outlined mb-1">search</span>
-            Recherche
+            Mes objets
           </Link>
           <Link className="text-on-surface-variant font-label-md text-label-md hover:opacity-80 transition-opacity flex flex-col items-center" href="/activity">
             <span className="material-symbols-outlined mb-1">explore</span>
