@@ -105,6 +105,26 @@ export type TranslationDict = {
     itemRecovered: string;
     itemReturned: string;
   };
+  profile: {
+    settingsAria: string;
+    trustLevel: string;
+    tierNew: string;
+    tierBronze: string;
+    tierSilver: string;
+    tierGold: string;
+    statSignaled: string;
+    statFound: string;
+    statRecovered: string;
+    signIn: string;
+    signInBody: string;
+    noAccount: string;
+    greeting: string;
+    darkMode: string;
+    messages: string;
+    notifications: string;
+    help: string;
+    reportProblem: string;
+  };
 };
 
 export const translations: Record<Language, TranslationDict> = {
@@ -213,6 +233,26 @@ export const translations: Record<Language, TranslationDict> = {
       itemRecovered: "Objet retrouvé",
       itemReturned: "Objet restitué",
     },
+    profile: {
+      settingsAria: "Paramètres du compte",
+      trustLevel: "Niveau de confiance",
+      tierNew: "Nouveau",
+      tierBronze: "Bronze",
+      tierSilver: "Argent",
+      tierGold: "Or",
+      statSignaled: "Objets\nsignalés",
+      statFound: "Objets\ntrouvés",
+      statRecovered: "Retrouvés",
+      signIn: "Se connecter",
+      signInBody: "Connectez-vous pour déclarer vos objets et suivre vos retrouvailles.",
+      noAccount: "Pas de compte ? Créer un compte",
+      greeting: "Bonjour 👋",
+      darkMode: "Mode sombre",
+      messages: "Messages",
+      notifications: "Notifications",
+      help: "Aide",
+      reportProblem: "Signaler un problème",
+    },
   },
   en: {
     common: {
@@ -318,6 +358,26 @@ export const translations: Record<Language, TranslationDict> = {
       stillSearchingBody: "No one has reported this item yet. You'll be notified as soon as a match is found.",
       itemRecovered: "Item recovered",
       itemReturned: "Item returned",
+    },
+    profile: {
+      settingsAria: "Account settings",
+      trustLevel: "Trust level",
+      tierNew: "New",
+      tierBronze: "Bronze",
+      tierSilver: "Silver",
+      tierGold: "Gold",
+      statSignaled: "Items\nreported",
+      statFound: "Items\nfound",
+      statRecovered: "Recovered",
+      signIn: "Sign in",
+      signInBody: "Sign in to report your items and track your recoveries.",
+      noAccount: "No account? Create one",
+      greeting: "Hello 👋",
+      darkMode: "Dark mode",
+      messages: "Messages",
+      notifications: "Notifications",
+      help: "Help",
+      reportProblem: "Report a problem",
     },
   },
 };

@@ -7,31 +7,23 @@ import ThemeToggle from "@/components/ThemeToggle";
 import { getCurrentUser } from "@/lib/auth";
 import { getMyItemStats, type MyItemStats } from "@/lib/supabase/items";
 import { getMyProfile } from "@/lib/supabase/profile";
+import { useLanguage } from "@/components/LanguageProvider";
+import type { TranslationDict } from "@/lib/i18n/translations";
 import type { User } from "@supabase/supabase-js";
 
 const EMPTY_STATS: MyItemStats = { signaled: 0, found: 0, recovered: 0 };
 
-const MENU_ITEMS_TOP = [
-  { icon: "chat_bubble", label: "Messages", bg: "bg-primary-fixed/30", color: "text-primary", href: "/messages" },
-];
-
-const MENU_ITEMS_BOTTOM = [
-  { icon: "notifications", label: "Notifications", bg: "bg-primary-fixed/30", color: "text-primary", href: "/profile/notifications" },
-  { icon: "help", label: "Aide", bg: "bg-secondary-fixed/30", color: "text-secondary", href: "/help" },
-  { icon: "flag", label: "Signaler un problème", bg: "bg-surface-variant/50", color: "text-on-surface-variant", href: "/profile/report" },
-];
-
-function trustTier(score: number) {
+function trustTier(score: number, t: TranslationDict) {
   if (score >= 70) {
-    return { label: "Or", badge: "bg-gradient-to-r from-amber-50 to-orange-50 border-amber-200/50", icon: "text-amber-500", text: "text-amber-700" };
+    return { label: t.profile.tierGold, badge: "bg-gradient-to-r from-amber-50 to-orange-50 border-amber-200/50", icon: "text-amber-500", text: "text-amber-700" };
   }
   if (score >= 40) {
-    return { label: "Argent", badge: "bg-gradient-to-r from-slate-50 to-gray-100 border-slate-200/60", icon: "text-slate-500", text: "text-slate-700" };
+    return { label: t.profile.tierSilver, badge: "bg-gradient-to-r from-slate-50 to-gray-100 border-slate-200/60", icon: "text-slate-500", text: "text-slate-700" };
   }
   if (score >= 15) {
-    return { label: "Bronze", badge: "bg-gradient-to-r from-orange-50 to-amber-50 border-orange-200/50", icon: "text-orange-700", text: "text-orange-800" };
+    return { label: t.profile.tierBronze, badge: "bg-gradient-to-r from-orange-50 to-amber-50 border-orange-200/50", icon: "text-orange-700", text: "text-orange-800" };
   }
-  return { label: "Nouveau", badge: "bg-surface-container border-outline-variant/40", icon: "text-on-surface-variant", text: "text-on-surface-variant" };
+  return { label: t.profile.tierNew, badge: "bg-surface-container border-outline-variant/40", icon: "text-on-surface-variant", text: "text-on-surface-variant" };
 }
 
 function ProfileSummary({
@@ -40,21 +32,23 @@ function ProfileSummary({
   avatarUrl,
   displayName,
   trustScore,
+  t,
 }: {
   user: User | null;
   stats: MyItemStats;
   avatarUrl: string | null;
   displayName: string;
   trustScore: number;
+  t: TranslationDict;
 }) {
   const authenticated = !!user;
-  const tier = trustTier(trustScore);
+  const tier = trustTier(trustScore, t);
 
   return (
     <>
       <Link
         href="/profile/settings"
-        aria-label="Paramètres du compte"
+        aria-label={t.profile.settingsAria}
         className="absolute right-container-margin md:right-0 w-10 h-10 rounded-full bg-surface-container-lowest shadow-sm flex items-center justify-center text-on-surface-variant hover:text-primary transition-colors"
         style={{ top: "calc(1rem + env(safe-area-inset-top))" }}
       >
@@ -85,16 +79,16 @@ function ProfileSummary({
                 shield
               </span>
               <span className={`font-label-md text-label-md ${tier.text}`}>
-                Niveau de confiance : {tier.label} ({trustScore}%)
+                {t.profile.trustLevel} : {tier.label} ({trustScore}%)
               </span>
             </div>
           </section>
 
           <section className="grid grid-cols-3 gap-3 animate-slideUp">
             {[
-              { value: stats.signaled, label: "Objets\nsignalés", color: "text-primary" },
-              { value: stats.found, label: "Objets\ntrouvés", color: "text-secondary" },
-              { value: stats.recovered, label: "Retrouvés", color: "text-tertiary" },
+              { value: stats.signaled, label: t.profile.statSignaled, color: "text-primary" },
+              { value: stats.found, label: t.profile.statFound, color: "text-secondary" },
+              { value: stats.recovered, label: t.profile.statRecovered, color: "text-tertiary" },
             ].map((stat) => (
               <div key={stat.label} className="bg-surface-container-lowest rounded-[24px] p-4 flex flex-col items-center justify-center soft-shadow inner-stroke">
                 <span className={`font-headline-lg-mobile text-headline-lg-mobile mb-1 ${stat.color}`}>{stat.value}</span>
@@ -107,7 +101,7 @@ function ProfileSummary({
         <section className="flex flex-col items-center pt-8 pb-6 animate-fadeIn">
           <Link
             href="/login"
-            aria-label="Se connecter"
+            aria-label={t.profile.signIn}
             className="w-28 h-28 rounded-full border-2 border-dashed border-primary/40 bg-primary-fixed/20 flex items-center justify-center mb-4 hover:bg-primary-fixed/30 transition-colors"
           >
             <span className="material-symbols-outlined text-primary text-[36px]">login</span>
@@ -116,13 +110,13 @@ function ProfileSummary({
             href="/login"
             className="font-headline-lg-mobile md:font-headline-lg text-headline-lg-mobile md:text-headline-lg text-primary mb-1 hover:underline"
           >
-            Se connecter
+            {t.profile.signIn}
           </Link>
           <p className="font-body-md text-body-md text-on-surface-variant text-center max-w-xs mt-1">
-            Connectez-vous pour déclarer vos objets et suivre vos retrouvailles.
+            {t.profile.signInBody}
           </p>
           <Link href="/register" className="font-label-md text-label-md text-primary mt-3 hover:underline">
-            Pas de compte ? Créer un compte
+            {t.profile.noAccount}
           </Link>
         </section>
       )}
@@ -131,6 +125,7 @@ function ProfileSummary({
 }
 
 export default function UserProfilePage() {
+  const { t } = useLanguage();
   const [user, setUser] = useState<User | null>(null);
   const [stats, setStats] = useState<MyItemStats>(EMPTY_STATS);
   const [avatarUrl, setAvatarUrl] = useState<string | null>(null);
@@ -138,6 +133,15 @@ export default function UserProfilePage() {
   const [trustScore, setTrustScore] = useState(0);
   const authenticated = !!user;
   const displayName = profileName || (user?.user_metadata?.full_name as string | undefined) || user?.email || "";
+
+  const menuItemsTop = [
+    { icon: "chat_bubble", label: t.profile.messages, bg: "bg-primary-fixed/30", color: "text-primary", href: "/messages" },
+  ];
+  const menuItemsBottom = [
+    { icon: "notifications", label: t.profile.notifications, bg: "bg-primary-fixed/30", color: "text-primary", href: "/profile/notifications" },
+    { icon: "help", label: t.profile.help, bg: "bg-secondary-fixed/30", color: "text-secondary", href: "/help" },
+    { icon: "flag", label: t.profile.reportProblem, bg: "bg-surface-variant/50", color: "text-on-surface-variant", href: "/profile/report" },
+  ];
 
   useEffect(() => {
     // Read after mount (not as a lazy initial state) so the server-rendered
@@ -165,7 +169,7 @@ export default function UserProfilePage() {
         <div className="font-display text-display text-primary">Objely</div>
         <div className="flex items-center gap-4">
           <div className="w-10 h-10 rounded-full bg-surface-variant overflow-hidden" />
-          <span className="font-headline-sm text-headline-sm text-primary">Bonjour 👋</span>
+          <span className="font-headline-sm text-headline-sm text-primary">{t.profile.greeting}</span>
           <button className="w-10 h-10 rounded-full flex items-center justify-center text-on-surface-variant hover:opacity-80 transition-opacity">
             <span className="material-symbols-outlined">notifications</span>
           </button>
@@ -177,7 +181,7 @@ export default function UserProfilePage() {
         className="md:hidden fixed top-0 inset-x-0 z-40 bg-background/95 backdrop-blur-md px-container-margin pb-4 shadow-sm"
         style={{ paddingTop: "env(safe-area-inset-top)" }}
       >
-        <ProfileSummary user={user} stats={stats} avatarUrl={avatarUrl} displayName={displayName} trustScore={trustScore} />
+        <ProfileSummary user={user} stats={stats} avatarUrl={avatarUrl} displayName={displayName} trustScore={trustScore} t={t} />
       </div>
 
       <main
@@ -186,12 +190,12 @@ export default function UserProfilePage() {
         }`}
       >
         <div className="hidden md:block relative">
-          <ProfileSummary user={user} stats={stats} avatarUrl={avatarUrl} displayName={displayName} trustScore={trustScore} />
+          <ProfileSummary user={user} stats={stats} avatarUrl={avatarUrl} displayName={displayName} trustScore={trustScore} t={t} />
         </div>
 
         <section className="bg-surface-container-lowest rounded-[32px] soft-shadow inner-stroke overflow-hidden mb-8 animate-slideUp">
           <div className="flex flex-col">
-            {MENU_ITEMS_TOP.map((item) => (
+            {menuItemsTop.map((item) => (
               <Link
                 key={item.label}
                 href={item.href}
@@ -209,9 +213,9 @@ export default function UserProfilePage() {
 
             <ThemeToggle />
 
-            {MENU_ITEMS_BOTTOM.map((item, i) => {
+            {menuItemsBottom.map((item, i) => {
               const rowClassName = `w-full flex items-center justify-between p-lg text-left hover:bg-black/[0.02] transition-colors ${
-                i < MENU_ITEMS_BOTTOM.length - 1 ? "border-b border-surface-variant/50" : ""
+                i < menuItemsBottom.length - 1 ? "border-b border-surface-variant/50" : ""
               }`;
               const content = (
                 <>
