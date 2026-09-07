@@ -1,18 +1,9 @@
-"use client";
-
-import { useState } from "react";
 import Link from "next/link";
+import FaqAccordion from "@/components/FaqAccordion";
+import { listFaqItems } from "@/lib/supabase/faq";
 
-const FAQ_ITEMS = [
-  "Comment déclarer un objet perdu ou trouvé ?",
-  "Comment fonctionne la correspondance entre objets ?",
-  "Comment organiser une restitution en toute sécurité ?",
-  "Comment supprimer mon compte ?",
-];
-
-export default function HelpCenterPage() {
-  const [query, setQuery] = useState("");
-  const filteredFaq = FAQ_ITEMS.filter((q) => q.toLowerCase().includes(query.toLowerCase()));
+export default async function HelpCenterPage() {
+  const { data: faqItems } = await listFaqItems();
 
   return (
     <div className="bg-gradient-to-b from-surface-container to-background text-on-background min-h-screen antialiased pb-12">
@@ -23,13 +14,8 @@ export default function HelpCenterPage() {
         <h1 className="font-headline-sm text-headline-sm text-on-surface absolute left-1/2 -translate-x-1/2">
           Support
         </h1>
-        <div className="w-8 h-8 rounded-full overflow-hidden shrink-0 bg-surface-container-high">
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img
-            alt="Agent support"
-            className="w-full h-full object-cover"
-            src="https://lh3.googleusercontent.com/aida-public/AB6AXuDU6JeAdh405-ve2qnbhookkk1hhUDtsY4zNzAR7xn73Ol1GsfA2cn7K-sct9yikuzOSE6AamFKeDlM1_rt0opv-A9xfXTjvvNz5icdY3J4ySOxNQWsMrMzCUzgi4RszxHe0Wnwcq_gkV_eBk_l8H_hpcy6b3WG3nr4_H03NCgqd3m0JerAZn_-saicn65oi7kEQ5rMB59SiiaHNJoJMSPoEjdrFIVYUpli5UqtHH9V_Ns9ZTNkO22j"
-          />
+        <div className="w-8 h-8 rounded-full shrink-0 bg-primary-fixed flex items-center justify-center text-primary">
+          <span className="material-symbols-outlined text-[18px]" style={{ fontVariationSettings: "'FILL' 1" }}>support_agent</span>
         </div>
       </header>
 
@@ -76,35 +62,7 @@ export default function HelpCenterPage() {
           </span>
         </Link>
 
-        {/* FAQ */}
-        <section id="faq" className="bg-surface-container-lowest rounded-[28px] soft-shadow overflow-hidden scroll-mt-lg">
-          <div className="flex items-center gap-3 bg-surface-container-low mx-3 mt-3 mb-2 px-4 py-3 rounded-2xl">
-            <input
-              value={query}
-              onChange={(e) => setQuery(e.target.value)}
-              placeholder="Trouver une réponse"
-              className="flex-1 bg-transparent border-none p-0 font-headline-sm text-headline-sm text-on-surface font-bold placeholder:text-on-surface placeholder:font-bold focus:ring-0 outline-none"
-            />
-            <span className="material-symbols-outlined text-primary shrink-0">search</span>
-          </div>
-          <div className="flex flex-col">
-            {filteredFaq.length === 0 ? (
-              <p className="px-lg py-6 font-body-md text-body-md text-on-surface-variant text-center">Aucune réponse trouvée.</p>
-            ) : (
-              filteredFaq.map((question, i) => (
-                <button
-                  key={question}
-                  className={`flex items-center justify-between gap-md px-lg py-4 text-left hover:bg-black/[0.02] transition-colors ${
-                    i < filteredFaq.length - 1 ? "border-b border-surface-variant/50" : ""
-                  }`}
-                >
-                  <span className="font-body-lg text-body-lg text-on-surface">{question}</span>
-                  <span className="material-symbols-outlined text-primary shrink-0">chevron_right</span>
-                </button>
-              ))
-            )}
-          </div>
-        </section>
+        <FaqAccordion items={faqItems ?? []} />
       </main>
     </div>
   );
