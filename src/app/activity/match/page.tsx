@@ -6,7 +6,7 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { getCurrentUser } from "@/lib/auth";
 import { getMatch, type MatchWithItems } from "@/lib/supabase/messages";
 import { explainItemMatch } from "@/lib/supabase/matching";
-import { resolveMatch } from "@/lib/supabase/verification";
+import { getLatestVerification, resolveMatch, type MatchVerification } from "@/lib/supabase/verification";
 import type { Item } from "@/lib/supabase/items";
 
 function ItemCard({ item, label, highlighted, dateLabel }: { item: Item; label: string; highlighted: boolean; dateLabel: string }) {
@@ -47,19 +47,23 @@ function MatchDetailContent() {
 
   const [match, setMatch] = useState<MatchWithItems | null>(null);
   const [currentUserId, setCurrentUserId] = useState<string | null>(null);
+  const [verification, setVerification] = useState<MatchVerification | null>(null);
   const [loadError, setLoadError] = useState(false);
   const [isRejecting, setIsRejecting] = useState(false);
 
   useEffect(() => {
     if (!matchId) return;
-    Promise.all([getCurrentUser(), getMatch(matchId)]).then(([user, { data, error }]) => {
-      if (!user || error || !data) {
-        setLoadError(true);
-        return;
-      }
-      setCurrentUserId(user.id);
-      setMatch(data);
-    });
+    Promise.all([getCurrentUser(), getMatch(matchId), getLatestVerification(matchId)]).then(
+      ([user, { data, error }, verificationRes]) => {
+        if (!user || error || !data) {
+          setLoadError(true);
+          return;
+        }
+        setCurrentUserId(user.id);
+        setMatch(data);
+        setVerification(verificationRes.data ?? null);
+      },
+    );
   }, [matchId]);
 
   if (loadError || !matchId) {
@@ -157,6 +161,38 @@ function MatchDetailContent() {
             ))}
           </ul>
         </section>
+
+        {isLostSide && match.status === "pending" && (
+          <section className="bg-surface-container-lowest rounded-2xl p-lg soft-shadow flex flex-col items-center text-center gap-2">
+            {verification ? (
+              <>
+                <div className="w-12 h-12 rounded-full bg-primary/10 text-primary flex items-center justify-center mb-1">
+                  <span className="material-symbols-outlined" style={{ fontVariationSettings: "'FILL' 1" }}>hourglass_top</span>
+                </div>
+                <h3 className="font-headline-sm text-headline-sm text-on-surface">Vérification envoyée</h3>
+                <p className="font-body-md text-body-md text-on-surface-variant">
+                  En attente de confirmation par la personne qui a trouvé l&apos;objet.
+                </p>
+              </>
+            ) : (
+              <>
+                <div className="w-12 h-12 rounded-full bg-secondary/10 text-secondary flex items-center justify-center mb-1">
+                  <span className="material-symbols-outlined" style={{ fontVariationSettings: "'FILL' 1" }}>lock_open</span>
+                </div>
+                <h3 className="font-headline-sm text-headline-sm text-on-surface">Prouvez que cet objet vous appartient</h3>
+                <p className="font-body-md text-body-md text-on-surface-variant mb-1">
+                  Répondez à quelques questions de vérification avant de pouvoir échanger.
+                </p>
+                <Link
+                  href={`/ownership-verification?match=${match.id}`}
+                  className="w-full h-12 bg-primary text-on-primary rounded-xl font-headline-sm text-headline-sm flex items-center justify-center hover:opacity-90 active:scale-[0.98] transition-all"
+                >
+                  Répondre aux questions de vérification
+                </Link>
+              </>
+            )}
+          </section>
+        )}
       </main>
 
       <div className="fixed bottom-0 inset-x-0 z-50 glass-input px-container-margin py-md safe-area-pb shadow-[0_-4px_20px_rgba(0,0,0,0.05)]">
