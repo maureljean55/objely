@@ -157,7 +157,12 @@ export default function ReportFoundMatchesPage() {
                 <div className="flex flex-col items-center text-center">
                   <span className="font-label-md text-[11px] text-on-surface-variant uppercase mb-2">Objet trouvé (vous)</span>
                   <div className="w-24 h-24 rounded-xl overflow-hidden mb-2 bg-surface-container-high border border-outline-variant/30 flex items-center justify-center text-primary">
-                    <span className="material-symbols-outlined text-4xl">{draft.categoryIcon || "inventory_2"}</span>
+                    {draft.photos?.[0] ? (
+                      // eslint-disable-next-line @next/next/no-img-element
+                      <img alt={draft.objectName || ""} className="w-full h-full object-cover" src={draft.photos[0]} />
+                    ) : (
+                      <span className="material-symbols-outlined text-4xl">{draft.categoryIcon || "inventory_2"}</span>
+                    )}
                   </div>
                   <span className="font-body-md text-body-md text-on-surface">{draft.objectName || draft.categoryLabel}</span>
                 </div>

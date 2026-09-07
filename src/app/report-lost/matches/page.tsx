@@ -164,7 +164,12 @@ export default function DeclarationMatchesPage() {
                   <span className="font-label-md text-[10px] text-on-surface-variant uppercase">Votre objet</span>
                 </div>
                 <div className="aspect-square w-full relative bg-surface-container-high flex items-center justify-center text-primary">
-                  <span className="material-symbols-outlined text-5xl">{draft.categoryIcon || "inventory_2"}</span>
+                  {draft.photos?.[0] ? (
+                    // eslint-disable-next-line @next/next/no-img-element
+                    <img alt={draft.objectName || ""} className="absolute inset-0 w-full h-full object-cover" src={draft.photos[0]} />
+                  ) : (
+                    <span className="material-symbols-outlined text-5xl">{draft.categoryIcon || "inventory_2"}</span>
+                  )}
                 </div>
                 <div className="p-3 grow flex flex-col gap-1">
                   <h4 className="font-headline-sm text-headline-sm text-on-surface line-clamp-1">{draft.objectName || draft.categoryLabel}</h4>
@@ -243,8 +248,13 @@ export default function DeclarationMatchesPage() {
             </div>
 
             <div className="bg-surface-container-lowest rounded-[24px] p-md soft-shadow mb-lg border border-surface-variant flex gap-md items-center">
-              <div className="w-16 h-16 rounded-xl bg-surface-container flex items-center justify-center shrink-0 text-primary">
-                <span className="material-symbols-outlined text-3xl">{draft.categoryIcon || "inventory_2"}</span>
+              <div className="w-16 h-16 rounded-xl bg-surface-container overflow-hidden flex items-center justify-center shrink-0 text-primary relative">
+                {draft.photos?.[0] ? (
+                  // eslint-disable-next-line @next/next/no-img-element
+                  <img alt={draft.objectName || ""} className="absolute inset-0 w-full h-full object-cover" src={draft.photos[0]} />
+                ) : (
+                  <span className="material-symbols-outlined text-3xl">{draft.categoryIcon || "inventory_2"}</span>
+                )}
               </div>
               <div className="flex-1 overflow-hidden">
                 <h4 className="font-headline-sm text-headline-sm text-on-surface truncate">{draft.objectName || draft.categoryLabel || "Votre objet"}</h4>
