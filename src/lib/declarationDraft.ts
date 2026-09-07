@@ -6,7 +6,7 @@ export type DeclarationDraft = {
   objectName?: string;
   description?: string;
   brand?: string;
-  color?: string;
+  colors?: string[];
   location?: string;
   date?: string;
   time?: string;

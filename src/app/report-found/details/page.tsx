@@ -22,7 +22,7 @@ export default function ReportFoundDetailsPage() {
 
   const goNext = () => {
     if (!canContinue) return;
-    saveDraft({ objectName: name, brand, color: colors.length > 0 ? colors.join(", ") : undefined, description, privateDetail, photos });
+    saveDraft({ objectName: name, brand, colors: colors.length > 0 ? colors : undefined, description, privateDetail, photos });
     router.push("/report-found/location");
   };
 

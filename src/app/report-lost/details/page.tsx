@@ -58,7 +58,7 @@ export default function DeclarationDetailsPage() {
           onSubmit={(e) => {
             e.preventDefault();
             if (!canContinue) return;
-            saveDraft({ objectName: name, description, brand, color: colors.length > 0 ? colors.join(", ") : undefined, privateDetail: distinctive, photos });
+            saveDraft({ objectName: name, description, brand, colors: colors.length > 0 ? colors : undefined, privateDetail: distinctive, photos });
             router.push("/report-lost/location");
           }}
         >
@@ -149,7 +149,7 @@ export default function DeclarationDetailsPage() {
             type="button"
             disabled={!canContinue}
             onClick={() => {
-              saveDraft({ objectName: name, description, brand, color: colors.length > 0 ? colors.join(", ") : undefined, privateDetail: distinctive, photos });
+              saveDraft({ objectName: name, description, brand, colors: colors.length > 0 ? colors : undefined, privateDetail: distinctive, photos });
               router.push("/report-lost/location");
             }}
             className="btn-gradient bg-primary text-on-primary rounded-xl px-6 py-3 flex items-center justify-center gap-2 font-headline-sm text-headline-sm shadow-[0px_10px_30px_rgba(0,88,188,0.15)] hover:opacity-90 transition-opacity disabled:opacity-50 disabled:cursor-not-allowed"

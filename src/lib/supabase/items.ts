@@ -21,7 +21,7 @@ export type Item = {
   title: string;
   description: string | null;
   brand: string | null;
-  color: string | null;
+  colors: string[] | null;
   location: string | null;
   hide_exact_location: boolean;
   photos: string[];
@@ -54,7 +54,7 @@ export async function createItemFromDraft(draft: DeclarationDraft, type: ItemTyp
       title: draft.objectName?.trim() || draft.categoryLabel || "Objet",
       description: draft.description || null,
       brand: draft.brand || null,
-      color: draft.color || null,
+      colors: draft.colors && draft.colors.length > 0 ? draft.colors : null,
       location: draft.location || null,
       hide_exact_location: draft.hideExactLocation ?? false,
       occurred_on: draft.date || null,

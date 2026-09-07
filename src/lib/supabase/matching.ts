@@ -5,7 +5,7 @@ import { notifyMatchParticipants } from "@/lib/supabase/notifications";
 
 const MATCH_THRESHOLD = 45;
 
-type DraftLike = Pick<DeclarationDraft, "categoryId" | "color" | "brand" | "location" | "date">;
+type DraftLike = Pick<DeclarationDraft, "categoryId" | "colors" | "brand" | "location" | "date">;
 
 /**
  * Scores how likely `draft` (a lost/found declaration being created) refers
@@ -19,7 +19,7 @@ export function scoreMatch(draft: DraftLike, item: Item): number {
 
   let score = 40; // same category
 
-  if (colorsOverlap(draft.color, item.color)) {
+  if (colorsOverlap(draft.colors, item.colors)) {
     score += 15;
   }
 
@@ -41,13 +41,12 @@ export function scoreMatch(draft: DraftLike, item: Item): number {
   return Math.min(score, 100);
 }
 
-// Both sides can now be a "Noir, Bleu"-style comma list (multi-color
-// selection) rather than a single value, so a match means any shared color.
-function colorsOverlap(a: string | null | undefined, b: string | null | undefined): boolean {
-  if (!a || !b) return false;
-  const setA = new Set(a.split(",").map((c) => c.trim().toLowerCase()).filter(Boolean));
-  const setB = b.split(",").map((c) => c.trim().toLowerCase()).filter(Boolean);
-  return setB.some((c) => setA.has(c));
+// An item can have multiple colors, so a match means any shared color
+// between the two lists rather than requiring an exact single value.
+function colorsOverlap(a: string[] | null | undefined, b: string[] | null | undefined): boolean {
+  if (!a || !b || a.length === 0 || b.length === 0) return false;
+  const setA = new Set(a.map((c) => c.trim().toLowerCase()));
+  return b.some((c) => setA.has(c.trim().toLowerCase()));
 }
 
 function normalizeWords(text: string): string[] {
@@ -63,7 +62,7 @@ export type MatchCriterion = { label: string; matched: boolean };
 
 /** Human-readable breakdown of why (or why not) a draft matches an item. */
 export function explainMatch(draft: DraftLike, item: Item): MatchCriterion[] {
-  const colorMatch = colorsOverlap(draft.color, item.color);
+  const colorMatch = colorsOverlap(draft.colors, item.colors);
   const brandMatch = !!(draft.brand && item.brand && draft.brand.trim().toLowerCase() === item.brand.trim().toLowerCase());
   const locationMatch = !!(
     draft.location &&

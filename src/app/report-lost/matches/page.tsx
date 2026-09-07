@@ -249,7 +249,7 @@ export default function DeclarationMatchesPage() {
               <div className="flex-1 overflow-hidden">
                 <h4 className="font-headline-sm text-headline-sm text-on-surface truncate">{draft.objectName || draft.categoryLabel || "Votre objet"}</h4>
                 <p className="font-body-md text-[13px] text-on-surface-variant truncate">
-                  {draft.color ? `${draft.color} • ` : ""}Perdu le {draft.date ? new Date(draft.date).toLocaleDateString("fr-FR") : "—"}
+                  {draft.colors && draft.colors.length > 0 ? `${draft.colors.join(", ")} • ` : ""}Perdu le {draft.date ? new Date(draft.date).toLocaleDateString("fr-FR") : "—"}
                 </p>
                 <div className="flex items-center gap-1 mt-1 text-on-surface-variant">
                   <span className="material-symbols-outlined text-[16px]">location_on</span>
