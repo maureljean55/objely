@@ -58,19 +58,16 @@ export default function SettingsPage() {
 
       <main className="max-w-[800px] mx-auto pt-[calc(5rem+env(safe-area-inset-top))] pb-8 px-container-margin flex flex-col gap-lg">
         <Section title="Préférences">
-          <Row icon="notifications" label="Notifications" href="/profile/notifications" />
           <Row icon="language" label="Langue" />
         </Section>
 
         <Section title="Sécurité">
           <Row icon="key" label="Mot de passe" />
           <Row icon="devices" label="Connexion et appareils" />
-          <Row icon="shield" label="Authentification renforcée" />
         </Section>
 
         <Section title="Confidentialité">
           <Row icon="lock" label="Confidentialité & Sécurité" href="/profile/privacy" />
-          <Row icon="database" label="Gestion des données" />
           <Row icon="assignment_turned_in" label="Autorisations" />
         </Section>
 
