@@ -21,18 +21,34 @@ const MENU_ITEMS_BOTTOM = [
   { icon: "flag", label: "Signaler un problème", bg: "bg-surface-variant/50", color: "text-on-surface-variant", href: "/profile/report" },
 ];
 
+function trustTier(score: number) {
+  if (score >= 70) {
+    return { label: "Or", badge: "bg-gradient-to-r from-amber-50 to-orange-50 border-amber-200/50", icon: "text-amber-500", text: "text-amber-700" };
+  }
+  if (score >= 40) {
+    return { label: "Argent", badge: "bg-gradient-to-r from-slate-50 to-gray-100 border-slate-200/60", icon: "text-slate-500", text: "text-slate-700" };
+  }
+  if (score >= 15) {
+    return { label: "Bronze", badge: "bg-gradient-to-r from-orange-50 to-amber-50 border-orange-200/50", icon: "text-orange-700", text: "text-orange-800" };
+  }
+  return { label: "Nouveau", badge: "bg-surface-container border-outline-variant/40", icon: "text-on-surface-variant", text: "text-on-surface-variant" };
+}
+
 function ProfileSummary({
   user,
   stats,
   avatarUrl,
   displayName,
+  trustScore,
 }: {
   user: User | null;
   stats: MyItemStats;
   avatarUrl: string | null;
   displayName: string;
+  trustScore: number;
 }) {
   const authenticated = !!user;
+  const tier = trustTier(trustScore);
 
   return (
     <>
@@ -64,11 +80,13 @@ function ProfileSummary({
             <h1 className="font-headline-lg-mobile md:font-headline-lg text-headline-lg-mobile md:text-headline-lg text-on-surface mb-1">
               {displayName}
             </h1>
-            <div className="flex items-center gap-2 bg-gradient-to-r from-amber-50 to-orange-50 border border-amber-200/50 rounded-full px-4 py-1.5 shadow-sm mt-2">
-              <span className="material-symbols-outlined text-amber-500 text-[18px] drop-shadow-sm" style={{ fontVariationSettings: "'FILL' 1" }}>
+            <div className={`flex items-center gap-2 border rounded-full px-4 py-1.5 shadow-sm mt-2 ${tier.badge}`}>
+              <span className={`material-symbols-outlined text-[18px] drop-shadow-sm ${tier.icon}`} style={{ fontVariationSettings: "'FILL' 1" }}>
                 shield
               </span>
-              <span className="font-label-md text-label-md text-amber-700">Niveau de confiance : Or (98%)</span>
+              <span className={`font-label-md text-label-md ${tier.text}`}>
+                Niveau de confiance : {tier.label} ({trustScore}%)
+              </span>
             </div>
           </section>
 
@@ -117,6 +135,7 @@ export default function UserProfilePage() {
   const [stats, setStats] = useState<MyItemStats>(EMPTY_STATS);
   const [avatarUrl, setAvatarUrl] = useState<string | null>(null);
   const [profileName, setProfileName] = useState<string | null>(null);
+  const [trustScore, setTrustScore] = useState(0);
   const authenticated = !!user;
   const displayName = profileName || (user?.user_metadata?.full_name as string | undefined) || user?.email || "";
 
@@ -131,6 +150,7 @@ export default function UserProfilePage() {
         getMyProfile().then(({ data }) => {
           setAvatarUrl(data?.avatar_url ?? null);
           setProfileName(data?.full_name ?? null);
+          setTrustScore(data?.trust_score ?? 0);
         });
       }
     });
@@ -157,7 +177,7 @@ export default function UserProfilePage() {
         className="md:hidden fixed top-0 inset-x-0 z-40 bg-background/95 backdrop-blur-md px-container-margin pb-4 shadow-sm"
         style={{ paddingTop: "env(safe-area-inset-top)" }}
       >
-        <ProfileSummary user={user} stats={stats} avatarUrl={avatarUrl} displayName={displayName} />
+        <ProfileSummary user={user} stats={stats} avatarUrl={avatarUrl} displayName={displayName} trustScore={trustScore} />
       </div>
 
       <main
@@ -166,7 +186,7 @@ export default function UserProfilePage() {
         }`}
       >
         <div className="hidden md:block relative">
-          <ProfileSummary user={user} stats={stats} avatarUrl={avatarUrl} displayName={displayName} />
+          <ProfileSummary user={user} stats={stats} avatarUrl={avatarUrl} displayName={displayName} trustScore={trustScore} />
         </div>
 
         <section className="bg-surface-container-lowest rounded-[32px] soft-shadow inner-stroke overflow-hidden mb-8 animate-slideUp">
