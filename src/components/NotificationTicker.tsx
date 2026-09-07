@@ -2,10 +2,13 @@
 
 import { useEffect, useState } from "react";
 
-const NOTIFICATIONS = [
-  { icon: "🔑", text: "Clés trouvées à Paris 11e", time: "il y a 5 min" },
-  { icon: "👜", text: "Sac restitué à son propriétaire", time: "il y a 1 h" },
-  { icon: "📱", text: "Nouvelle correspondance trouvée", time: "il y a 3 h" },
+const PREVENTION_MESSAGES = [
+  { icon: "🛡️", text: "Donnez rendez-vous uniquement dans des lieux publics et fréquentés" },
+  { icon: "⚠️", text: "Objely ne vous empêche pas de déclarer un objet dans un lieu réputé à risque — restez vigilant" },
+  { icon: "🚫", text: "Ne partagez jamais vos coordonnées bancaires dans une conversation" },
+  { icon: "🔍", text: "Vérifiez toujours les détails avant de confirmer une restitution" },
+  { icon: "👥", text: "Privilégiez un échange accompagné ou en journée" },
+  { icon: "🚨", text: "Signalez tout comportement suspect depuis la fiche de l'objet" },
 ];
 
 export default function NotificationTicker() {
@@ -13,12 +16,12 @@ export default function NotificationTicker() {
 
   useEffect(() => {
     const id = setInterval(() => {
-      setIndex((i) => (i + 1) % NOTIFICATIONS.length);
-    }, 4000);
+      setIndex((i) => (i + 1) % PREVENTION_MESSAGES.length);
+    }, 5000);
     return () => clearInterval(id);
   }, []);
 
-  const current = NOTIFICATIONS[index];
+  const current = PREVENTION_MESSAGES[index];
 
   return (
     <div className="bg-surface-container-lowest rounded-full shadow-sm px-4 py-2.5 overflow-hidden">
@@ -26,8 +29,6 @@ export default function NotificationTicker() {
         <span className="font-label-md text-label-md text-on-surface-variant truncate">
           {current.icon} {current.text}
         </span>
-        <span className="text-outline-variant shrink-0">•</span>
-        <span className="font-label-md text-label-md text-outline shrink-0 whitespace-nowrap">{current.time}</span>
       </div>
     </div>
   );
