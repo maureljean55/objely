@@ -16,8 +16,9 @@ export default function DeclarationDetailsPage() {
   const [color, setColor] = useState<string | null>(null);
   const [distinctive, setDistinctive] = useState("");
   const [photos, setPhotos] = useState<string[]>([]);
+  const [isUploadingPhotos, setIsUploadingPhotos] = useState(false);
 
-  const canContinue = name.trim().length > 0;
+  const canContinue = name.trim().length > 0 && !isUploadingPhotos;
 
   return (
     <div className="font-body-md text-on-surface antialiased min-h-screen flex flex-col bg-background">
@@ -49,7 +50,7 @@ export default function DeclarationDetailsPage() {
 
         <div className="mb-lg">
           <label className="block font-label-md text-label-md text-outline uppercase tracking-wider mb-2">Photos</label>
-          <PhotoPicker photos={photos} onChange={setPhotos} />
+          <PhotoPicker photos={photos} onChange={setPhotos} onUploadingChange={setIsUploadingPhotos} />
         </div>
 
         <form

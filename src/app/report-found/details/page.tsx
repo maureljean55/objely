@@ -16,8 +16,9 @@ export default function ReportFoundDetailsPage() {
   const [description, setDescription] = useState("");
   const [privateDetail, setPrivateDetail] = useState("");
   const [photos, setPhotos] = useState<string[]>([]);
+  const [isUploadingPhotos, setIsUploadingPhotos] = useState(false);
 
-  const canContinue = name.trim().length > 0;
+  const canContinue = name.trim().length > 0 && !isUploadingPhotos;
 
   const goNext = () => {
     if (!canContinue) return;
@@ -52,7 +53,7 @@ export default function ReportFoundDetailsPage() {
         </div>
 
         <div className="mb-lg">
-          <PhotoPicker photos={photos} onChange={setPhotos} />
+          <PhotoPicker photos={photos} onChange={setPhotos} onUploadingChange={setIsUploadingPhotos} />
         </div>
 
         <div className="flex flex-col gap-lg">
