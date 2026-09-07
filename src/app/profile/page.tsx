@@ -13,7 +13,6 @@ const EMPTY_STATS: MyItemStats = { signaled: 0, found: 0, recovered: 0 };
 
 const MENU_ITEMS_TOP = [
   { icon: "chat_bubble", label: "Messages", bg: "bg-primary-fixed/30", color: "text-primary", href: "/messages" },
-  { icon: "lock", label: "Confidentialité & Sécurité", bg: "bg-tertiary-fixed/30", color: "text-tertiary", href: "/profile/privacy" },
 ];
 
 const MENU_ITEMS_BOTTOM = [
