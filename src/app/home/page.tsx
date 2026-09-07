@@ -24,24 +24,29 @@ export default async function HomeDashboardPage({
 }) {
   const { welcome } = await searchParams;
   const supabase = await createClient();
-  const { data: recentFinds } = await supabase
-    .from("items")
-    .select("*")
-    .eq("type", "found")
-    .is("deleted_at", null)
-    .order("created_at", { ascending: false })
-    .limit(6)
-    .returns<Item[]>();
 
-  const {
+  // recentFinds doesn't depend on the user, so it can run alongside the
+  // auth check instead of waiting behind it.
+  const [{ data: recentFinds }, {
     data: { user },
-  } = await supabase.auth.getUser();
-  const { count: unreadCount } = user
-    ? await supabase.from("notifications").select("id", { count: "exact", head: true }).eq("user_id", user.id).eq("read", false)
-    : { count: 0 };
-  const { data: profile } = user
-    ? await supabase.from("profiles").select("avatar_url").eq("id", user.id).maybeSingle<{ avatar_url: string | null }>()
-    : { data: null };
+  }] = await Promise.all([
+    supabase
+      .from("items")
+      .select("*")
+      .eq("type", "found")
+      .is("deleted_at", null)
+      .order("created_at", { ascending: false })
+      .limit(6)
+      .returns<Item[]>(),
+    supabase.auth.getUser(),
+  ]);
+
+  const [{ count: unreadCount }, { data: profile }] = user
+    ? await Promise.all([
+        supabase.from("notifications").select("id", { count: "exact", head: true }).eq("user_id", user.id).eq("read", false),
+        supabase.from("profiles").select("avatar_url").eq("id", user.id).maybeSingle<{ avatar_url: string | null }>(),
+      ])
+    : [{ count: 0 }, { data: null }];
 
   return (
     <div className="pt-[calc(172px+env(safe-area-inset-top))] pb-[120px] md:pt-[calc(100px+env(safe-area-inset-top))] md:pb-0">
