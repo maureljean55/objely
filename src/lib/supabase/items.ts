@@ -1,5 +1,11 @@
 import { createClient } from "@/lib/supabase/client";
 import type { DeclarationDraft } from "@/lib/declarationDraft";
+import { incrementTrustScore } from "@/lib/supabase/profile";
+
+// Trust score grows with real, verifiable actions: a small bump for
+// reporting a found item, a bigger one once a restitution is actually
+// confirmed (see resolveMatch in verification.ts).
+const FOUND_ITEM_TRUST_BONUS = 5;
 
 export type ItemType = "lost" | "found";
 export type ItemStatus = "searching" | "matched" | "recovered" | "returned";
@@ -63,6 +69,10 @@ export async function createItemFromDraft(draft: DeclarationDraft, type: ItemTyp
 
   if (draft.privateDetail && draft.privateDetail.trim().length > 0) {
     await supabase.from("item_secrets").insert({ item_id: item.id, private_detail: draft.privateDetail.trim() });
+  }
+
+  if (type === "found") {
+    await incrementTrustScore(FOUND_ITEM_TRUST_BONUS);
   }
 
   return { data: item, error: null };

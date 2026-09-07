@@ -27,6 +27,12 @@ export async function updateAvatarUrl(avatarUrl: string) {
   return supabase.from("profiles").update({ avatar_url: avatarUrl }).eq("id", user.id);
 }
 
+/** Bumps the current user's own trust score by `delta` (server-side clamped to 100). */
+export async function incrementTrustScore(delta: number) {
+  const supabase = createClient();
+  return supabase.rpc("increment_trust_score", { delta });
+}
+
 /** Uploads a photo to the "avatars" bucket under the user's own folder and returns its public URL. */
 export async function uploadAvatarPhoto(file: File) {
   const supabase = createClient();
