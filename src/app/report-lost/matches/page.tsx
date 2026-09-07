@@ -106,8 +106,14 @@ export default function DeclarationMatchesPage() {
         </div>
 
         <div className="mb-lg space-y-2">
-          <h2 className="font-headline-md text-headline-md text-on-background">Vérifions d&apos;abord...</h2>
-          <p className="font-body-lg text-body-lg text-on-surface-variant">Nous recherchons des objets trouvés qui pourraient correspondre au vôtre.</p>
+          {phase === "checking" ? (
+            <>
+              <h2 className="font-headline-md text-headline-md text-on-background">Vérifions d&apos;abord...</h2>
+              <p className="font-body-lg text-body-lg text-on-surface-variant">Nous recherchons des objets trouvés qui pourraient correspondre au vôtre.</p>
+            </>
+          ) : (
+            <h2 className="font-headline-md text-headline-md text-on-background">Vérification terminée</h2>
+          )}
         </div>
 
         {phase === "checking" && (
@@ -127,7 +133,6 @@ export default function DeclarationMatchesPage() {
                 check_circle
               </span>
             </div>
-            <p className="font-body-md text-body-md text-on-surface">Vérification terminée</p>
           </div>
         )}
 

@@ -110,7 +110,18 @@ export default function ReportFoundMatchesPage() {
       </header>
 
       <main className="grow px-container-margin pt-lg pb-[200px] max-w-2xl mx-auto w-full">
-        {phase === "verified" ? (
+        {phase === "checking" && (
+          <div className="flex flex-col items-center text-center mb-lg">
+            <RadarPulse />
+            <span className="font-label-md text-label-md text-primary uppercase tracking-wider mb-2">{STATUS_TEXTS[statusIndex]}</span>
+            <h2 className="font-headline-lg-mobile text-headline-lg-mobile text-on-surface mb-2">Vérifions si quelqu&apos;un le recherche</h2>
+            <p className="font-body-lg text-body-lg text-on-surface-variant max-w-sm">
+              Objely recherche les déclarations d&apos;objets perdus qui pourraient correspondre à votre découverte.
+            </p>
+          </div>
+        )}
+
+        {phase === "verified" && (
           <div className="flex flex-col items-center text-center mb-lg animate-fadeIn">
             <div className="w-24 h-24 mb-md rounded-full bg-primary/10 text-primary flex items-center justify-center">
               <span className="material-symbols-outlined text-5xl" style={{ fontVariationSettings: "'FILL' 1" }}>
@@ -119,17 +130,10 @@ export default function ReportFoundMatchesPage() {
             </div>
             <h2 className="font-headline-lg-mobile text-headline-lg-mobile text-on-surface mb-2">Vérification terminée</h2>
           </div>
-        ) : (
-          <div className="flex flex-col items-center text-center mb-lg">
-            <RadarPulse />
-            {phase === "checking" && (
-              <span className="font-label-md text-label-md text-primary uppercase tracking-wider mb-2">{STATUS_TEXTS[statusIndex]}</span>
-            )}
-            <h2 className="font-headline-lg-mobile text-headline-lg-mobile text-on-surface mb-2">Vérifions si quelqu&apos;un le recherche</h2>
-            <p className="font-body-lg text-body-lg text-on-surface-variant max-w-sm">
-              Objely recherche les déclarations d&apos;objets perdus qui pourraient correspondre à votre découverte.
-            </p>
-          </div>
+        )}
+
+        {(phase === "match" || phase === "no-match") && (
+          <h2 className="font-headline-lg-mobile text-headline-lg-mobile text-on-surface mb-lg">Vérification terminée</h2>
         )}
 
         <div className="flex gap-1 mb-lg">
