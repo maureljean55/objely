@@ -10,9 +10,13 @@ const FILTERS = ["Tous", "Téléphones", "Sacs", "Clés", "Portefeuilles", "Ordi
 export default async function SearchFiltersPage() {
   const supabase = await createClient();
   const t = await getServerTranslations();
+  // Middleware already validated/refreshed the session for this request, so
+  // reading it back here doesn't need a second round trip to Supabase's
+  // Auth server.
   const {
-    data: { user },
-  } = await supabase.auth.getUser();
+    data: { session },
+  } = await supabase.auth.getSession();
+  const user = session?.user ?? null;
 
   const { data: myItems } = user
     ? await supabase

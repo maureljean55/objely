@@ -18,9 +18,11 @@ export default async function HomeDashboardPage({
   const t = await getServerTranslations();
 
   // recentFinds doesn't depend on the user, so it can run alongside the
-  // auth check instead of waiting behind it.
+  // auth check instead of waiting behind it. getSession() reads the session
+  // middleware already validated/refreshed for this request — no need to
+  // hit Supabase's Auth server a second time just to read the user id.
   const [{ data: recentFinds }, {
-    data: { user },
+    data: { session },
   }] = await Promise.all([
     supabase
       .from("items")
@@ -30,8 +32,9 @@ export default async function HomeDashboardPage({
       .order("created_at", { ascending: false })
       .limit(6)
       .returns<Item[]>(),
-    supabase.auth.getUser(),
+    supabase.auth.getSession(),
   ]);
+  const user = session?.user ?? null;
 
   const [{ count: unreadCount }, { count: unreadMessageCount }, { data: profile }] = user
     ? await Promise.all([

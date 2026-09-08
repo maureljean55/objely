@@ -30,9 +30,13 @@ export async function POST(request: Request) {
   }
 
   const supabase = await createClient();
+  // Middleware already validated/refreshed the session for this request, so
+  // reading it back here doesn't need a second round trip to Supabase's
+  // Auth server.
   const {
-    data: { user },
-  } = await supabase.auth.getUser();
+    data: { session },
+  } = await supabase.auth.getSession();
+  const user = session?.user ?? null;
   if (!user) {
     return NextResponse.json({ error: "Vous devez être connecté." }, { status: 401 });
   }
@@ -127,8 +131,9 @@ export async function POST(request: Request) {
 export async function GET(request: Request) {
   const supabase = await createClient();
   const {
-    data: { user },
-  } = await supabase.auth.getUser();
+    data: { session },
+  } = await supabase.auth.getSession();
+  const user = session?.user ?? null;
   if (!user) {
     return NextResponse.json({ error: "Vous devez être connecté." }, { status: 401 });
   }
