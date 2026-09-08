@@ -1,4 +1,5 @@
 import Link from "next/link";
+import Image from "next/image";
 import BottomNav from "@/components/BottomNav";
 import NotificationTicker from "@/components/NotificationTicker";
 import MessagesFab from "@/components/MessagesFab";
@@ -54,10 +55,9 @@ export default async function HomeDashboardPage({
       >
         <div className="flex justify-between items-center">
           <Link href="/profile" className="relative">
-            <div className="w-11 h-11 rounded-full overflow-hidden ring-2 ring-surface-container-lowest shadow-sm bg-surface-container-high flex items-center justify-center text-on-surface-variant">
+            <div className="relative w-11 h-11 rounded-full overflow-hidden ring-2 ring-surface-container-lowest shadow-sm bg-surface-container-high flex items-center justify-center text-on-surface-variant">
               {profile?.avatar_url ? (
-                // eslint-disable-next-line @next/next/no-img-element
-                <img alt="Profil" className="w-full h-full object-cover" src={profile.avatar_url} />
+                <Image alt="Profil" src={profile.avatar_url} fill sizes="44px" className="object-cover" />
               ) : (
                 <span className="material-symbols-outlined text-[22px]">person</span>
               )}
@@ -120,10 +120,9 @@ export default async function HomeDashboardPage({
             {t.nav.profile}
           </Link>
         </nav>
-        <Link href="/profile" className="w-10 h-10 flex items-center justify-center rounded-full surface-card overflow-hidden bg-surface-container-high text-on-surface-variant">
+        <Link href="/profile" className="relative w-10 h-10 flex items-center justify-center rounded-full surface-card overflow-hidden bg-surface-container-high text-on-surface-variant">
           {profile?.avatar_url ? (
-            // eslint-disable-next-line @next/next/no-img-element
-            <img alt="Profil" className="w-full h-full object-cover" src={profile.avatar_url} />
+            <Image alt="Profil" src={profile.avatar_url} fill sizes="40px" className="object-cover" />
           ) : (
             <span className="material-symbols-outlined text-[20px]">person</span>
           )}
@@ -190,8 +189,7 @@ export default async function HomeDashboardPage({
                   </div>
                   <div className="relative h-32 rounded-2xl overflow-hidden bg-surface-container-high mb-2 flex items-center justify-center text-primary">
                     {item.photos?.[0] ? (
-                      // eslint-disable-next-line @next/next/no-img-element
-                      <img alt={item.title} className="w-full h-full object-cover" src={item.photos[0]} />
+                      <Image alt={item.title} src={item.photos[0]} fill sizes="200px" className="object-cover" />
                     ) : (
                       <span className="material-symbols-outlined text-4xl">{item.category_icon || "inventory_2"}</span>
                     )}

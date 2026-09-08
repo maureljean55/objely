@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
+import Image from "next/image";
 import BottomNav from "@/components/BottomNav";
 import { getCurrentUser } from "@/lib/auth";
 import { listMyConversations, type Conversation } from "@/lib/supabase/messages";
@@ -71,8 +72,7 @@ export default function MessagesPage() {
                     <div className="flex items-start gap-4">
                       <div className="relative shrink-0 mt-1 w-12 h-12 rounded-full overflow-hidden bg-surface-container-high flex items-center justify-center text-primary">
                         {otherItem.photos?.[0] ? (
-                          // eslint-disable-next-line @next/next/no-img-element
-                          <img alt={otherItem.title} className="w-full h-full object-cover" src={otherItem.photos[0]} />
+                          <Image alt={otherItem.title} src={otherItem.photos[0]} fill sizes="48px" className="object-cover" />
                         ) : (
                           <span className="material-symbols-outlined" style={{ fontVariationSettings: "'FILL' 1" }}>
                             {otherItem.category_icon || "inventory_2"}

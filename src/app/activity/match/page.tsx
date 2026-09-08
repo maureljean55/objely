@@ -2,6 +2,7 @@
 
 import { Suspense, useEffect, useState } from "react";
 import Link from "next/link";
+import Image from "next/image";
 import { useRouter, useSearchParams } from "next/navigation";
 import { getCurrentUser } from "@/lib/auth";
 import { getMatch, type MatchWithItems } from "@/lib/supabase/messages";
@@ -17,10 +18,9 @@ function ItemCard({ item, label, highlighted, dateLabel }: { item: Item; label: 
       <div className={`px-3 py-2 border-b text-center ${highlighted ? "bg-primary/10 border-primary/20" : "bg-surface-container-low border-surface-variant"}`}>
         <span className={`font-label-md text-label-md uppercase ${highlighted ? "text-primary" : "text-on-surface-variant"}`}>{label}</span>
       </div>
-      <div className="h-32 bg-surface-container-high flex items-center justify-center text-primary">
+      <div className="relative h-32 bg-surface-container-high flex items-center justify-center text-primary">
         {item.photos?.[0] ? (
-          // eslint-disable-next-line @next/next/no-img-element
-          <img alt={item.title} className="w-full h-full object-cover" src={item.photos[0]} />
+          <Image alt={item.title} src={item.photos[0]} fill sizes="(max-width: 768px) 45vw, 300px" className="object-cover" />
         ) : (
           <span className="material-symbols-outlined text-4xl">{item.category_icon || "inventory_2"}</span>
         )}

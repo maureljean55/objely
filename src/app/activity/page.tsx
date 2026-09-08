@@ -1,4 +1,5 @@
 import Link from "next/link";
+import Image from "next/image";
 import BottomNav from "@/components/BottomNav";
 import { createClient } from "@/lib/supabase/server";
 import { getServerTranslations } from "@/lib/i18n/server";
@@ -74,10 +75,9 @@ export default async function ActivityPage() {
                   </div>
                 </div>
                 <div className="p-md bg-surface-container-low flex gap-4 items-center">
-                  <div className="w-16 h-16 rounded-xl shadow-sm bg-surface-container-high flex items-center justify-center text-primary shrink-0">
+                  <div className="relative w-16 h-16 rounded-xl shadow-sm bg-surface-container-high flex items-center justify-center text-primary shrink-0 overflow-hidden">
                     {otherItem.photos?.[0] ? (
-                      // eslint-disable-next-line @next/next/no-img-element
-                      <img alt={otherItem.title} className="w-full h-full object-cover rounded-xl" src={otherItem.photos[0]} />
+                      <Image alt={otherItem.title} src={otherItem.photos[0]} fill sizes="64px" className="object-cover" />
                     ) : (
                       <span className="material-symbols-outlined text-3xl">{otherItem.category_icon || "inventory_2"}</span>
                     )}

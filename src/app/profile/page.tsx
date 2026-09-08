@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
+import Image from "next/image";
 import BottomNav from "@/components/BottomNav";
 import ThemeToggle from "@/components/ThemeToggle";
 import { getCurrentUser } from "@/lib/auth";
@@ -59,10 +60,9 @@ function ProfileSummary({
         <>
           <section className="flex flex-col items-center pt-8 pb-6 animate-fadeIn">
             <div className="relative mb-4">
-              <div className="w-28 h-28 rounded-full overflow-hidden soft-shadow ring-4 ring-surface-container-lowest bg-surface-container-high flex items-center justify-center text-on-surface-variant">
+              <div className="relative w-28 h-28 rounded-full overflow-hidden soft-shadow ring-4 ring-surface-container-lowest bg-surface-container-high flex items-center justify-center text-on-surface-variant">
                 {avatarUrl ? (
-                  // eslint-disable-next-line @next/next/no-img-element
-                  <img className="w-full h-full object-cover" alt={displayName} src={avatarUrl} />
+                  <Image alt={displayName} src={avatarUrl} fill sizes="112px" className="object-cover" />
                 ) : (
                   <span className="material-symbols-outlined text-[52px]">person</span>
                 )}

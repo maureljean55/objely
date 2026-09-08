@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState, type InputHTMLAttributes, type ReactNode } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
+import Image from "next/image";
 import BottomNav from "@/components/BottomNav";
 import { getMyProfile, updateAvatarUrl, uploadAvatarPhoto } from "@/lib/supabase/profile";
 import { AVATAR_CATEGORIES } from "@/lib/presetAvatars";
@@ -97,10 +98,9 @@ export default function EditProfilePage() {
       <main className="pt-[calc(5rem+env(safe-area-inset-top))] px-container-margin pb-8 max-w-lg mx-auto">
         <section className="flex flex-col items-center justify-center py-xl">
           <div className="relative mb-3">
-            <div className="w-24 h-24 rounded-full overflow-hidden border-4 border-surface-container-lowest soft-shadow bg-surface-container-high flex items-center justify-center text-on-surface-variant">
+            <div className="relative w-24 h-24 rounded-full overflow-hidden border-4 border-surface-container-lowest soft-shadow bg-surface-container-high flex items-center justify-center text-on-surface-variant">
               {avatarUrl ? (
-                // eslint-disable-next-line @next/next/no-img-element
-                <img alt="Photo de profil" className="w-full h-full object-cover" src={avatarUrl} />
+                <Image alt="Photo de profil" src={avatarUrl} fill sizes="96px" className="object-cover" />
               ) : (
                 <span className="material-symbols-outlined text-[40px]">person</span>
               )}

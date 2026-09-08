@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
+import Image from "next/image";
 import type { Item } from "@/lib/supabase/items";
 import { softDeleteItem } from "@/lib/supabase/items";
 import type { TranslationDict } from "@/lib/i18n/translations";
@@ -60,8 +61,13 @@ export default function MyItemCard({ item, t }: { item: Item; t: TranslationDict
         >
           <div className="h-48 w-full relative bg-surface-container-high flex items-center justify-center text-primary">
             {item.photos?.[0] ? (
-              // eslint-disable-next-line @next/next/no-img-element
-              <img alt={item.title} className="w-full h-full object-cover rounded-t-lg" src={item.photos[0]} />
+              <Image
+                alt={item.title}
+                src={item.photos[0]}
+                fill
+                sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, (max-width: 1280px) 33vw, 25vw"
+                className="object-cover rounded-t-lg"
+              />
             ) : (
               <span className="material-symbols-outlined text-5xl">{item.category_icon || "inventory_2"}</span>
             )}

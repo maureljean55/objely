@@ -1,4 +1,5 @@
 import Link from "next/link";
+import Image from "next/image";
 import { notFound } from "next/navigation";
 import BottomNav from "@/components/BottomNav";
 import { createClient } from "@/lib/supabase/server";
@@ -37,8 +38,7 @@ export default async function MyItemDetailPage({ params }: { params: Promise<{ i
       <main className="max-w-[720px] mx-auto px-container-margin pt-[calc(88px+env(safe-area-inset-top))]">
         <div className="relative h-56 w-full rounded-2xl overflow-hidden bg-surface-container-high mb-lg flex items-center justify-center text-primary">
           {item.photos?.[0] ? (
-            // eslint-disable-next-line @next/next/no-img-element
-            <img alt={item.title} className="w-full h-full object-cover" src={item.photos[0]} />
+            <Image alt={item.title} src={item.photos[0]} fill sizes="(max-width: 768px) 100vw, 720px" className="object-cover" />
           ) : (
             <span className="material-symbols-outlined text-6xl">{item.category_icon || "inventory_2"}</span>
           )}

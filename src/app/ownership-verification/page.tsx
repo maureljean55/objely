@@ -1,6 +1,7 @@
 "use client";
 
 import { Suspense, useEffect, useState } from "react";
+import Image from "next/image";
 import { useRouter, useSearchParams } from "next/navigation";
 import { getMatch, type MatchWithItems } from "@/lib/supabase/messages";
 import { submitVerificationAnswers } from "@/lib/supabase/verification";
@@ -108,11 +109,12 @@ function OwnershipVerificationContent() {
               <div className="bg-surface-container-lowest rounded-xl soft-shadow inner-stroke overflow-hidden flex flex-col">
                 <div className="relative h-48 w-full bg-surface-container-high flex items-center justify-center text-primary">
                   {foundItem.photos?.[0] ? (
-                    // eslint-disable-next-line @next/next/no-img-element
-                    <img
+                    <Image
                       alt="Objet trouvé (photo floutée)"
-                      className="w-full h-full object-cover filter blur-sm scale-110 opacity-90 transition-all duration-500 hover:blur-md"
                       src={foundItem.photos[0]}
+                      fill
+                      sizes="(max-width: 768px) 100vw, 480px"
+                      className="object-cover filter blur-sm scale-110 opacity-90 transition-all duration-500 hover:blur-md"
                     />
                   ) : (
                     <span className="material-symbols-outlined text-6xl opacity-60">{foundItem.category_icon || "inventory_2"}</span>
