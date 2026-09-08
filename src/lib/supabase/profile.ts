@@ -17,8 +17,8 @@ export type Profile = {
 
 export async function getMyProfile() {
   const supabase = createClient();
-  const { data: userData } = await supabase.auth.getUser();
-  const user = userData.user;
+  const { data: { session } } = await supabase.auth.getSession();
+  const user = session?.user ?? null;
   if (!user) return { data: null, error: null };
 
   return supabase.from("profiles").select("*").eq("id", user.id).maybeSingle<Profile>();
@@ -26,8 +26,8 @@ export async function getMyProfile() {
 
 export async function updateAvatarUrl(avatarUrl: string) {
   const supabase = createClient();
-  const { data: userData } = await supabase.auth.getUser();
-  const user = userData.user;
+  const { data: { session } } = await supabase.auth.getSession();
+  const user = session?.user ?? null;
   if (!user) return { error: new Error("Vous devez être connecté.") };
 
   return supabase.from("profiles").update({ avatar_url: avatarUrl }).eq("id", user.id);
@@ -48,8 +48,8 @@ export async function awardRestitutionTrustBonus(matchId: string) {
 /** Uploads a photo to the "avatars" bucket under the user's own folder and returns its public URL. */
 export async function uploadAvatarPhoto(file: File) {
   const supabase = createClient();
-  const { data: userData } = await supabase.auth.getUser();
-  const user = userData.user;
+  const { data: { session } } = await supabase.auth.getSession();
+  const user = session?.user ?? null;
   if (!user) return { url: null, error: new Error("Vous devez être connecté.") };
 
   const compressed = await compressImage(file, AVATAR_MAX_DIMENSION, AVATAR_JPEG_QUALITY);

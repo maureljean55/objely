@@ -15,8 +15,8 @@ export type MatchVerification = {
 
 export async function submitVerificationAnswers(matchId: string, brandAnswer: string, detailAnswer: string) {
   const supabase = createClient();
-  const { data: userData } = await supabase.auth.getUser();
-  const user = userData.user;
+  const { data: { session } } = await supabase.auth.getSession();
+  const user = session?.user ?? null;
   if (!user) return { data: null, error: new Error("Vous devez être connecté.") };
 
   const result = await supabase

@@ -43,8 +43,10 @@ export async function signOut() {
 
 export async function getCurrentUser(): Promise<User | null> {
   const supabase = createClient();
-  const { data } = await supabase.auth.getUser();
-  return data.user;
+  const {
+    data: { session },
+  } = await supabase.auth.getSession();
+  return session?.user ?? null;
 }
 
 /**

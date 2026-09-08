@@ -35,8 +35,8 @@ export type Item = {
  */
 export async function createItemFromDraft(draft: DeclarationDraft, type: ItemType) {
   const supabase = createClient();
-  const { data: userData } = await supabase.auth.getUser();
-  const user = userData.user;
+  const { data: { session } } = await supabase.auth.getSession();
+  const user = session?.user ?? null;
   if (!user) {
     return { data: null, error: new Error("Vous devez être connecté pour publier une déclaration.") };
   }
@@ -89,8 +89,8 @@ export async function listFoundItems(limit = 10) {
 
 export async function listMyItems() {
   const supabase = createClient();
-  const { data: userData } = await supabase.auth.getUser();
-  const user = userData.user;
+  const { data: { session } } = await supabase.auth.getSession();
+  const user = session?.user ?? null;
   if (!user) return { data: [] as Item[], error: null };
 
   return supabase
@@ -137,8 +137,8 @@ export async function getItem(id: string) {
 /** Uploads a photo to the "item-photos" bucket under the user's own folder and returns its public URL. */
 export async function uploadItemPhoto(file: File) {
   const supabase = createClient();
-  const { data: userData } = await supabase.auth.getUser();
-  const user = userData.user;
+  const { data: { session } } = await supabase.auth.getSession();
+  const user = session?.user ?? null;
   if (!user) return { url: null, error: new Error("Vous devez être connecté.") };
 
   const ext = file.name.split(".").pop() || "jpg";

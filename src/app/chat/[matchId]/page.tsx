@@ -35,11 +35,11 @@ export default function SecureChatPage() {
     (async () => {
       // Neither call depends on the other's result, so run them together
       // instead of waiting for auth before even starting the match fetch.
-      const [{ data: userData }, { data: matchData, error: matchErr }] = await Promise.all([
-        supabase.auth.getUser(),
+      const [{ data: sessionData }, { data: matchData, error: matchErr }] = await Promise.all([
+        supabase.auth.getSession(),
         getMatch(matchId),
       ]);
-      const user = userData.user;
+      const user = sessionData.session?.user ?? null;
       if (!user || matchErr || !matchData) {
         setLoadError(true);
         return;

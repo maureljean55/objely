@@ -20,8 +20,8 @@ export type SupportConversationSummary = { conversation: SupportConversation; la
 /** Every support conversation the current user has ever had, newest activity first. */
 export async function listMySupportConversations() {
   const supabase = createClient();
-  const { data: userData } = await supabase.auth.getUser();
-  const user = userData.user;
+  const { data: { session } } = await supabase.auth.getSession();
+  const user = session?.user ?? null;
   if (!user) return { data: [] as SupportConversationSummary[], error: null };
 
   const { data: conversations, error } = await supabase

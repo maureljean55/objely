@@ -42,8 +42,8 @@ export type Conversation = { match: MatchWithItems; lastMessage: Message | null 
 /** Every confirmed match the current user is part of, newest activity first. */
 export async function listMyConversations() {
   const supabase = createClient();
-  const { data: userData } = await supabase.auth.getUser();
-  const user = userData.user;
+  const { data: { session } } = await supabase.auth.getSession();
+  const user = session?.user ?? null;
   if (!user) return { data: [] as Conversation[], error: null };
 
   const { data: matches, error } = await supabase
@@ -80,8 +80,8 @@ export async function listMyConversations() {
 
 export async function sendMessage(matchId: string, body: string) {
   const supabase = createClient();
-  const { data: userData } = await supabase.auth.getUser();
-  const user = userData.user;
+  const { data: { session } } = await supabase.auth.getSession();
+  const user = session?.user ?? null;
   if (!user) return { data: null, error: new Error("Vous devez être connecté.") };
 
   const result = await supabase

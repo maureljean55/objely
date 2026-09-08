@@ -41,8 +41,8 @@ export async function notifyMatchParticipants(
 
 export async function listMyNotifications() {
   const supabase = createClient();
-  const { data: userData } = await supabase.auth.getUser();
-  const user = userData.user;
+  const { data: { session } } = await supabase.auth.getSession();
+  const user = session?.user ?? null;
   if (!user) return { data: [] as AppNotification[], error: null };
 
   return supabase
@@ -55,8 +55,8 @@ export async function listMyNotifications() {
 
 export async function getUnreadCount(): Promise<number> {
   const supabase = createClient();
-  const { data: userData } = await supabase.auth.getUser();
-  const user = userData.user;
+  const { data: { session } } = await supabase.auth.getSession();
+  const user = session?.user ?? null;
   if (!user) return 0;
 
   const { count } = await supabase
@@ -75,8 +75,8 @@ export async function markAsRead(id: string) {
 
 export async function markAllAsRead() {
   const supabase = createClient();
-  const { data: userData } = await supabase.auth.getUser();
-  const user = userData.user;
+  const { data: { session } } = await supabase.auth.getSession();
+  const user = session?.user ?? null;
   if (!user) return;
   await supabase.from("notifications").update({ read: true }).eq("user_id", user.id).eq("read", false);
 }
