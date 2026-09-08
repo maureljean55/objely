@@ -27,10 +27,16 @@ export async function updateAvatarUrl(avatarUrl: string) {
   return supabase.from("profiles").update({ avatar_url: avatarUrl }).eq("id", user.id);
 }
 
-/** Bumps the current user's own trust score by `delta` (server-side clamped to 100). */
-export async function incrementTrustScore(delta: number) {
+/** Bumps the caller's trust score for declaring a found item — server-side verifies they own it and it's a "found" item, and won't award it twice. */
+export async function awardFoundItemTrustBonus(itemId: string) {
   const supabase = createClient();
-  return supabase.rpc("increment_trust_score", { delta });
+  return supabase.rpc("award_found_item_trust_bonus", { p_item_id: itemId });
+}
+
+/** Bumps the caller's trust score for seeing a restitution through — server-side verifies they're the found-item owner on a confirmed match, and won't award it twice. */
+export async function awardRestitutionTrustBonus(matchId: string) {
+  const supabase = createClient();
+  return supabase.rpc("award_restitution_trust_bonus", { p_match_id: matchId });
 }
 
 /** Uploads a photo to the "avatars" bucket under the user's own folder and returns its public URL. */

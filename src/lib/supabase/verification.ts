@@ -1,12 +1,8 @@
 import { createClient } from "@/lib/supabase/client";
 import { createNotification } from "@/lib/supabase/notifications";
-import { incrementTrustScore } from "@/lib/supabase/profile";
+import { awardRestitutionTrustBonus } from "@/lib/supabase/profile";
 import { getMatch } from "@/lib/supabase/messages";
 import type { Item } from "@/lib/supabase/items";
-
-// Bigger than the found-item bonus (see items.ts) — this is the finder
-// actually seeing a restitution through, not just reporting a find.
-const RESTITUTION_TRUST_BONUS = 20;
 
 export type MatchVerification = {
   id: string;
@@ -75,7 +71,7 @@ export async function resolveMatch(matchId: string, approved: boolean) {
       await Promise.all([
         supabase.from("items").update({ status: "recovered" }).eq("id", match.lost_item_id),
         supabase.from("items").update({ status: "returned" }).eq("id", match.found_item_id),
-        incrementTrustScore(RESTITUTION_TRUST_BONUS),
+        awardRestitutionTrustBonus(matchId),
       ]);
     }
 
