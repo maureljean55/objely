@@ -2,6 +2,7 @@
 
 import { useEffect } from "react";
 import { useRouter } from "next/navigation";
+import { useLanguage } from "@/components/LanguageProvider";
 
 const ORBIT_OBJECTS = [
   { id: "wallet", src: "/illustrations/splash/wallet.png", alt: "Portefeuille", angle: 0 },
@@ -14,6 +15,7 @@ const ORBIT_RADIUS = 120;
 
 export default function SplashPage() {
   const router = useRouter();
+  const { t } = useLanguage();
 
   useEffect(() => {
     const timer = setTimeout(() => router.replace("/home"), 2800);
@@ -63,7 +65,7 @@ export default function SplashPage() {
         style={{ animationDelay: "0.15s", paddingBottom: "calc(3rem + env(safe-area-inset-bottom))" }}
       >
         <h1 className="font-headline-lg text-headline-lg text-white tracking-tight">Objely</h1>
-        <p className="font-body-md text-body-md text-blue-200/80 mt-1">Perdu. Trouvé. Retrouvé.</p>
+        <p className="font-body-md text-body-md text-blue-200/80 mt-1">{t.splash.tagline}</p>
       </div>
     </div>
   );

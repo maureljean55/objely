@@ -125,6 +125,76 @@ export type TranslationDict = {
     help: string;
     reportProblem: string;
   };
+  login: {
+    back: string;
+    dataProtected: string;
+    title: string;
+    subtitle: string;
+    identifierLabel: string;
+    identifierPlaceholder: string;
+    passwordLabel: string;
+    passwordPlaceholder: string;
+    showPassword: string;
+    hidePassword: string;
+    rememberMe: string;
+    forgotPassword: string;
+    submitting: string;
+    submit: string;
+    or: string;
+    continueGoogle: string;
+    continueApple: string;
+    noAccount: string;
+    createAccount: string;
+    termsPrefix: string;
+    termsLink: string;
+    termsAnd: string;
+    privacyLink: string;
+    termsSuffix: string;
+    invalidCredentials: string;
+    expiredLink: string;
+  };
+  register: {
+    secureSignup: string;
+    dataEncrypted: string;
+    title: string;
+    subtitle: string;
+    fullNameLabel: string;
+    emailLabel: string;
+    phoneLabel: string;
+    phoneHint: string;
+    countryAria: string;
+    addressLabel: string;
+    passwordLabel: string;
+    confirmPasswordLabel: string;
+    confirmPasswordPlaceholder: string;
+    passwordsMismatch: string;
+    passwordStrength: string;
+    strengthVeryWeak: string;
+    strengthWeak: string;
+    strengthMedium: string;
+    strengthStrong: string;
+    criteriaLength: string;
+    criteriaUpper: string;
+    criteriaDigit: string;
+    criteriaSymbol: string;
+    acceptTermsPrefix: string;
+    termsLink: string;
+    termsAnd: string;
+    privacyLink: string;
+    termsSuffix: string;
+    submitting: string;
+    submit: string;
+    haveAccount: string;
+    signIn: string;
+    alreadyRegistered: string;
+    rateLimited: string;
+    checkEmailTitle: string;
+    checkEmailBody: string;
+    backToLogin: string;
+  };
+  splash: {
+    tagline: string;
+  };
 };
 
 export const translations: Record<Language, TranslationDict> = {
@@ -253,6 +323,76 @@ export const translations: Record<Language, TranslationDict> = {
       help: "Aide",
       reportProblem: "Signaler un problème",
     },
+    login: {
+      back: "Retour",
+      dataProtected: "Vos données sont protégées",
+      title: "Connectez-vous à Objely",
+      subtitle: "Retrouvez vos objets et gérez vos déclarations en toute simplicité.",
+      identifierLabel: "E-mail ou numéro de téléphone",
+      identifierPlaceholder: "Votre e-mail ou numéro de téléphone",
+      passwordLabel: "Mot de passe",
+      passwordPlaceholder: "Votre mot de passe",
+      showPassword: "Afficher le mot de passe",
+      hidePassword: "Masquer le mot de passe",
+      rememberMe: "Se souvenir de moi",
+      forgotPassword: "Mot de passe oublié ?",
+      submitting: "Connexion…",
+      submit: "Se connecter",
+      or: "ou",
+      continueGoogle: "Continuer avec Google",
+      continueApple: "Continuer avec Apple",
+      noAccount: "Vous n'avez pas encore de compte ?",
+      createAccount: "Créer un compte",
+      termsPrefix: "En continuant, vous acceptez les",
+      termsLink: "Conditions d'utilisation",
+      termsAnd: "et la",
+      privacyLink: "Politique de confidentialité",
+      termsSuffix: "d'Objely.",
+      invalidCredentials: "E-mail ou mot de passe incorrect.",
+      expiredLink: "Ce lien de confirmation n'est plus valable (déjà utilisé ou expiré). Réinscrivez-vous ou reconnectez-vous pour recevoir un nouveau lien.",
+    },
+    register: {
+      secureSignup: "Inscription sécurisée",
+      dataEncrypted: "Vos données sont sécurisées et chiffrées",
+      title: "Créer un compte",
+      subtitle: "Rejoignez Objely pour sécuriser, inventorier et retrouver tous vos objets en un instant.",
+      fullNameLabel: "Prénom et nom",
+      emailLabel: "Adresse e-mail",
+      phoneLabel: "Numéro de mobile",
+      phoneHint: "(pour les alertes d'objets)",
+      countryAria: "Pays",
+      addressLabel: "Adresse (optionnel)",
+      passwordLabel: "Mot de passe",
+      confirmPasswordLabel: "Confirmer le mot de passe",
+      confirmPasswordPlaceholder: "Confirmez votre mot de passe",
+      passwordsMismatch: "Les mots de passe ne correspondent pas.",
+      passwordStrength: "Sécurité du mot de passe :",
+      strengthVeryWeak: "Très faible",
+      strengthWeak: "Faible",
+      strengthMedium: "Moyen",
+      strengthStrong: "Fort",
+      criteriaLength: "8+ caractères",
+      criteriaUpper: "1 majuscule",
+      criteriaDigit: "1 chiffre",
+      criteriaSymbol: "1 symbole",
+      acceptTermsPrefix: "J'accepte les",
+      termsLink: "Conditions générales",
+      termsAnd: "et la",
+      privacyLink: "Politique de confidentialité",
+      termsSuffix: "d'Objely.",
+      submitting: "Création…",
+      submit: "Créer mon compte",
+      haveAccount: "Vous avez déjà un compte ?",
+      signIn: "Se connecter",
+      alreadyRegistered: "Un compte existe déjà avec cet e-mail.",
+      rateLimited: "Trop d'e-mails envoyés récemment, réessayez dans quelques minutes.",
+      checkEmailTitle: "Vérifiez votre e-mail",
+      checkEmailBody: "Nous avons envoyé un lien de confirmation à {email}. Cliquez dessus pour activer votre compte.",
+      backToLogin: "Retour à la connexion",
+    },
+    splash: {
+      tagline: "Perdu. Trouvé. Retrouvé.",
+    },
   },
   en: {
     common: {
@@ -378,6 +518,76 @@ export const translations: Record<Language, TranslationDict> = {
       notifications: "Notifications",
       help: "Help",
       reportProblem: "Report a problem",
+    },
+    login: {
+      back: "Back",
+      dataProtected: "Your data is protected",
+      title: "Sign in to Objely",
+      subtitle: "Find your items and manage your reports with ease.",
+      identifierLabel: "Email or phone number",
+      identifierPlaceholder: "Your email or phone number",
+      passwordLabel: "Password",
+      passwordPlaceholder: "Your password",
+      showPassword: "Show password",
+      hidePassword: "Hide password",
+      rememberMe: "Remember me",
+      forgotPassword: "Forgot password?",
+      submitting: "Signing in…",
+      submit: "Sign in",
+      or: "or",
+      continueGoogle: "Continue with Google",
+      continueApple: "Continue with Apple",
+      noAccount: "Don't have an account yet?",
+      createAccount: "Create an account",
+      termsPrefix: "By continuing, you agree to Objely's",
+      termsLink: "Terms of Service",
+      termsAnd: "and",
+      privacyLink: "Privacy Policy",
+      termsSuffix: ".",
+      invalidCredentials: "Incorrect email or password.",
+      expiredLink: "This confirmation link is no longer valid (already used or expired). Sign up again or sign in to get a new one.",
+    },
+    register: {
+      secureSignup: "Secure sign-up",
+      dataEncrypted: "Your data is secure and encrypted",
+      title: "Create an account",
+      subtitle: "Join Objely to secure, catalog, and find all your belongings instantly.",
+      fullNameLabel: "First and last name",
+      emailLabel: "Email address",
+      phoneLabel: "Mobile number",
+      phoneHint: "(for item alerts)",
+      countryAria: "Country",
+      addressLabel: "Address (optional)",
+      passwordLabel: "Password",
+      confirmPasswordLabel: "Confirm password",
+      confirmPasswordPlaceholder: "Confirm your password",
+      passwordsMismatch: "Passwords don't match.",
+      passwordStrength: "Password strength:",
+      strengthVeryWeak: "Very weak",
+      strengthWeak: "Weak",
+      strengthMedium: "Medium",
+      strengthStrong: "Strong",
+      criteriaLength: "8+ characters",
+      criteriaUpper: "1 uppercase letter",
+      criteriaDigit: "1 digit",
+      criteriaSymbol: "1 symbol",
+      acceptTermsPrefix: "I agree to Objely's",
+      termsLink: "Terms of Service",
+      termsAnd: "and",
+      privacyLink: "Privacy Policy",
+      termsSuffix: ".",
+      submitting: "Creating…",
+      submit: "Create my account",
+      haveAccount: "Already have an account?",
+      signIn: "Sign in",
+      alreadyRegistered: "An account already exists with this email.",
+      rateLimited: "Too many emails sent recently, please try again in a few minutes.",
+      checkEmailTitle: "Check your email",
+      checkEmailBody: "We've sent a confirmation link to {email}. Click it to activate your account.",
+      backToLogin: "Back to sign in",
+    },
+    splash: {
+      tagline: "Lost. Found. Reunited.",
     },
   },
 };

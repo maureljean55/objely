@@ -4,15 +4,17 @@ import { Suspense, useState, type FormEvent } from "react";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { signInWithPassword } from "@/lib/auth";
+import { useLanguage } from "@/components/LanguageProvider";
+import type { TranslationDict } from "@/lib/i18n/translations";
 
 const HEADER_HEIGHT = "calc(172px + env(safe-area-inset-top))";
 
 // Supabase's own error messages for expired/reused confirmation links are in
-// English and not very reassuring — swap in a friendlier French message that
-// tells the user what to actually do next.
-function friendlyAuthError(message: string) {
+// English and not very reassuring — swap in a friendlier translated message
+// that tells the user what to actually do next.
+function friendlyAuthError(message: string, t: TranslationDict) {
   if (/expired|invalid/i.test(message)) {
-    return "Ce lien de confirmation n'est plus valable (déjà utilisé ou expiré). Réinscrivez-vous ou reconnectez-vous pour recevoir un nouveau lien.";
+    return t.login.expiredLink;
   }
   return message;
 }
@@ -20,6 +22,7 @@ function friendlyAuthError(message: string) {
 function LoginForm() {
   const router = useRouter();
   const searchParams = useSearchParams();
+  const { t } = useLanguage();
   const [identifier, setIdentifier] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
@@ -27,7 +30,7 @@ function LoginForm() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(() => {
     const fromLink = searchParams.get("error");
-    return fromLink ? friendlyAuthError(fromLink) : null;
+    return fromLink ? friendlyAuthError(fromLink, t) : null;
   });
 
   const canSubmit = identifier.trim().length > 0 && password.length > 0 && !isSubmitting;
@@ -43,7 +46,7 @@ function LoginForm() {
     if (signInError) {
       setError(
         signInError.message === "Invalid login credentials"
-          ? "E-mail ou mot de passe incorrect."
+          ? t.login.invalidCredentials
           : signInError.message,
       );
       setIsSubmitting(false);
@@ -63,7 +66,7 @@ function LoginForm() {
         <div className="w-full max-w-md mx-auto px-container-margin pt-4 pb-4 flex flex-col">
           <Link
             href="/home"
-            aria-label="Retour"
+            aria-label={t.login.back}
             className="-ml-2 w-10 h-10 flex items-center justify-center rounded-full hover:bg-surface-container-high/60 transition-colors text-on-surface"
           >
             <span className="material-symbols-outlined">arrow_back</span>
@@ -77,7 +80,7 @@ function LoginForm() {
             </div>
             <div className="flex items-center gap-1.5 bg-primary/10 text-primary px-3 py-1.5 rounded-full">
               <span className="material-symbols-outlined text-[16px]">lock</span>
-              <span className="font-label-md text-label-md">Vos données sont protégées</span>
+              <span className="font-label-md text-label-md">{t.login.dataProtected}</span>
             </div>
           </div>
         </div>
@@ -87,22 +90,22 @@ function LoginForm() {
         className="w-full max-w-md mx-auto px-container-margin pb-16 flex flex-col grow"
         style={{ paddingTop: HEADER_HEIGHT }}
       >
-        <h1 className="font-headline-lg-mobile text-headline-lg-mobile text-on-surface mb-2 mt-lg">Connectez-vous à Objely</h1>
+        <h1 className="font-headline-lg-mobile text-headline-lg-mobile text-on-surface mb-2 mt-lg">{t.login.title}</h1>
         <p className="font-body-md text-body-md text-on-surface-variant mb-xl">
-          Retrouvez vos objets et gérez vos déclarations en toute simplicité.
+          {t.login.subtitle}
         </p>
 
         <form onSubmit={handleSubmit} className="flex flex-col gap-lg">
           <div>
             <label htmlFor="identifier" className="block font-body-md text-body-md font-semibold text-on-surface mb-2">
-              E-mail ou numéro de téléphone
+              {t.login.identifierLabel}
             </label>
             <input
               id="identifier"
               type="text"
               value={identifier}
               onChange={(e) => setIdentifier(e.target.value)}
-              placeholder="Votre e-mail ou numéro de téléphone"
+              placeholder={t.login.identifierPlaceholder}
               autoComplete="username"
               className="w-full px-4 py-4 rounded-2xl border border-outline-variant/60 bg-surface-container-lowest font-body-lg text-body-lg text-on-surface soft-shadow focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all"
             />
@@ -110,7 +113,7 @@ function LoginForm() {
 
           <div>
             <label htmlFor="password" className="block font-body-md text-body-md font-semibold text-on-surface mb-2">
-              Mot de passe
+              {t.login.passwordLabel}
             </label>
             <div className="relative">
               <input
@@ -118,14 +121,14 @@ function LoginForm() {
                 type={showPassword ? "text" : "password"}
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                placeholder="Votre mot de passe"
+                placeholder={t.login.passwordPlaceholder}
                 autoComplete="current-password"
                 className="w-full pr-12 px-4 py-4 rounded-2xl border border-outline-variant/60 bg-surface-container-lowest font-body-lg text-body-lg text-on-surface soft-shadow focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all"
               />
               <button
                 type="button"
                 onClick={() => setShowPassword((v) => !v)}
-                aria-label={showPassword ? "Masquer le mot de passe" : "Afficher le mot de passe"}
+                aria-label={showPassword ? t.login.hidePassword : t.login.showPassword}
                 className="absolute right-4 top-1/2 -translate-y-1/2 text-on-surface-variant"
               >
                 <span className="material-symbols-outlined text-[20px]">
@@ -141,10 +144,10 @@ function LoginForm() {
                   onChange={(e) => setRememberMe(e.target.checked)}
                   className="w-[18px] h-[18px] rounded border-outline-variant text-primary focus:ring-primary/30"
                 />
-                <span className="font-body-md text-body-md text-[14px] text-on-surface-variant">Se souvenir de moi</span>
+                <span className="font-body-md text-body-md text-[14px] text-on-surface-variant">{t.login.rememberMe}</span>
               </label>
               <button type="button" className="font-body-md text-body-md text-[14px] font-semibold text-primary">
-                Mot de passe oublié ?
+                {t.login.forgotPassword}
               </button>
             </div>
           </div>
@@ -158,13 +161,13 @@ function LoginForm() {
             disabled={!canSubmit}
             className="btn-gradient w-full py-4 rounded-2xl bg-primary text-on-primary font-headline-sm text-headline-sm shadow-[0px_10px_30px_rgba(0,88,188,0.25)] hover:opacity-90 transition-opacity disabled:opacity-50 disabled:cursor-not-allowed"
           >
-            {isSubmitting ? "Connexion…" : "Se connecter"}
+            {isSubmitting ? t.login.submitting : t.login.submit}
           </button>
         </form>
 
         <div className="flex items-center gap-3 my-6">
           <div className="h-px flex-1 bg-outline-variant/50" />
-          <span className="font-body-md text-[13px] text-on-surface-variant whitespace-nowrap">ou</span>
+          <span className="font-body-md text-[13px] text-on-surface-variant whitespace-nowrap">{t.login.or}</span>
           <div className="h-px flex-1 bg-outline-variant/50" />
         </div>
 
@@ -174,27 +177,27 @@ function LoginForm() {
             className="w-full flex items-center justify-center gap-2 py-4 rounded-2xl border border-outline-variant/60 bg-surface-container-lowest font-headline-sm text-headline-sm text-on-surface hover:bg-surface-container-low transition-colors"
           >
             <GoogleIcon className="w-5 h-5" />
-            Continuer avec Google
+            {t.login.continueGoogle}
           </button>
           <button
             type="button"
             className="w-full flex items-center justify-center gap-2 py-4 rounded-2xl bg-black text-white font-headline-sm text-headline-sm hover:opacity-90 transition-opacity"
           >
             <AppleIcon className="w-5 h-5" />
-            Continuer avec Apple
+            {t.login.continueApple}
           </button>
         </div>
 
         <p className="font-body-md text-body-md text-on-surface-variant text-center mt-6">
-          Vous n&apos;avez pas encore de compte ?{" "}
+          {t.login.noAccount}{" "}
           <Link href="/register" className="text-primary font-semibold">
-            Créer un compte
+            {t.login.createAccount}
           </Link>
         </p>
 
         <p className="font-body-md text-[12px] text-on-surface-variant text-center mt-8 leading-relaxed">
-          En continuant, vous acceptez les <span className="text-primary font-medium">Conditions d&apos;utilisation</span> et la{" "}
-          <span className="text-primary font-medium">Politique de confidentialité</span> d&apos;Objely.
+          {t.login.termsPrefix} <span className="text-primary font-medium">{t.login.termsLink}</span> {t.login.termsAnd}{" "}
+          <span className="text-primary font-medium">{t.login.privacyLink}</span> {t.login.termsSuffix}
         </p>
       </main>
     </div>

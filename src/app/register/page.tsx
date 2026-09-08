@@ -4,6 +4,7 @@ import { useMemo, useState, type FormEvent } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { signUpWithPassword } from "@/lib/auth";
+import { useLanguage } from "@/components/LanguageProvider";
 
 const COUNTRIES = [
   { code: "FR", dial: "+33", flag: "🇫🇷", name: "France" },
@@ -25,15 +26,9 @@ const COUNTRIES = [
 
 const HEADER_HEIGHT = "calc(172px + env(safe-area-inset-top))";
 
-const STRENGTH_LEVELS = [
-  { label: "Très faible", className: "bg-error" },
-  { label: "Faible", className: "bg-amber-500" },
-  { label: "Moyen", className: "bg-blue-500" },
-  { label: "Fort", className: "bg-emerald-500" },
-] as const;
-
 export default function RegisterPage() {
   const router = useRouter();
+  const { t } = useLanguage();
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [countryCode, setCountryCode] = useState<(typeof COUNTRIES)[number]["code"]>("FR");
@@ -48,6 +43,13 @@ export default function RegisterPage() {
   const [error, setError] = useState<string | null>(null);
   const [confirmationSent, setConfirmationSent] = useState(false);
 
+  const strengthLevels = [
+    { label: t.register.strengthVeryWeak, className: "bg-error" },
+    { label: t.register.strengthWeak, className: "bg-amber-500" },
+    { label: t.register.strengthMedium, className: "bg-blue-500" },
+    { label: t.register.strengthStrong, className: "bg-emerald-500" },
+  ] as const;
+
   const criteria = useMemo(
     () => ({
       length: password.length >= 8,
@@ -58,7 +60,7 @@ export default function RegisterPage() {
     [password],
   );
   const score = Object.values(criteria).filter(Boolean).length;
-  const strength = STRENGTH_LEVELS[Math.max(score - 1, 0)];
+  const strength = strengthLevels[Math.max(score - 1, 0)];
   const passwordsMatch = confirmPassword.length > 0 && password === confirmPassword;
 
   const canSubmit =
@@ -84,9 +86,9 @@ export default function RegisterPage() {
 
     if (signUpError) {
       if (signUpError.message === "User already registered") {
-        setError("Un compte existe déjà avec cet e-mail.");
+        setError(t.register.alreadyRegistered);
       } else if (/rate limit/i.test(signUpError.message)) {
-        setError("Trop d'e-mails envoyés récemment, réessayez dans quelques minutes.");
+        setError(t.register.rateLimited);
       } else {
         setError(signUpError.message);
       }
@@ -106,18 +108,20 @@ export default function RegisterPage() {
   };
 
   if (confirmationSent) {
+    const [bodyBefore, bodyAfter] = t.register.checkEmailBody.split("{email}");
     return (
       <div className="min-h-[100dvh] bg-background flex flex-col items-center justify-center px-container-margin text-center">
         <div className="w-16 h-16 rounded-full bg-primary/10 text-primary flex items-center justify-center mb-6">
           <span className="material-symbols-outlined text-[32px]">mark_email_read</span>
         </div>
-        <h1 className="font-headline-lg-mobile text-headline-lg-mobile text-on-surface mb-2">Vérifiez votre e-mail</h1>
+        <h1 className="font-headline-lg-mobile text-headline-lg-mobile text-on-surface mb-2">{t.register.checkEmailTitle}</h1>
         <p className="font-body-md text-body-md text-on-surface-variant max-w-xs mb-6">
-          Nous avons envoyé un lien de confirmation à <span className="font-semibold text-on-surface">{email}</span>.
-          Cliquez dessus pour activer votre compte.
+          {bodyBefore}
+          <span className="font-semibold text-on-surface">{email}</span>
+          {bodyAfter}
         </p>
         <Link href="/login" className="text-primary font-semibold">
-          Retour à la connexion
+          {t.register.backToLogin}
         </Link>
       </div>
     );
@@ -133,14 +137,14 @@ export default function RegisterPage() {
           <div className="flex items-center justify-between">
             <Link
               href="/login"
-              aria-label="Retour"
+              aria-label={t.login.back}
               className="-ml-2 w-10 h-10 flex items-center justify-center rounded-full hover:bg-surface-container-high/60 transition-colors text-on-surface"
             >
               <span className="material-symbols-outlined">arrow_back</span>
             </Link>
             <div className="flex items-center gap-1.5 text-on-surface-variant">
               <span className="w-1.5 h-1.5 rounded-full bg-primary" />
-              <span className="font-label-md text-label-md">Inscription sécurisée</span>
+              <span className="font-label-md text-label-md">{t.register.secureSignup}</span>
             </div>
             <div className="w-10" />
           </div>
@@ -153,7 +157,7 @@ export default function RegisterPage() {
             </div>
             <div className="flex items-center gap-1.5 bg-primary/10 text-primary px-3 py-1.5 rounded-full">
               <span className="material-symbols-outlined text-[16px]">lock</span>
-              <span className="font-label-md text-label-md">Vos données sont sécurisées et chiffrées</span>
+              <span className="font-label-md text-label-md">{t.register.dataEncrypted}</span>
             </div>
           </div>
         </div>
@@ -163,15 +167,15 @@ export default function RegisterPage() {
         className="w-full max-w-md mx-auto px-container-margin pb-16 flex flex-col grow"
         style={{ paddingTop: HEADER_HEIGHT }}
       >
-        <h1 className="font-headline-lg-mobile text-headline-lg-mobile text-on-surface mb-2 mt-lg">Créer un compte</h1>
+        <h1 className="font-headline-lg-mobile text-headline-lg-mobile text-on-surface mb-2 mt-lg">{t.register.title}</h1>
         <p className="font-body-md text-body-md text-on-surface-variant mb-xl">
-          Rejoignez Objely pour sécuriser, inventorier et retrouver tous vos objets en un instant.
+          {t.register.subtitle}
         </p>
 
         <form onSubmit={handleSubmit} className="flex flex-col gap-lg">
           <div>
             <label htmlFor="name" className="block font-label-md text-[11px] text-outline uppercase tracking-wider mb-2">
-              Prénom et nom
+              {t.register.fullNameLabel}
             </label>
             <input
               id="name"
@@ -187,7 +191,7 @@ export default function RegisterPage() {
 
           <div>
             <label htmlFor="email" className="block font-label-md text-[11px] text-outline uppercase tracking-wider mb-2">
-              Adresse e-mail
+              {t.register.emailLabel}
             </label>
             <input
               id="email"
@@ -203,14 +207,14 @@ export default function RegisterPage() {
 
           <div>
             <label htmlFor="phone" className="block font-label-md text-[11px] text-outline uppercase tracking-wider mb-2">
-              Numéro de mobile <span className="normal-case text-outline/70">(pour les alertes d&apos;objets)</span>
+              {t.register.phoneLabel} <span className="normal-case text-outline/70">{t.register.phoneHint}</span>
             </label>
             <div className="flex gap-2">
               <div className="relative shrink-0">
                 <select
                   value={countryCode}
                   onChange={(e) => setCountryCode(e.target.value as (typeof COUNTRIES)[number]["code"])}
-                  aria-label="Pays"
+                  aria-label={t.register.countryAria}
                   className="h-full w-[64px] appearance-none bg-none bg-surface-container-lowest border border-surface-container-highest rounded-[16px] pl-3 pr-6 py-4 font-body-lg text-body-lg text-on-surface soft-shadow focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all"
                 >
                   {COUNTRIES.map((c) => (
@@ -241,7 +245,7 @@ export default function RegisterPage() {
 
           <div>
             <label htmlFor="address" className="block font-label-md text-[11px] text-outline uppercase tracking-wider mb-2">
-              Adresse (optionnel)
+              {t.register.addressLabel}
             </label>
             <input
               id="address"
@@ -256,7 +260,7 @@ export default function RegisterPage() {
 
           <div>
             <label htmlFor="password" className="block font-label-md text-[11px] text-outline uppercase tracking-wider mb-2">
-              Mot de passe
+              {t.register.passwordLabel}
             </label>
             <div className="relative">
               <input
@@ -272,7 +276,7 @@ export default function RegisterPage() {
               <button
                 type="button"
                 onClick={() => setShowPassword((v) => !v)}
-                aria-label={showPassword ? "Masquer le mot de passe" : "Afficher le mot de passe"}
+                aria-label={showPassword ? t.login.hidePassword : t.login.showPassword}
                 className="absolute right-4 top-1/2 -translate-y-1/2 text-on-surface-variant"
               >
                 <span className="material-symbols-outlined text-[20px]">
@@ -284,11 +288,11 @@ export default function RegisterPage() {
             {password.length > 0 && (
               <div className="mt-3 bg-surface-container-lowest border border-surface-container-highest rounded-[16px] p-4">
                 <div className="flex items-center justify-between mb-2">
-                  <span className="font-label-md text-label-md text-on-surface-variant">Sécurité du mot de passe :</span>
+                  <span className="font-label-md text-label-md text-on-surface-variant">{t.register.passwordStrength}</span>
                   <span className="font-label-md text-label-md font-semibold text-on-surface">{strength.label}</span>
                 </div>
                 <div className="flex gap-1.5 mb-3">
-                  {STRENGTH_LEVELS.map((level, i) => (
+                  {strengthLevels.map((level, i) => (
                     <div
                       key={level.label}
                       className={`h-1.5 flex-1 rounded-full transition-colors ${i < score ? strength.className : "bg-surface-container-highest"}`}
@@ -296,10 +300,10 @@ export default function RegisterPage() {
                   ))}
                 </div>
                 <div className="grid grid-cols-2 gap-x-4 gap-y-1.5">
-                  <PasswordCriterion met={criteria.length} label="8+ caractères" />
-                  <PasswordCriterion met={criteria.upper} label="1 majuscule" />
-                  <PasswordCriterion met={criteria.digit} label="1 chiffre" />
-                  <PasswordCriterion met={criteria.symbol} label="1 symbole" />
+                  <PasswordCriterion met={criteria.length} label={t.register.criteriaLength} />
+                  <PasswordCriterion met={criteria.upper} label={t.register.criteriaUpper} />
+                  <PasswordCriterion met={criteria.digit} label={t.register.criteriaDigit} />
+                  <PasswordCriterion met={criteria.symbol} label={t.register.criteriaSymbol} />
                 </div>
               </div>
             )}
@@ -307,20 +311,20 @@ export default function RegisterPage() {
 
           <div>
             <label htmlFor="confirm-password" className="block font-label-md text-[11px] text-outline uppercase tracking-wider mb-2">
-              Confirmer le mot de passe
+              {t.register.confirmPasswordLabel}
             </label>
             <input
               id="confirm-password"
               type={showPassword ? "text" : "password"}
               value={confirmPassword}
               onChange={(e) => setConfirmPassword(e.target.value)}
-              placeholder="Confirmez votre mot de passe"
+              placeholder={t.register.confirmPasswordPlaceholder}
               autoComplete="new-password"
               required
               className="w-full bg-surface-container-lowest border border-surface-container-highest rounded-[16px] px-4 py-4 font-body-lg text-body-lg text-on-surface soft-shadow focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all"
             />
             {confirmPassword.length > 0 && !passwordsMatch && (
-              <p className="font-body-md text-[12px] text-error mt-2">Les mots de passe ne correspondent pas.</p>
+              <p className="font-body-md text-[12px] text-error mt-2">{t.register.passwordsMismatch}</p>
             )}
           </div>
 
@@ -332,8 +336,8 @@ export default function RegisterPage() {
               className="mt-0.5 w-5 h-5 rounded-md border-outline-variant text-primary focus:ring-primary/30 shrink-0"
             />
             <span className="font-body-md text-body-md text-on-surface-variant">
-              J&apos;accepte les <span className="text-primary font-medium">Conditions générales</span> et la{" "}
-              <span className="text-primary font-medium">Politique de confidentialité</span> d&apos;Objely.
+              {t.register.acceptTermsPrefix} <span className="text-primary font-medium">{t.register.termsLink}</span> {t.register.termsAnd}{" "}
+              <span className="text-primary font-medium">{t.register.privacyLink}</span> {t.register.termsSuffix}
             </span>
           </label>
 
@@ -346,14 +350,14 @@ export default function RegisterPage() {
             disabled={!canSubmit}
             className="btn-gradient w-full py-4 rounded-2xl bg-primary text-on-primary font-headline-sm text-headline-sm shadow-[0px_10px_30px_rgba(0,88,188,0.25)] hover:opacity-90 transition-opacity disabled:opacity-50 disabled:cursor-not-allowed"
           >
-            {isSubmitting ? "Création…" : "Créer mon compte"}
+            {isSubmitting ? t.register.submitting : t.register.submit}
           </button>
         </form>
 
         <p className="font-body-md text-body-md text-on-surface-variant text-center mt-6">
-          Vous avez déjà un compte ?{" "}
+          {t.register.haveAccount}{" "}
           <Link href="/login" className="text-primary font-semibold">
-            Se connecter
+            {t.register.signIn}
           </Link>
         </p>
       </main>
