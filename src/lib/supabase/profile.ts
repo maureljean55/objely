@@ -1,4 +1,10 @@
 import { createClient } from "@/lib/supabase/client";
+import { compressImage } from "@/lib/compressImage";
+
+// Avatars only ever render as a small round thumbnail (112px at most in the
+// UI) — no need to keep a multi-MB, full-resolution phone photo around.
+const AVATAR_MAX_DIMENSION = 512;
+const AVATAR_JPEG_QUALITY = 0.85;
 
 export type Profile = {
   id: string;
@@ -46,12 +52,13 @@ export async function uploadAvatarPhoto(file: File) {
   const user = userData.user;
   if (!user) return { url: null, error: new Error("Vous devez être connecté.") };
 
-  const ext = file.name.split(".").pop() || "jpg";
+  const compressed = await compressImage(file, AVATAR_MAX_DIMENSION, AVATAR_JPEG_QUALITY);
+  const ext = compressed.name.split(".").pop() || "jpg";
   const path = `${user.id}/${Date.now()}.${ext}`;
 
-  const { error: uploadError } = await supabase.storage.from("avatars").upload(path, file, {
+  const { error: uploadError } = await supabase.storage.from("avatars").upload(path, compressed, {
     upsert: true,
-    contentType: file.type || "image/jpeg",
+    contentType: compressed.type || "image/jpeg",
   });
   if (uploadError) return { url: null, error: uploadError };
 

@@ -2,33 +2,13 @@
 
 import { useRef, useState } from "react";
 import { uploadItemPhoto } from "@/lib/supabase/items";
+import { compressImage } from "@/lib/compressImage";
 
 const MAX_PHOTOS = 5;
 const MAX_DIMENSION = 1600;
 const JPEG_QUALITY = 0.82;
 
 type Slot = { id: string; previewUrl: string; status: "uploading" | "done" | "error"; finalUrl?: string };
-
-// Phone camera photos are routinely 3-10MB; resizing/re-encoding client-side
-// before upload cuts real transfer time, not just perceived speed.
-async function compressImage(file: File): Promise<File> {
-  try {
-    const bitmap = await createImageBitmap(file);
-    const scale = Math.min(1, MAX_DIMENSION / Math.max(bitmap.width, bitmap.height));
-    const width = Math.round(bitmap.width * scale);
-    const height = Math.round(bitmap.height * scale);
-    const canvas = document.createElement("canvas");
-    canvas.width = width;
-    canvas.height = height;
-    const ctx = canvas.getContext("2d");
-    if (!ctx) return file;
-    ctx.drawImage(bitmap, 0, 0, width, height);
-    const blob: Blob | null = await new Promise((resolve) => canvas.toBlob(resolve, "image/jpeg", JPEG_QUALITY));
-    return blob ? new File([blob], file.name.replace(/\.\w+$/, ".jpg"), { type: "image/jpeg" }) : file;
-  } catch {
-    return file;
-  }
-}
 
 export default function PhotoPicker({
   photos,
@@ -69,7 +49,7 @@ export default function PhotoPicker({
     await Promise.all(
       files.map(async (file, i) => {
         const slot = newSlots[i];
-        const compressed = await compressImage(file);
+        const compressed = await compressImage(file, MAX_DIMENSION, JPEG_QUALITY);
         const { url } = await uploadItemPhoto(compressed);
         applySlots(
           slotsRef.current.map((s) =>

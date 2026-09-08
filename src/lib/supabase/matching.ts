@@ -7,40 +7,6 @@ const MATCH_THRESHOLD = 45;
 
 type DraftLike = Pick<DeclarationDraft, "categoryId" | "colors" | "brand" | "location" | "date">;
 
-/**
- * Scores how likely `draft` (a lost/found declaration being created) refers
- * to the same physical object as `item` (an existing declaration of the
- * opposite type). Points are additive and deliberately simple/explainable:
- * category is the gate (no category match, no point comparing further),
- * then color/brand/location/date each add confidence.
- */
-export function scoreMatch(draft: DraftLike, item: Item): number {
-  if (!draft.categoryId || draft.categoryId !== item.category_id) return 0;
-
-  let score = 40; // same category
-
-  if (colorsOverlap(draft.colors, item.colors)) {
-    score += 15;
-  }
-
-  if (draft.brand && item.brand && draft.brand.trim().toLowerCase() === item.brand.trim().toLowerCase()) {
-    score += 15;
-  }
-
-  if (draft.location && item.location) {
-    const a = normalizeWords(draft.location);
-    const b = normalizeWords(item.location);
-    if (a.some((word) => b.includes(word))) score += 15;
-  }
-
-  if (draft.date && item.occurred_on) {
-    const daysApart = Math.abs(new Date(draft.date).getTime() - new Date(item.occurred_on).getTime()) / 86_400_000;
-    if (daysApart <= 14) score += 15;
-  }
-
-  return Math.min(score, 100);
-}
-
 // An item can have multiple colors, so a match means any shared color
 // between the two lists rather than requiring an exact single value.
 function colorsOverlap(a: string[] | null | undefined, b: string[] | null | undefined): boolean {
@@ -110,29 +76,30 @@ export type MatchCandidate = { item: Item; score: number };
  * Looks for the best existing item of the opposite type that could match
  * this draft. `oppositeType` is "found" when declaring a lost item, and
  * "lost" when declaring a found item.
+ *
+ * The scoring itself (same rules as compute_match_score in the DB) runs in
+ * Postgres via RPC, so only the single best candidate's id ever crosses the
+ * network instead of every same-category item in the whole table.
  */
 export async function findBestMatch(draft: DraftLike, oppositeType: ItemType): Promise<MatchCandidate | null> {
   const supabase = createClient();
-  const { data: candidates } = await supabase
-    .from("items")
-    .select("*")
-    .eq("type", oppositeType)
-    .eq("category_id", draft.categoryId ?? "__none__")
-    .in("status", ["searching", "matched"])
-    .is("deleted_at", null)
-    .returns<Item[]>();
+  const { data: best } = await supabase
+    .rpc("find_best_match_candidate", {
+      p_category_id: draft.categoryId ?? null,
+      p_colors: draft.colors && draft.colors.length > 0 ? draft.colors : null,
+      p_brand: draft.brand || null,
+      p_location: draft.location || null,
+      p_occurred_on: draft.date || null,
+      p_opposite_type: oppositeType,
+    })
+    .maybeSingle<{ item_id: string; score: number }>();
 
-  if (!candidates || candidates.length === 0) return null;
+  if (!best || best.score < MATCH_THRESHOLD) return null;
 
-  let best: MatchCandidate | null = null;
-  for (const item of candidates) {
-    const score = scoreMatch(draft, item);
-    if (score >= MATCH_THRESHOLD && (!best || score > best.score)) {
-      best = { item, score };
-    }
-  }
+  const { data: item } = await supabase.from("items").select("*").eq("id", best.item_id).single<Item>();
+  if (!item) return null;
 
-  return best;
+  return { item, score: best.score };
 }
 
 type MatchParty = Pick<Item, "id" | "user_id" | "title">;
