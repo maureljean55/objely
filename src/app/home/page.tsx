@@ -4,9 +4,20 @@ import BottomNav from "@/components/BottomNav";
 import NotificationTicker from "@/components/NotificationTicker";
 import MessagesFab from "@/components/MessagesFab";
 import { createClient } from "@/lib/supabase/server";
-import { getServerTranslations } from "@/lib/i18n/server";
-import { formatTimeAgo } from "@/lib/i18n/timeAgo";
 import { listRecentFinds } from "@/lib/supabase/publicFeed";
+
+function timeAgo(dateStr: string) {
+  const diffMs = Date.now() - new Date(dateStr).getTime();
+  const mins = Math.floor(diffMs / 60000);
+  if (mins < 1) return "à l'instant";
+  if (mins < 60) return `il y a ${mins} min`;
+  const hours = Math.floor(mins / 60);
+  if (hours < 24) return `il y a ${hours} h`;
+  const days = Math.floor(hours / 24);
+  if (days === 1) return "hier";
+  if (days < 7) return `il y a ${days} j`;
+  return new Date(dateStr).toLocaleDateString("fr-FR");
+}
 
 export default async function HomeDashboardPage({
   searchParams,
@@ -15,7 +26,6 @@ export default async function HomeDashboardPage({
 }) {
   const { welcome } = await searchParams;
   const supabase = await createClient();
-  const t = await getServerTranslations();
 
   // recentFinds doesn't depend on the user, so it can run alongside the
   // auth check instead of waiting behind it — and it's cached (see
@@ -72,7 +82,7 @@ export default async function HomeDashboardPage({
             </Link>
             <Link
               href="/qr"
-              aria-label={t.home.scanQr}
+              aria-label="Scanner un QR code"
               className="w-11 h-11 rounded-full bg-surface-container-lowest shadow-sm flex items-center justify-center text-on-surface-variant hover:text-primary transition-colors"
             >
               <span className="material-symbols-outlined text-[22px]">qr_code_scanner</span>
@@ -81,7 +91,7 @@ export default async function HomeDashboardPage({
         </div>
 
         <h1 className="font-headline-lg-mobile text-headline-lg-mobile text-on-background">
-          {t.home.question}
+          Quelque chose à retrouver ?
         </h1>
 
         <NotificationTicker />
@@ -100,19 +110,19 @@ export default async function HomeDashboardPage({
         <nav className="flex gap-gutter">
           <Link className="text-primary font-label-md text-label-md hover:opacity-80 transition-opacity flex flex-col items-center" href="/home">
             <span className="material-symbols-outlined mb-1" style={{ fontVariationSettings: "'FILL' 1" }}>home</span>
-            {t.nav.home}
+            Accueil
           </Link>
           <Link className="text-on-surface-variant font-label-md text-label-md hover:opacity-80 transition-opacity flex flex-col items-center" href="/search">
             <span className="material-symbols-outlined mb-1">search</span>
-            {t.nav.myItems}
+            Mes objets
           </Link>
           <Link className="text-on-surface-variant font-label-md text-label-md hover:opacity-80 transition-opacity flex flex-col items-center" href="/activity">
             <span className="material-symbols-outlined mb-1">explore</span>
-            {t.nav.activity}
+            Activité
           </Link>
           <Link className="text-on-surface-variant font-label-md text-label-md hover:opacity-80 transition-opacity flex flex-col items-center" href="/profile">
             <span className="material-symbols-outlined mb-1">person</span>
-            {t.nav.profile}
+            Profil
           </Link>
         </nav>
         <Link href="/profile" className="relative w-10 h-10 flex items-center justify-center rounded-full surface-card overflow-hidden bg-surface-container-high text-on-surface-variant">
@@ -131,14 +141,14 @@ export default async function HomeDashboardPage({
               check_circle
             </span>
             <p className="font-body-md text-body-md text-emerald-800">
-              {t.home.welcomeBanner}
+              Compte confirmé, bienvenue sur Objely !
             </p>
           </div>
         )}
 
         {/* Greeting (desktop only — mobile shows this pinned in the fixed header above) */}
         <div className="hidden md:block">
-          <h1 className="font-headline-lg text-headline-lg text-on-background">{t.home.question}</h1>
+          <h1 className="font-headline-lg text-headline-lg text-on-background">Quelque chose à retrouver ?</h1>
         </div>
 
         {/* Recent Activity Notification (desktop only) */}
@@ -155,8 +165,8 @@ export default async function HomeDashboardPage({
             <div className="w-11 h-11 rounded-full bg-white/20 flex items-center justify-center mb-1">
               <span className="material-symbols-outlined" style={{ fontVariationSettings: "'FILL' 1" }}>search</span>
             </div>
-            <h2 className="font-headline-lg-mobile text-headline-lg-mobile">{t.home.lostCta}</h2>
-            <p className="font-body-md text-body-md text-white/80">{t.home.lostSubtitle}</p>
+            <h2 className="font-headline-lg-mobile text-headline-lg-mobile">J&apos;ai perdu un objet</h2>
+            <p className="font-body-md text-body-md text-white/80">Déclarez un objet disparu</p>
           </Link>
 
           <Link
@@ -166,21 +176,21 @@ export default async function HomeDashboardPage({
             <div className="w-11 h-11 rounded-full bg-white/20 flex items-center justify-center mb-1">
               <span className="material-symbols-outlined" style={{ fontVariationSettings: "'FILL' 1" }}>front_hand</span>
             </div>
-            <h2 className="font-headline-lg-mobile text-headline-lg-mobile">{t.home.foundCta}</h2>
-            <p className="font-body-md text-body-md text-white/80">{t.home.foundSubtitle}</p>
+            <h2 className="font-headline-lg-mobile text-headline-lg-mobile">J&apos;ai trouvé un objet</h2>
+            <p className="font-body-md text-body-md text-white/80">Aidez à restituer</p>
           </Link>
         </section>
 
         {/* Recent Finds — community notifications, not links to a specific item */}
         <section className="space-y-md pt-2">
-          <h3 className="font-headline-sm text-headline-sm text-on-background">{t.home.recentFindsTitle}</h3>
+          <h3 className="font-headline-sm text-headline-sm text-on-background">Objets récemment trouvés près de vous</h3>
           {recentFinds && recentFinds.length > 0 ? (
             <div className="flex overflow-x-auto md:grid md:grid-cols-3 gap-md pb-md hide-scrollbar -mx-container-margin px-container-margin md:mx-0 md:px-0">
               {recentFinds.map((item, index) => (
                 <div key={item.id} className="flex flex-col min-w-[200px] max-w-[200px] md:min-w-0 md:max-w-none shrink-0">
                   <div className="flex items-center gap-1.5 mb-2">
                     <span className="w-2 h-2 rounded-full bg-primary" />
-                    <span className="font-label-md text-label-md text-on-surface-variant">{item.location || t.home.noLocation}</span>
+                    <span className="font-label-md text-label-md text-on-surface-variant">{item.location || "Lieu non précisé"}</span>
                   </div>
                   <div className="relative h-32 rounded-2xl overflow-hidden bg-surface-container-high mb-2 flex items-center justify-center text-primary">
                     {item.photos?.[0] ? (
@@ -190,14 +200,14 @@ export default async function HomeDashboardPage({
                     )}
                   </div>
                   <h4 className="font-headline-sm text-headline-sm text-on-background line-clamp-1 mb-0.5">{item.title}</h4>
-                  <p className="font-body-md text-body-md text-on-surface-variant">{t.home.foundPrefix} {formatTimeAgo(item.created_at, t)}</p>
+                  <p className="font-body-md text-body-md text-on-surface-variant">Trouvé {timeAgo(item.created_at)}</p>
                 </div>
               ))}
             </div>
           ) : (
             <div className="rounded-2xl bg-surface-container-lowest soft-shadow p-lg text-center">
               <p className="font-body-md text-body-md text-on-surface-variant">
-                {t.home.noRecentFinds}
+                Aucun objet trouvé signalé pour le moment. Revenez bientôt !
               </p>
             </div>
           )}

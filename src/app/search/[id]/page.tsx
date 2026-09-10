@@ -3,20 +3,17 @@ import Image from "next/image";
 import { notFound } from "next/navigation";
 import BottomNav from "@/components/BottomNav";
 import { createClient } from "@/lib/supabase/server";
-import { getServerTranslations } from "@/lib/i18n/server";
-import type { TranslationDict } from "@/lib/i18n/translations";
 import type { Item } from "@/lib/supabase/items";
 
-function declaredDateLabel(item: Item, t: TranslationDict) {
-  const verb = item.type === "lost" ? t.myItemCard.lostVerb : t.myItemCard.foundVerb;
+function declaredDateLabel(item: Item) {
+  const verb = item.type === "lost" ? "Perdu" : "Trouvé";
   if (!item.occurred_on) return verb;
-  return `${verb} ${new Date(item.occurred_on).toLocaleDateString(t.common.locale)}`;
+  return `${verb} le ${new Date(item.occurred_on).toLocaleDateString("fr-FR")}`;
 }
 
 export default async function MyItemDetailPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
   const supabase = await createClient();
-  const t = await getServerTranslations();
   const { data: item } = await supabase.from("items").select("*").eq("id", id).single<Item>();
   if (!item) notFound();
 
@@ -27,7 +24,7 @@ export default async function MyItemDetailPage({ params }: { params: Promise<{ i
           className="max-w-[720px] mx-auto flex items-center justify-between px-container-margin pb-sm"
           style={{ paddingTop: "calc(0.75rem + env(safe-area-inset-top))" }}
         >
-          <Link href="/search" aria-label={t.itemDetail.back} className="w-10 h-10 flex items-center justify-center rounded-full text-on-surface-variant hover:opacity-80 transition-opacity active:scale-95">
+          <Link href="/search" aria-label="Retour" className="w-10 h-10 flex items-center justify-center rounded-full text-on-surface-variant hover:opacity-80 transition-opacity active:scale-95">
             <span className="material-symbols-outlined text-[24px]">arrow_back</span>
           </Link>
           <h1 className="font-display text-headline-sm font-bold text-on-surface text-center flex-1 truncate px-2">{item.title}</h1>
@@ -48,7 +45,7 @@ export default async function MyItemDetailPage({ params }: { params: Promise<{ i
           <div>
             <p className="font-label-md text-[11px] text-outline uppercase tracking-wider">{item.category_label}</p>
             <p className="font-body-md text-body-md text-on-surface-variant">
-              {declaredDateLabel(item, t)} · {item.location || t.myItemCard.noLocation}
+              {declaredDateLabel(item)} · {item.location || "Lieu non précisé"}
             </p>
           </div>
         </div>
@@ -65,10 +62,12 @@ export default async function MyItemDetailPage({ params }: { params: Promise<{ i
               <span className="material-symbols-outlined">radar</span>
             </div>
             <h2 className="font-headline-sm text-headline-sm text-on-surface">
-              {item.status === "matched" ? t.itemDetail.matchFound : t.itemDetail.stillSearching}
+              {item.status === "matched" ? "Une correspondance a été trouvée" : "Recherche toujours active"}
             </h2>
             <p className="font-body-md text-body-md text-on-surface-variant max-w-sm">
-              {item.status === "matched" ? t.itemDetail.matchFoundBody : t.itemDetail.stillSearchingBody}
+              {item.status === "matched"
+                ? "Consultez l'onglet Activité pour voir la correspondance et échanger."
+                : "Personne n'a encore signalé cet objet. Vous serez averti dès qu'une correspondance est trouvée."}
             </p>
           </section>
         ) : (
@@ -78,9 +77,9 @@ export default async function MyItemDetailPage({ params }: { params: Promise<{ i
                 <span className="material-symbols-outlined">check_circle</span>
               </div>
               <div>
-                <p className="font-label-md text-[11px] text-outline uppercase tracking-wider">{t.itemDetail.status}</p>
+                <p className="font-label-md text-[11px] text-outline uppercase tracking-wider">Statut</p>
                 <p className="font-headline-sm text-headline-sm text-on-surface">
-                  {item.status === "recovered" ? t.itemDetail.itemRecovered : t.itemDetail.itemReturned}
+                  {item.status === "recovered" ? "Objet retrouvé" : "Objet restitué"}
                 </p>
               </div>
             </div>

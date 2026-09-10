@@ -1,19 +1,15 @@
-"use client";
-
 import Link from "next/link";
-import { useLanguage } from "@/components/LanguageProvider";
 
 type NavKey = "home" | "search" | "activity" | "profile";
 
-export default function BottomNav({ active }: { active: NavKey }) {
-  const { t } = useLanguage();
-  const items: { key: NavKey; href: string; icon: string; label: string }[] = [
-    { key: "home", href: "/home", icon: "home", label: t.nav.home },
-    { key: "search", href: "/search", icon: "search", label: t.nav.myItems },
-    { key: "activity", href: "/activity", icon: "explore", label: t.nav.activity },
-    { key: "profile", href: "/profile", icon: "person", label: t.nav.profile },
-  ];
+const ITEMS: { key: NavKey; href: string; icon: string; label: string }[] = [
+  { key: "home", href: "/home", icon: "home", label: "Accueil" },
+  { key: "search", href: "/search", icon: "search", label: "Mes objets" },
+  { key: "activity", href: "/activity", icon: "explore", label: "Activité" },
+  { key: "profile", href: "/profile", icon: "person", label: "Profil" },
+];
 
+export default function BottomNav({ active }: { active: NavKey }) {
   return (
     <nav className="md:hidden fixed inset-x-4 bottom-4 z-50">
       {/* Refraction filter for the liquid-glass surface. Browsers that don't
@@ -40,7 +36,7 @@ export default function BottomNav({ active }: { active: NavKey }) {
         <div className="pointer-events-none absolute -bottom-10 left-4 w-20 h-16 rounded-full bg-white/20 dark:bg-white/5 blur-2xl" />
         <div className="pointer-events-none absolute inset-0 rounded-full bg-gradient-to-b from-white/25 dark:from-white/5 via-transparent to-white/5 dark:to-transparent" />
 
-        {items.map((item) => {
+        {ITEMS.map((item) => {
           const isActive = item.key === active;
           return (
             <Link

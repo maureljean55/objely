@@ -2,9 +2,9 @@ import Link from "next/link";
 import Image from "next/image";
 import BottomNav from "@/components/BottomNav";
 import { createClient } from "@/lib/supabase/server";
-import { getServerTranslations } from "@/lib/i18n/server";
-import { formatTimeAgo } from "@/lib/i18n/timeAgo";
 import type { Item } from "@/lib/supabase/items";
+
+const FILTERS = ["Tout", "Correspondances", "Messages", "Restitutions"];
 
 type MatchRow = {
   id: string;
@@ -15,9 +15,18 @@ type MatchRow = {
   found_item: Item;
 };
 
+function timeAgo(dateStr: string) {
+  const diffMs = Date.now() - new Date(dateStr).getTime();
+  const mins = Math.floor(diffMs / 60000);
+  if (mins < 1) return "à l'instant";
+  if (mins < 60) return `il y a ${mins} min`;
+  const hours = Math.floor(mins / 60);
+  if (hours < 24) return `il y a ${hours} h`;
+  return `il y a ${Math.floor(hours / 24)} j`;
+}
+
 export default async function ActivityPage() {
   const supabase = await createClient();
-  const t = await getServerTranslations();
   // Middleware already validated/refreshed the session for this request, so
   // reading it back here doesn't need a second round trip to Supabase's
   // Auth server.
@@ -25,8 +34,6 @@ export default async function ActivityPage() {
     data: { session },
   } = await supabase.auth.getSession();
   const user = session?.user ?? null;
-
-  const filters = [t.activity.filterAll, t.activity.filterMatches, t.activity.filterMessages, t.activity.filterRestitutions];
 
   const { data: matches } = user
     ? await supabase
@@ -39,12 +46,12 @@ export default async function ActivityPage() {
   return (
     <div className="bg-background text-on-background font-body-md antialiased min-h-screen pb-28 md:pb-12">
       <header className="glass-header fixed top-0 inset-x-0 z-50 flex items-center px-container-margin min-h-16 pt-[env(safe-area-inset-top)] w-full shadow-[0_1px_0_rgba(0,0,0,0.05)]">
-        <h1 className="font-display text-headline-lg-mobile text-headline-lg-mobile text-on-surface">{t.activity.title}</h1>
+        <h1 className="font-display text-headline-lg-mobile text-headline-lg-mobile text-on-surface">Activité</h1>
       </header>
 
       <main className="pt-[calc(88px+env(safe-area-inset-top))] max-w-2xl mx-auto">
         <div className="px-container-margin pb-md flex gap-sm overflow-x-auto hide-scrollbar">
-          {filters.map((filter, i) => (
+          {FILTERS.map((filter, i) => (
             <button
               key={filter}
               className={
@@ -70,11 +77,11 @@ export default async function ActivityPage() {
                   </div>
                   <div className="flex-1">
                     <div className="flex items-center justify-between gap-2 mb-0.5">
-                      <h2 className="font-headline-sm text-headline-sm text-on-surface">{t.activity.newMatch}</h2>
-                      <span className="font-label-md text-label-md text-on-surface-variant shrink-0">{formatTimeAgo(match.created_at, t)}</span>
+                      <h2 className="font-headline-sm text-headline-sm text-on-surface">Nouvelle correspondance</h2>
+                      <span className="font-label-md text-label-md text-on-surface-variant shrink-0">{timeAgo(match.created_at)}</span>
                     </div>
                     <p className="font-body-md text-body-md text-on-surface-variant">
-                      {t.activity.matchFoundFor} {isLostSide ? t.activity.lostItem : t.activity.foundItem}.
+                      Une correspondance possible a été trouvée pour votre {isLostSide ? "objet perdu" : "objet trouvé"}.
                     </p>
                   </div>
                 </div>
@@ -90,7 +97,7 @@ export default async function ActivityPage() {
                     <p className="font-headline-sm text-headline-sm text-on-surface">{otherItem.title}</p>
                     <div className="flex items-center gap-1 mt-1 text-tertiary">
                       <span className="material-symbols-outlined text-[16px]" style={{ fontVariationSettings: "'FILL' 1" }}>check_circle</span>
-                      <span className="font-label-md text-label-md">{match.match_percent}{t.activity.matchPercent}</span>
+                      <span className="font-label-md text-label-md">{match.match_percent}% de correspondance</span>
                     </div>
                   </div>
                 </div>
@@ -99,18 +106,18 @@ export default async function ActivityPage() {
                     href={`/activity/match?match=${match.id}`}
                     className="flex-1 h-14 bg-surface-container-lowest border border-outline-variant text-on-surface rounded-xl font-headline-sm text-headline-sm hover:bg-surface-container-low transition-all flex items-center justify-center"
                   >
-                    {t.activity.details}
+                    Détails
                   </Link>
                   {match.status === "confirmed" ? (
                     <Link
                       href={`/chat/${match.id}`}
                       className="flex-1 h-14 bg-primary text-on-primary rounded-xl font-headline-sm text-headline-sm hover:opacity-90 active:scale-[0.98] transition-all flex items-center justify-center"
                     >
-                      {t.activity.discuss}
+                      Discuter
                     </Link>
                   ) : (
                     <div className="flex-1 h-14 bg-surface-container text-on-surface-variant rounded-xl font-label-md text-label-md flex items-center justify-center text-center px-2">
-                      {t.activity.waitingVerification}
+                      En attente de vérification
                     </div>
                   )}
                 </div>
@@ -121,7 +128,7 @@ export default async function ActivityPage() {
           {(!matches || matches.length === 0) && (
             <div className="bg-surface-container-lowest rounded-2xl soft-shadow inner-stroke p-lg text-center">
               <p className="font-body-md text-body-md text-on-surface-variant">
-                {t.activity.noMatches}
+                Aucune correspondance pour le moment. Vous serez averti dès qu&apos;une déclaration correspond à un de vos objets.
               </p>
             </div>
           )}
@@ -136,11 +143,11 @@ export default async function ActivityPage() {
                   </div>
                   <div className="flex-1">
                     <div className="flex items-center justify-between gap-2 mb-0.5">
-                      <h2 className="font-headline-sm text-headline-sm text-on-surface">{t.activity.ownershipVerification}</h2>
-                      <span className="font-label-md text-label-md text-on-surface-variant shrink-0">{formatTimeAgo(match.created_at, t)}</span>
+                      <h2 className="font-headline-sm text-headline-sm text-on-surface">Vérification de propriété</h2>
+                      <span className="font-label-md text-label-md text-on-surface-variant shrink-0">{timeAgo(match.created_at)}</span>
                     </div>
                     <p className="font-body-md text-body-md text-on-surface-variant">
-                      {t.activity.verificationNeeded} {match.found_item.title}.
+                      Une vérification est nécessaire avant la restitution de {match.found_item.title}.
                     </p>
                   </div>
                 </div>
@@ -148,7 +155,7 @@ export default async function ActivityPage() {
                   href={`/activity/verification?match=${match.id}`}
                   className="w-full h-14 bg-surface-container-lowest border-2 border-outline-variant text-on-surface rounded-xl font-headline-sm text-headline-sm hover:bg-surface-container-low transition-all flex items-center justify-center"
                 >
-                  {t.activity.seeRequest}
+                  Voir la demande
                 </Link>
               </article>
             ))}

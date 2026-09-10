@@ -3,8 +3,6 @@ import { Plus_Jakarta_Sans } from "next/font/google";
 import "./globals.css";
 import ServiceWorkerRegister from "@/components/ServiceWorkerRegister";
 import SessionGuard from "@/components/SessionGuard";
-import { LanguageProvider } from "@/components/LanguageProvider";
-import { getServerLanguage } from "@/lib/i18n/server";
 
 // Self-hosted at build time (no render-blocking request to fonts.googleapis.com
 // on every cold load) — exposed as a CSS variable so Tailwind's fontFamily
@@ -54,10 +52,9 @@ const THEME_INIT_SCRIPT = `
 })();
 `;
 
-export default async function RootLayout({ children }: LayoutProps<"/">) {
-  const language = await getServerLanguage();
+export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
-    <html lang={language} suppressHydrationWarning className={plusJakartaSans.variable}>
+    <html lang="fr" suppressHydrationWarning className={plusJakartaSans.variable}>
       <head>
         {/* Runs before paint so the stored/system theme applies with no flash. */}
         <script dangerouslySetInnerHTML={{ __html: THEME_INIT_SCRIPT }} />
@@ -72,11 +69,9 @@ export default async function RootLayout({ children }: LayoutProps<"/">) {
         />
       </head>
       <body className="min-h-screen bg-background font-body-md text-on-background antialiased">
-        <LanguageProvider initialLanguage={language}>
-          {children}
-          <ServiceWorkerRegister />
-          <SessionGuard />
-        </LanguageProvider>
+        {children}
+        <ServiceWorkerRegister />
+        <SessionGuard />
       </body>
     </html>
   );

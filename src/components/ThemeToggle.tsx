@@ -1,10 +1,8 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { useLanguage } from "@/components/LanguageProvider";
 
 export default function ThemeToggle() {
-  const { t } = useLanguage();
   const [isDark, setIsDark] = useState(false);
   const [mounted, setMounted] = useState(false);
 
@@ -39,7 +37,7 @@ export default function ThemeToggle() {
         <div className="w-10 h-10 rounded-full bg-tertiary-fixed/30 flex items-center justify-center text-tertiary">
           <span className="material-symbols-outlined">{on ? "dark_mode" : "light_mode"}</span>
         </div>
-        <span className="font-body-lg text-body-lg text-on-surface">{t.profile.darkMode}</span>
+        <span className="font-body-lg text-body-lg text-on-surface">Mode sombre</span>
       </div>
       <span
         className={`relative inline-flex h-7 w-12 shrink-0 items-center rounded-full transition-colors ${
