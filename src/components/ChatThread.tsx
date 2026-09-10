@@ -29,6 +29,16 @@ function formatDuration(seconds: number) {
 }
 
 const LONG_PRESS_MS = 450;
+const MENU_WIDTH = 200;
+const MENU_MARGIN = 8;
+
+function clampMenuPosition(x: number, y: number, rows: number) {
+  if (typeof window === "undefined") return { left: x, top: y };
+  const height = rows * 48;
+  const left = Math.min(Math.max(x, MENU_MARGIN), window.innerWidth - MENU_WIDTH - MENU_MARGIN);
+  const top = Math.min(Math.max(y, MENU_MARGIN), window.innerHeight - height - MENU_MARGIN);
+  return { left, top };
+}
 
 function VoicePlayer({ url, isMine }: { url: string; isMine: boolean }) {
   const audioRef = useRef<HTMLAudioElement>(null);
@@ -110,6 +120,8 @@ export default function ChatThread({
   const [isSending, setIsSending] = useState(false);
   const [editingId, setEditingId] = useState<string | null>(null);
   const [menuMessage, setMenuMessage] = useState<ChatMessage | null>(null);
+  const [menuPos, setMenuPos] = useState<{ x: number; y: number } | null>(null);
+  const pendingPos = useRef<{ x: number; y: number } | null>(null);
   const [isRecording, setIsRecording] = useState(false);
   const [recordingSeconds, setRecordingSeconds] = useState(0);
   const [isUploadingVoice, setIsUploadingVoice] = useState(false);
@@ -134,10 +146,19 @@ export default function ChatThread({
     }
   };
 
-  const startLongPress = (message: ChatMessage) => {
+  const startLongPress = (message: ChatMessage, x: number, y: number) => {
     if (message.senderId !== currentUserId || message.deletedAt) return;
     clearLongPress();
-    longPressTimer.current = setTimeout(() => setMenuMessage(message), LONG_PRESS_MS);
+    pendingPos.current = { x, y };
+    longPressTimer.current = setTimeout(() => {
+      setMenuMessage(message);
+      setMenuPos(pendingPos.current);
+    }, LONG_PRESS_MS);
+  };
+
+  const closeMenu = () => {
+    setMenuMessage(null);
+    setMenuPos(null);
   };
 
   const handleSend = async () => {
@@ -164,7 +185,7 @@ export default function ChatThread({
   const startEditing = (message: ChatMessage) => {
     setEditingId(message.id);
     setDraft(message.body ?? "");
-    setMenuMessage(null);
+    closeMenu();
     textareaRef.current?.focus();
   };
 
@@ -174,7 +195,7 @@ export default function ChatThread({
   };
 
   const handleDelete = async (message: ChatMessage) => {
-    setMenuMessage(null);
+    closeMenu();
     await onDelete(message.id);
   };
 
@@ -270,7 +291,7 @@ export default function ChatThread({
               </div>
               <div className="flex flex-col gap-1">
                 <div
-                  onPointerDown={() => startLongPress(message)}
+                  onPointerDown={(e) => startLongPress(message, e.clientX, e.clientY)}
                   onPointerUp={clearLongPress}
                   onPointerLeave={clearLongPress}
                   onPointerCancel={clearLongPress}
@@ -278,9 +299,12 @@ export default function ChatThread({
                     if (message.senderId === currentUserId && !isDeleted) {
                       e.preventDefault();
                       setMenuMessage(message);
+                      setMenuPos({ x: e.clientX, y: e.clientY });
                     }
                   }}
-                  className={`rounded-2xl px-4 py-2.5 shadow-sm select-none ${
+                  className={`rounded-2xl px-4 py-2.5 shadow-sm select-none transition-shadow ${
+                    menuMessage?.id === message.id ? "ring-2 ring-primary ring-offset-2 ring-offset-background" : ""
+                  } ${
                     isDeleted
                       ? "bg-surface-container-high text-on-surface-variant italic"
                       : isMine
@@ -396,41 +420,31 @@ export default function ChatThread({
         </div>
       </footer>
 
-      {menuMessage && (
-        <div
-          role="dialog"
-          aria-modal="true"
-          className="fixed inset-0 z-[100] flex items-center justify-center bg-black/20 backdrop-blur-sm p-4"
-          onClick={() => setMenuMessage(null)}
-        >
-          <div className="bg-surface-container-lowest w-[280px] rounded-xl overflow-hidden shadow-xl" onClick={(e) => e.stopPropagation()}>
-            <div className="flex flex-col w-full">
-              {menuMessage.kind === "text" && (
-                <button
-                  type="button"
-                  onClick={() => startEditing(menuMessage)}
-                  className="w-full py-3 text-center border-b border-surface-variant/50 text-primary font-headline-sm text-headline-sm active:bg-surface-variant/50 transition-colors flex items-center justify-center gap-2"
-                >
-                  <span className="material-symbols-outlined text-[20px]">edit</span>
-                  Modifier
-                </button>
-              )}
+      {menuMessage && menuPos && (
+        <div role="dialog" aria-modal="true" className="fixed inset-0 z-[100] bg-black/10" onClick={closeMenu}>
+          <div
+            className="absolute bg-surface-container-lowest rounded-2xl overflow-hidden shadow-2xl divide-y divide-surface-variant/50"
+            style={{ ...clampMenuPosition(menuPos.x, menuPos.y, menuMessage.kind === "text" ? 2 : 1), width: MENU_WIDTH }}
+            onClick={(e) => e.stopPropagation()}
+          >
+            {menuMessage.kind === "text" && (
               <button
                 type="button"
-                onClick={() => handleDelete(menuMessage)}
-                className="w-full py-3 text-center border-b border-surface-variant/50 text-error font-headline-sm text-headline-sm active:bg-surface-variant/50 transition-colors flex items-center justify-center gap-2"
+                onClick={() => startEditing(menuMessage)}
+                className="w-full py-3.5 px-4 flex items-center gap-3 text-on-surface font-body-lg text-body-lg active:bg-surface-variant/50 transition-colors"
               >
-                <span className="material-symbols-outlined text-[20px]">delete</span>
-                Supprimer
+                <span className="material-symbols-outlined text-[20px] text-on-surface-variant">edit</span>
+                Modifier
               </button>
-              <button
-                type="button"
-                onClick={() => setMenuMessage(null)}
-                className="w-full py-3 text-center text-on-surface-variant font-body-md text-body-md active:bg-surface-variant/50 transition-colors"
-              >
-                Annuler
-              </button>
-            </div>
+            )}
+            <button
+              type="button"
+              onClick={() => handleDelete(menuMessage)}
+              className="w-full py-3.5 px-4 flex items-center gap-3 text-error font-body-lg text-body-lg active:bg-surface-variant/50 transition-colors"
+            >
+              <span className="material-symbols-outlined text-[20px]">delete</span>
+              Supprimer
+            </button>
           </div>
         </div>
       )}
