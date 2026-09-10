@@ -45,6 +45,10 @@ const MENU_WIDTH = 200;
 const MENU_MARGIN = 8;
 const SWIPE_MAX = 72;
 const SWIPE_THRESHOLD = 48;
+// Preferred order for recording: Safari/iOS only supports mp4, Chrome/
+// Firefox only support webm/ogg — isTypeSupported picks whichever this
+// browser actually has.
+const PREFERRED_VOICE_MIME_TYPES = ["audio/mp4", "audio/webm;codecs=opus", "audio/webm", "audio/ogg;codecs=opus"];
 
 function clampMenuPosition(x: number, y: number, rows: number) {
   if (typeof window === "undefined") return { left: x, top: y };
@@ -414,7 +418,14 @@ export default function ChatThread({
       const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
       streamRef.current = stream;
       chunksRef.current = [];
-      const recorder = new MediaRecorder(stream);
+      // Letting the browser pick a default (no mimeType option) leaves
+      // recorder.mimeType unreliable on some browsers — it can come back
+      // empty even though recording works, which then made the upload
+      // fall back to a hardcoded "audio/webm" label on a file that wasn't
+      // actually webm (Safari records mp4/aac). Ask explicitly instead, so
+      // the recorded format is always known for certain.
+      const mimeType = PREFERRED_VOICE_MIME_TYPES.find((type) => MediaRecorder.isTypeSupported(type));
+      const recorder = mimeType ? new MediaRecorder(stream, { mimeType }) : new MediaRecorder(stream);
       recorder.ondataavailable = (e) => {
         if (e.data.size > 0) chunksRef.current.push(e.data);
       };
