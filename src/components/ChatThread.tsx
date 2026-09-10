@@ -421,9 +421,9 @@ export default function ChatThread({
       </footer>
 
       {menuMessage && menuPos && (
-        <div role="dialog" aria-modal="true" className="fixed inset-0 z-[100] bg-black/10 backdrop-blur-[1px]" onClick={closeMenu}>
+        <div role="dialog" aria-modal="true" className="fixed inset-0 z-[100]" onClick={closeMenu}>
           <div
-            className="absolute bg-surface-container-lowest rounded-2xl overflow-hidden shadow-2xl border border-outline-variant/10 divide-y divide-surface-variant/50 origin-top-left animate-popIn"
+            className="absolute bg-surface-container-lowest/95 backdrop-blur-xl rounded-xl overflow-hidden shadow-[0_8px_30px_rgba(0,0,0,0.12)] border border-outline-variant/15 py-1 origin-top-left animate-popIn"
             style={{ ...clampMenuPosition(menuPos.x, menuPos.y, menuMessage.kind === "text" ? 2 : 1), width: MENU_WIDTH }}
             onClick={(e) => e.stopPropagation()}
           >
@@ -431,22 +431,18 @@ export default function ChatThread({
               <button
                 type="button"
                 onClick={() => startEditing(menuMessage)}
-                className="w-full py-2.5 px-3 flex items-center gap-3 text-on-surface font-body-lg text-body-lg hover:bg-surface-variant/40 active:bg-surface-variant/60 transition-colors"
+                className="w-full py-2 px-3 flex items-center gap-2.5 text-on-surface font-body-md text-body-md hover:bg-surface-variant/40 active:bg-surface-variant/60 transition-colors"
               >
-                <span className="w-8 h-8 rounded-full bg-primary/10 text-primary flex items-center justify-center shrink-0">
-                  <span className="material-symbols-outlined text-[18px]">edit</span>
-                </span>
+                <span className="material-symbols-outlined text-[19px] text-on-surface-variant w-5 shrink-0">edit</span>
                 Modifier
               </button>
             )}
             <button
               type="button"
               onClick={() => handleDelete(menuMessage)}
-              className="w-full py-2.5 px-3 flex items-center gap-3 text-error font-body-lg text-body-lg hover:bg-error-container/20 active:bg-error-container/30 transition-colors"
+              className="w-full py-2 px-3 flex items-center gap-2.5 text-error font-body-md text-body-md hover:bg-surface-variant/40 active:bg-surface-variant/60 transition-colors"
             >
-              <span className="w-8 h-8 rounded-full bg-error/10 text-error flex items-center justify-center shrink-0">
-                <span className="material-symbols-outlined text-[18px]">delete</span>
-              </span>
+              <span className="material-symbols-outlined text-[19px] text-on-surface-variant w-5 shrink-0">delete</span>
               Supprimer
             </button>
           </div>
