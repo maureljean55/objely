@@ -302,8 +302,8 @@ export default function ChatThread({
                       setMenuPos({ x: e.clientX, y: e.clientY });
                     }
                   }}
-                  className={`rounded-2xl px-4 py-2.5 shadow-sm select-none transition-shadow ${
-                    menuMessage?.id === message.id ? "ring-2 ring-primary ring-offset-2 ring-offset-background" : ""
+                  className={`rounded-2xl px-4 py-2.5 shadow-sm select-none transition-shadow duration-200 ${
+                    menuMessage?.id === message.id ? "shadow-[0_0_0_4px_rgba(0,88,188,0.18)]" : ""
                   } ${
                     isDeleted
                       ? "bg-surface-container-high text-on-surface-variant italic"
@@ -421,9 +421,9 @@ export default function ChatThread({
       </footer>
 
       {menuMessage && menuPos && (
-        <div role="dialog" aria-modal="true" className="fixed inset-0 z-[100] bg-black/10" onClick={closeMenu}>
+        <div role="dialog" aria-modal="true" className="fixed inset-0 z-[100] bg-black/10 backdrop-blur-[1px]" onClick={closeMenu}>
           <div
-            className="absolute bg-surface-container-lowest rounded-2xl overflow-hidden shadow-2xl divide-y divide-surface-variant/50"
+            className="absolute bg-surface-container-lowest rounded-2xl overflow-hidden shadow-2xl border border-outline-variant/10 divide-y divide-surface-variant/50 origin-top-left animate-popIn"
             style={{ ...clampMenuPosition(menuPos.x, menuPos.y, menuMessage.kind === "text" ? 2 : 1), width: MENU_WIDTH }}
             onClick={(e) => e.stopPropagation()}
           >
@@ -431,18 +431,22 @@ export default function ChatThread({
               <button
                 type="button"
                 onClick={() => startEditing(menuMessage)}
-                className="w-full py-3.5 px-4 flex items-center gap-3 text-on-surface font-body-lg text-body-lg active:bg-surface-variant/50 transition-colors"
+                className="w-full py-2.5 px-3 flex items-center gap-3 text-on-surface font-body-lg text-body-lg hover:bg-surface-variant/40 active:bg-surface-variant/60 transition-colors"
               >
-                <span className="material-symbols-outlined text-[20px] text-on-surface-variant">edit</span>
+                <span className="w-8 h-8 rounded-full bg-primary/10 text-primary flex items-center justify-center shrink-0">
+                  <span className="material-symbols-outlined text-[18px]">edit</span>
+                </span>
                 Modifier
               </button>
             )}
             <button
               type="button"
               onClick={() => handleDelete(menuMessage)}
-              className="w-full py-3.5 px-4 flex items-center gap-3 text-error font-body-lg text-body-lg active:bg-surface-variant/50 transition-colors"
+              className="w-full py-2.5 px-3 flex items-center gap-3 text-error font-body-lg text-body-lg hover:bg-error-container/20 active:bg-error-container/30 transition-colors"
             >
-              <span className="material-symbols-outlined text-[20px]">delete</span>
+              <span className="w-8 h-8 rounded-full bg-error/10 text-error flex items-center justify-center shrink-0">
+                <span className="material-symbols-outlined text-[18px]">delete</span>
+              </span>
               Supprimer
             </button>
           </div>

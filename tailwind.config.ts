@@ -128,10 +128,15 @@ const config: Config = {
           "0%, 80%, 100%": { opacity: "0.2" },
           "40%": { opacity: "1" },
         },
+        popIn: {
+          from: { opacity: "0", transform: "scale(0.85)" },
+          to: { opacity: "1", transform: "scale(1)" },
+        },
       },
       animation: {
         float: "float 6s ease-in-out infinite",
         fadeIn: "fadeIn 0.5s ease-out",
+        popIn: "popIn 0.15s cubic-bezier(0.16, 1, 0.3, 1)",
         slideUp: "slideUp 0.5s ease-out both",
         dotBlink: "dotBlink 1.4s ease-in-out infinite both",
       },
