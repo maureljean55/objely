@@ -9,6 +9,7 @@ export type AppNotification = {
   title: string;
   body: string;
   match_id: string | null;
+  direct_conversation_id: string | null;
   read: boolean;
   created_at: string;
 };

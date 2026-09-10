@@ -3,6 +3,7 @@ import Link from "next/link";
 import { notFound, redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import type { PublicProfile } from "@/lib/supabase/profile";
+import StartDirectMessageButton from "@/components/StartDirectMessageButton";
 
 function trustLabel(score: number) {
   if (score >= 70) return "Membre Or";
@@ -80,14 +81,22 @@ export default async function PublicProfilePage({ params }: { params: Promise<{ 
           </div>
         )}
 
-        {!isSelf && profile.phone && (
-          <a
-            href={`tel:${profile.phone}`}
-            className="w-full h-[50px] bg-primary text-on-primary font-headline-sm text-headline-sm rounded-xl shadow-sm flex items-center justify-center gap-2 active:scale-[0.98] transition-transform mt-auto"
-          >
-            <span className="material-symbols-outlined">call</span>
-            Appeler
-          </a>
+        {!isSelf && (
+          <div className="w-full flex flex-col gap-sm mt-auto">
+            <StartDirectMessageButton
+              otherUserId={profile.id}
+              className="w-full h-[50px] bg-primary text-on-primary font-headline-sm text-headline-sm rounded-xl shadow-sm flex items-center justify-center gap-2 active:scale-[0.98] transition-transform disabled:opacity-50"
+            />
+            {profile.phone && (
+              <a
+                href={`tel:${profile.phone}`}
+                className="w-full h-[50px] bg-primary/5 text-primary font-headline-sm text-headline-sm rounded-xl flex items-center justify-center gap-2 active:bg-primary/10 transition-colors"
+              >
+                <span className="material-symbols-outlined">call</span>
+                Appeler
+              </a>
+            )}
+          </div>
         )}
       </main>
     </div>

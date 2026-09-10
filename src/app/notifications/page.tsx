@@ -58,6 +58,10 @@ export default function NotificationsPage() {
       setNotifications((items) => items.map((n) => (n.id === item.id ? { ...n, read: true } : n)));
       await markAsRead(item.id);
     }
+    if (item.type === "message" && item.direct_conversation_id) {
+      router.push(`/dm/${item.direct_conversation_id}`);
+      return;
+    }
     if (!item.match_id) return;
     if (item.type === "message") {
       router.push(`/chat/${item.match_id}`);
