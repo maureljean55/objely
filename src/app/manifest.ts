@@ -12,7 +12,11 @@ export default function manifest(): MetadataRoute.Manifest {
     display: "standalone",
     orientation: "portrait",
     lang: "fr",
-    background_color: "#f9f9fe",
+    // Matches the splash screen's gradient start (src/app/page.tsx) — iOS
+    // shows this as the native launch background before any web content
+    // paints, so a near-white value here reads as a blank/broken flash
+    // instead of a seamless continuation into the real splash screen.
+    background_color: "#0058bc",
     theme_color: "#0058bc",
     categories: ["lifestyle", "utilities"],
     icons: [
