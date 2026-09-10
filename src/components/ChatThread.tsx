@@ -100,11 +100,23 @@ function VoicePlayer({ url, isMine }: { url: string; isMine: boolean }) {
           }
         }}
         onTimeUpdate={(e) => setCurrentTime(e.currentTarget.currentTime)}
-        className="hidden"
+        // Not `display:none` (Tailwind's `hidden`) — Safari/iOS can refuse
+        // to play an <audio> element that was never actually laid out.
+        // `sr-only` keeps it in the layout at 1x1px instead.
+        className="sr-only"
       />
       <button
         type="button"
-        onClick={toggle}
+        onPointerDown={(e) => e.stopPropagation()}
+        onClick={(e) => {
+          // The bubble around this button listens for pointerdown/move to
+          // recognize long-press and swipe-to-reply gestures — without
+          // stopping propagation, a real finger tap (which always has a
+          // little jitter) can be read as the start of that gesture and
+          // the play button then never receives its click.
+          e.stopPropagation();
+          toggle();
+        }}
         className={`shrink-0 w-9 h-9 rounded-full flex items-center justify-center ${isMine ? "bg-white/20 text-on-primary" : "bg-primary/10 text-primary"}`}
       >
         <span className="material-symbols-outlined text-[20px]" style={{ fontVariationSettings: "'FILL' 1" }}>
