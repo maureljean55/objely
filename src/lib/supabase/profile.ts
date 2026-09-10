@@ -13,6 +13,16 @@ export type Profile = {
   address: string | null;
   avatar_url: string | null;
   trust_score: number;
+  share_phone: boolean;
+};
+
+export type PublicProfile = {
+  id: string;
+  full_name: string | null;
+  avatar_url: string | null;
+  trust_score: number;
+  /** Only populated when the profile owner has opted in to sharing it. */
+  phone: string | null;
 };
 
 export async function getMyProfile() {
@@ -31,6 +41,21 @@ export async function updateAvatarUrl(avatarUrl: string) {
   if (!user) return { error: new Error("Vous devez être connecté.") };
 
   return supabase.from("profiles").update({ avatar_url: avatarUrl }).eq("id", user.id);
+}
+
+export async function updateSharePhone(sharePhone: boolean) {
+  const supabase = createClient();
+  const { data: { session } } = await supabase.auth.getSession();
+  const user = session?.user ?? null;
+  if (!user) return { error: new Error("Vous devez être connecté.") };
+
+  return supabase.from("profiles").update({ share_phone: sharePhone }).eq("id", user.id);
+}
+
+/** Fetches the safe, public-facing fields of another user's profile (e.g. after scanning their QR code). */
+export async function getPublicProfile(profileId: string) {
+  const supabase = createClient();
+  return supabase.rpc("get_public_profile", { profile_id: profileId }).maybeSingle<PublicProfile>();
 }
 
 /** Bumps the caller's trust score for declaring a found item — server-side verifies they own it and it's a "found" item, and won't award it twice. */

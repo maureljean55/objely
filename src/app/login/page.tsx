@@ -50,7 +50,8 @@ function LoginForm() {
       return;
     }
 
-    router.push("/home");
+    const next = searchParams.get("next");
+    router.push(next && next.startsWith("/") && !next.startsWith("//") ? next : "/home");
     router.refresh();
   };
 
