@@ -61,8 +61,8 @@ export default function SecureChatPage() {
     })();
   }, [matchId]);
 
-  const handleSend = async (body: string) => {
-    const { data, error } = await sendMessage(matchId, body);
+  const handleSend = async (body: string, replyToId: string | null) => {
+    const { data, error } = await sendMessage(matchId, body, replyToId);
     if (!error && data) {
       setMessages((prev) => [...prev, data]);
       return true;
@@ -70,10 +70,10 @@ export default function SecureChatPage() {
     return false;
   };
 
-  const handleSendVoice = async (blob: Blob) => {
+  const handleSendVoice = async (blob: Blob, replyToId: string | null) => {
     const { url, error: uploadError } = await uploadVoiceNote(blob);
     if (uploadError || !url) return false;
-    const { data, error } = await sendVoiceMessage(matchId, url);
+    const { data, error } = await sendVoiceMessage(matchId, url, replyToId);
     if (!error && data) {
       setMessages((prev) => [...prev, data]);
       return true;
@@ -139,6 +139,8 @@ export default function SecureChatPage() {
     voiceUrl: m.voice_url,
     editedAt: m.edited_at,
     deletedAt: m.deleted_at,
+    createdAt: m.created_at,
+    replyToId: m.reply_to_id,
   }));
 
   return (

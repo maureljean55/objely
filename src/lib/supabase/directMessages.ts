@@ -10,6 +10,7 @@ export type DirectMessage = {
   edited_at: string | null;
   deleted_at: string | null;
   created_at: string;
+  reply_to_id: string | null;
 };
 
 export type ConversationPeer = {
@@ -51,15 +52,17 @@ export async function listDirectMessages(conversationId: string) {
     .returns<DirectMessage[]>();
 }
 
-export async function sendDirectMessage(conversationId: string, body: string) {
-  const supabase = createClient();
-  return supabase.rpc("send_direct_message", { p_conversation_id: conversationId, p_body: body }).single<DirectMessage>();
-}
-
-export async function sendVoiceDirectMessage(conversationId: string, voiceUrl: string) {
+export async function sendDirectMessage(conversationId: string, body: string, replyToId: string | null = null) {
   const supabase = createClient();
   return supabase
-    .rpc("send_direct_message", { p_conversation_id: conversationId, p_voice_url: voiceUrl })
+    .rpc("send_direct_message", { p_conversation_id: conversationId, p_body: body, p_reply_to_id: replyToId })
+    .single<DirectMessage>();
+}
+
+export async function sendVoiceDirectMessage(conversationId: string, voiceUrl: string, replyToId: string | null = null) {
+  const supabase = createClient();
+  return supabase
+    .rpc("send_direct_message", { p_conversation_id: conversationId, p_voice_url: voiceUrl, p_reply_to_id: replyToId })
     .single<DirectMessage>();
 }
 

@@ -12,6 +12,7 @@ export type Message = {
   edited_at: string | null;
   deleted_at: string | null;
   created_at: string;
+  reply_to_id: string | null;
 };
 
 export type MatchWithItems = {
@@ -89,7 +90,7 @@ async function notifyOtherParticipant(matchId: string, senderId: string, notifBo
   await createNotification(recipientId, "message", "Nouveau message", notifBody, matchId);
 }
 
-export async function sendMessage(matchId: string, body: string) {
+export async function sendMessage(matchId: string, body: string, replyToId: string | null = null) {
   const supabase = createClient();
   const { data: { session } } = await supabase.auth.getSession();
   const user = session?.user ?? null;
@@ -97,7 +98,7 @@ export async function sendMessage(matchId: string, body: string) {
 
   const result = await supabase
     .from("messages")
-    .insert({ match_id: matchId, sender_id: user.id, body, kind: "text" })
+    .insert({ match_id: matchId, sender_id: user.id, body, kind: "text", reply_to_id: replyToId })
     .select()
     .single<Message>();
 
@@ -106,7 +107,7 @@ export async function sendMessage(matchId: string, body: string) {
   return result;
 }
 
-export async function sendVoiceMessage(matchId: string, voiceUrl: string) {
+export async function sendVoiceMessage(matchId: string, voiceUrl: string, replyToId: string | null = null) {
   const supabase = createClient();
   const { data: { session } } = await supabase.auth.getSession();
   const user = session?.user ?? null;
@@ -114,7 +115,7 @@ export async function sendVoiceMessage(matchId: string, voiceUrl: string) {
 
   const result = await supabase
     .from("messages")
-    .insert({ match_id: matchId, sender_id: user.id, kind: "voice", voice_url: voiceUrl })
+    .insert({ match_id: matchId, sender_id: user.id, kind: "voice", voice_url: voiceUrl, reply_to_id: replyToId })
     .select()
     .single<Message>();
 

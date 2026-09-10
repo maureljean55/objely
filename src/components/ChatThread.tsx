@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, type PointerEvent as ReactPointerEvent } from "react";
 import Image from "next/image";
 
 export type ChatMessage = {
@@ -11,6 +11,8 @@ export type ChatMessage = {
   voiceUrl: string | null;
   editedAt: string | null;
   deletedAt: string | null;
+  createdAt: string;
+  replyToId: string | null;
 };
 
 function initials(name: string) {
@@ -28,13 +30,25 @@ function formatDuration(seconds: number) {
   return `${m}:${s.toString().padStart(2, "0")}`;
 }
 
+function formatTime(iso: string) {
+  return new Date(iso).toLocaleTimeString("fr-FR", { hour: "2-digit", minute: "2-digit" });
+}
+
+function messagePreviewText(message: ChatMessage) {
+  if (message.deletedAt) return "Message supprimé";
+  if (message.kind === "voice") return "🎤 Note vocale";
+  return message.body ?? "";
+}
+
 const LONG_PRESS_MS = 450;
 const MENU_WIDTH = 200;
 const MENU_MARGIN = 8;
+const SWIPE_MAX = 72;
+const SWIPE_THRESHOLD = 48;
 
 function clampMenuPosition(x: number, y: number, rows: number) {
   if (typeof window === "undefined") return { left: x, top: y };
-  const height = rows * 48;
+  const height = rows * 40 + 8;
   const left = Math.min(Math.max(x, MENU_MARGIN), window.innerWidth - MENU_WIDTH - MENU_MARGIN);
   const top = Math.min(Math.max(y, MENU_MARGIN), window.innerHeight - height - MENU_MARGIN);
   return { left, top };
@@ -92,13 +106,151 @@ function VoicePlayer({ url, isMine }: { url: string; isMine: boolean }) {
   );
 }
 
+function MessageBubble({
+  message,
+  isMine,
+  peerName,
+  currentUserId,
+  isMenuOpen,
+  replyTarget,
+  onLongPress,
+  onContextMenu,
+  onSwipeReply,
+}: {
+  message: ChatMessage;
+  isMine: boolean;
+  peerName: string;
+  currentUserId: string | null;
+  isMenuOpen: boolean;
+  replyTarget: ChatMessage | null;
+  onLongPress: (message: ChatMessage, x: number, y: number) => void;
+  onContextMenu: (message: ChatMessage, x: number, y: number) => void;
+  onSwipeReply: (message: ChatMessage) => void;
+}) {
+  const isDeleted = !!message.deletedAt;
+  const [dragX, setDragX] = useState(0);
+  const [isDragging, setIsDragging] = useState(false);
+  const gesture = useRef<{ startX: number; startY: number; mode: "none" | "swipe" | "scroll" } | null>(null);
+  const longPressTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  const clearLongPress = () => {
+    if (longPressTimer.current) {
+      clearTimeout(longPressTimer.current);
+      longPressTimer.current = null;
+    }
+  };
+
+  const handlePointerDown = (e: ReactPointerEvent) => {
+    if (isDeleted) return;
+    gesture.current = { startX: e.clientX, startY: e.clientY, mode: "none" };
+    clearLongPress();
+    longPressTimer.current = setTimeout(() => onLongPress(message, e.clientX, e.clientY), LONG_PRESS_MS);
+  };
+
+  const handlePointerMove = (e: ReactPointerEvent) => {
+    const g = gesture.current;
+    if (!g || isDeleted) return;
+    const dx = e.clientX - g.startX;
+    const dy = e.clientY - g.startY;
+    if (g.mode === "none") {
+      if (Math.abs(dx) > 10 && Math.abs(dx) > Math.abs(dy) * 1.5) {
+        g.mode = "swipe";
+        setIsDragging(true);
+        clearLongPress();
+      } else if (Math.abs(dy) > 10) {
+        g.mode = "scroll";
+        clearLongPress();
+      }
+    }
+    if (g.mode === "swipe") {
+      setDragX(Math.max(Math.min(dx, 0), -SWIPE_MAX));
+    }
+  };
+
+  const endGesture = () => {
+    clearLongPress();
+    if (gesture.current?.mode === "swipe" && dragX <= -SWIPE_THRESHOLD) {
+      onSwipeReply(message);
+    }
+    gesture.current = null;
+    setIsDragging(false);
+    setDragX(0);
+  };
+
+  return (
+    <div className={`flex gap-2 max-w-[85%] ${isMine ? "self-end flex-row-reverse" : "self-start"}`}>
+      <div
+        className={`w-8 h-8 rounded-full overflow-hidden shrink-0 flex items-center justify-center ${
+          isMine ? "bg-primary text-on-primary" : "bg-surface-container-highest text-on-surface-variant"
+        }`}
+      >
+        <span className="font-label-md text-label-md">{isMine ? "Moi" : initials(peerName)}</span>
+      </div>
+      <div className="flex flex-col gap-1 min-w-0">
+        <div className="relative">
+          {!isDeleted && (
+            <div
+              className="absolute inset-y-0 right-0 flex items-center pr-2 pointer-events-none"
+              style={{ opacity: Math.min(1, Math.abs(dragX) / SWIPE_THRESHOLD) }}
+            >
+              <span className="material-symbols-outlined text-primary text-[22px]">reply</span>
+            </div>
+          )}
+          <div
+            onPointerDown={handlePointerDown}
+            onPointerMove={handlePointerMove}
+            onPointerUp={endGesture}
+            onPointerLeave={endGesture}
+            onPointerCancel={endGesture}
+            onContextMenu={(e) => {
+              if (isDeleted) return;
+              e.preventDefault();
+              onContextMenu(message, e.clientX, e.clientY);
+            }}
+            style={{ transform: `translateX(${dragX}px)`, transition: isDragging ? "none" : "transform 200ms ease-out" }}
+            className={`rounded-2xl px-4 py-2.5 shadow-sm select-none ${isMenuOpen ? "shadow-[0_0_0_4px_rgba(0,88,188,0.18)]" : ""} ${
+              isDeleted
+                ? "bg-surface-container-high text-on-surface-variant italic"
+                : isMine
+                  ? "message-out text-on-primary text-right"
+                  : "bg-surface-container message-in text-on-surface"
+            }`}
+          >
+            {!isDeleted && replyTarget && (
+              <div className={`mb-1.5 rounded-md px-2 py-1 border-l-2 text-left ${isMine ? "bg-white/10 border-white/60" : "bg-black/5 border-primary"}`}>
+                <span className={`block font-label-md text-[11px] font-semibold ${isMine ? "text-on-primary/90" : "text-primary"}`}>
+                  {replyTarget.senderId === currentUserId ? "Vous" : peerName}
+                </span>
+                <span className={`block font-body-md text-[12px] truncate ${isMine ? "text-on-primary/70" : "text-on-surface-variant"}`}>
+                  {messagePreviewText(replyTarget)}
+                </span>
+              </div>
+            )}
+            {isDeleted ? (
+              <p className="font-body-md text-body-md">Message supprimé</p>
+            ) : message.kind === "voice" && message.voiceUrl ? (
+              <VoicePlayer url={message.voiceUrl} isMine={isMine} />
+            ) : (
+              <p className="font-body-md text-body-md whitespace-pre-wrap">{message.body}</p>
+            )}
+          </div>
+        </div>
+        <div className={`flex items-center gap-1 font-label-md text-[10px] text-outline px-1 ${isMine ? "justify-end" : "justify-start"}`}>
+          <span>{formatTime(message.createdAt)}</span>
+          {!isDeleted && message.editedAt && <span>· modifié</span>}
+        </div>
+      </div>
+    </div>
+  );
+}
+
 type Props = {
   peerName: string;
   peerAvatarUrl: string | null;
   currentUserId: string | null;
   messages: ChatMessage[];
-  onSend: (body: string) => Promise<boolean>;
-  onSendVoice: (blob: Blob) => Promise<boolean>;
+  onSend: (body: string, replyToId: string | null) => Promise<boolean>;
+  onSendVoice: (blob: Blob, replyToId: string | null) => Promise<boolean>;
   onEdit: (messageId: string, body: string) => Promise<boolean>;
   onDelete: (messageId: string) => Promise<boolean>;
   onBack: () => void;
@@ -119,18 +271,19 @@ export default function ChatThread({
   const [draft, setDraft] = useState("");
   const [isSending, setIsSending] = useState(false);
   const [editingId, setEditingId] = useState<string | null>(null);
+  const [replyingTo, setReplyingTo] = useState<ChatMessage | null>(null);
   const [menuMessage, setMenuMessage] = useState<ChatMessage | null>(null);
   const [menuPos, setMenuPos] = useState<{ x: number; y: number } | null>(null);
-  const pendingPos = useRef<{ x: number; y: number } | null>(null);
   const [isRecording, setIsRecording] = useState(false);
   const [recordingSeconds, setRecordingSeconds] = useState(0);
   const [isUploadingVoice, setIsUploadingVoice] = useState(false);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
-  const longPressTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const mediaRecorderRef = useRef<MediaRecorder | null>(null);
   const chunksRef = useRef<Blob[]>([]);
   const streamRef = useRef<MediaStream | null>(null);
   const recordingIntervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
+
+  const messagesById = new Map(messages.map((m) => [m.id, m]));
 
   useEffect(() => {
     return () => {
@@ -139,26 +292,26 @@ export default function ChatThread({
     };
   }, []);
 
-  const clearLongPress = () => {
-    if (longPressTimer.current) {
-      clearTimeout(longPressTimer.current);
-      longPressTimer.current = null;
-    }
-  };
-
-  const startLongPress = (message: ChatMessage, x: number, y: number) => {
-    if (message.senderId !== currentUserId || message.deletedAt) return;
-    clearLongPress();
-    pendingPos.current = { x, y };
-    longPressTimer.current = setTimeout(() => {
-      setMenuMessage(message);
-      setMenuPos(pendingPos.current);
-    }, LONG_PRESS_MS);
-  };
-
   const closeMenu = () => {
     setMenuMessage(null);
     setMenuPos(null);
+  };
+
+  const handleLongPress = (message: ChatMessage, x: number, y: number) => {
+    const isOwn = message.senderId === currentUserId;
+    const hasAnyAction = message.kind === "text" || isOwn;
+    if (!hasAnyAction) return;
+    setMenuMessage(message);
+    setMenuPos({ x, y });
+  };
+
+  const handleSwipeReply = (message: ChatMessage) => {
+    if (editingId) {
+      setEditingId(null);
+      setDraft("");
+    }
+    setReplyingTo(message);
+    textareaRef.current?.focus();
   };
 
   const handleSend = async () => {
@@ -177,14 +330,19 @@ export default function ChatThread({
     }
 
     setDraft("");
-    const sent = await onSend(body);
-    if (!sent) setDraft(body);
+    const sent = await onSend(body, replyingTo?.id ?? null);
+    if (sent) {
+      setReplyingTo(null);
+    } else {
+      setDraft(body);
+    }
     setIsSending(false);
   };
 
   const startEditing = (message: ChatMessage) => {
     setEditingId(message.id);
     setDraft(message.body ?? "");
+    setReplyingTo(null);
     closeMenu();
     textareaRef.current?.focus();
   };
@@ -192,6 +350,17 @@ export default function ChatThread({
   const cancelEditing = () => {
     setEditingId(null);
     setDraft("");
+  };
+
+  const handleCopy = async (message: ChatMessage) => {
+    closeMenu();
+    if (!message.body) return;
+    try {
+      await navigator.clipboard.writeText(message.body);
+    } catch {
+      // Clipboard access can be denied by the browser — nothing useful to
+      // do about it beyond leaving the message as-is.
+    }
   };
 
   const handleDelete = async (message: ChatMessage) => {
@@ -233,13 +402,17 @@ export default function ChatThread({
       if (send && chunksRef.current.length > 0) {
         const blob = new Blob(chunksRef.current, { type: recorder.mimeType || "audio/webm" });
         setIsUploadingVoice(true);
-        await onSendVoice(blob);
+        const sent = await onSendVoice(blob, replyingTo?.id ?? null);
+        if (sent) setReplyingTo(null);
         setIsUploadingVoice(false);
       }
       chunksRef.current = [];
     };
     recorder.stop();
   };
+
+  const menuIsOwn = menuMessage?.senderId === currentUserId;
+  const menuRowCount = menuMessage ? (menuMessage.kind === "text" ? 1 : 0) + (menuIsOwn ? (menuMessage.kind === "text" ? 2 : 1) : 0) : 0;
 
   return (
     <div className="bg-background text-on-background font-body-md antialiased">
@@ -277,60 +450,38 @@ export default function ChatThread({
           </p>
         )}
 
-        {messages.map((message) => {
-          const isMine = message.senderId === currentUserId;
-          const isDeleted = !!message.deletedAt;
-          return (
-            <div key={message.id} className={`flex gap-2 max-w-[85%] ${isMine ? "self-end flex-row-reverse" : "self-start"}`}>
-              <div
-                className={`w-8 h-8 rounded-full overflow-hidden shrink-0 flex items-center justify-center ${
-                  isMine ? "bg-primary text-on-primary" : "bg-surface-container-highest text-on-surface-variant"
-                }`}
-              >
-                <span className="font-label-md text-label-md">{isMine ? "Moi" : initials(peerName)}</span>
-              </div>
-              <div className="flex flex-col gap-1">
-                <div
-                  onPointerDown={(e) => startLongPress(message, e.clientX, e.clientY)}
-                  onPointerUp={clearLongPress}
-                  onPointerLeave={clearLongPress}
-                  onPointerCancel={clearLongPress}
-                  onContextMenu={(e) => {
-                    if (message.senderId === currentUserId && !isDeleted) {
-                      e.preventDefault();
-                      setMenuMessage(message);
-                      setMenuPos({ x: e.clientX, y: e.clientY });
-                    }
-                  }}
-                  className={`rounded-2xl px-4 py-2.5 shadow-sm select-none transition-shadow duration-200 ${
-                    menuMessage?.id === message.id ? "shadow-[0_0_0_4px_rgba(0,88,188,0.18)]" : ""
-                  } ${
-                    isDeleted
-                      ? "bg-surface-container-high text-on-surface-variant italic"
-                      : isMine
-                        ? "message-out text-on-primary text-right"
-                        : "bg-surface-container message-in text-on-surface"
-                  }`}
-                >
-                  {isDeleted ? (
-                    <p className="font-body-md text-body-md">Message supprimé</p>
-                  ) : message.kind === "voice" && message.voiceUrl ? (
-                    <VoicePlayer url={message.voiceUrl} isMine={isMine} />
-                  ) : (
-                    <p className="font-body-md text-body-md whitespace-pre-wrap">{message.body}</p>
-                  )}
-                </div>
-                {!isDeleted && message.editedAt && (
-                  <span className={`font-label-md text-[10px] text-outline ${isMine ? "text-right" : "text-left"}`}>modifié</span>
-                )}
-              </div>
-            </div>
-          );
-        })}
+        {messages.map((message) => (
+          <MessageBubble
+            key={message.id}
+            message={message}
+            isMine={message.senderId === currentUserId}
+            peerName={peerName}
+            currentUserId={currentUserId}
+            isMenuOpen={menuMessage?.id === message.id}
+            replyTarget={message.replyToId ? messagesById.get(message.replyToId) ?? null : null}
+            onLongPress={handleLongPress}
+            onContextMenu={handleLongPress}
+            onSwipeReply={handleSwipeReply}
+          />
+        ))}
       </main>
 
       <footer className="glass-input fixed bottom-0 inset-x-0 z-50 p-3 safe-area-pb">
         <div className="max-w-7xl mx-auto w-full">
+          {replyingTo && !editingId && (
+            <div className="flex items-start gap-2 px-3 py-2 mb-1.5 bg-surface-container-high rounded-lg border-l-[3px] border-primary">
+              <div className="flex-1 min-w-0">
+                <span className="block font-label-md text-label-md text-primary font-semibold">
+                  {replyingTo.senderId === currentUserId ? "Vous" : peerName}
+                </span>
+                <span className="block font-body-md text-body-md text-on-surface-variant truncate">{messagePreviewText(replyingTo)}</span>
+              </div>
+              <button type="button" onClick={() => setReplyingTo(null)} aria-label="Annuler la réponse" className="text-on-surface-variant p-1 shrink-0">
+                <span className="material-symbols-outlined text-[18px]">close</span>
+              </button>
+            </div>
+          )}
+
           {editingId && (
             <div className="flex items-center justify-between px-3 py-1.5 mb-1.5 bg-surface-container-high rounded-lg">
               <span className="font-label-md text-label-md text-on-surface-variant">Modifier le message</span>
@@ -424,10 +575,20 @@ export default function ChatThread({
         <div role="dialog" aria-modal="true" className="fixed inset-0 z-[100]" onClick={closeMenu}>
           <div
             className="absolute bg-surface-container-lowest/95 backdrop-blur-xl rounded-xl overflow-hidden shadow-[0_8px_30px_rgba(0,0,0,0.12)] border border-outline-variant/15 py-1 origin-top-left animate-popIn"
-            style={{ ...clampMenuPosition(menuPos.x, menuPos.y, menuMessage.kind === "text" ? 2 : 1), width: MENU_WIDTH }}
+            style={{ ...clampMenuPosition(menuPos.x, menuPos.y, menuRowCount), width: MENU_WIDTH }}
             onClick={(e) => e.stopPropagation()}
           >
             {menuMessage.kind === "text" && (
+              <button
+                type="button"
+                onClick={() => handleCopy(menuMessage)}
+                className="w-full py-2 px-3 flex items-center gap-2.5 text-on-surface font-body-md text-body-md hover:bg-surface-variant/40 active:bg-surface-variant/60 transition-colors"
+              >
+                <span className="material-symbols-outlined text-[19px] text-on-surface-variant w-5 shrink-0">content_copy</span>
+                Copier
+              </button>
+            )}
+            {menuIsOwn && menuMessage.kind === "text" && (
               <button
                 type="button"
                 onClick={() => startEditing(menuMessage)}
@@ -437,14 +598,16 @@ export default function ChatThread({
                 Modifier
               </button>
             )}
-            <button
-              type="button"
-              onClick={() => handleDelete(menuMessage)}
-              className="w-full py-2 px-3 flex items-center gap-2.5 text-error font-body-md text-body-md hover:bg-surface-variant/40 active:bg-surface-variant/60 transition-colors"
-            >
-              <span className="material-symbols-outlined text-[19px] text-on-surface-variant w-5 shrink-0">delete</span>
-              Supprimer
-            </button>
+            {menuIsOwn && (
+              <button
+                type="button"
+                onClick={() => handleDelete(menuMessage)}
+                className="w-full py-2 px-3 flex items-center gap-2.5 text-error font-body-md text-body-md hover:bg-surface-variant/40 active:bg-surface-variant/60 transition-colors"
+              >
+                <span className="material-symbols-outlined text-[19px] text-on-surface-variant w-5 shrink-0">delete</span>
+                Supprimer
+              </button>
+            )}
           </div>
         </div>
       )}
