@@ -62,7 +62,7 @@ function ProfileSummary({
             <div className="relative mb-4">
               <div className="relative w-28 h-28 rounded-full overflow-hidden soft-shadow ring-4 ring-surface-container-lowest bg-surface-container-high flex items-center justify-center text-on-surface-variant">
                 {avatarUrl ? (
-                  <Image alt={displayName} src={avatarUrl} fill sizes="112px" className="object-cover" />
+                  <Image alt={displayName} src={avatarUrl} fill sizes="112px" className="object-cover" priority />
                 ) : (
                   <span className="material-symbols-outlined text-[52px]">person</span>
                 )}

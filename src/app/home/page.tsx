@@ -6,7 +6,7 @@ import MessagesFab from "@/components/MessagesFab";
 import { createClient } from "@/lib/supabase/server";
 import { getServerTranslations } from "@/lib/i18n/server";
 import { formatTimeAgo } from "@/lib/i18n/timeAgo";
-import type { Item } from "@/lib/supabase/items";
+import { listRecentFinds } from "@/lib/supabase/publicFeed";
 
 export default async function HomeDashboardPage({
   searchParams,
@@ -18,22 +18,14 @@ export default async function HomeDashboardPage({
   const t = await getServerTranslations();
 
   // recentFinds doesn't depend on the user, so it can run alongside the
-  // auth check instead of waiting behind it. getSession() reads the session
-  // middleware already validated/refreshed for this request — no need to
-  // hit Supabase's Auth server a second time just to read the user id.
+  // auth check instead of waiting behind it — and it's cached (see
+  // publicFeed.ts), so most requests don't hit Supabase for it at all.
+  // getSession() reads the session middleware already validated/refreshed
+  // for this request — no need to hit Supabase's Auth server a second time
+  // just to read the user id.
   const [{ data: recentFinds }, {
     data: { session },
-  }] = await Promise.all([
-    supabase
-      .from("items")
-      .select("*")
-      .eq("type", "found")
-      .is("deleted_at", null)
-      .order("created_at", { ascending: false })
-      .limit(6)
-      .returns<Item[]>(),
-    supabase.auth.getSession(),
-  ]);
+  }] = await Promise.all([listRecentFinds(6), supabase.auth.getSession()]);
   const user = session?.user ?? null;
 
   const [{ count: unreadCount }, { count: unreadMessageCount }, { data: profile }] = user
@@ -184,7 +176,7 @@ export default async function HomeDashboardPage({
           <h3 className="font-headline-sm text-headline-sm text-on-background">{t.home.recentFindsTitle}</h3>
           {recentFinds && recentFinds.length > 0 ? (
             <div className="flex overflow-x-auto md:grid md:grid-cols-3 gap-md pb-md hide-scrollbar -mx-container-margin px-container-margin md:mx-0 md:px-0">
-              {recentFinds.map((item) => (
+              {recentFinds.map((item, index) => (
                 <div key={item.id} className="flex flex-col min-w-[200px] max-w-[200px] md:min-w-0 md:max-w-none shrink-0">
                   <div className="flex items-center gap-1.5 mb-2">
                     <span className="w-2 h-2 rounded-full bg-primary" />
@@ -192,7 +184,7 @@ export default async function HomeDashboardPage({
                   </div>
                   <div className="relative h-32 rounded-2xl overflow-hidden bg-surface-container-high mb-2 flex items-center justify-center text-primary">
                     {item.photos?.[0] ? (
-                      <Image alt={item.title} src={item.photos[0]} fill sizes="200px" className="object-cover" />
+                      <Image alt={item.title} src={item.photos[0]} fill sizes="200px" className="object-cover" priority={index === 0} />
                     ) : (
                       <span className="material-symbols-outlined text-4xl">{item.category_icon || "inventory_2"}</span>
                     )}

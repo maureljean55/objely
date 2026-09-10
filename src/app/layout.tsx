@@ -1,9 +1,20 @@
 import type { Metadata, Viewport } from "next";
+import { Plus_Jakarta_Sans } from "next/font/google";
 import "./globals.css";
 import ServiceWorkerRegister from "@/components/ServiceWorkerRegister";
 import SessionGuard from "@/components/SessionGuard";
 import { LanguageProvider } from "@/components/LanguageProvider";
 import { getServerLanguage } from "@/lib/i18n/server";
+
+// Self-hosted at build time (no render-blocking request to fonts.googleapis.com
+// on every cold load) — exposed as a CSS variable so Tailwind's fontFamily
+// config (see tailwind.config.ts) can reference it.
+const plusJakartaSans = Plus_Jakarta_Sans({
+  subsets: ["latin"],
+  weight: ["400", "500", "600", "700"],
+  display: "swap",
+  variable: "--font-plus-jakarta-sans",
+});
 
 export const metadata: Metadata = {
   applicationName: "Objely",
@@ -46,17 +57,14 @@ const THEME_INIT_SCRIPT = `
 export default async function RootLayout({ children }: LayoutProps<"/">) {
   const language = await getServerLanguage();
   return (
-    <html lang={language} suppressHydrationWarning>
+    <html lang={language} suppressHydrationWarning className={plusJakartaSans.variable}>
       <head>
         {/* Runs before paint so the stored/system theme applies with no flash. */}
         <script dangerouslySetInnerHTML={{ __html: THEME_INIT_SCRIPT }} />
+        {/* Material Symbols is an icon font next/font/google doesn't carry in
+            its catalog, so it stays a regular Google Fonts request. */}
         <link href="https://fonts.googleapis.com" rel="preconnect" />
         <link href="https://fonts.gstatic.com" rel="preconnect" crossOrigin="" />
-        {/* eslint-disable-next-line @next/next/no-page-custom-font */}
-        <link
-          href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap"
-          rel="stylesheet"
-        />
         {/* eslint-disable-next-line @next/next/no-page-custom-font */}
         <link
           href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap"
