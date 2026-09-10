@@ -3,7 +3,17 @@
 import { useEffect, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
-import { getMatch, listMessages, sendMessage, type MatchWithItems, type Message } from "@/lib/supabase/messages";
+import {
+  deleteMessage,
+  editMessage,
+  getMatch,
+  listMessages,
+  sendMessage,
+  sendVoiceMessage,
+  type MatchWithItems,
+  type Message,
+} from "@/lib/supabase/messages";
+import { uploadVoiceNote } from "@/lib/supabase/voiceNotes";
 import ChatThread, { type ChatMessage } from "@/components/ChatThread";
 
 type OtherProfile = { full_name: string | null; avatar_url: string | null };
@@ -60,6 +70,35 @@ export default function SecureChatPage() {
     return false;
   };
 
+  const handleSendVoice = async (blob: Blob) => {
+    const { url, error: uploadError } = await uploadVoiceNote(blob);
+    if (uploadError || !url) return false;
+    const { data, error } = await sendVoiceMessage(matchId, url);
+    if (!error && data) {
+      setMessages((prev) => [...prev, data]);
+      return true;
+    }
+    return false;
+  };
+
+  const handleEdit = async (messageId: string, body: string) => {
+    const { data, error } = await editMessage(messageId, body);
+    if (!error && data) {
+      setMessages((prev) => prev.map((m) => (m.id === messageId ? data : m)));
+      return true;
+    }
+    return false;
+  };
+
+  const handleDelete = async (messageId: string) => {
+    const { data, error } = await deleteMessage(messageId);
+    if (!error && data) {
+      setMessages((prev) => prev.map((m) => (m.id === messageId ? data : m)));
+      return true;
+    }
+    return false;
+  };
+
   if (loadError) {
     return (
       <div className="bg-background text-on-background antialiased min-h-screen flex flex-col items-center justify-center px-container-margin text-center">
@@ -92,7 +131,15 @@ export default function SecureChatPage() {
     );
   }
 
-  const chatMessages: ChatMessage[] = messages.map((m) => ({ id: m.id, senderId: m.sender_id, body: m.body }));
+  const chatMessages: ChatMessage[] = messages.map((m) => ({
+    id: m.id,
+    senderId: m.sender_id,
+    kind: m.kind,
+    body: m.body,
+    voiceUrl: m.voice_url,
+    editedAt: m.edited_at,
+    deletedAt: m.deleted_at,
+  }));
 
   return (
     <ChatThread
@@ -101,6 +148,9 @@ export default function SecureChatPage() {
       currentUserId={currentUserId}
       messages={chatMessages}
       onSend={handleSend}
+      onSendVoice={handleSendVoice}
+      onEdit={handleEdit}
+      onDelete={handleDelete}
       onBack={() => router.back()}
     />
   );

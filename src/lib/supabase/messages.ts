@@ -6,7 +6,11 @@ export type Message = {
   id: string;
   match_id: string;
   sender_id: string;
-  body: string;
+  body: string | null;
+  kind: "text" | "voice";
+  voice_url: string | null;
+  edited_at: string | null;
+  deleted_at: string | null;
   created_at: string;
 };
 
@@ -78,6 +82,13 @@ export async function listMyConversations() {
   return { data: conversations, error: null };
 }
 
+async function notifyOtherParticipant(matchId: string, senderId: string, notifBody: string) {
+  const { data: match } = await getMatch(matchId);
+  if (!match) return;
+  const recipientId = match.lost_item.user_id === senderId ? match.found_item.user_id : match.lost_item.user_id;
+  await createNotification(recipientId, "message", "Nouveau message", notifBody, matchId);
+}
+
 export async function sendMessage(matchId: string, body: string) {
   const supabase = createClient();
   const { data: { session } } = await supabase.auth.getSession();
@@ -86,17 +97,38 @@ export async function sendMessage(matchId: string, body: string) {
 
   const result = await supabase
     .from("messages")
-    .insert({ match_id: matchId, sender_id: user.id, body })
+    .insert({ match_id: matchId, sender_id: user.id, body, kind: "text" })
     .select()
     .single<Message>();
 
-  if (!result.error) {
-    const { data: match } = await getMatch(matchId);
-    if (match) {
-      const recipientId = match.lost_item.user_id === user.id ? match.found_item.user_id : match.lost_item.user_id;
-      await createNotification(recipientId, "message", "Nouveau message", body.slice(0, 120), matchId);
-    }
-  }
+  if (!result.error) await notifyOtherParticipant(matchId, user.id, body.slice(0, 120));
 
   return result;
+}
+
+export async function sendVoiceMessage(matchId: string, voiceUrl: string) {
+  const supabase = createClient();
+  const { data: { session } } = await supabase.auth.getSession();
+  const user = session?.user ?? null;
+  if (!user) return { data: null, error: new Error("Vous devez être connecté.") };
+
+  const result = await supabase
+    .from("messages")
+    .insert({ match_id: matchId, sender_id: user.id, kind: "voice", voice_url: voiceUrl })
+    .select()
+    .single<Message>();
+
+  if (!result.error) await notifyOtherParticipant(matchId, user.id, "Note vocale");
+
+  return result;
+}
+
+export async function editMessage(messageId: string, body: string) {
+  const supabase = createClient();
+  return supabase.rpc("edit_message", { p_message_id: messageId, p_body: body }).single<Message>();
+}
+
+export async function deleteMessage(messageId: string) {
+  const supabase = createClient();
+  return supabase.rpc("delete_message", { p_message_id: messageId }).single<Message>();
 }

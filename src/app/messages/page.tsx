@@ -8,6 +8,12 @@ import { getCurrentUser } from "@/lib/auth";
 import { listMyConversations, type Conversation } from "@/lib/supabase/messages";
 import { listMyDirectConversations, type DirectConversationSummary } from "@/lib/supabase/directMessages";
 
+function previewText(body: string | null, kind: "text" | "voice" | null | undefined, deletedAt: string | null | undefined) {
+  if (deletedAt) return "Message supprimé";
+  if (kind === "voice") return "🎤 Note vocale";
+  return body ?? "";
+}
+
 function timeAgo(dateStr: string) {
   const diffMs = Date.now() - new Date(dateStr).getTime();
   const mins = Math.floor(diffMs / 60000);
@@ -115,7 +121,9 @@ export default function MessagesPage() {
                             {lastMessage && <span className="font-label-md text-[11px] text-outline shrink-0">{timeAgo(lastMessage.created_at)}</span>}
                           </div>
                           <p className="font-body-md text-body-md text-on-surface-variant truncate">
-                            {lastMessage ? `${isMine ? "Vous : " : ""}${lastMessage.body}` : "Aucun message pour le moment — dites bonjour !"}
+                            {lastMessage
+                              ? `${isMine ? "Vous : " : ""}${previewText(lastMessage.body, lastMessage.kind, lastMessage.deleted_at)}`
+                              : "Aucun message pour le moment — dites bonjour !"}
                           </p>
                         </div>
                       </div>
@@ -146,8 +154,8 @@ export default function MessagesPage() {
                           )}
                         </div>
                         <p className="font-body-md text-body-md text-on-surface-variant truncate">
-                          {conversation.last_message_body
-                            ? `${isMine ? "Vous : " : ""}${conversation.last_message_body}`
+                          {conversation.last_message_created_at
+                            ? `${isMine ? "Vous : " : ""}${previewText(conversation.last_message_body, conversation.last_message_kind, conversation.last_message_deleted_at)}`
                             : "Aucun message pour le moment — dites bonjour !"}
                         </p>
                       </div>

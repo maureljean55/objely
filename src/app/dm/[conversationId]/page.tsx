@@ -4,12 +4,16 @@ import { useEffect, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
 import {
+  deleteDirectMessage,
+  editDirectMessage,
   getDirectConversationPeer,
   listDirectMessages,
   sendDirectMessage,
+  sendVoiceDirectMessage,
   type ConversationPeer,
   type DirectMessage,
 } from "@/lib/supabase/directMessages";
+import { uploadVoiceNote } from "@/lib/supabase/voiceNotes";
 import ChatThread, { type ChatMessage } from "@/components/ChatThread";
 
 export default function DirectMessagePage() {
@@ -51,6 +55,35 @@ export default function DirectMessagePage() {
     return false;
   };
 
+  const handleSendVoice = async (blob: Blob) => {
+    const { url, error: uploadError } = await uploadVoiceNote(blob);
+    if (uploadError || !url) return false;
+    const { data, error } = await sendVoiceDirectMessage(conversationId, url);
+    if (!error && data) {
+      setMessages((prev) => [...prev, data]);
+      return true;
+    }
+    return false;
+  };
+
+  const handleEdit = async (messageId: string, body: string) => {
+    const { data, error } = await editDirectMessage(messageId, body);
+    if (!error && data) {
+      setMessages((prev) => prev.map((m) => (m.id === messageId ? data : m)));
+      return true;
+    }
+    return false;
+  };
+
+  const handleDelete = async (messageId: string) => {
+    const { data, error } = await deleteDirectMessage(messageId);
+    if (!error && data) {
+      setMessages((prev) => prev.map((m) => (m.id === messageId ? data : m)));
+      return true;
+    }
+    return false;
+  };
+
   if (loadError) {
     return (
       <div className="bg-background text-on-background antialiased min-h-screen flex flex-col items-center justify-center px-container-margin text-center">
@@ -62,7 +95,15 @@ export default function DirectMessagePage() {
     );
   }
 
-  const chatMessages: ChatMessage[] = messages.map((m) => ({ id: m.id, senderId: m.sender_id, body: m.body }));
+  const chatMessages: ChatMessage[] = messages.map((m) => ({
+    id: m.id,
+    senderId: m.sender_id,
+    kind: m.kind,
+    body: m.body,
+    voiceUrl: m.voice_url,
+    editedAt: m.edited_at,
+    deletedAt: m.deleted_at,
+  }));
 
   return (
     <ChatThread
@@ -71,6 +112,9 @@ export default function DirectMessagePage() {
       currentUserId={currentUserId}
       messages={chatMessages}
       onSend={handleSend}
+      onSendVoice={handleSendVoice}
+      onEdit={handleEdit}
+      onDelete={handleDelete}
       onBack={() => router.back()}
     />
   );
