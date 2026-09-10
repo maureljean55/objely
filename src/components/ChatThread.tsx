@@ -59,15 +59,19 @@ function VoicePlayer({ url, isMine }: { url: string; isMine: boolean }) {
   const [isPlaying, setIsPlaying] = useState(false);
   const [duration, setDuration] = useState(0);
   const [currentTime, setCurrentTime] = useState(0);
+  const [loadError, setLoadError] = useState(false);
 
   const toggle = () => {
     const audio = audioRef.current;
     if (!audio) return;
     if (isPlaying) {
       audio.pause();
-    } else {
-      audio.play();
+      return;
     }
+    // play() returns a promise that rejects silently on autoplay-policy or
+    // decode failures — without catching it, a failure here just does
+    // nothing visible, which is exactly the "rien ne se passe" symptom.
+    audio.play().catch(() => setLoadError(true));
   };
 
   const progress = duration > 0 ? Math.min(1, currentTime / duration) : 0;
@@ -100,6 +104,7 @@ function VoicePlayer({ url, isMine }: { url: string; isMine: boolean }) {
           }
         }}
         onTimeUpdate={(e) => setCurrentTime(e.currentTarget.currentTime)}
+        onError={() => setLoadError(true)}
         // Not `display:none` (Tailwind's `hidden`) — Safari/iOS can refuse
         // to play an <audio> element that was never actually laid out.
         // `sr-only` keeps it in the layout at 1x1px instead.
@@ -107,6 +112,7 @@ function VoicePlayer({ url, isMine }: { url: string; isMine: boolean }) {
       />
       <button
         type="button"
+        disabled={loadError}
         onPointerDown={(e) => e.stopPropagation()}
         onClick={(e) => {
           // The bubble around this button listens for pointerdown/move to
@@ -117,20 +123,26 @@ function VoicePlayer({ url, isMine }: { url: string; isMine: boolean }) {
           e.stopPropagation();
           toggle();
         }}
-        className={`shrink-0 w-9 h-9 rounded-full flex items-center justify-center ${isMine ? "bg-white/20 text-on-primary" : "bg-primary/10 text-primary"}`}
+        className={`shrink-0 w-9 h-9 rounded-full flex items-center justify-center disabled:opacity-50 ${isMine ? "bg-white/20 text-on-primary" : "bg-primary/10 text-primary"}`}
       >
         <span className="material-symbols-outlined text-[20px]" style={{ fontVariationSettings: "'FILL' 1" }}>
-          {isPlaying ? "pause" : "play_arrow"}
+          {loadError ? "error_outline" : isPlaying ? "pause" : "play_arrow"}
         </span>
       </button>
-      <div className="flex-1 flex flex-col gap-1">
-        <div className={`h-1 rounded-full overflow-hidden ${isMine ? "bg-white/30" : "bg-primary/20"}`}>
-          <div className={`h-full ${isMine ? "bg-white" : "bg-primary"}`} style={{ width: `${progress * 100}%` }} />
-        </div>
-        <span className={`font-label-md text-[11px] ${isMine ? "text-on-primary/80" : "text-on-surface-variant"}`}>
-          {formatDuration(isPlaying || currentTime > 0 ? currentTime : duration)}
+      {loadError ? (
+        <span className={`font-body-md text-[13px] ${isMine ? "text-on-primary/80" : "text-on-surface-variant"}`}>
+          Lecture impossible sur cet appareil
         </span>
-      </div>
+      ) : (
+        <div className="flex-1 flex flex-col gap-1">
+          <div className={`h-1 rounded-full overflow-hidden ${isMine ? "bg-white/30" : "bg-primary/20"}`}>
+            <div className={`h-full ${isMine ? "bg-white" : "bg-primary"}`} style={{ width: `${progress * 100}%` }} />
+          </div>
+          <span className={`font-label-md text-[11px] ${isMine ? "text-on-primary/80" : "text-on-surface-variant"}`}>
+            {formatDuration(isPlaying || currentTime > 0 ? currentTime : duration)}
+          </span>
+        </div>
+      )}
     </div>
   );
 }

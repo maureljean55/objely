@@ -7,9 +7,15 @@ export async function uploadVoiceNote(blob: Blob) {
   const user = session?.user ?? null;
   if (!user) return { url: null, error: new Error("Vous devez être connecté.") };
 
-  const path = `${user.id}/${Date.now()}.webm`;
+  // MediaRecorder's actual output format varies by browser (Chrome/Android
+  // records webm/opus, Safari/iOS records mp4/aac) — the file extension was
+  // previously hardcoded to .webm regardless, which is simply wrong for
+  // every non-Chromium recording.
+  const mimeType = blob.type || "audio/webm";
+  const ext = mimeType.includes("mp4") ? "m4a" : mimeType.includes("ogg") ? "ogg" : "webm";
+  const path = `${user.id}/${Date.now()}.${ext}`;
   const { error: uploadError } = await supabase.storage.from("voice-messages").upload(path, blob, {
-    contentType: blob.type || "audio/webm",
+    contentType: mimeType,
   });
   if (uploadError) return { url: null, error: uploadError };
 
