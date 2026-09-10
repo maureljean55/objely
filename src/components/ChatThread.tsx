@@ -81,7 +81,24 @@ function VoicePlayer({ url, isMine }: { url: string; isMine: boolean }) {
         onPlay={() => setIsPlaying(true)}
         onPause={() => setIsPlaying(false)}
         onEnded={() => setIsPlaying(false)}
-        onLoadedMetadata={(e) => setDuration(e.currentTarget.duration || 0)}
+        onLoadedMetadata={(e) => {
+          const audio = e.currentTarget;
+          // Chrome's MediaRecorder doesn't write a duration into the WebM
+          // header (it isn't known until recording stops), so `duration`
+          // reads as Infinity until the browser is forced to seek through
+          // the whole file once — this is the standard workaround.
+          if (!Number.isFinite(audio.duration)) {
+            const fixDuration = () => {
+              audio.currentTime = 0;
+              audio.removeEventListener("timeupdate", fixDuration);
+              setDuration(audio.duration || 0);
+            };
+            audio.addEventListener("timeupdate", fixDuration);
+            audio.currentTime = 1e101;
+          } else {
+            setDuration(audio.duration);
+          }
+        }}
         onTimeUpdate={(e) => setCurrentTime(e.currentTarget.currentTime)}
         className="hidden"
       />

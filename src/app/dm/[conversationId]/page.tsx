@@ -46,6 +46,50 @@ export default function DirectMessagePage() {
     })();
   }, [conversationId]);
 
+  // Without this, a new message (or an edit/delete) only ever showed up for
+  // whoever sent it — the other participant had no way to know until they
+  // reloaded the page.
+  useEffect(() => {
+    const supabase = createClient();
+    let channel: ReturnType<typeof supabase.channel> | null = null;
+    let cancelled = false;
+
+    (async () => {
+      // Realtime's own websocket auth doesn't always pick up the session
+      // restored from cookies in time for the first subscribe — setting it
+      // explicitly guarantees the RLS check on direct_messages (participants
+      // only) actually passes for this connection.
+      const { data: { session } } = await supabase.auth.getSession();
+      if (cancelled || !session) return;
+      supabase.realtime.setAuth(session.access_token);
+
+      channel = supabase
+        .channel(`direct_messages:${conversationId}`)
+        .on(
+          "postgres_changes",
+          { event: "INSERT", schema: "public", table: "direct_messages", filter: `conversation_id=eq.${conversationId}` },
+          (payload) => {
+            const incoming = payload.new as DirectMessage;
+            setMessages((prev) => (prev.some((m) => m.id === incoming.id) ? prev : [...prev, incoming]));
+          },
+        )
+        .on(
+          "postgres_changes",
+          { event: "UPDATE", schema: "public", table: "direct_messages", filter: `conversation_id=eq.${conversationId}` },
+          (payload) => {
+            const updated = payload.new as DirectMessage;
+            setMessages((prev) => prev.map((m) => (m.id === updated.id ? updated : m)));
+          },
+        )
+        .subscribe();
+    })();
+
+    return () => {
+      cancelled = true;
+      if (channel) supabase.removeChannel(channel);
+    };
+  }, [conversationId]);
+
   const handleSend = async (body: string, replyToId: string | null) => {
     const { data, error } = await sendDirectMessage(conversationId, body, replyToId);
     if (!error && data) {
