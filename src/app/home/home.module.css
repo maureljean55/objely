@@ -308,32 +308,53 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin: 25px 3px 13px;
+  margin: 28px 3px 14px;
 }
 
 .sectionTitle {
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 10px;
 }
 
 .sectionIcon {
-  font-size: 24px;
+  flex-shrink: 0;
+  width: 34px;
+  height: 34px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #4f7cfb, #8b5cf6);
+  color: white;
+  box-shadow: 0 6px 14px -4px rgba(79, 70, 229, 0.45);
+}
+
+.sectionIcon .material-symbols-outlined {
+  font-size: 18px;
 }
 
 .sectionTitle h2 {
-  font-size: 20px;
-  letter-spacing: -0.7px;
+  font-size: 19px;
+  font-weight: 800;
+  letter-spacing: -0.5px;
   color: #122653;
 }
 
 .seeAll {
+  display: inline-flex;
+  align-items: center;
+  gap: 1px;
   border: none;
   background: transparent;
   color: #6650e8;
-  font-size: 12px;
+  font-size: 13px;
   font-weight: 700;
   cursor: pointer;
+}
+
+.seeAll .material-symbols-outlined {
+  font-size: 18px;
 }
 
 .objectsList {

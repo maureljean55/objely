@@ -177,11 +177,16 @@ export default async function HomeDashboardPage({
         <section>
           <div className={styles.sectionHeader}>
             <div className={styles.sectionTitle}>
-              <span className={styles.sectionIcon}>🛍️</span>
+              <span className={styles.sectionIcon}>
+                <span className="material-symbols-outlined" style={{ fontVariationSettings: "'FILL' 1" }}>
+                  shopping_bag
+                </span>
+              </span>
               <h2>Objets récemment trouvés</h2>
             </div>
             <Link href="/search" className={styles.seeAll}>
-              Voir tout →
+              Voir tout
+              <span className="material-symbols-outlined">chevron_right</span>
             </Link>
           </div>
 
