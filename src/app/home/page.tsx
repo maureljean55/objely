@@ -131,9 +131,9 @@ export default async function HomeDashboardPage({
         <section className={styles.hero}>
           <div className={styles.welcome}>Bienvenue sur Objely&nbsp;!</div>
           <h1>
-            Ton objet peut tout
+            Chaque objet perdu
             <br />
-            <strong>changer&nbsp;!</strong>
+            <strong>mérite d&apos;être retrouvé&nbsp;!</strong>
           </h1>
           <p>Perds un objet. Retrouve-le. Ou aide les autres&nbsp;!</p>
         </section>
