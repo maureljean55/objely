@@ -112,9 +112,9 @@ export default async function HomeDashboardPage({
               {!!unreadCount && <i className={styles.notificationDot} />}
             </Link>
 
-            <button type="button" aria-label="Scanner un QR code" className={styles.circleButton}>
+            <Link href="/qr" aria-label="Scanner un QR code" className={styles.circleButton}>
               <span className="material-symbols-outlined">qr_code_scanner</span>
-            </button>
+            </Link>
           </div>
         </header>
 
