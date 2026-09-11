@@ -1,0 +1,112 @@
+<!DOCTYPE html><html lang="fr" style=""><head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Cartes d'action Objely</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="">
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800&amp;family=Plus+Jakarta+Sans:wght@500;600;700;800&amp;display=swap" rel="stylesheet">
+  <style>
+    body {
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      background: #f4f6fb;
+    }
+    .font-heading {
+      font-family: 'Outfit', sans-serif;
+    }
+    .card-lost {
+      background: linear-gradient(135deg, #1d72fe 0%, #2563eb 40%, #3b82f6 100%);
+      box-shadow: 0 14px 30px -8px rgba(37, 99, 235, 0.38), inset 0 2px 4px rgba(255, 255, 255, 0.35);
+      border-radius: 46px;
+    }
+    .card-found {
+      background: linear-gradient(135deg, #a78bfa 0%, #9061f9 45%, #7e4df8 100%);
+      box-shadow: 0 14px 30px -8px rgba(126, 77, 248, 0.38), inset 0 2px 4px rgba(255, 255, 255, 0.35);
+      border-radius: 46px;
+    }
+    .arrow-btn {
+      transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    .arrow-btn:hover {
+      transform: scale(1.08) translateX(2px);
+    }
+    .img-glow-blue {
+      filter: drop-shadow(0 8px 16px rgba(15, 23, 42, 0.2));
+    }
+    .img-glow-purple {
+      filter: drop-shadow(0 8px 16px rgba(76, 29, 149, 0.25));
+    }
+  </style>
+</head>
+<body class="min-h-screen flex items-center justify-center p-4 bg-slate-50">
+  <div class="w-full max-w-2xl mx-auto py-8"><svg class="absolute w-0 h-0 pointer-events-none" aria-hidden="true"><defs><clipPath id="wavy-zigzag-card" clipPathUnits="objectBoundingBox"><path d="M 0.05,0 C 0.08,0.02 0.12,0.02 0.15,0 C 0.18,0.02 0.22,0.02 0.25,0 C 0.28,0.02 0.32,0.02 0.35,0 C 0.38,0.02 0.42,0.02 0.45,0 C 0.48,0.02 0.52,0.02 0.55,0 C 0.58,0.02 0.62,0.02 0.65,0 C 0.68,0.02 0.72,0.02 0.75,0 C 0.78,0.02 0.82,0.02 0.85,0 C 0.88,0.02 0.92,0.02 0.95,0 Q 1,0 1,0.08 C 0.98,0.15 0.98,0.22 1,0.28 C 0.98,0.35 0.98,0.42 1,0.5 C 0.98,0.58 0.98,0.65 1,0.72 C 0.98,0.78 0.98,0.85 1,0.92 Q 1,1 0.95,1 C 0.92,0.98 0.88,0.98 0.85,1 C 0.82,0.98 0.78,0.98 0.75,1 C 0.72,0.98 0.68,0.98 0.65,1 C 0.62,0.98 0.58,0.98 0.55,1 C 0.52,0.98 0.48,0.98 0.45,1 C 0.42,0.98 0.38,0.98 0.35,1 C 0.32,0.98 0.28,0.98 0.25,1 C 0.22,0.98 0.18,0.98 0.15,1 C 0.12,0.98 0.08,0.98 0.05,1 Q 0,1 0,0.92 C 0.02,0.85 0.02,0.78 0,0.72 C 0.02,0.65 0.02,0.58 0,0.5 C 0.02,0.42 0.02,0.35 0,0.28 C 0.02,0.22 0.02,0.15 0,0.08 Q 0,0 0.05,0 Z"></path></clipPath><filter id="card-shadow-blue" x="-10%" y="-10%" width="130%" height="140%"><feDropShadow dx="0" dy="12" stdDeviation="12" flood-color="#2563eb" flood-opacity="0.35"></feDropShadow></filter><filter id="card-shadow-purple" x="-10%" y="-10%" width="130%" height="140%"><feDropShadow dx="0" dy="12" stdDeviation="12" flood-color="#7e4df8" flood-opacity="0.35"></feDropShadow></filter></defs></svg>
+    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 items-center justify-center">
+      
+      <!-- Carte 1 : Découvrir un objet perdu -->
+      <div role="button" tabindex="0" class="card-lost group relative overflow-hidden p-4 pr-5 flex items-center gap-4 cursor-pointer select-none transition-transform duration-200 active:scale-[0.98]" style="clip-path: url(&quot;#wavy-zigzag-card&quot;); filter: url(&quot;#card-shadow-blue&quot;);">
+        <!-- Ambiance & Glass reflection -->
+        <div class="absolute -top-14 -left-14 w-40 h-40 bg-white/20 rounded-full blur-2xl pointer-events-none"></div>
+        <div class="absolute top-1/2 left-6 -translate-y-1/2 w-20 h-20 bg-blue-300/30 rounded-full blur-xl pointer-events-none"></div>
+        
+        <!-- 3D Loupe Illustration without white container -->
+        <div class="relative flex-shrink-0 w-20 h-20 flex items-center justify-center">
+          <img src="https://lh3.googleusercontent.com/aida/AEtjO1XAYYNmqQiErUhw2Lwa1LtteMYxAXfZiuytFvAhVKqR0zc1DQgF0chVuaae9ld9XC__wxaDsPkCw2BtTp8ELKfRVpdpkQPSx98NGGtuqU_7tvEXlmoG0LRmsj6FWt7IU3BEpHO1rz468XOxqpAFrR2aqhsTbYLcEhikxY8HU1XnqAdaHJZemSkwTHmX3l5Wjslccc8kNaqWbBP1k3Jteape3LY9JlyK9vjH3i_DgfN7-Dy91yduG64ywh4" alt="Personnage loupe 3D amicale" class="w-20 h-20 object-contain relative z-10 blend-illustration drop-shadow-sm pointer-events-none">
+        </div>
+
+        <!-- Typography -->
+        <div class="flex-1 min-w-0 pr-1 text-white z-10">
+          <h3 class="font-heading font-extrabold text-[17px] sm:text-[18px] leading-[1.2] tracking-tight drop-shadow-sm">
+            Découvrir<br>un objet perdu
+          </h3>
+          <p class="text-[12px] sm:text-[13px] font-medium text-blue-100 mt-1 leading-snug truncate tracking-normal opacity-90">
+            Aide à le retrouver
+          </p>
+        </div>
+
+        <!-- Sleek Arrow Button -->
+        <div class="arrow-btn flex-shrink-0 w-10 h-10 rounded-full bg-white text-[#1e6bfb] flex items-center justify-center shadow-md z-10">
+          <svg class="w-5 h-5 ml-0.5 stroke-[2.75]" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M9 18l6-6-6-6"></path>
+          </svg>
+        </div>
+      </div>
+
+      <!-- Carte 2 : Déclarer un objet trouvé -->
+      <div role="button" tabindex="0" class="card-found group relative overflow-hidden p-4 pr-5 flex items-center gap-4 cursor-pointer select-none transition-transform duration-200 active:scale-[0.98]" style="clip-path: url(&quot;#wavy-zigzag-card&quot;); filter: url(&quot;#card-shadow-purple&quot;);">
+        <!-- Ambiance & Glass reflection -->
+        <div class="absolute -top-14 -left-14 w-40 h-40 bg-white/20 rounded-full blur-2xl pointer-events-none"></div>
+        <div class="absolute top-1/2 left-6 -translate-y-1/2 w-20 h-20 bg-purple-300/30 rounded-full blur-xl pointer-events-none"></div>
+
+        <!-- 3D Gift Box Illustration without white container -->
+        <div class="relative flex-shrink-0 w-20 h-20 flex items-center justify-center">
+          <img src="https://lh3.googleusercontent.com/aida/AEtjO1Wvu90_p_6wId6mWHgAsUmEIvlFo48sZmXjk71-R0K-nuVP23ayCrk6wtIY_o7bzK5bQ6Gy73grSYwnzZxqVeFS_7Krifa_xe_CVDcW58aKLnbGtwanrmEa7nzczm_Akw3FntAZ8KHXOaMhtHXWBFbp25ErI2WtNUWrOuWBmv9GzUcxrP6Dx0MjdNxhSs8qjtKYKS2mD8_v3dIBW6_wHYQj5QexOgXD9_g3r96DzlfN1bUiif9I0mFMJt0" alt="Boîte cadeau 3D isométrique violette" class="w-20 h-20 object-contain relative z-10 blend-illustration drop-shadow-sm pointer-events-none">
+        </div>
+
+        <!-- Typography -->
+        <div class="flex-1 min-w-0 pr-1 text-white z-10">
+          <h3 class="font-heading font-extrabold text-[17px] sm:text-[18px] leading-[1.2] tracking-tight drop-shadow-sm">
+            Déclarer<br>un objet trouvé
+          </h3>
+          <p class="text-[12px] sm:text-[13px] font-medium text-purple-100 mt-1 leading-snug truncate tracking-normal opacity-90">
+            Rends-le à son propriétaire
+          </p>
+        </div>
+
+        <!-- Sleek Arrow Button -->
+        <div class="arrow-btn flex-shrink-0 w-10 h-10 rounded-full bg-white text-[#8b5cf6] flex items-center justify-center shadow-md z-10">
+          <svg class="w-5 h-5 ml-0.5 stroke-[2.75]" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M9 18l6-6-6-6"></path>
+          </svg>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+
+
+
+
+
+
+</body></html>

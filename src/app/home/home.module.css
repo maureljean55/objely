@@ -164,36 +164,45 @@
    ACTIONS
 ========================= */
 
+/* Stacked single column on phone widths — the icon+text+arrow row needs
+   real width to breathe; squeezed into a 2-column grid cell it forced
+   the title to wrap onto 3 lines and clipped the subtitle to nothing. */
 .actions {
   display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 14px;
+  grid-template-columns: 1fr;
+  gap: 12px;
 }
 
+/* Card height is driven by its content (no fixed/min height) so the
+   title + subtitle never get clipped or overlap the arrow button —
+   a fixed height here previously caused text to wrap awkwardly and
+   collide with the arrow on narrower real devices. */
 .actionCard {
   position: relative;
-  height: 125px;
-  padding: 0;
+  padding: 14px 16px 14px 12px;
   border: none;
+  border-radius: 46px;
   color: white;
   text-align: left;
   cursor: pointer;
   overflow: hidden;
-  display: block;
-  box-shadow: 0 12px 25px rgba(55, 83, 160, 0.16), inset 0 1px 0 rgba(255, 255, 255, 0.35);
-  transition: transform 0.25s ease, box-shadow 0.25s ease;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  box-shadow: 0 14px 30px -8px rgba(37, 99, 235, 0.28), inset 0 2px 4px rgba(255, 255, 255, 0.35);
+  transition: transform 0.2s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .actionCard::before {
   content: "";
   position: absolute;
-  width: 180px;
-  height: 180px;
-  top: -100px;
-  right: -50px;
-  background: rgba(255, 255, 255, 0.13);
+  top: -56px;
+  left: -56px;
+  width: 160px;
+  height: 160px;
+  background: rgba(255, 255, 255, 0.2);
   border-radius: 50%;
-  filter: blur(4px);
+  filter: blur(24px);
   pointer-events: none;
 }
 
@@ -202,87 +211,88 @@
 }
 
 .lost {
-  background: linear-gradient(135deg, #087bea 0%, #1989f5 45%, #4ba8ff 100%);
-  border-radius: 38px 55px 42px 30px;
+  background: linear-gradient(135deg, #1d72fe 0%, #2563eb 40%, #3b82f6 100%);
+  box-shadow: 0 14px 30px -8px rgba(37, 99, 235, 0.38), inset 0 2px 4px rgba(255, 255, 255, 0.35);
 }
 
 .found {
-  background: linear-gradient(135deg, #9874ee 0%, #a785f5 48%, #b49cff 100%);
-  border-radius: 55px 35px 30px 50px;
-}
-
-.actionContent {
-  position: relative;
-  z-index: 2;
-  height: 100%;
-  display: flex;
-  align-items: center;
-  padding: 12px 13px;
+  background: linear-gradient(135deg, #a78bfa 0%, #9061f9 45%, #7e4df8 100%);
+  box-shadow: 0 14px 30px -8px rgba(126, 77, 248, 0.38), inset 0 2px 4px rgba(255, 255, 255, 0.35);
 }
 
 .actionIcon {
+  position: relative;
+  z-index: 1;
+  flex-shrink: 0;
+  width: 66px;
+  height: 66px;
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 75px;
-  height: 75px;
-  flex-shrink: 0;
-  border-radius: 50%;
-  background: radial-gradient(circle, rgba(255, 255, 255, 0.35), rgba(255, 255, 255, 0.08));
-  box-shadow: inset 0 2px 8px rgba(255, 255, 255, 0.25);
 }
 
 .actionIconImg {
-  width: 58px;
-  height: 58px;
+  width: 66px;
+  height: 66px;
   object-fit: contain;
-  filter: drop-shadow(0 5px 5px rgba(0, 0, 0, 0.15));
+  border-radius: 18px;
 }
 
-.actionIconDiamond {
-  color: white;
-  filter: drop-shadow(0 5px 5px rgba(0, 0, 0, 0.15));
+.lost .actionIconImg {
+  filter: drop-shadow(0 8px 16px rgba(15, 23, 42, 0.2));
+}
+
+.found .actionIconImg {
+  filter: drop-shadow(0 8px 16px rgba(76, 29, 149, 0.25));
 }
 
 .actionBody {
-  text-align: left;
-  margin-left: 10px;
+  position: relative;
+  z-index: 1;
+  flex: 1;
   min-width: 0;
 }
 
 .actionCard h2 {
   margin: 0;
-  font-size: 17px;
-  line-height: 1.08;
-  font-weight: 750;
-  letter-spacing: -0.3px;
+  font-size: 16px;
+  line-height: 1.2;
+  font-weight: 800;
+  letter-spacing: -0.2px;
   color: white;
 }
 
 .actionCard p {
-  margin: 9px 0 0;
-  font-size: 11px;
-  line-height: 1.2;
-  color: rgba(255, 255, 255, 0.92);
+  margin: 4px 0 0;
+  font-size: 11.5px;
+  font-weight: 500;
+  line-height: 1.3;
+  color: rgba(255, 255, 255, 0.9);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .actionArrow {
-  position: absolute;
-  z-index: 2;
-  right: 11px;
-  top: 50%;
-  transform: translateY(-50%);
-  width: 36px;
-  height: 36px;
+  position: relative;
+  z-index: 1;
+  flex-shrink: 0;
+  width: 34px;
+  height: 34px;
   display: flex;
   align-items: center;
   justify-content: center;
   background: white;
-  color: #356fdc;
   border-radius: 50%;
-  font-size: 26px;
-  line-height: 1;
-  box-shadow: 0 5px 12px rgba(30, 50, 100, 0.15);
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
+}
+
+.arrowLost {
+  color: #1e6bfb;
+}
+
+.arrowFound {
+  color: #8b5cf6;
 }
 
 /* =========================
@@ -541,44 +551,7 @@
     font-size: 18px;
   }
 
-  .actions {
-    gap: 9px;
-  }
-
   .actionCard {
-    height: 112px;
-  }
-
-  .actionContent {
-    padding: 9px;
-  }
-
-  .actionIcon {
-    width: 62px;
-    height: 62px;
-  }
-
-  .actionIconImg {
-    width: 48px;
-    height: 48px;
-  }
-
-  .actionBody {
-    margin-left: 7px;
-  }
-
-  .actionCard h2 {
-    font-size: 14px;
-  }
-
-  .actionCard p {
-    font-size: 9px;
-  }
-
-  .actionArrow {
-    width: 30px;
-    height: 30px;
-    right: 8px;
-    font-size: 22px;
+    border-radius: 40px;
   }
 }
