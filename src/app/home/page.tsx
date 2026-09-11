@@ -151,7 +151,7 @@ export default async function HomeDashboardPage({
               />
             </span>
             <div className={styles.actionBody}>
-              <h2>Découvrir un objet perdu</h2>
+              <h2>Déclarer un objet perdu</h2>
               <p>Aide à le retrouver</p>
             </div>
           </Link>
@@ -289,7 +289,7 @@ export default async function HomeDashboardPage({
               />
             </div>
             <div className="relative z-[1] flex-1 min-w-0">
-              <h2 className="font-headline-lg-mobile text-headline-lg-mobile">Découvrir un objet perdu</h2>
+              <h2 className="font-headline-lg-mobile text-headline-lg-mobile">Déclarer un objet perdu</h2>
               <p className="mt-1 font-body-md text-body-md text-white/90 truncate">Aide à le retrouver</p>
             </div>
             <span
