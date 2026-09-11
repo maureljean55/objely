@@ -20,7 +20,7 @@
   max-width: 430px;
   margin: 0 auto;
   padding: 25px 18px 140px;
-  padding-top: calc(25px + env(safe-area-inset-top));
+  padding-top: calc(112px + env(safe-area-inset-top));
   overflow: hidden;
 }
 
@@ -28,11 +28,23 @@
    HEADER
 ========================= */
 
+/* Fixed so it stays put while the rest of the page scrolls — .app's
+   extra top padding above reserves the space this takes up. */
 .header {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 40;
+  max-width: 430px;
+  margin: 0 auto;
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 25px;
+  padding: calc(18px + env(safe-area-inset-top)) 18px 18px;
+  background: rgba(247, 249, 255, 0.85);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
 }
 
 .brand {
@@ -178,7 +190,7 @@
    caused text to wrap awkwardly on narrower real devices. */
 .actionCard {
   position: relative;
-  padding: 28px 26px 30px;
+  padding: 20px 20px 22px;
   border: none;
   color: white;
   text-align: left;
@@ -194,10 +206,10 @@
 .actionCard::before {
   content: "";
   position: absolute;
-  top: -56px;
-  left: -56px;
-  width: 160px;
-  height: 160px;
+  top: -40px;
+  left: -40px;
+  width: 120px;
+  height: 120px;
   background: rgba(255, 255, 255, 0.2);
   border-radius: 50%;
   filter: blur(24px);
@@ -215,7 +227,7 @@
 .lost {
   width: 88%;
   justify-self: start;
-  border-radius: 56px 110px 40px 100px;
+  border-radius: 40px 80px 30px 72px;
   background: linear-gradient(135deg, #1d72fe 0%, #2563eb 40%, #3b82f6 100%);
   box-shadow: 0 14px 30px -8px rgba(37, 99, 235, 0.38), inset 0 2px 4px rgba(255, 255, 255, 0.35);
 }
@@ -223,7 +235,7 @@
 .found {
   width: 80%;
   justify-self: end;
-  border-radius: 110px 56px 100px 40px;
+  border-radius: 80px 40px 72px 30px;
   background: linear-gradient(135deg, #a78bfa 0%, #9061f9 45%, #7e4df8 100%);
   box-shadow: 0 14px 30px -8px rgba(126, 77, 248, 0.38), inset 0 2px 4px rgba(255, 255, 255, 0.35);
 }
@@ -232,21 +244,21 @@
   position: relative;
   z-index: 1;
   flex-shrink: 0;
-  width: 86px;
-  height: 86px;
+  width: 60px;
+  height: 60px;
   display: flex;
   align-items: center;
   justify-content: center;
-  margin-bottom: 16px;
+  margin-bottom: 10px;
   background: rgba(255, 255, 255, 0.2);
   border-radius: 50%;
 }
 
 .actionIconImg {
-  width: 66px;
-  height: 66px;
+  width: 44px;
+  height: 44px;
   object-fit: contain;
-  border-radius: 18px;
+  border-radius: 14px;
 }
 
 .lost .actionIconImg {
@@ -265,84 +277,19 @@
 
 .actionCard h2 {
   margin: 0;
-  font-size: 24px;
+  font-size: 19px;
   line-height: 1.15;
   font-weight: 800;
-  letter-spacing: -0.3px;
+  letter-spacing: -0.2px;
   color: white;
 }
 
 .actionCard p {
-  margin: 6px 0 0;
-  font-size: 14.5px;
+  margin: 4px 0 0;
+  font-size: 13px;
   font-weight: 500;
   line-height: 1.3;
   color: rgba(255, 255, 255, 0.9);
-}
-
-/* =========================
-   COMMUNAUTÉ
-========================= */
-
-.community {
-  position: relative;
-  min-height: 185px;
-  margin-top: 17px;
-  border-radius: 30px;
-  overflow: hidden;
-  background: linear-gradient(100deg, #e6f4ff, #e9e2ff);
-  box-shadow: 0 12px 30px rgba(35, 75, 140, 0.1);
-}
-
-.communityContent {
-  position: relative;
-  z-index: 2;
-  padding: 20px;
-  max-width: 78%;
-}
-
-.communityIcon {
-  font-size: 25px;
-}
-
-.community h2 {
-  margin-top: 5px;
-  font-size: 18px;
-  line-height: 1.1;
-  color: #123d93;
-}
-
-.community p {
-  margin-top: 10px;
-  font-size: 12px;
-  line-height: 1.4;
-  color: #66738d;
-}
-
-.joinButton {
-  margin-top: 13px;
-  padding: 10px 17px;
-  border: none;
-  border-radius: 25px;
-  background: white;
-  color: #176de0;
-  font-size: 13px;
-  font-weight: 700;
-  cursor: pointer;
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-}
-
-.communityImage {
-  position: absolute;
-  width: 150px;
-  height: 150px;
-  right: -5px;
-  bottom: -4px;
-  object-fit: cover;
-  object-position: top;
-  border-radius: 100px 0 0 0;
 }
 
 /* =========================
@@ -526,10 +473,6 @@
 
   .hero h1 {
     font-size: 34px;
-  }
-
-  .communityImage {
-    width: 195px;
   }
 
   .sectionTitle h2 {

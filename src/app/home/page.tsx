@@ -174,33 +174,6 @@ export default async function HomeDashboardPage({
           </Link>
         </section>
 
-        {/* Communauté */}
-        <section className={styles.community}>
-          <div className={styles.communityContent}>
-            <div className={styles.communityIcon}>👥</div>
-            <h2>
-              Une communauté
-              <br />
-              solidaire
-            </h2>
-            <p>
-              Des milliers de personnes
-              <br />
-              déjà actives près de chez toi.
-            </p>
-            <Link href="/profile" className={styles.joinButton}>
-              Rejoindre →
-            </Link>
-          </div>
-          <Image
-            src="/illustrations/home/couple.png"
-            alt="Deux utilisateurs Objely qui consultent l'app ensemble"
-            width={225}
-            height={180}
-            className={styles.communityImage}
-          />
-        </section>
-
         {/* Objets récents — vraies données */}
         <section>
           <div className={styles.sectionHeader}>
