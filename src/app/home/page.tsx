@@ -147,16 +147,32 @@ export default async function HomeDashboardPage({
           </div>
 
           <div className={styles.heroObjects}>
-            <Image
-              src="/illustrations/home/composition.png"
-              alt="Téléphone, écouteurs, montre, sac, casquette, clés et lunettes"
-              width={405}
-              height={287}
-              priority
-            />
-            <span className={`${styles.spark} ${styles.spark1}`}>✦</span>
-            <span className={`${styles.spark} ${styles.spark2}`}>✦</span>
-            <span className={`${styles.spark} ${styles.spark3}`}>♥</span>
+            <span className={styles.bubbleHeart}>
+              <span className="material-symbols-outlined" style={{ fontSize: 15, fontVariationSettings: "'FILL' 1" }}>favorite</span>
+            </span>
+
+            <p className={styles.heroNote}>
+              Des objets
+              <br />
+              vraiment
+              <br />
+              partout !
+              <span className={styles.heroNoteArrow}>↘</span>
+            </p>
+
+            <div className={styles.heroImageWrap}>
+              <Image
+                src="/illustrations/home/composition.png"
+                alt="Téléphone, écouteurs, montre, sac, casquette, clés et lunettes"
+                width={405}
+                height={287}
+                priority
+              />
+              <span className={styles.crown}>👑</span>
+              <span className={`${styles.spark} ${styles.spark1}`}>✦</span>
+              <span className={`${styles.spark} ${styles.spark2}`}>✦</span>
+              <span className={`${styles.spark} ${styles.spark3}`}>♥</span>
+            </div>
           </div>
         </section>
 
