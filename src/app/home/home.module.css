@@ -180,7 +180,6 @@
   position: relative;
   padding: 28px 26px 30px;
   border: none;
-  border-radius: 46px;
   color: white;
   text-align: left;
   cursor: pointer;
@@ -209,12 +208,22 @@
   transform: scale(0.98);
 }
 
+/* Staggered blob silhouette: each card gets mirrored, unequal corner
+   radii and is narrower than the row with opposite self-alignment, so
+   the two cards read as an offset diagonal pair instead of a stacked
+   uniform column. */
 .lost {
+  width: 88%;
+  justify-self: start;
+  border-radius: 56px 110px 40px 100px;
   background: linear-gradient(135deg, #1d72fe 0%, #2563eb 40%, #3b82f6 100%);
   box-shadow: 0 14px 30px -8px rgba(37, 99, 235, 0.38), inset 0 2px 4px rgba(255, 255, 255, 0.35);
 }
 
 .found {
+  width: 80%;
+  justify-self: end;
+  border-radius: 110px 56px 100px 40px;
   background: linear-gradient(135deg, #a78bfa 0%, #9061f9 45%, #7e4df8 100%);
   box-shadow: 0 14px 30px -8px rgba(126, 77, 248, 0.38), inset 0 2px 4px rgba(255, 255, 255, 0.35);
 }
@@ -525,9 +534,5 @@
 
   .sectionTitle h2 {
     font-size: 18px;
-  }
-
-  .actionCard {
-    border-radius: 40px;
   }
 }
