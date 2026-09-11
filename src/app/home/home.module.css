@@ -2,20 +2,35 @@
    PAGE BACKGROUND
 ========================= */
 
-/* background-attachment: fixed anchors the gradient to the viewport
-   (not each element's own box) — .header below uses the identical
-   recipe with the same attachment, so the two stay pixel-aligned at
-   every scroll position instead of showing a seam where the short
-   fixed header meets the much taller scrolling page. */
+/* background-attachment: fixed is unreliable on iOS Safari for this
+   (it can desync from a position: fixed sibling during scroll), so the
+   glow lives on a real position: fixed pseudo-element instead — a
+   plain fixed box iOS handles correctly. isolation creates a local
+   stacking context so ::before's z-index: -1 only has to sit below
+   this page's own content, not fight the rest of the document. .header
+   below repeats the exact same explicit-pixel gradient (not
+   percentage/farthest-corner, which resize per element box) so the
+   short fixed header and this full-viewport layer render identical
+   pixels at the same screen coordinates. */
 .page {
+  position: relative;
+  isolation: isolate;
   min-height: 100vh;
-  background:
-    radial-gradient(circle at 50% 0%, rgba(56, 211, 255, 0.32), transparent 25%),
-    radial-gradient(circle at 100% 20%, rgba(145, 115, 255, 0.18), transparent 30%),
-    #f7f9ff;
-  background-attachment: fixed;
+  background: #f7f9ff;
   color: #263556;
   font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Segoe UI", Arial, sans-serif;
+}
+
+.page::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  background:
+    radial-gradient(circle 460px at 50% 0px, rgba(56, 211, 255, 0.32) 0%, transparent 70%),
+    radial-gradient(circle 380px at 100% 140px, rgba(145, 115, 255, 0.18) 0%, transparent 70%),
+    #f7f9ff;
 }
 
 /* =========================
@@ -52,10 +67,9 @@
   align-items: center;
   padding: calc(18px + env(safe-area-inset-top)) 18px 18px;
   background:
-    radial-gradient(circle at 50% 0%, rgba(56, 211, 255, 0.32), transparent 25%),
-    radial-gradient(circle at 100% 20%, rgba(145, 115, 255, 0.18), transparent 30%),
+    radial-gradient(circle 460px at 50% 0px, rgba(56, 211, 255, 0.32) 0%, transparent 70%),
+    radial-gradient(circle 380px at 100% 140px, rgba(145, 115, 255, 0.18) 0%, transparent 70%),
     #f7f9ff;
-  background-attachment: fixed;
 }
 
 .brand {
