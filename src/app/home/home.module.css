@@ -117,39 +117,30 @@
    HERO
 ========================= */
 
-/* A real two-column flex layout, not two overlapping absolutely-positioned
-   blocks — the original spec relied on the headline's words happening to
-   stay narrow enough not to reach the image, which broke on any viewport
-   it wasn't measured against (e.g. wider phones: text and photo overlapped
-   directly). This keeps the two columns from ever touching, at any width. */
+/* Plain, well-structured text — no side graphic. Every attempt at one (a
+   cropped photo composition, then icon badges) either carried visible
+   image artifacts or added clutter the content didn't need. */
 .hero {
   display: flex;
-  align-items: flex-start;
-  gap: 10px;
-}
-
-.heroContent {
-  position: relative;
-  z-index: 5;
-  flex: 1 1 55%;
-  min-width: 0;
+  flex-direction: column;
 }
 
 .welcome {
   display: inline-block;
-  padding: 8px 14px;
+  align-self: flex-start;
+  padding: 8px 16px;
   color: white;
   background: linear-gradient(90deg, #6375ed, #8863f5);
   border-radius: 20px 20px 20px 5px;
   font-size: 13px;
   font-weight: 600;
-  transform: rotate(-3deg);
+  box-shadow: 0 8px 18px rgba(102, 89, 230, 0.22);
   margin-bottom: 18px;
 }
 
 .hero h1 {
-  font-size: 38px;
-  line-height: 1;
+  font-size: 40px;
+  line-height: 1.05;
   letter-spacing: -1.5px;
   color: #122653;
 }
@@ -162,157 +153,11 @@
 }
 
 .hero p {
-  margin-top: 20px;
-  font-size: 14px;
-  line-height: 1.45;
+  max-width: 320px;
+  margin-top: 16px;
+  font-size: 15px;
+  line-height: 1.5;
   color: #69758e;
-  overflow-wrap: normal;
-}
-
-.heroObjects {
-  position: relative;
-  flex: 0 0 auto;
-  width: 44%;
-  max-width: 195px;
-  align-self: flex-start;
-  margin-top: 4px;
-}
-
-.bubbleHeart {
-  position: absolute;
-  top: -10px;
-  right: -6px;
-  z-index: 7;
-  width: 28px;
-  height: 28px;
-  border-radius: 50%;
-  background: white;
-  box-shadow: 0 4px 10px rgba(30, 50, 100, 0.18);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: #8863f5;
-}
-
-.heroNote {
-  margin: 0 6px 6px 0;
-  font-size: 11px;
-  font-weight: 800;
-  line-height: 1.15;
-  color: #0758d4;
-  text-align: right;
-  transform: rotate(-6deg);
-}
-
-.heroNoteArrow {
-  display: block;
-  margin-top: 2px;
-  font-size: 20px;
-  line-height: 1;
-  transform: rotate(15deg);
-}
-
-/* No bitmap here on purpose — every attempt to isolate the reference
-   photo composition left visible artifacts (a hard-edged glow, or gaps
-   where dark objects couldn't be told apart from the dark source
-   background). A small set of icon badges on a soft gradient blob gives
-   the same "lost items" feel with crisp, reliable rendering at any size. */
-.heroGraphic {
-  position: relative;
-  aspect-ratio: 1 / 1;
-  border-radius: 42% 58% 55% 45% / 48% 42% 58% 52%;
-  background: linear-gradient(135deg, #dbe9ff 0%, #e7dcff 55%, #f3ddff 100%);
-  box-shadow: inset 0 0 30px rgba(255, 255, 255, 0.6), 0 20px 30px rgba(70, 60, 150, 0.12);
-}
-
-@keyframes float {
-  0%, 100% { transform: translateY(0px); }
-  50% { transform: translateY(-8px); }
-}
-
-.heroIcon {
-  position: absolute;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  border-radius: 50%;
-  background: white;
-  box-shadow: 0 10px 20px rgba(40, 50, 110, 0.16);
-  animation: float 3.6s ease-in-out infinite;
-}
-
-.heroIconPhone {
-  width: 42%;
-  aspect-ratio: 1;
-  top: 8%;
-  left: 10%;
-  color: #1479e8;
-  font-size: clamp(20px, 9vw, 32px);
-  animation-delay: 0s;
-}
-
-.heroIconKey {
-  width: 30%;
-  aspect-ratio: 1;
-  bottom: 10%;
-  left: 6%;
-  color: #f5a623;
-  font-size: clamp(16px, 6.5vw, 24px);
-  animation-delay: 0.6s;
-}
-
-.heroIconBag {
-  width: 38%;
-  aspect-ratio: 1;
-  top: 20%;
-  right: 6%;
-  color: #8c78f5;
-  font-size: clamp(18px, 8vw, 28px);
-  animation-delay: 1.2s;
-}
-
-.heroIconWatch {
-  width: 26%;
-  aspect-ratio: 1;
-  bottom: 6%;
-  right: 20%;
-  color: #16bd82;
-  font-size: clamp(14px, 5.5vw, 20px);
-  animation-delay: 1.8s;
-}
-
-.crown {
-  position: absolute;
-  top: -6px;
-  left: 30%;
-  font-size: 20px;
-  transform: rotate(-12deg);
-  z-index: 6;
-}
-
-.spark {
-  position: absolute;
-  font-weight: 800;
-  color: #765cf0;
-}
-
-.spark1 {
-  top: -10px;
-  right: 4px;
-  font-size: 24px;
-}
-
-.spark2 {
-  bottom: 4px;
-  left: -6px;
-  font-size: 22px;
-}
-
-.spark3 {
-  bottom: 40px;
-  right: 4px;
-  color: #9b68f2;
-  font-size: 25px;
 }
 
 /* =========================
@@ -648,11 +493,7 @@
   }
 
   .hero h1 {
-    font-size: 32px;
-  }
-
-  .heroObjects {
-    max-width: 175px;
+    font-size: 34px;
   }
 
   .communityImage {

@@ -128,57 +128,15 @@ export default async function HomeDashboardPage({
           </div>
         )}
 
-        {/* Hero */}
+        {/* Hero — plain, well-structured text, no side graphic */}
         <section className={styles.hero}>
-          <div className={styles.heroContent}>
-            <div className={styles.welcome}>Bienvenue sur Objely !</div>
-            <h1>
-              Ton objet
-              <br />
-              peut tout
-              <br />
-              <strong>changer !</strong>
-            </h1>
-            <p>
-              Perds un objet. Retrouve-le.
-              <br />
-              Ou aide les autres !
-            </p>
-          </div>
-
-          <div className={styles.heroObjects}>
-            <span className={styles.bubbleHeart}>
-              <span className="material-symbols-outlined" style={{ fontSize: 15, fontVariationSettings: "'FILL' 1" }}>favorite</span>
-            </span>
-
-            <p className={styles.heroNote}>
-              Des objets
-              <br />
-              vraiment
-              <br />
-              partout !
-              <span className={styles.heroNoteArrow}>↘</span>
-            </p>
-
-            <div className={styles.heroGraphic}>
-              <span className={`${styles.heroIcon} ${styles.heroIconPhone}`}>
-                <span className="material-symbols-outlined" style={{ fontVariationSettings: "'FILL' 1" }}>smartphone</span>
-              </span>
-              <span className={`${styles.heroIcon} ${styles.heroIconKey}`}>
-                <span className="material-symbols-outlined" style={{ fontVariationSettings: "'FILL' 1" }}>key</span>
-              </span>
-              <span className={`${styles.heroIcon} ${styles.heroIconBag}`}>
-                <span className="material-symbols-outlined" style={{ fontVariationSettings: "'FILL' 1" }}>backpack</span>
-              </span>
-              <span className={`${styles.heroIcon} ${styles.heroIconWatch}`}>
-                <span className="material-symbols-outlined" style={{ fontVariationSettings: "'FILL' 1" }}>watch</span>
-              </span>
-              <span className={styles.crown}>👑</span>
-              <span className={`${styles.spark} ${styles.spark1}`}>✦</span>
-              <span className={`${styles.spark} ${styles.spark2}`}>✦</span>
-              <span className={`${styles.spark} ${styles.spark3}`}>♥</span>
-            </div>
-          </div>
+          <div className={styles.welcome}>Bienvenue sur Objely&nbsp;!</div>
+          <h1>
+            Ton objet peut tout
+            <br />
+            <strong>changer&nbsp;!</strong>
+          </h1>
+          <p>Perds un objet. Retrouve-le. Ou aide les autres&nbsp;!</p>
         </section>
 
         {/* Actions */}
