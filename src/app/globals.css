@@ -52,6 +52,11 @@ html,
 body {
   background-color: rgb(var(--color-background));
   -webkit-tap-highlight-color: transparent;
+  /* Without this, pulling past the top/bottom edge (iOS rubber-band
+     bounce) briefly reveals this flat background behind fixed-position
+     elements like the home header, showing as a seam against its
+     gradient. Disabling the bounce removes the gap that exposes it. */
+  overscroll-behavior-y: none;
 }
 
 .material-symbols-outlined {
