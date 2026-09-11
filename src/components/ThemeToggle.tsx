@@ -34,7 +34,10 @@ export default function ThemeToggle() {
       className="w-full flex items-center justify-between p-lg text-left menu-item-hover transition-colors border-b border-surface-variant/50"
     >
       <div className="flex items-center gap-4">
-        <div className="w-10 h-10 rounded-full bg-tertiary-fixed/30 flex items-center justify-center text-tertiary">
+        <div
+          className="w-10 h-10 rounded-full flex items-center justify-center text-white shadow-sm"
+          style={{ background: "linear-gradient(135deg, #6366f1, #8b5cf6)" }}
+        >
           <span className="material-symbols-outlined">{on ? "dark_mode" : "light_mode"}</span>
         </div>
         <span className="font-body-lg text-body-lg text-on-surface">Mode sombre</span>

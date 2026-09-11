@@ -13,26 +13,32 @@ import type { User } from "@supabase/supabase-js";
 const EMPTY_STATS: MyItemStats = { signaled: 0, found: 0, recovered: 0 };
 
 const MENU_ITEMS_TOP = [
-  { icon: "chat_bubble", label: "Messages", bg: "bg-primary-fixed/30", color: "text-primary", href: "/messages" },
+  { icon: "chat_bubble", label: "Messages", gradient: "linear-gradient(135deg, #0058bc, #5952af)", href: "/messages" },
 ];
 
 const MENU_ITEMS_BOTTOM = [
-  { icon: "notifications", label: "Notifications", bg: "bg-primary-fixed/30", color: "text-primary", href: "/profile/notifications" },
-  { icon: "help", label: "Aide", bg: "bg-secondary-fixed/30", color: "text-secondary", href: "/help" },
-  { icon: "flag", label: "Signaler un problème", bg: "bg-surface-variant/50", color: "text-on-surface-variant", href: "/profile/report" },
+  { icon: "notifications", label: "Notifications", gradient: "linear-gradient(135deg, #0058bc, #3b82f6)", href: "/profile/notifications" },
+  { icon: "help", label: "Aide", gradient: "linear-gradient(135deg, #06b6d4, #0891b2)", href: "/help" },
+  { icon: "flag", label: "Signaler un problème", gradient: "linear-gradient(135deg, #f97316, #ef4444)", href: "/profile/report" },
 ];
+
+const STATS_META = [
+  { key: "signaled", icon: "search", label: "Objets\nsignalés", color: "#0058bc" },
+  { key: "found", icon: "inventory_2", label: "Objets\ntrouvés", color: "#5952af" },
+  { key: "recovered", icon: "check_circle", label: "Retrouvés", color: "#16a34a" },
+] as const;
 
 function trustTier(score: number) {
   if (score >= 70) {
-    return { label: "Or", badge: "bg-gradient-to-r from-amber-50 to-orange-50 border-amber-200/50", icon: "text-amber-500", text: "text-amber-700" };
+    return { label: "Or", gradient: "linear-gradient(135deg, #f6b93b, #d9822b)" };
   }
   if (score >= 40) {
-    return { label: "Argent", badge: "bg-gradient-to-r from-slate-50 to-gray-100 border-slate-200/60", icon: "text-slate-500", text: "text-slate-700" };
+    return { label: "Argent", gradient: "linear-gradient(135deg, #9aa6b8, #6b7688)" };
   }
   if (score >= 15) {
-    return { label: "Bronze", badge: "bg-gradient-to-r from-orange-50 to-amber-50 border-orange-200/50", icon: "text-orange-700", text: "text-orange-800" };
+    return { label: "Bronze", gradient: "linear-gradient(135deg, #e59a5f, #b8622a)" };
   }
-  return { label: "Nouveau", badge: "bg-surface-container border-outline-variant/40", icon: "text-on-surface-variant", text: "text-on-surface-variant" };
+  return { label: "Nouveau", gradient: "linear-gradient(135deg, #0058bc, #5952af)" };
 }
 
 function ProfileSummary({
@@ -66,62 +72,76 @@ function ProfileSummary({
         <>
           <section className="flex flex-col items-center pt-8 pb-6 animate-fadeIn">
             <div className="relative mb-4">
-              <div className="relative w-28 h-28 rounded-full overflow-hidden soft-shadow ring-4 ring-surface-container-lowest bg-surface-container-high flex items-center justify-center text-on-surface-variant">
-                {avatarUrl ? (
-                  <Image alt={displayName} src={avatarUrl} fill sizes="112px" className="object-cover" priority />
-                ) : (
-                  <span className="material-symbols-outlined text-[52px]">person</span>
-                )}
+              <div
+                className="w-28 h-28 rounded-full p-[3px] shadow-lg"
+                style={{ background: "linear-gradient(135deg, #0058bc, #8b5cf6)" }}
+              >
+                <div className="relative w-full h-full rounded-full overflow-hidden bg-surface-container-high flex items-center justify-center text-on-surface-variant ring-4 ring-surface-container-lowest">
+                  {avatarUrl ? (
+                    <Image alt={displayName} src={avatarUrl} fill sizes="112px" className="object-cover" priority />
+                  ) : (
+                    <span className="material-symbols-outlined text-[52px]">person</span>
+                  )}
+                </div>
               </div>
               <Link href="/profile/edit" className="absolute bottom-0 right-0 w-8 h-8 bg-surface-container-lowest rounded-full shadow-md flex items-center justify-center text-primary hover:bg-surface-variant transition-colors border border-surface-container">
                 <span className="material-symbols-outlined text-[18px]">edit</span>
               </Link>
             </div>
-            <h1 className="font-headline-lg-mobile md:font-headline-lg text-headline-lg-mobile md:text-headline-lg text-on-surface mb-1">
+            <h1 className="font-headline-lg-mobile md:font-headline-lg text-headline-lg-mobile md:text-headline-lg text-on-surface mb-2">
               {displayName}
             </h1>
-            <div className={`flex items-center gap-2 border rounded-full px-4 py-1.5 shadow-sm mt-2 ${tier.badge}`}>
-              <span className={`material-symbols-outlined text-[18px] drop-shadow-sm ${tier.icon}`} style={{ fontVariationSettings: "'FILL' 1" }}>
+            <div
+              className="flex items-center gap-2 rounded-full px-4 py-1.5 shadow-md mt-1 text-white"
+              style={{ background: tier.gradient }}
+            >
+              <span className="material-symbols-outlined text-[18px]" style={{ fontVariationSettings: "'FILL' 1" }}>
                 shield
               </span>
-              <span className={`font-label-md text-label-md ${tier.text}`}>
+              <span className="font-label-md text-label-md text-white">
                 Niveau de confiance : {tier.label} ({trustScore}%)
               </span>
             </div>
           </section>
 
           <section className="grid grid-cols-3 gap-3 animate-slideUp">
-            {[
-              { value: stats.signaled, label: "Objets\nsignalés", color: "text-primary" },
-              { value: stats.found, label: "Objets\ntrouvés", color: "text-secondary" },
-              { value: stats.recovered, label: "Retrouvés", color: "text-tertiary" },
-            ].map((stat) => (
-              <div key={stat.label} className="bg-surface-container-lowest rounded-[24px] p-4 flex flex-col items-center justify-center soft-shadow inner-stroke">
-                <span className={`font-headline-lg-mobile text-headline-lg-mobile mb-1 ${stat.color}`}>{stat.value}</span>
-                <span className="font-label-md text-label-md text-on-surface-variant text-center leading-tight whitespace-pre-line">{stat.label}</span>
+            {STATS_META.map((meta) => (
+              <div key={meta.key} className="bg-surface-container-lowest rounded-[24px] p-4 flex flex-col items-center justify-center gap-1 soft-shadow inner-stroke">
+                <span className="material-symbols-outlined text-[20px]" style={{ color: meta.color }}>
+                  {meta.icon}
+                </span>
+                <span className="font-headline-lg-mobile text-headline-lg-mobile" style={{ color: meta.color }}>
+                  {stats[meta.key]}
+                </span>
+                <span className="font-label-md text-label-md text-on-surface-variant text-center leading-tight whitespace-pre-line">
+                  {meta.label}
+                </span>
               </div>
             ))}
           </section>
         </>
       ) : (
-        <section className="flex flex-col items-center pt-8 pb-6 animate-fadeIn">
-          <Link
-            href="/login"
-            aria-label="Se connecter"
-            className="w-28 h-28 rounded-full border-2 border-dashed border-primary/40 bg-primary-fixed/20 flex items-center justify-center mb-4 hover:bg-primary-fixed/30 transition-colors"
+        <section className="flex flex-col items-center text-center pt-10 pb-6 animate-fadeIn">
+          <div
+            className="w-24 h-24 rounded-full flex items-center justify-center mb-5 shadow-lg"
+            style={{ background: "linear-gradient(135deg, #0058bc, #5952af)" }}
           >
-            <span className="material-symbols-outlined text-primary text-[36px]">login</span>
-          </Link>
+            <span className="material-symbols-outlined text-white text-[36px]">person</span>
+          </div>
+          <h1 className="font-headline-lg-mobile md:font-headline-lg text-headline-lg-mobile md:text-headline-lg text-on-surface mb-2">
+            Bienvenue sur Objely
+          </h1>
+          <p className="font-body-md text-body-md text-on-surface-variant text-center max-w-xs mb-5">
+            Connecte-toi pour déclarer tes objets et suivre tes retrouvailles.
+          </p>
           <Link
             href="/login"
-            className="font-headline-lg-mobile md:font-headline-lg text-headline-lg-mobile md:text-headline-lg text-primary mb-1 hover:underline"
+            className="px-8 py-3 rounded-full text-white font-body-lg text-body-lg font-bold shadow-md hover:opacity-90 transition-opacity"
+            style={{ background: "linear-gradient(135deg, #0058bc, #5952af)" }}
           >
             Se connecter
           </Link>
-          <p className="font-body-md text-body-md text-on-surface-variant text-center max-w-xs mt-1">
-            Connectez-vous pour déclarer vos objets et suivre vos retrouvailles.
-          </p>
-          <Link href="/register" className="font-label-md text-label-md text-primary mt-3 hover:underline">
+          <Link href="/register" className="font-label-md text-label-md text-primary mt-4 hover:underline">
             Pas de compte ? Créer un compte
           </Link>
         </section>
@@ -136,7 +156,6 @@ export default function UserProfilePage() {
   const [avatarUrl, setAvatarUrl] = useState<string | null>(null);
   const [profileName, setProfileName] = useState<string | null>(null);
   const [trustScore, setTrustScore] = useState(0);
-  const authenticated = !!user;
   const displayName = profileName || (user?.user_metadata?.full_name as string | undefined) || user?.email || "";
 
   useEffect(() => {
@@ -180,11 +199,7 @@ export default function UserProfilePage() {
         <ProfileSummary user={user} stats={stats} avatarUrl={avatarUrl} displayName={displayName} trustScore={trustScore} />
       </div>
 
-      <main
-        className={`max-w-2xl mx-auto md:mt-8 px-container-margin md:px-0 md:pt-0 ${
-          authenticated ? "pt-[calc(422px+env(safe-area-inset-top))]" : "pt-[calc(300px+env(safe-area-inset-top))]"
-        }`}
-      >
+      <main className="max-w-2xl mx-auto md:mt-8 px-container-margin md:px-0 pt-[calc(392px+env(safe-area-inset-top))] md:pt-0">
         <div className="hidden md:block relative">
           <ProfileSummary user={user} stats={stats} avatarUrl={avatarUrl} displayName={displayName} trustScore={trustScore} />
         </div>
@@ -198,7 +213,7 @@ export default function UserProfilePage() {
                 className="w-full flex items-center justify-between p-lg text-left hover:bg-black/[0.02] transition-colors border-b border-surface-variant/50"
               >
                 <div className="flex items-center gap-4">
-                  <div className={`w-10 h-10 rounded-full flex items-center justify-center ${item.bg} ${item.color}`}>
+                  <div className="w-10 h-10 rounded-full flex items-center justify-center text-white shadow-sm" style={{ background: item.gradient }}>
                     <span className="material-symbols-outlined">{item.icon}</span>
                   </div>
                   <span className="font-body-lg text-body-lg text-on-surface">{item.label}</span>
@@ -216,7 +231,7 @@ export default function UserProfilePage() {
               const content = (
                 <>
                   <div className="flex items-center gap-4">
-                    <div className={`w-10 h-10 rounded-full flex items-center justify-center ${item.bg} ${item.color}`}>
+                    <div className="w-10 h-10 rounded-full flex items-center justify-center text-white shadow-sm" style={{ background: item.gradient }}>
                       <span className="material-symbols-outlined">{item.icon}</span>
                     </div>
                     <span className="font-body-lg text-body-lg text-on-surface">{item.label}</span>
