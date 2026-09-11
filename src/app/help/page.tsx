@@ -42,9 +42,9 @@ export default async function HelpCenterPage() {
       </section>
 
       <main className="max-w-2xl mx-auto px-container-margin flex flex-col gap-lg">
-        {/* Historique / Aide */}
+        {/* Historique */}
         <section className="bg-surface-container-lowest rounded-[28px] soft-shadow overflow-hidden">
-          <Link href="/help/history" className="flex items-center justify-between px-lg py-5 border-b border-surface-variant/50 hover:bg-black/[0.02] transition-colors">
+          <Link href="/help/history" className="flex items-center justify-between px-lg py-5 hover:bg-black/[0.02] transition-colors">
             <span className="font-headline-md text-headline-md text-on-surface font-bold">Historique</span>
             <span
               className="w-9 h-9 rounded-full flex items-center justify-center text-white shrink-0"
@@ -53,15 +53,6 @@ export default async function HelpCenterPage() {
               <span className="material-symbols-outlined text-[20px]" style={{ fontVariationSettings: "'FILL' 1" }}>history</span>
             </span>
           </Link>
-          <a href="#faq" className="flex items-center justify-between px-lg py-5 hover:bg-black/[0.02] transition-colors">
-            <span className="font-headline-md text-headline-md text-on-surface font-bold">Aide</span>
-            <span
-              className="w-9 h-9 rounded-full flex items-center justify-center text-white shrink-0"
-              style={{ background: "linear-gradient(135deg, #06b6d4, #0891b2)" }}
-            >
-              <span className="material-symbols-outlined text-[20px]" style={{ fontVariationSettings: "'FILL' 1" }}>help</span>
-            </span>
-          </a>
         </section>
 
         {/* Start a conversation */}
