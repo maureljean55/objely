@@ -2,12 +2,18 @@
    PAGE BACKGROUND
 ========================= */
 
+/* background-attachment: fixed anchors the gradient to the viewport
+   (not each element's own box) — .header below uses the identical
+   recipe with the same attachment, so the two stay pixel-aligned at
+   every scroll position instead of showing a seam where the short
+   fixed header meets the much taller scrolling page. */
 .page {
   min-height: 100vh;
   background:
     radial-gradient(circle at 50% 0%, rgba(56, 211, 255, 0.32), transparent 25%),
     radial-gradient(circle at 100% 20%, rgba(145, 115, 255, 0.18), transparent 30%),
     #f7f9ff;
+  background-attachment: fixed;
   color: #263556;
   font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Segoe UI", Arial, sans-serif;
 }
@@ -49,6 +55,7 @@
     radial-gradient(circle at 50% 0%, rgba(56, 211, 255, 0.32), transparent 25%),
     radial-gradient(circle at 100% 20%, rgba(145, 115, 255, 0.18), transparent 30%),
     #f7f9ff;
+  background-attachment: fixed;
 }
 
 .brand {
