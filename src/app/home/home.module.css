@@ -308,13 +308,16 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
+  gap: 10px;
   margin: 28px 3px 14px;
 }
 
 .sectionTitle {
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: 8px;
+  min-width: 0;
+  flex: 1 1 auto;
 }
 
 .sectionIcon {
@@ -335,16 +338,22 @@
 }
 
 .sectionTitle h2 {
-  font-size: 19px;
+  min-width: 0;
+  font-size: 16px;
   font-weight: 800;
-  letter-spacing: -0.5px;
+  letter-spacing: -0.3px;
   color: #122653;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .seeAll {
   display: inline-flex;
+  flex-shrink: 0;
   align-items: center;
   gap: 1px;
+  white-space: nowrap;
   border: none;
   background: transparent;
   color: #6650e8;
@@ -501,6 +510,6 @@
   }
 
   .sectionTitle h2 {
-    font-size: 18px;
+    font-size: 15px;
   }
 }
