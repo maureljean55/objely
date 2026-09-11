@@ -98,7 +98,7 @@ export default async function HomeDashboardPage({
         {/* Header */}
         <header className={styles.header}>
           <div className={styles.brand}>
-            <span className={styles.logo}>Objely</span>
+            <Image src="/illustrations/home/logo.png" alt="Objely" width={376} height={120} className={styles.logo} priority />
             <span>Perdu. Trouvé. Retrouvé.</span>
           </div>
 
