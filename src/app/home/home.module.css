@@ -29,7 +29,10 @@
 ========================= */
 
 /* Fixed so it stays put while the rest of the page scrolls — .app's
-   extra top padding above reserves the space this takes up. */
+   extra top padding above reserves the space this takes up. Uses the
+   same gradient recipe as .page (anchored to the same top-center point)
+   instead of a flat translucent panel, so it reads as a continuation
+   of the page background rather than a bar sitting on top of it. */
 .header {
   position: fixed;
   top: 0;
@@ -42,9 +45,10 @@
   justify-content: space-between;
   align-items: center;
   padding: calc(18px + env(safe-area-inset-top)) 18px 18px;
-  background: rgba(247, 249, 255, 0.85);
-  backdrop-filter: blur(14px);
-  -webkit-backdrop-filter: blur(14px);
+  background:
+    radial-gradient(circle at 50% 0%, rgba(56, 211, 255, 0.32), transparent 25%),
+    radial-gradient(circle at 100% 20%, rgba(145, 115, 255, 0.18), transparent 30%),
+    #f7f9ff;
 }
 
 .brand {
