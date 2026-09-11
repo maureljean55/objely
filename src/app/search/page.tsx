@@ -39,7 +39,7 @@ export default async function SearchFiltersPage() {
             <Link href="/home" className="text-on-surface-variant hover:opacity-80 transition-opacity active:scale-95 hidden md:flex items-center justify-center">
               <span className="material-symbols-outlined text-[24px]">arrow_back</span>
             </Link>
-            <h1 className="font-display text-headline-sm font-bold text-on-surface text-center flex-1">Mes objets</h1>
+            <h1 className="font-display text-headline-sm font-extrabold tracking-tight text-on-surface text-center flex-1">Mes objets</h1>
             <button className="text-on-surface-variant hover:opacity-80 transition-opacity active:scale-95 flex items-center justify-center">
               <span className="material-symbols-outlined text-[24px]">info</span>
             </button>
@@ -47,14 +47,14 @@ export default async function SearchFiltersPage() {
 
           <div className="flex flex-row gap-sm items-center w-full mt-md">
             <div className="relative flex-1 min-w-0">
-              <span className="material-symbols-outlined absolute left-sm top-1/2 -translate-y-1/2 text-outline">search</span>
+              <span className="material-symbols-outlined absolute left-lg top-1/2 -translate-y-1/2 text-outline">search</span>
               <input
-                className="w-full bg-surface text-on-surface placeholder:text-outline rounded border-none focus:ring-1 focus:ring-primary pl-[44px] pr-sm h-[56px] font-body-md transition-all shadow-sm"
+                className="w-full bg-surface-container-lowest text-on-surface placeholder:text-outline rounded-full border-none focus:outline-none focus:ring-2 focus:ring-primary/30 pl-[48px] pr-sm h-[56px] font-body-md transition-all shadow-sm"
                 placeholder="Rechercher parmi mes objets"
                 type="text"
               />
             </div>
-            <button className="shrink-0 flex items-center justify-center gap-2 bg-surface text-primary border border-primary rounded px-md h-[56px] font-headline-sm hover:opacity-80 transition-opacity whitespace-nowrap shadow-sm">
+            <button className="shrink-0 flex items-center justify-center gap-2 bg-primary/10 text-primary rounded-full px-md h-[56px] font-headline-sm hover:bg-primary/15 transition-colors whitespace-nowrap">
               <span className="material-symbols-outlined">tune</span>
               <span className="hidden sm:inline">Filtres</span>
             </button>
@@ -66,9 +66,10 @@ export default async function SearchFiltersPage() {
                 key={filter}
                 className={
                   i === 0
-                    ? "bg-[#A29BFE]/15 text-[#A29BFE] rounded-full px-4 py-2 font-label-md whitespace-nowrap border border-transparent"
-                    : "bg-surface text-on-surface-variant rounded-full px-4 py-2 font-label-md whitespace-nowrap border border-outline-variant hover:bg-surface-variant transition-colors"
+                    ? "text-white rounded-full px-4 py-2 font-label-md whitespace-nowrap shadow-sm"
+                    : "bg-surface-container-lowest text-on-surface-variant rounded-full px-4 py-2 font-label-md whitespace-nowrap border border-outline-variant/50 hover:bg-surface-variant transition-colors"
                 }
+                style={i === 0 ? { background: "linear-gradient(135deg, #0058bc, #5952af)" } : undefined}
               >
                 {filter}
               </button>
@@ -80,13 +81,23 @@ export default async function SearchFiltersPage() {
       <main className="max-w-[1140px] mx-auto px-container-margin pt-lg">
         {items.length === 0 ? (
           <div className="flex flex-col items-center justify-center py-xl text-center">
-            <div className="w-32 h-32 mb-lg bg-surface-container-low rounded-full flex items-center justify-center">
-              <span className="material-symbols-outlined text-primary text-[56px]">search_off</span>
+            <div
+              className="w-28 h-28 mb-lg rounded-full flex items-center justify-center shadow-lg"
+              style={{ background: "linear-gradient(135deg, #0058bc, #5952af)" }}
+            >
+              <span className="material-symbols-outlined text-white text-[48px]">search_off</span>
             </div>
-            <h3 className="font-headline-sm text-headline-sm text-on-surface mb-2">Vous n&apos;avez déclaré aucun objet</h3>
+            <h3 className="font-headline-sm text-headline-sm font-bold text-on-surface mb-2">Vous n&apos;avez déclaré aucun objet</h3>
             <p className="font-body-md text-body-md text-on-surface-variant mb-lg px-6 max-w-sm">
               Déclarez un objet perdu ou trouvé depuis l&apos;accueil pour le suivre ici.
             </p>
+            <Link
+              href="/home"
+              className="px-8 py-3 rounded-full text-white font-body-lg text-body-lg font-bold shadow-md hover:opacity-90 transition-opacity"
+              style={{ background: "linear-gradient(135deg, #0058bc, #5952af)" }}
+            >
+              Aller à l&apos;accueil
+            </Link>
           </div>
         ) : (
           <section className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-md mb-xl">

@@ -55,7 +55,7 @@ export default function MyItemCard({ item }: { item: Item }) {
       <div className="relative">
         <Link
           href={`/search/${item.id}`}
-          className="block bg-surface rounded-lg shadow-soft-bloom overflow-hidden border border-black/5 hover:scale-[1.02] transition-transform duration-300"
+          className="block bg-surface rounded-[24px] shadow-soft-bloom overflow-hidden border border-black/5 hover:scale-[1.02] transition-transform duration-300"
         >
           <div className="h-48 w-full relative bg-surface-container-high flex items-center justify-center text-primary">
             {item.photos?.[0] ? (
@@ -64,7 +64,7 @@ export default function MyItemCard({ item }: { item: Item }) {
                 src={item.photos[0]}
                 fill
                 sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, (max-width: 1280px) 33vw, 25vw"
-                className="object-cover rounded-t-lg"
+                className="object-cover"
               />
             ) : (
               <span className="material-symbols-outlined text-5xl">{item.category_icon || "inventory_2"}</span>
