@@ -72,38 +72,6 @@
     #f7f9ff;
 }
 
-.brand {
-  display: flex;
-  flex-direction: column;
-}
-
-.wordmark {
-  position: relative;
-  display: inline-block;
-  font-size: 34px;
-  font-weight: 800;
-  line-height: 1;
-  letter-spacing: -0.5px;
-  background: linear-gradient(90deg, #087be8, #735af4, #a34ee9);
-  -webkit-background-clip: text;
-  background-clip: text;
-  -webkit-text-fill-color: transparent;
-  color: transparent;
-}
-
-.wordmarkSpark {
-  position: absolute;
-  top: -6px;
-  right: -18px;
-}
-
-.brand span {
-  margin-top: 6px;
-  font-size: 13px;
-  font-weight: 600;
-  color: #405074;
-}
-
 .headerRight {
   display: flex;
   align-items: center;
@@ -505,10 +473,6 @@
   .app {
     padding-left: 14px;
     padding-right: 14px;
-  }
-
-  .wordmark {
-    font-size: 30px;
   }
 
   .hero h1 {

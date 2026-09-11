@@ -97,17 +97,14 @@ export default async function HomeDashboardPage({
       <div className={`${styles.app} md:hidden`}>
         {/* Header */}
         <header className={styles.header}>
-          <div className={styles.brand}>
-            <span className={styles.wordmark}>
-              Objely
-              <svg className={styles.wordmarkSpark} width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true">
-                <line x1="2" y1="10" x2="4.5" y2="4" stroke="#8b5cf6" strokeWidth="2" strokeLinecap="round" />
-                <line x1="8" y1="9" x2="8" y2="2" stroke="#8b5cf6" strokeWidth="2" strokeLinecap="round" />
-                <line x1="14" y1="10" x2="11.5" y2="4" stroke="#8b5cf6" strokeWidth="2" strokeLinecap="round" />
-              </svg>
-            </span>
-            <span>Perdu. Trouvé. Retrouvé.</span>
-          </div>
+          <Link href="/profile" aria-label="Profil" className={styles.profileButton}>
+            {profile?.avatar_url ? (
+              <Image src={profile.avatar_url} alt="Profil" width={52} height={52} />
+            ) : (
+              <span className="material-symbols-outlined" style={{ fontSize: 24 }}>person</span>
+            )}
+            <span className={styles.online} />
+          </Link>
 
           <div className={styles.headerRight}>
             <Link href="/notifications" aria-label="Notifications" className={styles.circleButton}>
@@ -115,14 +112,9 @@ export default async function HomeDashboardPage({
               {!!unreadCount && <i className={styles.notificationDot} />}
             </Link>
 
-            <Link href="/profile" aria-label="Profil" className={styles.profileButton}>
-              {profile?.avatar_url ? (
-                <Image src={profile.avatar_url} alt="Profil" width={52} height={52} />
-              ) : (
-                <span className="material-symbols-outlined" style={{ fontSize: 24 }}>person</span>
-              )}
-              <span className={styles.online} />
-            </Link>
+            <button type="button" aria-label="Scanner un QR code" className={styles.circleButton}>
+              <span className="material-symbols-outlined">qr_code_scanner</span>
+            </button>
           </div>
         </header>
 
