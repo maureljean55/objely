@@ -160,14 +160,19 @@ export default async function HomeDashboardPage({
               <span className={styles.heroNoteArrow}>↘</span>
             </p>
 
-            <div className={styles.heroImageWrap}>
-              <Image
-                src="/illustrations/home/composition.png"
-                alt="Téléphone, écouteurs, montre, sac, casquette, clés et lunettes"
-                width={405}
-                height={287}
-                priority
-              />
+            <div className={styles.heroGraphic}>
+              <span className={`${styles.heroIcon} ${styles.heroIconPhone}`}>
+                <span className="material-symbols-outlined" style={{ fontVariationSettings: "'FILL' 1" }}>smartphone</span>
+              </span>
+              <span className={`${styles.heroIcon} ${styles.heroIconKey}`}>
+                <span className="material-symbols-outlined" style={{ fontVariationSettings: "'FILL' 1" }}>key</span>
+              </span>
+              <span className={`${styles.heroIcon} ${styles.heroIconBag}`}>
+                <span className="material-symbols-outlined" style={{ fontVariationSettings: "'FILL' 1" }}>backpack</span>
+              </span>
+              <span className={`${styles.heroIcon} ${styles.heroIconWatch}`}>
+                <span className="material-symbols-outlined" style={{ fontVariationSettings: "'FILL' 1" }}>watch</span>
+              </span>
               <span className={styles.crown}>👑</span>
               <span className={`${styles.spark} ${styles.spark1}`}>✦</span>
               <span className={`${styles.spark} ${styles.spark2}`}>✦</span>

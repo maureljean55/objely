@@ -212,16 +212,17 @@
   transform: rotate(15deg);
 }
 
-.heroImageWrap {
+/* No bitmap here on purpose — every attempt to isolate the reference
+   photo composition left visible artifacts (a hard-edged glow, or gaps
+   where dark objects couldn't be told apart from the dark source
+   background). A small set of icon badges on a soft gradient blob gives
+   the same "lost items" feel with crisp, reliable rendering at any size. */
+.heroGraphic {
   position: relative;
-}
-
-.heroImageWrap img {
-  width: 100%;
-  height: auto;
-  object-fit: contain;
-  filter: drop-shadow(0 15px 18px rgba(30, 50, 100, 0.18));
-  animation: float 3.4s ease-in-out infinite;
+  aspect-ratio: 1 / 1;
+  border-radius: 42% 58% 55% 45% / 48% 42% 58% 52%;
+  background: linear-gradient(135deg, #dbe9ff 0%, #e7dcff 55%, #f3ddff 100%);
+  box-shadow: inset 0 0 30px rgba(255, 255, 255, 0.6), 0 20px 30px rgba(70, 60, 150, 0.12);
 }
 
 @keyframes float {
@@ -229,10 +230,61 @@
   50% { transform: translateY(-8px); }
 }
 
+.heroIcon {
+  position: absolute;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  background: white;
+  box-shadow: 0 10px 20px rgba(40, 50, 110, 0.16);
+  animation: float 3.6s ease-in-out infinite;
+}
+
+.heroIconPhone {
+  width: 42%;
+  aspect-ratio: 1;
+  top: 8%;
+  left: 10%;
+  color: #1479e8;
+  font-size: clamp(20px, 9vw, 32px);
+  animation-delay: 0s;
+}
+
+.heroIconKey {
+  width: 30%;
+  aspect-ratio: 1;
+  bottom: 10%;
+  left: 6%;
+  color: #f5a623;
+  font-size: clamp(16px, 6.5vw, 24px);
+  animation-delay: 0.6s;
+}
+
+.heroIconBag {
+  width: 38%;
+  aspect-ratio: 1;
+  top: 20%;
+  right: 6%;
+  color: #8c78f5;
+  font-size: clamp(18px, 8vw, 28px);
+  animation-delay: 1.2s;
+}
+
+.heroIconWatch {
+  width: 26%;
+  aspect-ratio: 1;
+  bottom: 6%;
+  right: 20%;
+  color: #16bd82;
+  font-size: clamp(14px, 5.5vw, 20px);
+  animation-delay: 1.8s;
+}
+
 .crown {
   position: absolute;
   top: -6px;
-  left: -4px;
+  left: 30%;
   font-size: 20px;
   transform: rotate(-12deg);
   z-index: 6;
