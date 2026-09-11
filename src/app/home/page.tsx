@@ -142,41 +142,37 @@ export default async function HomeDashboardPage({
         {/* Actions */}
         <section className={styles.actions}>
           <Link href="/report-lost" className={`${styles.actionCard} ${styles.lost}`}>
-            <div className={styles.actionTop}>
+            <div className={styles.actionContent}>
               <span className={styles.actionIcon}>
-                <Image src="/illustrations/home/mascot.png" alt="" width={34} height={34} className={styles.actionIconImg} />
+                <Image src="/illustrations/home/mascot.png" alt="" width={58} height={58} className={styles.actionIconImg} />
               </span>
-              <span className={styles.actionArrow}>
-                <span className="material-symbols-outlined" style={{ fontSize: 19 }}>chevron_right</span>
-              </span>
+              <div className={styles.actionBody}>
+                <h2>
+                  Découvrir
+                  <br />
+                  un objet perdu
+                </h2>
+                <p>Aide à le retrouver</p>
+              </div>
             </div>
-            <div className={styles.actionBody}>
-              <h2>
-                Découvrir
-                <br />
-                un objet perdu
-              </h2>
-              <p>Aide à le retrouver</p>
-            </div>
+            <span className={styles.actionArrow}>›</span>
           </Link>
 
           <Link href="/report-found" className={`${styles.actionCard} ${styles.found}`}>
-            <div className={styles.actionTop}>
+            <div className={styles.actionContent}>
               <span className={`${styles.actionIcon} ${styles.actionIconDiamond}`}>
-                <span className="material-symbols-outlined" style={{ fontVariationSettings: "'FILL' 1" }}>diamond</span>
+                <span className="material-symbols-outlined" style={{ fontSize: 40, fontVariationSettings: "'FILL' 1" }}>diamond</span>
               </span>
-              <span className={styles.actionArrow}>
-                <span className="material-symbols-outlined" style={{ fontSize: 19 }}>chevron_right</span>
-              </span>
+              <div className={styles.actionBody}>
+                <h2>
+                  Déclarer
+                  <br />
+                  un objet trouvé
+                </h2>
+                <p>Rends-le à son propriétaire</p>
+              </div>
             </div>
-            <div className={styles.actionBody}>
-              <h2>
-                Déclarer
-                <br />
-                un objet trouvé
-              </h2>
-              <p>Rends-le à son propriétaire</p>
-            </div>
+            <span className={styles.actionArrow}>›</span>
           </Link>
         </section>
 
@@ -296,50 +292,68 @@ export default async function HomeDashboardPage({
         <section className="grid grid-cols-2 gap-lg">
           <Link
             href="/report-lost"
-            className="relative overflow-hidden text-white p-lg flex flex-col justify-center gap-1.5 min-h-[190px] rounded-[30px] transition-transform hover:scale-[0.98]"
+            className="relative overflow-hidden text-white flex items-center min-h-[150px] transition-transform hover:-translate-y-0.5"
             style={{
-              background: "linear-gradient(150deg, #3aa4ff 0%, #1c7ef0 55%, #0f5fd6 100%)",
-              boxShadow: "0 18px 34px rgba(20, 100, 220, 0.28), inset 0 1px 0 rgba(255, 255, 255, 0.35)",
+              background: "linear-gradient(135deg, #087bea 0%, #1989f5 45%, #4ba8ff 100%)",
+              borderRadius: "38px 55px 42px 30px",
+              boxShadow: "0 12px 25px rgba(55, 83, 160, 0.16), inset 0 1px 0 rgba(255, 255, 255, 0.35)",
             }}
           >
             <div
-              className="pointer-events-none absolute inset-0"
-              style={{ background: "radial-gradient(160px 120px at 12% -8%, rgba(255,255,255,0.4), transparent 60%)" }}
+              className="pointer-events-none absolute rounded-full blur-[4px]"
+              style={{ width: 180, height: 180, top: -100, right: -50, background: "rgba(255,255,255,0.13)" }}
             />
-            <div className="relative z-[1] flex items-start justify-between">
-              <div className="w-11 h-11 rounded-full bg-white flex items-center justify-center text-[#2873dc] shadow-sm">
-                <span className="material-symbols-outlined" style={{ fontVariationSettings: "'FILL' 1" }}>search</span>
+            <div className="relative z-[1] flex items-center gap-4 px-6 py-4 w-full">
+              <div
+                className="w-20 h-20 shrink-0 rounded-full flex items-center justify-center"
+                style={{ background: "radial-gradient(circle, rgba(255,255,255,0.35), rgba(255,255,255,0.08))", boxShadow: "inset 0 2px 8px rgba(255,255,255,0.25)" }}
+              >
+                <span className="material-symbols-outlined text-white" style={{ fontSize: 40, fontVariationSettings: "'FILL' 1", filter: "drop-shadow(0 5px 5px rgba(0,0,0,0.15))" }}>search</span>
               </div>
-              <div className="w-8 h-8 rounded-full bg-white/25 flex items-center justify-center">
-                <span className="material-symbols-outlined" style={{ fontSize: 19 }}>chevron_right</span>
+              <div>
+                <h2 className="font-headline-lg-mobile text-headline-lg-mobile">Découvrir un objet perdu</h2>
+                <p className="mt-1.5 font-body-md text-body-md text-white/90">Aide à le retrouver</p>
               </div>
             </div>
-            <h2 className="relative z-[1] font-headline-lg-mobile text-headline-lg-mobile">Découvrir un objet perdu</h2>
-            <p className="relative z-[1] font-body-md text-body-md text-white/85">Aide à le retrouver</p>
+            <span
+              className="absolute z-[1] right-3 top-1/2 -translate-y-1/2 w-9 h-9 rounded-full bg-white flex items-center justify-center text-[#356fdc] text-2xl leading-none"
+              style={{ boxShadow: "0 5px 12px rgba(30,50,100,0.15)" }}
+            >
+              ›
+            </span>
           </Link>
 
           <Link
             href="/report-found"
-            className="relative overflow-hidden text-white p-lg flex flex-col justify-center gap-1.5 min-h-[190px] rounded-[30px] transition-transform hover:scale-[0.98]"
+            className="relative overflow-hidden text-white flex items-center min-h-[150px] transition-transform hover:-translate-y-0.5"
             style={{
-              background: "linear-gradient(150deg, #b6a4ff 0%, #9377f5 55%, #7c5cf0 100%)",
-              boxShadow: "0 18px 34px rgba(110, 80, 220, 0.25), inset 0 1px 0 rgba(255, 255, 255, 0.35)",
+              background: "linear-gradient(135deg, #9874ee 0%, #a785f5 48%, #b49cff 100%)",
+              borderRadius: "55px 35px 30px 50px",
+              boxShadow: "0 12px 25px rgba(55, 83, 160, 0.16), inset 0 1px 0 rgba(255, 255, 255, 0.35)",
             }}
           >
             <div
-              className="pointer-events-none absolute inset-0"
-              style={{ background: "radial-gradient(160px 120px at 12% -8%, rgba(255,255,255,0.4), transparent 60%)" }}
+              className="pointer-events-none absolute rounded-full blur-[4px]"
+              style={{ width: 180, height: 180, top: -100, right: -50, background: "rgba(255,255,255,0.13)" }}
             />
-            <div className="relative z-[1] flex items-start justify-between">
-              <div className="w-11 h-11 rounded-full bg-white flex items-center justify-center text-[#8c78f5] shadow-sm">
-                <span className="material-symbols-outlined" style={{ fontVariationSettings: "'FILL' 1" }}>front_hand</span>
+            <div className="relative z-[1] flex items-center gap-4 px-6 py-4 w-full">
+              <div
+                className="w-20 h-20 shrink-0 rounded-full flex items-center justify-center"
+                style={{ background: "radial-gradient(circle, rgba(255,255,255,0.35), rgba(255,255,255,0.08))", boxShadow: "inset 0 2px 8px rgba(255,255,255,0.25)" }}
+              >
+                <span className="material-symbols-outlined text-white" style={{ fontSize: 40, fontVariationSettings: "'FILL' 1", filter: "drop-shadow(0 5px 5px rgba(0,0,0,0.15))" }}>diamond</span>
               </div>
-              <div className="w-8 h-8 rounded-full bg-white/25 flex items-center justify-center">
-                <span className="material-symbols-outlined" style={{ fontSize: 19 }}>chevron_right</span>
+              <div>
+                <h2 className="font-headline-lg-mobile text-headline-lg-mobile">Déclarer un objet trouvé</h2>
+                <p className="mt-1.5 font-body-md text-body-md text-white/90">Rends-le à son propriétaire</p>
               </div>
             </div>
-            <h2 className="relative z-[1] font-headline-lg-mobile text-headline-lg-mobile">Déclarer un objet trouvé</h2>
-            <p className="relative z-[1] font-body-md text-body-md text-white/85">Rends-le à son propriétaire</p>
+            <span
+              className="absolute z-[1] right-3 top-1/2 -translate-y-1/2 w-9 h-9 rounded-full bg-white flex items-center justify-center text-[#356fdc] text-2xl leading-none"
+              style={{ boxShadow: "0 5px 12px rgba(30,50,100,0.15)" }}
+            >
+              ›
+            </span>
           </Link>
         </section>
 
