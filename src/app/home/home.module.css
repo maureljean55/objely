@@ -77,9 +77,24 @@
   flex-direction: column;
 }
 
-.logo {
-  width: 138px;
-  height: auto;
+.wordmark {
+  position: relative;
+  display: inline-block;
+  font-size: 34px;
+  font-weight: 800;
+  line-height: 1;
+  letter-spacing: -0.5px;
+  background: linear-gradient(90deg, #087be8, #735af4, #a34ee9);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  color: transparent;
+}
+
+.wordmarkSpark {
+  position: absolute;
+  top: -6px;
+  right: -18px;
 }
 
 .brand span {
@@ -492,8 +507,8 @@
     padding-right: 14px;
   }
 
-  .logo {
-    width: 120px;
+  .wordmark {
+    font-size: 30px;
   }
 
   .hero h1 {

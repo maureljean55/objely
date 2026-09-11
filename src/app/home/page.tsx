@@ -98,7 +98,14 @@ export default async function HomeDashboardPage({
         {/* Header */}
         <header className={styles.header}>
           <div className={styles.brand}>
-            <Image src="/illustrations/home/logo.png" alt="Objely" width={376} height={120} className={styles.logo} priority />
+            <span className={styles.wordmark}>
+              Objely
+              <svg className={styles.wordmarkSpark} width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+                <line x1="2" y1="10" x2="4.5" y2="4" stroke="#8b5cf6" strokeWidth="2" strokeLinecap="round" />
+                <line x1="8" y1="9" x2="8" y2="2" stroke="#8b5cf6" strokeWidth="2" strokeLinecap="round" />
+                <line x1="14" y1="10" x2="11.5" y2="4" stroke="#8b5cf6" strokeWidth="2" strokeLinecap="round" />
+              </svg>
+            </span>
             <span>Perdu. Trouvé. Retrouvé.</span>
           </div>
 
