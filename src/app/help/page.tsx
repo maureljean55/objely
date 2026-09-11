@@ -11,10 +11,13 @@ export default async function HelpCenterPage() {
         <Link href="/profile" aria-label="Retour" className="text-primary hover:opacity-70 transition-opacity active:scale-95 flex items-center justify-center w-10 h-10 -ml-2 rounded-full">
           <span className="material-symbols-outlined text-[24px]" style={{ fontVariationSettings: "'FILL' 0" }}>arrow_back_ios</span>
         </Link>
-        <h1 className="font-headline-sm text-headline-sm text-on-surface absolute left-1/2 -translate-x-1/2">
+        <h1 className="font-headline-sm text-headline-sm font-extrabold tracking-tight text-on-surface absolute left-1/2 -translate-x-1/2">
           Support
         </h1>
-        <div className="w-8 h-8 rounded-full shrink-0 bg-primary-fixed flex items-center justify-center text-primary">
+        <div
+          className="w-8 h-8 rounded-full shrink-0 flex items-center justify-center text-white shadow-sm"
+          style={{ background: "linear-gradient(135deg, #0058bc, #5952af)" }}
+        >
           <span className="material-symbols-outlined text-[18px]" style={{ fontVariationSettings: "'FILL' 1" }}>support_agent</span>
         </div>
       </header>
@@ -22,8 +25,11 @@ export default async function HelpCenterPage() {
       {/* Hero */}
       <section className="flex flex-col items-center text-center px-6 pt-10 pb-8 relative">
         <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-56 h-56 bg-primary-fixed/40 rounded-full blur-3xl -z-10 pointer-events-none" />
-        <div className="w-20 h-20 rounded-full bg-surface-container-lowest/80 backdrop-blur-md border border-outline-variant/30 flex items-center justify-center mb-5 shadow-[0_8px_24px_rgba(0,88,188,0.12)]">
-          <span className="material-symbols-outlined text-[40px] text-primary" style={{ fontVariationSettings: "'FILL' 1" }}>
+        <div
+          className="w-20 h-20 rounded-full flex items-center justify-center mb-5 shadow-lg"
+          style={{ background: "linear-gradient(135deg, #0058bc, #5952af)" }}
+        >
+          <span className="material-symbols-outlined text-[40px] text-white" style={{ fontVariationSettings: "'FILL' 1" }}>
             waving_hand
           </span>
         </div>
@@ -40,11 +46,21 @@ export default async function HelpCenterPage() {
         <section className="bg-surface-container-lowest rounded-[28px] soft-shadow overflow-hidden">
           <Link href="/help/history" className="flex items-center justify-between px-lg py-5 border-b border-surface-variant/50 hover:bg-black/[0.02] transition-colors">
             <span className="font-headline-md text-headline-md text-on-surface font-bold">Historique</span>
-            <span className="material-symbols-outlined text-primary" style={{ fontVariationSettings: "'FILL' 1" }}>history</span>
+            <span
+              className="w-9 h-9 rounded-full flex items-center justify-center text-white shrink-0"
+              style={{ background: "linear-gradient(135deg, #0058bc, #5952af)" }}
+            >
+              <span className="material-symbols-outlined text-[20px]" style={{ fontVariationSettings: "'FILL' 1" }}>history</span>
+            </span>
           </Link>
           <a href="#faq" className="flex items-center justify-between px-lg py-5 hover:bg-black/[0.02] transition-colors">
             <span className="font-headline-md text-headline-md text-on-surface font-bold">Aide</span>
-            <span className="material-symbols-outlined text-primary" style={{ fontVariationSettings: "'FILL' 1" }}>help</span>
+            <span
+              className="w-9 h-9 rounded-full flex items-center justify-center text-white shrink-0"
+              style={{ background: "linear-gradient(135deg, #06b6d4, #0891b2)" }}
+            >
+              <span className="material-symbols-outlined text-[20px]" style={{ fontVariationSettings: "'FILL' 1" }}>help</span>
+            </span>
           </a>
         </section>
 
@@ -57,7 +73,10 @@ export default async function HelpCenterPage() {
             <h2 className="font-headline-md text-headline-md text-on-surface font-bold mb-1">Envoyez-nous un message</h2>
             <p className="font-body-md text-body-md text-on-surface-variant">Nous répondons généralement en quelques minutes</p>
           </div>
-          <span className="w-9 h-9 rounded-full bg-primary/10 flex items-center justify-center text-primary shrink-0">
+          <span
+            className="w-9 h-9 rounded-full flex items-center justify-center text-white shrink-0 shadow-sm"
+            style={{ background: "linear-gradient(135deg, #0058bc, #5952af)" }}
+          >
             <span className="material-symbols-outlined text-[20px]" style={{ fontVariationSettings: "'FILL' 1" }}>send</span>
           </span>
         </Link>
