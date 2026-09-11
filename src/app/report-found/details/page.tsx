@@ -18,7 +18,7 @@ export default function ReportFoundDetailsPage() {
   const [photos, setPhotos] = useState<string[]>([]);
   const [isUploadingPhotos, setIsUploadingPhotos] = useState(false);
 
-  const canContinue = name.trim().length > 0 && !isUploadingPhotos;
+  const canContinue = name.trim().length > 0 && photos.length > 0 && !isUploadingPhotos;
 
   const goNext = () => {
     if (!canContinue) return;
@@ -53,6 +53,9 @@ export default function ReportFoundDetailsPage() {
         </div>
 
         <div className="mb-lg">
+          <label className="block font-label-md text-[11px] text-outline uppercase tracking-wider mb-2">
+            Photo de l&apos;objet <span className="text-error normal-case">(obligatoire)</span>
+          </label>
           <PhotoPicker photos={photos} onChange={setPhotos} onUploadingChange={setIsUploadingPhotos} />
         </div>
 
