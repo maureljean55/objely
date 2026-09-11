@@ -5,12 +5,12 @@ import { useRouter } from "next/navigation";
 import BottomNav from "@/components/BottomNav";
 import { listMyNotifications, markAllAsRead, markAsRead, type AppNotification } from "@/lib/supabase/notifications";
 
-const ICONS: Record<AppNotification["type"], { icon: string; bg: string; color: string; filled?: boolean }> = {
-  match: { icon: "search", bg: "bg-primary/10", color: "text-primary", filled: true },
-  message: { icon: "chat_bubble", bg: "bg-surface-container-high", color: "text-on-surface" },
-  verification_submitted: { icon: "lock_open", bg: "bg-secondary/10", color: "text-secondary", filled: true },
-  verification_confirmed: { icon: "check_circle", bg: "bg-[#e8f5e9]", color: "text-[#2e7d32]", filled: true },
-  verification_rejected: { icon: "cancel", bg: "bg-error-container", color: "text-error" },
+const ICONS: Record<AppNotification["type"], { icon: string; gradient: string; filled?: boolean }> = {
+  match: { icon: "search", gradient: "linear-gradient(135deg, #0058bc, #5952af)", filled: true },
+  message: { icon: "chat_bubble", gradient: "linear-gradient(135deg, #0058bc, #3b82f6)" },
+  verification_submitted: { icon: "lock_open", gradient: "linear-gradient(135deg, #f97316, #ef4444)", filled: true },
+  verification_confirmed: { icon: "check_circle", gradient: "linear-gradient(135deg, #16a34a, #15803d)", filled: true },
+  verification_rejected: { icon: "cancel", gradient: "linear-gradient(135deg, #ef4444, #b91c1c)" },
 };
 
 type Section = "Aujourd'hui" | "Hier" | "Plus anciennes";
@@ -85,7 +85,7 @@ export default function NotificationsPage() {
             <span className="material-symbols-outlined" style={{ fontVariationSettings: "'FILL' 0" }}>arrow_back_ios</span>
           </button>
           <div className="flex flex-col items-center">
-            <h1 className="font-headline-md text-headline-md text-on-surface">Notifications</h1>
+            <h1 className="font-headline-md text-headline-md font-extrabold tracking-tight text-on-surface">Notifications</h1>
             <span className="font-label-md text-[11px] text-outline">
               {unreadCount > 0 ? `${unreadCount} nouvelle${unreadCount > 1 ? "s" : ""} notification${unreadCount > 1 ? "s" : ""}` : "Tout est à jour"}
             </span>
@@ -101,11 +101,18 @@ export default function NotificationsPage() {
         </div>
       </header>
 
-      <main className="pt-[calc(92px+env(safe-area-inset-top))] max-w-2xl mx-auto">
+      <main className="pt-[calc(92px+env(safe-area-inset-top))] max-w-2xl mx-auto px-container-margin">
         {notifications.length === 0 && (
-          <p className="font-body-md text-body-md text-on-surface-variant text-center mt-xl px-container-margin">
-            Aucune notification pour le moment.
-          </p>
+          <div className="flex flex-col items-center justify-center py-xl text-center">
+            <div
+              className="w-20 h-20 mb-lg rounded-full flex items-center justify-center shadow-lg"
+              style={{ background: "linear-gradient(135deg, #0058bc, #5952af)" }}
+            >
+              <span className="material-symbols-outlined text-white text-[36px]">notifications</span>
+            </div>
+            <h3 className="font-headline-sm text-headline-sm font-bold text-on-surface mb-1">Aucune notification</h3>
+            <p className="font-body-md text-body-md text-on-surface-variant">Tout est calme pour le moment.</p>
+          </div>
         )}
 
         {SECTIONS.map((section) => {
@@ -113,8 +120,8 @@ export default function NotificationsPage() {
           if (items.length === 0) return null;
           return (
             <div key={section} className="mb-lg">
-              <h2 className="px-container-margin font-label-md text-[11px] text-outline uppercase tracking-wider mb-2">{section}</h2>
-              <div className="bg-surface-container-lowest divide-y divide-surface-variant/60 border-y border-surface-variant/60">
+              <h2 className="font-label-md text-[11px] text-outline uppercase tracking-wider mb-2">{section}</h2>
+              <div className="bg-surface-container-lowest rounded-[24px] soft-shadow inner-stroke divide-y divide-surface-variant/60 overflow-hidden">
                 {items.map((item) => {
                   const icon = ICONS[item.type];
                   return (
@@ -125,7 +132,10 @@ export default function NotificationsPage() {
                       className={`relative w-full flex items-start gap-3 p-md text-left transition-colors ${item.read ? "" : "bg-[#EBF2FF] hover:brightness-[0.98]"}`}
                     >
                       {!item.read && <span className="absolute left-2 top-1/2 -translate-y-1/2 w-2 h-2 rounded-full bg-primary" />}
-                      <div className={`shrink-0 w-10 h-10 rounded-full flex items-center justify-center ml-3 ${icon.bg} ${icon.color}`}>
+                      <div
+                        className="shrink-0 w-10 h-10 rounded-full flex items-center justify-center ml-3 text-white shadow-sm"
+                        style={{ background: icon.gradient }}
+                      >
                         <span className="material-symbols-outlined text-[20px]" style={icon.filled ? { fontVariationSettings: "'FILL' 1" } : undefined}>
                           {icon.icon}
                         </span>
