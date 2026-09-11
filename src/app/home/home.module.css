@@ -20,6 +20,7 @@
   max-width: 430px;
   margin: 0 auto;
   padding: 25px 18px 140px;
+  padding-top: calc(25px + env(safe-area-inset-top));
   overflow: hidden;
 }
 
@@ -122,14 +123,22 @@
    HERO
 ========================= */
 
+/* A real two-column flex layout, not two overlapping absolutely-positioned
+   blocks — the original spec relied on the headline's words happening to
+   stay narrow enough not to reach the image, which broke on any viewport
+   it wasn't measured against (e.g. wider phones: text and photo overlapped
+   directly). This keeps the two columns from ever touching, at any width. */
 .hero {
-  min-height: 340px;
-  position: relative;
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
 }
 
 .heroContent {
   position: relative;
   z-index: 5;
+  flex: 1 1 55%;
+  min-width: 0;
 }
 
 .welcome {
@@ -145,9 +154,9 @@
 }
 
 .hero h1 {
-  font-size: 46px;
-  line-height: 0.98;
-  letter-spacing: -2.5px;
+  font-size: 38px;
+  line-height: 1;
+  letter-spacing: -1.5px;
   color: #122653;
 }
 
@@ -160,22 +169,23 @@
 
 .hero p {
   margin-top: 20px;
-  font-size: 16px;
+  font-size: 15px;
   line-height: 1.45;
   color: #69758e;
 }
 
 .heroObjects {
-  position: absolute;
-  width: 240px;
-  height: 300px;
-  right: -18px;
-  top: 10px;
+  position: relative;
+  flex: 0 0 auto;
+  width: 42%;
+  max-width: 190px;
+  align-self: center;
+  margin-top: 12px;
 }
 
 .heroObjects img {
   width: 100%;
-  height: 100%;
+  height: auto;
   object-fit: contain;
   filter: drop-shadow(0 15px 18px rgba(30, 50, 100, 0.18));
   animation: float 3.4s ease-in-out infinite;
@@ -193,15 +203,15 @@
 }
 
 .spark1 {
-  top: 5px;
-  right: 20px;
-  font-size: 28px;
+  top: -10px;
+  right: 4px;
+  font-size: 24px;
 }
 
 .spark2 {
-  bottom: 20px;
-  left: 8px;
-  font-size: 25px;
+  bottom: 4px;
+  left: -6px;
+  font-size: 22px;
 }
 
 .spark3 {
@@ -525,13 +535,11 @@
   }
 
   .hero h1 {
-    font-size: 39px;
+    font-size: 32px;
   }
 
   .heroObjects {
-    transform: scale(0.84);
-    transform-origin: top right;
-    right: -30px;
+    max-width: 155px;
   }
 
   .communityImage {
