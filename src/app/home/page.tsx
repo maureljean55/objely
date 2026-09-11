@@ -4,6 +4,7 @@ import BottomNav from "@/components/BottomNav";
 import MessagesFab from "@/components/MessagesFab";
 import { createClient } from "@/lib/supabase/server";
 import { listRecentFinds } from "@/lib/supabase/publicFeed";
+import styles from "./home.module.css";
 
 function timeAgo(dateStr: string) {
   const diffMs = Date.now() - new Date(dateStr).getTime();
@@ -51,13 +52,14 @@ export default async function HomeDashboardPage({
     : [{ count: 0 }, { count: 0 }, { data: null }];
 
   return (
-    <div
-      className="min-h-screen pb-[120px] md:pb-0"
-      style={{ background: "linear-gradient(180deg, #eef1fb 0%, #f2eefc 45%, #f6f3fe 100%)" }}
-    >
-      {/* TopAppBar (desktop) — unchanged from before */}
+    <div className={styles.page}>
+      {/* Desktop nav — the mockup this page follows only targets phone
+          widths (its own breakpoint tops out at 430px), so wider screens
+          keep the app's existing simple top nav instead of an invented
+          desktop redesign. Without this, md+ screens would have no
+          navigation at all, since BottomNav below is mobile-only. */}
       <header
-        className="hidden md:flex justify-between items-center w-full px-container-margin pb-base max-w-7xl mx-auto fixed top-0 z-50 bg-background/80 backdrop-blur-md"
+        className="hidden md:flex justify-between items-center w-full px-container-margin pb-base max-w-7xl mx-auto sticky top-0 z-50 bg-background/80 backdrop-blur-md"
         style={{ paddingTop: "calc(0.5rem + env(safe-area-inset-top))" }}
       >
         <div className="flex items-center gap-sm">
@@ -92,45 +94,30 @@ export default async function HomeDashboardPage({
         </Link>
       </header>
 
-      <main className="md:hidden max-w-7xl mx-auto px-container-margin" style={{ paddingTop: "calc(1.25rem + env(safe-area-inset-top))" }}>
-        {/* Header row: wordmark + tagline, notifications / avatar */}
-        <div className="flex items-start justify-between mb-lg">
-          <div>
-            <h1 className="font-headline-lg text-headline-lg bg-gradient-to-r from-primary to-secondary-container bg-clip-text text-transparent">
-              Objely
-            </h1>
-            <p className="font-label-md text-label-md text-on-surface-variant -mt-1">Perdu. Trouvé. Retrouvé.</p>
+      <div className={`${styles.app} md:hidden`}>
+        {/* Header */}
+        <header className={styles.header}>
+          <div className={styles.brand}>
+            <span className={styles.logo}>Objely</span>
+            <span>Perdu. Trouvé. Retrouvé.</span>
           </div>
-          <div className="flex items-center gap-2">
-            <Link
-              href="/qr"
-              aria-label="Scanner un QR code"
-              className="w-11 h-11 rounded-full bg-surface-container-lowest shadow-sm flex items-center justify-center text-on-surface-variant hover:text-primary transition-colors"
-            >
-              <span className="material-symbols-outlined text-[20px]">qr_code_scanner</span>
+
+          <div className={styles.headerRight}>
+            <Link href="/notifications" aria-label="Notifications" className={styles.circleButton}>
+              <span className="material-symbols-outlined">notifications</span>
+              {!!unreadCount && <i className={styles.notificationDot} />}
             </Link>
-            <Link
-              href="/notifications"
-              aria-label="Notifications"
-              className="relative w-11 h-11 rounded-full bg-surface-container-lowest shadow-sm flex items-center justify-center text-on-surface-variant hover:text-primary transition-colors"
-            >
-              <span className="material-symbols-outlined text-[20px]">notifications</span>
-              {!!unreadCount && (
-                <span className="absolute top-2.5 right-3 w-2 h-2 rounded-full bg-error ring-2 ring-surface-container-lowest" />
+
+            <Link href="/profile" aria-label="Profil" className={styles.profileButton}>
+              {profile?.avatar_url ? (
+                <Image src={profile.avatar_url} alt="Profil" width={52} height={52} />
+              ) : (
+                <span className="material-symbols-outlined" style={{ fontSize: 24 }}>person</span>
               )}
-            </Link>
-            <Link href="/profile" className="relative shrink-0">
-              <div className="relative w-11 h-11 rounded-full overflow-hidden ring-2 ring-surface-container-lowest shadow-sm bg-surface-container-high flex items-center justify-center text-on-surface-variant">
-                {profile?.avatar_url ? (
-                  <Image alt="Profil" src={profile.avatar_url} fill sizes="44px" className="object-cover" />
-                ) : (
-                  <span className="material-symbols-outlined text-[22px]">person</span>
-                )}
-              </div>
-              <span className="absolute -bottom-0.5 -right-0.5 w-3.5 h-3.5 rounded-full bg-emerald-500 ring-2 ring-surface-container-lowest" />
+              <span className={styles.online} />
             </Link>
           </div>
-        </div>
+        </header>
 
         {welcome === "1" && (
           <div className="flex items-center gap-3 rounded-2xl bg-emerald-50 border border-emerald-200/60 px-4 py-3 mb-lg animate-fadeIn">
@@ -142,122 +129,225 @@ export default async function HomeDashboardPage({
         )}
 
         {/* Hero */}
-        <section className="relative mb-lg">
-          <span className="inline-block font-label-md text-label-md text-white bg-gradient-to-r from-primary to-secondary-container px-4 py-1.5 rounded-full mb-3 shadow-sm">
-            Bienvenue sur Objely !
-          </span>
-          <h2 className="font-headline-lg text-headline-lg text-on-background leading-tight mb-2">
-            Ton objet peut tout <span className="bg-gradient-to-r from-primary to-secondary-container bg-clip-text text-transparent">changer !</span>
-          </h2>
-          <p className="font-body-lg text-body-lg text-on-surface-variant mb-md">
-            Perds un objet. Retrouve-le.
-            <br />
-            Ou aide les autres !
-          </p>
+        <section className={styles.hero}>
+          <div className={styles.heroContent}>
+            <div className={styles.welcome}>Bienvenue sur Objely !</div>
+            <h1>
+              Ton objet
+              <br />
+              peut tout
+              <br />
+              <strong>changer !</strong>
+            </h1>
+            <p>
+              Perds un objet. Retrouve-le.
+              <br />
+              Ou aide les autres !
+            </p>
+          </div>
 
-          <div className="relative w-full flex justify-center">
-            <div className="absolute -top-1 left-2 font-label-md text-[13px] text-primary -rotate-3">
-              Des objets vraiment partout !
-            </div>
+          <div className={styles.heroObjects}>
             <Image
               src="/illustrations/home/composition.png"
               alt="Téléphone, écouteurs, montre, sac, casquette, clés et lunettes"
               width={405}
               height={287}
               priority
-              className="w-[78%] h-auto drop-shadow-xl mt-6"
             />
+            <span className={`${styles.spark} ${styles.spark1}`}>✦</span>
+            <span className={`${styles.spark} ${styles.spark2}`}>✦</span>
+            <span className={`${styles.spark} ${styles.spark3}`}>♥</span>
           </div>
         </section>
 
-        {/* Primary Action Cards */}
-        <section className="flex flex-col gap-md mb-lg">
+        {/* Actions */}
+        <section className={styles.actions}>
+          <Link href="/report-lost" className={`${styles.actionCard} ${styles.lost}`}>
+            <div className={styles.actionIcon}>🔎</div>
+            <div>
+              <h2>
+                Découvrir
+                <br />
+                un objet perdu
+              </h2>
+              <p>Aide à le retrouver</p>
+            </div>
+            <span className={styles.actionArrow}>→</span>
+          </Link>
+
+          <Link href="/report-found" className={`${styles.actionCard} ${styles.found}`}>
+            <div className={styles.actionIcon}>🎁</div>
+            <div>
+              <h2>
+                Déclarer
+                <br />
+                un objet trouvé
+              </h2>
+              <p>Rends-le à son propriétaire</p>
+            </div>
+            <span className={styles.actionArrow}>→</span>
+          </Link>
+        </section>
+
+        {/* Communauté */}
+        <section className={styles.community}>
+          <div className={styles.communityContent}>
+            <div className={styles.communityIcon}>👥</div>
+            <h2>
+              Une communauté
+              <br />
+              solidaire
+            </h2>
+            <p>
+              Des milliers de personnes
+              <br />
+              déjà actives près de chez toi.
+            </p>
+            <Link href="/profile" className={styles.joinButton}>
+              Rejoindre →
+            </Link>
+          </div>
+          <Image
+            src="/illustrations/home/couple.png"
+            alt="Deux utilisateurs Objely qui consultent l'app ensemble"
+            width={225}
+            height={180}
+            className={styles.communityImage}
+          />
+        </section>
+
+        {/* Objets récents — vraies données */}
+        <section>
+          <div className={styles.sectionHeader}>
+            <div className={styles.sectionTitle}>
+              <span className={styles.sectionIcon}>🛍️</span>
+              <h2>Objets récemment trouvés</h2>
+            </div>
+            <Link href="/search" className={styles.seeAll}>
+              Voir tout →
+            </Link>
+          </div>
+
+          {recentFinds && recentFinds.length > 0 ? (
+            <div className={styles.objectsList}>
+              {recentFinds.map((item, index) => (
+                <article key={item.id} className={styles.objectCard}>
+                  <div className={styles.objectImage}>
+                    {item.photos?.[0] ? (
+                      <Image
+                        src={item.photos[0]}
+                        alt={item.title}
+                        fill
+                        sizes="150px"
+                        style={{ objectFit: "contain", padding: 10 }}
+                        priority={index === 0}
+                      />
+                    ) : (
+                      <div className="w-full h-full flex items-center justify-center text-primary">
+                        <span className="material-symbols-outlined text-4xl">{item.category_icon || "inventory_2"}</span>
+                      </div>
+                    )}
+                    <span className={styles.verified}>✓</span>
+                  </div>
+                  <span className={styles.objectTag}>{item.category_label}</span>
+                  <p className={styles.place}>📍 {item.location || "Lieu non précisé"}</p>
+                  <p className={styles.time}>{timeAgo(item.created_at)}</p>
+                </article>
+              ))}
+            </div>
+          ) : (
+            <div className="rounded-2xl bg-white soft-shadow p-lg text-center">
+              <p className="font-body-md text-body-md text-on-surface-variant">
+                Aucun objet trouvé signalé pour le moment. Revenez bientôt !
+              </p>
+            </div>
+          )}
+        </section>
+
+        {/* Banner */}
+        <section className={styles.bottomBanner}>
+          <div className={styles.bannerMessage}>
+            Un petit objet peut faire
+            <br />
+            une grande différence !
+            <span>💜</span>
+          </div>
+
+          <Link href="/search" className={styles.bannerAction}>
+            <span>📍</span>
+            <div>
+              <strong>T&apos;es du coin ?</strong>
+              <small>
+                Découvre les objets
+                <br />
+                près de chez toi !
+              </small>
+            </div>
+            <b>›</b>
+          </Link>
+        </section>
+      </div>
+
+      {/* Desktop content — same real data, plain layout (see note above on
+          why desktop doesn't follow the phone-only mockup). */}
+      <main className="hidden md:block max-w-7xl mx-auto px-container-margin md:px-lg pt-lg md:pt-xl space-y-lg pb-2xl">
+        {welcome === "1" && (
+          <div className="flex items-center gap-3 rounded-2xl bg-emerald-50 border border-emerald-200/60 px-4 py-3 animate-fadeIn">
+            <span className="material-symbols-outlined text-emerald-600" style={{ fontVariationSettings: "'FILL' 1" }}>
+              check_circle
+            </span>
+            <p className="font-body-md text-body-md text-emerald-800">Compte confirmé, bienvenue sur Objely !</p>
+          </div>
+        )}
+
+        <h1 className="font-headline-lg text-headline-lg text-on-background">Quelque chose à retrouver ?</h1>
+
+        <section className="grid grid-cols-2 gap-lg">
           <Link
             href="/report-lost"
-            className="bg-gradient-to-r from-primary to-primary-container text-white rounded-[28px] px-lg py-md flex items-center gap-4 shadow-lg transition-transform active:scale-[0.98]"
+            className="bg-gradient-to-br from-primary to-primary-container text-white p-lg flex flex-col justify-center gap-1.5 shadow-xl min-h-[190px] rounded-[28px] transition-transform hover:scale-[0.98]"
           >
-            <span className="w-12 h-12 rounded-full bg-white flex items-center justify-center shrink-0 overflow-hidden">
-              <Image src="/illustrations/home/mascot.png" alt="" width={40} height={40} className="object-contain" />
-            </span>
-            <div className="flex-1">
-              <h3 className="font-headline-sm text-headline-sm">Découvrir un objet perdu</h3>
-              <p className="font-body-md text-[13px] text-white/80">Aidez à le retrouver</p>
+            <div className="w-11 h-11 rounded-full bg-white/20 flex items-center justify-center mb-1">
+              <span className="material-symbols-outlined" style={{ fontVariationSettings: "'FILL' 1" }}>search</span>
             </div>
-            <span className="w-8 h-8 rounded-full bg-white text-primary flex items-center justify-center shrink-0">
-              <span className="material-symbols-outlined text-[18px]">chevron_right</span>
-            </span>
+            <h2 className="font-headline-lg-mobile text-headline-lg-mobile">Découvrir un objet perdu</h2>
+            <p className="font-body-md text-body-md text-white/80">Aide à le retrouver</p>
           </Link>
 
           <Link
             href="/report-found"
-            className="bg-gradient-to-r from-secondary-container to-secondary text-white rounded-[28px] px-lg py-md flex items-center gap-4 shadow-lg transition-transform active:scale-[0.98]"
+            className="bg-gradient-to-br from-[#7c6ff0] to-secondary-container text-white p-lg flex flex-col justify-center gap-1.5 shadow-xl min-h-[190px] rounded-[28px] transition-transform hover:scale-[0.98]"
           >
-            <span className="w-12 h-12 rounded-full bg-white flex items-center justify-center shrink-0 text-secondary">
-              <span className="material-symbols-outlined text-[24px]" style={{ fontVariationSettings: "'FILL' 1" }}>diamond</span>
-            </span>
-            <div className="flex-1">
-              <h3 className="font-headline-sm text-headline-sm">Déclarer un objet trouvé</h3>
-              <p className="font-body-md text-[13px] text-white/80">Rends-le à son propriétaire</p>
+            <div className="w-11 h-11 rounded-full bg-white/20 flex items-center justify-center mb-1">
+              <span className="material-symbols-outlined" style={{ fontVariationSettings: "'FILL' 1" }}>front_hand</span>
             </div>
-            <span className="w-8 h-8 rounded-full bg-white text-secondary flex items-center justify-center shrink-0">
-              <span className="material-symbols-outlined text-[18px]">chevron_right</span>
-            </span>
+            <h2 className="font-headline-lg-mobile text-headline-lg-mobile">Déclarer un objet trouvé</h2>
+            <p className="font-body-md text-body-md text-white/80">Rends-le à son propriétaire</p>
           </Link>
         </section>
 
-        {/* Community */}
-        <section className="relative bg-surface-container-lowest/80 rounded-[28px] shadow-sm overflow-hidden mb-lg">
-          <div className="flex items-stretch">
-            <div className="flex-1 p-lg">
-              <div className="w-10 h-10 rounded-full bg-primary/10 text-primary flex items-center justify-center mb-2">
-                <span className="material-symbols-outlined" style={{ fontVariationSettings: "'FILL' 1" }}>groups</span>
-              </div>
-              <h3 className="font-headline-sm text-headline-sm text-on-surface mb-1">Une communauté solidaire</h3>
-              <p className="font-body-md text-[13px] text-on-surface-variant mb-3">Des milliers de personnes déjà actives près de chez toi.</p>
-              <Link href="/profile" className="inline-flex items-center gap-1 bg-white text-primary font-headline-sm text-[14px] px-4 py-2 rounded-full shadow-sm">
-                Rejoindre
-                <span className="material-symbols-outlined text-[16px]">arrow_forward</span>
-              </Link>
-            </div>
-            <div className="relative w-[42%] shrink-0">
-              <Image src="/illustrations/home/couple.png" alt="Deux utilisateurs Objely qui consultent l'app ensemble" fill sizes="200px" className="object-cover" />
-            </div>
-          </div>
-        </section>
-
-        {/* Recent Finds — real data, unchanged behavior (not links to a specific item) */}
-        <section className="space-y-md mb-lg">
+        <section className="space-y-md">
           <div className="flex items-center justify-between">
-            <h3 className="font-headline-sm text-headline-sm text-on-background">Objets récemment trouvés</h3>
-            <Link href="/search" className="font-label-md text-label-md text-primary flex items-center gap-0.5">
-              Voir tout
-              <span className="material-symbols-outlined text-[16px]">chevron_right</span>
-            </Link>
+            <h3 className="font-headline-sm text-headline-sm text-on-background">Objets récemment trouvés près de vous</h3>
+            <Link href="/search" className="font-label-md text-label-md text-primary">Voir tout</Link>
           </div>
           {recentFinds && recentFinds.length > 0 ? (
-            <div className="grid grid-cols-2 gap-md">
-              {recentFinds.map((item, index) => (
-                <div key={item.id} className="bg-surface-container-lowest rounded-2xl shadow-sm overflow-hidden">
-                  <div className="relative h-28 bg-surface-container-high flex items-center justify-center text-primary">
+            <div className="grid grid-cols-3 gap-md">
+              {recentFinds.map((item) => (
+                <div key={item.id} className="flex flex-col">
+                  <div className="flex items-center gap-1.5 mb-2">
+                    <span className="w-2 h-2 rounded-full bg-primary" />
+                    <span className="font-label-md text-label-md text-on-surface-variant">{item.location || "Lieu non précisé"}</span>
+                  </div>
+                  <div className="relative h-32 rounded-2xl overflow-hidden bg-surface-container-high mb-2 flex items-center justify-center text-primary">
                     {item.photos?.[0] ? (
-                      <Image alt={item.title} src={item.photos[0]} fill sizes="200px" className="object-cover" priority={index === 0} />
+                      <Image alt={item.title} src={item.photos[0]} fill sizes="300px" className="object-cover" />
                     ) : (
                       <span className="material-symbols-outlined text-4xl">{item.category_icon || "inventory_2"}</span>
                     )}
-                    <span className="absolute top-2 right-2 w-5 h-5 rounded-full bg-primary text-white flex items-center justify-center shadow-sm">
-                      <span className="material-symbols-outlined text-[13px]">check</span>
-                    </span>
                   </div>
-                  <div className="p-2.5">
-                    <span className="inline-block font-label-md text-[10px] text-white bg-primary/90 px-2 py-0.5 rounded-md mb-1.5">
-                      {item.category_label}
-                    </span>
-                    <div className="flex items-center gap-1 text-on-surface-variant mb-0.5">
-                      <span className="material-symbols-outlined text-[13px]">location_on</span>
-                      <span className="font-body-md text-[12px] truncate">{item.location || "Lieu non précisé"}</span>
-                    </div>
-                    <p className="font-label-md text-[11px] text-outline">{timeAgo(item.created_at)}</p>
-                  </div>
+                  <h4 className="font-headline-sm text-headline-sm text-on-background line-clamp-1 mb-0.5">{item.title}</h4>
+                  <p className="font-body-md text-body-md text-on-surface-variant">Trouvé {timeAgo(item.created_at)}</p>
                 </div>
               ))}
             </div>
@@ -268,27 +358,6 @@ export default async function HomeDashboardPage({
               </p>
             </div>
           )}
-        </section>
-
-        {/* Bottom banner */}
-        <section className="relative bg-surface-container-lowest/80 rounded-[28px] shadow-sm px-lg py-md flex items-center gap-3 mb-lg overflow-visible">
-          <p className="font-label-md text-[12px] text-primary -rotate-2 max-w-[90px] shrink-0">
-            Un petit objet peut faire une grande différence !
-          </p>
-          <Image src="/illustrations/home/mascot.png" alt="" width={56} height={56} className="shrink-0 drop-shadow-md" />
-          <Link
-            href="/search"
-            className="flex-1 bg-gradient-to-r from-primary to-secondary-container text-white rounded-full px-4 py-3 flex items-center gap-2 shadow-sm"
-          >
-            <span className="w-7 h-7 rounded-full bg-white/20 flex items-center justify-center shrink-0">
-              <span className="material-symbols-outlined text-[15px]">location_on</span>
-            </span>
-            <span className="flex-1 min-w-0">
-              <span className="block font-label-md text-[12px] font-semibold">T&apos;es du coin ?</span>
-              <span className="block font-body-md text-[11px] text-white/80 truncate">Découvre les objets près de chez toi !</span>
-            </span>
-            <span className="material-symbols-outlined text-[16px] shrink-0">chevron_right</span>
-          </Link>
         </section>
       </main>
 
