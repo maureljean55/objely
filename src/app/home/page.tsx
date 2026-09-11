@@ -152,18 +152,9 @@ export default async function HomeDashboardPage({
               />
             </span>
             <div className={styles.actionBody}>
-              <h2>
-                Découvrir
-                <br />
-                un objet perdu
-              </h2>
+              <h2>Découvrir un objet perdu</h2>
               <p>Aide à le retrouver</p>
             </div>
-            <span className={`${styles.actionArrow} ${styles.arrowLost}`}>
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.75" strokeLinecap="round" strokeLinejoin="round">
-                <path d="M9 18l6-6-6-6" />
-              </svg>
-            </span>
           </Link>
 
           <Link href="/report-found" className={`${styles.actionCard} ${styles.found}`}>
@@ -177,18 +168,9 @@ export default async function HomeDashboardPage({
               />
             </span>
             <div className={styles.actionBody}>
-              <h2>
-                Déclarer
-                <br />
-                un objet trouvé
-              </h2>
+              <h2>Déclarer un objet trouvé</h2>
               <p>Rends-le à son propriétaire</p>
             </div>
-            <span className={`${styles.actionArrow} ${styles.arrowFound}`}>
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.75" strokeLinecap="round" strokeLinejoin="round">
-                <path d="M9 18l6-6-6-6" />
-              </svg>
-            </span>
           </Link>
         </section>
 
