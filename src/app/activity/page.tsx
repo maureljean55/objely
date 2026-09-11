@@ -46,7 +46,7 @@ export default async function ActivityPage() {
   return (
     <div className="bg-background text-on-background font-body-md antialiased min-h-screen pb-28 md:pb-12">
       <header className="glass-header fixed top-0 inset-x-0 z-50 flex items-center px-container-margin min-h-16 pt-[env(safe-area-inset-top)] w-full shadow-[0_1px_0_rgba(0,0,0,0.05)]">
-        <h1 className="font-display text-headline-lg-mobile text-headline-lg-mobile text-on-surface">Activité</h1>
+        <h1 className="font-display text-headline-lg-mobile text-headline-lg-mobile font-extrabold tracking-tight text-on-surface">Activité</h1>
       </header>
 
       <main className="pt-[calc(88px+env(safe-area-inset-top))] max-w-2xl mx-auto">
@@ -56,9 +56,10 @@ export default async function ActivityPage() {
               key={filter}
               className={
                 i === 0
-                  ? "shrink-0 whitespace-nowrap px-4 py-2 rounded-full bg-primary text-on-primary font-headline-sm text-headline-sm"
-                  : "shrink-0 whitespace-nowrap px-4 py-2 rounded-full bg-surface-container-lowest text-on-surface-variant border border-outline-variant font-headline-sm text-headline-sm"
+                  ? "shrink-0 whitespace-nowrap px-4 py-2 rounded-full text-white font-headline-sm text-headline-sm shadow-sm"
+                  : "shrink-0 whitespace-nowrap px-4 py-2 rounded-full bg-surface-container-lowest text-on-surface-variant border border-outline-variant/50 font-headline-sm text-headline-sm hover:bg-surface-variant transition-colors"
               }
+              style={i === 0 ? { background: "linear-gradient(135deg, #0058bc, #5952af)" } : undefined}
             >
               {filter}
             </button>
@@ -70,9 +71,12 @@ export default async function ActivityPage() {
             const isLostSide = match.lost_item.user_id === user!.id;
             const otherItem = isLostSide ? match.found_item : match.lost_item;
             return (
-              <article key={match.id} className="bg-surface-container-lowest rounded-2xl soft-shadow inner-stroke overflow-hidden">
+              <article key={match.id} className="bg-surface-container-lowest rounded-[24px] soft-shadow inner-stroke overflow-hidden">
                 <div className="p-md border-b border-surface-variant/60 flex gap-3">
-                  <div className="w-10 h-10 rounded-full bg-primary-container/10 flex items-center justify-center shrink-0 text-primary-container">
+                  <div
+                    className="w-10 h-10 rounded-full flex items-center justify-center shrink-0 text-white shadow-sm"
+                    style={{ background: "linear-gradient(135deg, #0058bc, #5952af)" }}
+                  >
                     <span className="material-symbols-outlined">my_location</span>
                   </div>
                   <div className="flex-1">
@@ -111,7 +115,8 @@ export default async function ActivityPage() {
                   {match.status === "confirmed" ? (
                     <Link
                       href={`/chat/${match.id}`}
-                      className="flex-1 h-14 bg-primary text-on-primary rounded-xl font-headline-sm text-headline-sm hover:opacity-90 active:scale-[0.98] transition-all flex items-center justify-center"
+                      className="flex-1 h-14 text-white rounded-xl font-headline-sm text-headline-sm hover:opacity-90 active:scale-[0.98] transition-all flex items-center justify-center shadow-sm"
+                      style={{ background: "linear-gradient(135deg, #0058bc, #5952af)" }}
                     >
                       Discuter
                     </Link>
@@ -126,9 +131,16 @@ export default async function ActivityPage() {
           })}
 
           {(!matches || matches.length === 0) && (
-            <div className="bg-surface-container-lowest rounded-2xl soft-shadow inner-stroke p-lg text-center">
+            <div className="bg-surface-container-lowest rounded-[24px] soft-shadow inner-stroke p-xl flex flex-col items-center text-center">
+              <div
+                className="w-20 h-20 mb-md rounded-full flex items-center justify-center shadow-lg"
+                style={{ background: "linear-gradient(135deg, #0058bc, #5952af)" }}
+              >
+                <span className="material-symbols-outlined text-white text-[36px]">notifications_active</span>
+              </div>
+              <h3 className="font-headline-sm text-headline-sm font-bold text-on-surface mb-1">Aucune correspondance pour le moment</h3>
               <p className="font-body-md text-body-md text-on-surface-variant">
-                Aucune correspondance pour le moment. Vous serez averti dès qu&apos;une déclaration correspond à un de vos objets.
+                Vous serez averti dès qu&apos;une déclaration correspond à un de vos objets.
               </p>
             </div>
           )}
@@ -136,9 +148,12 @@ export default async function ActivityPage() {
           {(matches ?? [])
             .filter((match) => match.status === "pending" && match.found_item.user_id === user!.id)
             .map((match) => (
-              <article key={`verif-${match.id}`} className="bg-surface-container-lowest rounded-2xl soft-shadow inner-stroke p-md">
+              <article key={`verif-${match.id}`} className="bg-surface-container-lowest rounded-[24px] soft-shadow inner-stroke p-md">
                 <div className="flex gap-3 mb-md">
-                  <div className="w-10 h-10 rounded-full bg-error-container/60 flex items-center justify-center shrink-0 text-error">
+                  <div
+                    className="w-10 h-10 rounded-full flex items-center justify-center shrink-0 text-white shadow-sm"
+                    style={{ background: "linear-gradient(135deg, #f97316, #ef4444)" }}
+                  >
                     <span className="material-symbols-outlined">lock_open</span>
                   </div>
                   <div className="flex-1">
@@ -153,7 +168,8 @@ export default async function ActivityPage() {
                 </div>
                 <Link
                   href={`/activity/verification?match=${match.id}`}
-                  className="w-full h-14 bg-surface-container-lowest border-2 border-outline-variant text-on-surface rounded-xl font-headline-sm text-headline-sm hover:bg-surface-container-low transition-all flex items-center justify-center"
+                  className="w-full h-14 text-white rounded-xl font-headline-sm text-headline-sm hover:opacity-90 active:scale-[0.98] transition-all flex items-center justify-center shadow-sm"
+                  style={{ background: "linear-gradient(135deg, #f97316, #ef4444)" }}
                 >
                   Voir la demande
                 </Link>
