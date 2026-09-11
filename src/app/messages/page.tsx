@@ -70,7 +70,7 @@ export default function MessagesPage() {
         <Link href="/profile" aria-label="Retour" className="flex items-center justify-center p-2 -ml-2 text-primary hover:opacity-70 active:scale-95 transition-transform">
           <span className="material-symbols-outlined text-2xl">arrow_back_ios</span>
         </Link>
-        <h1 className="font-headline-sm text-headline-sm text-on-surface absolute left-1/2 -translate-x-1/2">Messages</h1>
+        <h1 className="font-headline-sm text-headline-sm font-extrabold tracking-tight text-on-surface absolute left-1/2 -translate-x-1/2">Messages</h1>
         <div className="w-8 h-8" />
       </header>
 
@@ -83,10 +83,13 @@ export default function MessagesPage() {
 
         {rows !== null && rows.length === 0 && (
           <div className="flex flex-col items-center justify-center py-xl text-center">
-            <div className="w-20 h-20 mb-lg bg-surface-container-low rounded-full flex items-center justify-center">
-              <span className="material-symbols-outlined text-primary text-[36px]">chat_bubble</span>
+            <div
+              className="w-20 h-20 mb-lg rounded-full flex items-center justify-center shadow-lg"
+              style={{ background: "linear-gradient(135deg, #0058bc, #5952af)" }}
+            >
+              <span className="material-symbols-outlined text-white text-[36px]">chat_bubble</span>
             </div>
-            <h3 className="font-headline-sm text-headline-sm text-on-surface mb-2">Aucune conversation pour le moment</h3>
+            <h3 className="font-headline-sm text-headline-sm font-bold text-on-surface mb-2">Aucune conversation pour le moment</h3>
             <p className="font-body-md text-body-md text-on-surface-variant max-w-sm">
               Une fois qu&apos;une correspondance est confirmée, ou après avoir scanné le QR Code de quelqu&apos;un, vous pourrez échanger ici.
             </p>
@@ -94,7 +97,7 @@ export default function MessagesPage() {
         )}
 
         {rows !== null && rows.length > 0 && (
-          <ul className="flex flex-col rounded-xl overflow-hidden bg-surface-container-lowest border border-outline-variant/30 shadow-sm">
+          <ul className="flex flex-col rounded-[24px] overflow-hidden bg-surface-container-lowest soft-shadow inner-stroke">
             {rows.map((row, i) => {
               const isLast = i === rows.length - 1;
               if (row.kind === "match") {
