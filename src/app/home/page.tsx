@@ -163,7 +163,9 @@ export default async function HomeDashboardPage({
         {/* Actions */}
         <section className={styles.actions}>
           <Link href="/report-lost" className={`${styles.actionCard} ${styles.lost}`}>
-            <div className={styles.actionIcon}>🔎</div>
+            <span className={styles.actionIcon}>
+              <Image src="/illustrations/home/mascot.png" alt="" width={34} height={34} className={styles.actionIconImg} />
+            </span>
             <div>
               <h2>
                 Découvrir
@@ -176,7 +178,9 @@ export default async function HomeDashboardPage({
           </Link>
 
           <Link href="/report-found" className={`${styles.actionCard} ${styles.found}`}>
-            <div className={styles.actionIcon}>🎁</div>
+            <span className={`${styles.actionIcon} ${styles.actionIconDiamond}`}>
+              <span className="material-symbols-outlined" style={{ fontVariationSettings: "'FILL' 1" }}>diamond</span>
+            </span>
             <div>
               <h2>
                 Déclarer
