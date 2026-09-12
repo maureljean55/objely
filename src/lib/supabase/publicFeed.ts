@@ -14,6 +14,7 @@ export const listRecentFinds = unstable_cache(
       .from("items")
       .select("*")
       .eq("type", "found")
+      .in("status", ["searching", "matched"])
       .is("deleted_at", null)
       .order("created_at", { ascending: false })
       .limit(limit)
