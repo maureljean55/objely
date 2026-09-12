@@ -54,6 +54,21 @@ function OwnershipVerificationContent() {
     );
   }
 
+  if (match && match.status !== "pending" && !submitted) {
+    return (
+      <div className="bg-background text-on-surface antialiased min-h-screen flex flex-col items-center justify-center px-container-margin text-center gap-3">
+        <p className="font-body-md text-body-md text-on-surface-variant max-w-sm">
+          {match.status === "confirmed"
+            ? "Cette correspondance a déjà été confirmée."
+            : "Cette correspondance a déjà été refusée."}
+        </p>
+        <button type="button" onClick={() => router.push("/activity")} className="text-primary font-semibold mt-2">
+          Retour à l&apos;activité
+        </button>
+      </div>
+    );
+  }
+
   if (submitted) {
     return (
       <div className="bg-background text-on-surface antialiased min-h-screen flex flex-col items-center justify-center px-container-margin text-center gap-3">

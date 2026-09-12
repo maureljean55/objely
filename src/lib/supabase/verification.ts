@@ -19,6 +19,11 @@ export async function submitVerificationAnswers(matchId: string, brandAnswer: st
   const user = session?.user ?? null;
   if (!user) return { data: null, error: new Error("Vous devez être connecté.") };
 
+  const { data: existingMatch } = await getMatch(matchId);
+  if (existingMatch && existingMatch.status !== "pending") {
+    return { data: null, error: new Error("Cette correspondance a déjà été traitée.") };
+  }
+
   const result = await supabase
     .from("match_verifications")
     .insert({ match_id: matchId, submitted_by: user.id, brand_answer: brandAnswer, detail_answer: detailAnswer })
@@ -72,6 +77,13 @@ export async function resolveMatch(matchId: string, approved: boolean) {
         supabase.from("items").update({ status: "recovered" }).eq("id", match.lost_item_id),
         supabase.from("items").update({ status: "returned" }).eq("id", match.found_item_id),
         awardRestitutionTrustBonus(matchId),
+      ]);
+    } else {
+      // A rejected match means this pairing was wrong — both items resume
+      // active searching instead of staying stuck showing "matched".
+      await Promise.all([
+        supabase.from("items").update({ status: "searching" }).eq("id", match.lost_item_id),
+        supabase.from("items").update({ status: "searching" }).eq("id", match.found_item_id),
       ]);
     }
 

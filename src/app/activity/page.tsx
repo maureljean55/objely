@@ -4,7 +4,13 @@ import BottomNav from "@/components/BottomNav";
 import { createClient } from "@/lib/supabase/server";
 import type { Item } from "@/lib/supabase/items";
 
-const FILTERS = ["Tout", "Correspondances", "Messages", "Restitutions"];
+type FilterId = "all" | "matches" | "messages" | "restitutions";
+const FILTERS: { label: string; id: FilterId }[] = [
+  { label: "Tout", id: "all" },
+  { label: "Correspondances", id: "matches" },
+  { label: "Messages", id: "messages" },
+  { label: "Restitutions", id: "restitutions" },
+];
 
 type MatchRow = {
   id: string;
@@ -25,7 +31,9 @@ function timeAgo(dateStr: string) {
   return `il y a ${Math.floor(hours / 24)} j`;
 }
 
-export default async function ActivityPage() {
+export default async function ActivityPage({ searchParams }: { searchParams: Promise<{ filter?: string }> }) {
+  const { filter: filterParam } = await searchParams;
+  const filter: FilterId = FILTERS.some((f) => f.id === filterParam) ? (filterParam as FilterId) : "all";
   const supabase = await createClient();
   // Middleware already validated/refreshed the session for this request, so
   // reading it back here doesn't need a second round trip to Supabase's
@@ -35,13 +43,31 @@ export default async function ActivityPage() {
   } = await supabase.auth.getSession();
   const user = session?.user ?? null;
 
-  const { data: matches } = user
+  const { data: allMatches } = user
     ? await supabase
         .from("matches")
         .select("id, match_percent, status, created_at, lost_item:items!matches_lost_item_id_fkey(*), found_item:items!matches_found_item_id_fkey(*)")
         .order("created_at", { ascending: false })
         .returns<MatchRow[]>()
     : { data: [] as MatchRow[] };
+
+  // Hide matches referencing an item either side has since soft-deleted —
+  // the declaration no longer exists to its owner, so it shouldn't keep
+  // showing up as an active match to the other party.
+  const matches = (allMatches ?? []).filter((match) => !match.lost_item.deleted_at && !match.found_item.deleted_at);
+
+  // "Messages" means the match has an open conversation (confirmed);
+  // "Correspondances" is everything else (pending/rejected); "Restitutions"
+  // hides match cards entirely in favor of the verification requests below.
+  const visibleMatches = matches.filter((match) => {
+    if (filter === "all") return true;
+    if (filter === "matches") return match.status !== "confirmed";
+    if (filter === "messages") return match.status === "confirmed";
+    return false;
+  });
+  const showVerifications = filter === "all" || filter === "restitutions";
+  const verificationRequests = matches.filter((match) => match.status === "pending" && match.found_item.user_id === user!.id);
+  const nothingForFilter = visibleMatches.length === 0 && (!showVerifications || verificationRequests.length === 0);
 
   return (
     <div className="bg-background text-on-background font-body-md antialiased min-h-screen pb-28 md:pb-12">
@@ -51,23 +77,27 @@ export default async function ActivityPage() {
 
       <main className="pt-[calc(88px+env(safe-area-inset-top))] max-w-2xl mx-auto">
         <div className="px-container-margin pb-md flex gap-sm overflow-x-auto hide-scrollbar">
-          {FILTERS.map((filter, i) => (
-            <button
-              key={filter}
-              className={
-                i === 0
-                  ? "shrink-0 whitespace-nowrap px-4 py-2 rounded-full text-white font-headline-sm text-headline-sm shadow-sm"
-                  : "shrink-0 whitespace-nowrap px-4 py-2 rounded-full bg-surface-container-lowest text-on-surface-variant border border-outline-variant/50 font-headline-sm text-headline-sm hover:bg-surface-variant transition-colors"
-              }
-              style={i === 0 ? { background: "linear-gradient(135deg, #0058bc, #5952af)" } : undefined}
-            >
-              {filter}
-            </button>
-          ))}
+          {FILTERS.map((f) => {
+            const isActive = f.id === filter;
+            return (
+              <Link
+                key={f.id}
+                href={f.id === "all" ? "/activity" : `/activity?filter=${f.id}`}
+                className={
+                  isActive
+                    ? "shrink-0 whitespace-nowrap px-4 py-2 rounded-full text-white font-headline-sm text-headline-sm shadow-sm"
+                    : "shrink-0 whitespace-nowrap px-4 py-2 rounded-full bg-surface-container-lowest text-on-surface-variant border border-outline-variant/50 font-headline-sm text-headline-sm hover:bg-surface-variant transition-colors"
+                }
+                style={isActive ? { background: "linear-gradient(135deg, #0058bc, #5952af)" } : undefined}
+              >
+                {f.label}
+              </Link>
+            );
+          })}
         </div>
 
         <div className="px-container-margin flex flex-col gap-lg">
-          {(matches ?? []).map((match) => {
+          {visibleMatches.map((match) => {
             const isLostSide = match.lost_item.user_id === user!.id;
             const otherItem = isLostSide ? match.found_item : match.lost_item;
             return (
@@ -120,6 +150,10 @@ export default async function ActivityPage() {
                     >
                       Discuter
                     </Link>
+                  ) : match.status === "rejected" ? (
+                    <div className="flex-1 h-14 bg-surface-container text-on-surface-variant rounded-xl font-label-md text-label-md flex items-center justify-center text-center px-2">
+                      Correspondance refusée
+                    </div>
                   ) : (
                     <div className="flex-1 h-14 bg-surface-container text-on-surface-variant rounded-xl font-label-md text-label-md flex items-center justify-center text-center px-2">
                       En attente de vérification
@@ -130,7 +164,7 @@ export default async function ActivityPage() {
             );
           })}
 
-          {(!matches || matches.length === 0) && (
+          {nothingForFilter && (
             <div className="bg-surface-container-lowest rounded-[24px] soft-shadow inner-stroke p-xl flex flex-col items-center text-center">
               <div
                 className="w-20 h-20 mb-md rounded-full flex items-center justify-center shadow-lg"
@@ -138,16 +172,19 @@ export default async function ActivityPage() {
               >
                 <span className="material-symbols-outlined text-white text-[36px]">notifications_active</span>
               </div>
-              <h3 className="font-headline-sm text-headline-sm font-bold text-on-surface mb-1">Aucune correspondance pour le moment</h3>
+              <h3 className="font-headline-sm text-headline-sm font-bold text-on-surface mb-1">
+                {filter === "all" ? "Aucune correspondance pour le moment" : "Rien à afficher pour ce filtre"}
+              </h3>
               <p className="font-body-md text-body-md text-on-surface-variant">
-                Vous serez averti dès qu&apos;une déclaration correspond à un de vos objets.
+                {filter === "all"
+                  ? "Vous serez averti dès qu'une déclaration correspond à un de vos objets."
+                  : "Essayez un autre filtre pour voir votre activité."}
               </p>
             </div>
           )}
 
-          {(matches ?? [])
-            .filter((match) => match.status === "pending" && match.found_item.user_id === user!.id)
-            .map((match) => (
+          {showVerifications &&
+            verificationRequests.map((match) => (
               <article key={`verif-${match.id}`} className="bg-surface-container-lowest rounded-[24px] soft-shadow inner-stroke p-md">
                 <div className="flex gap-3 mb-md">
                   <div

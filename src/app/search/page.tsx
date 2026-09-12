@@ -4,9 +4,21 @@ import MyItemCard from "@/components/MyItemCard";
 import { createClient } from "@/lib/supabase/server";
 import type { Item } from "@/lib/supabase/items";
 
-const FILTERS = ["Tous", "Téléphones", "Sacs", "Clés", "Portefeuilles", "Ordinateurs", "Autres"];
+// category ids match the CATEGORIES list in report-lost/report-found —
+// "Autres" catches anything declared under a category not named here.
+const FILTERS: { label: string; categoryId: string | null }[] = [
+  { label: "Tous", categoryId: null },
+  { label: "Téléphones", categoryId: "phone" },
+  { label: "Sacs", categoryId: "bag" },
+  { label: "Clés", categoryId: "keys" },
+  { label: "Portefeuilles", categoryId: "wallet" },
+  { label: "Ordinateurs", categoryId: "computer" },
+  { label: "Autres", categoryId: "other" },
+];
+const NAMED_CATEGORY_IDS = new Set(["phone", "bag", "keys", "wallet", "computer"]);
 
-export default async function SearchFiltersPage() {
+export default async function SearchFiltersPage({ searchParams }: { searchParams: Promise<{ category?: string }> }) {
+  const { category } = await searchParams;
   const supabase = await createClient();
   // Middleware already validated/refreshed the session for this request, so
   // reading it back here doesn't need a second round trip to Supabase's
@@ -26,7 +38,11 @@ export default async function SearchFiltersPage() {
         .returns<Item[]>()
     : { data: [] as Item[] };
 
-  const items = myItems ?? [];
+  const items = (myItems ?? []).filter((item) => {
+    if (!category) return true;
+    if (category === "other") return !NAMED_CATEGORY_IDS.has(item.category_id);
+    return item.category_id === category;
+  });
 
   return (
     <div className="bg-background text-on-background font-body-md min-h-screen pb-24 md:pb-0 pt-[calc(176px+env(safe-area-inset-top))] md:pt-[calc(132px+env(safe-area-inset-top))]">
@@ -61,19 +77,23 @@ export default async function SearchFiltersPage() {
           </div>
 
           <div className="flex gap-sm overflow-x-auto hide-scrollbar mt-sm py-xs w-full">
-            {FILTERS.map((filter, i) => (
-              <button
-                key={filter}
-                className={
-                  i === 0
-                    ? "text-white rounded-full px-4 py-2 font-label-md whitespace-nowrap shadow-sm"
-                    : "bg-surface-container-lowest text-on-surface-variant rounded-full px-4 py-2 font-label-md whitespace-nowrap border border-outline-variant/50 hover:bg-surface-variant transition-colors"
-                }
-                style={i === 0 ? { background: "linear-gradient(135deg, #0058bc, #5952af)" } : undefined}
-              >
-                {filter}
-              </button>
-            ))}
+            {FILTERS.map((filter) => {
+              const isActive = (category ?? null) === filter.categoryId;
+              return (
+                <Link
+                  key={filter.label}
+                  href={filter.categoryId ? `/search?category=${filter.categoryId}` : "/search"}
+                  className={
+                    isActive
+                      ? "text-white rounded-full px-4 py-2 font-label-md whitespace-nowrap shadow-sm"
+                      : "bg-surface-container-lowest text-on-surface-variant rounded-full px-4 py-2 font-label-md whitespace-nowrap border border-outline-variant/50 hover:bg-surface-variant transition-colors"
+                  }
+                  style={isActive ? { background: "linear-gradient(135deg, #0058bc, #5952af)" } : undefined}
+                >
+                  {filter.label}
+                </Link>
+              );
+            })}
           </div>
         </div>
       </header>
@@ -87,17 +107,35 @@ export default async function SearchFiltersPage() {
             >
               <span className="material-symbols-outlined text-white text-[48px]">search_off</span>
             </div>
-            <h3 className="font-headline-sm text-headline-sm font-bold text-on-surface mb-2">Vous n&apos;avez déclaré aucun objet</h3>
-            <p className="font-body-md text-body-md text-on-surface-variant mb-lg px-6 max-w-sm">
-              Déclarez un objet perdu ou trouvé depuis l&apos;accueil pour le suivre ici.
-            </p>
-            <Link
-              href="/home"
-              className="px-8 py-3 rounded-full text-white font-body-lg text-body-lg font-bold shadow-md hover:opacity-90 transition-opacity"
-              style={{ background: "linear-gradient(135deg, #0058bc, #5952af)" }}
-            >
-              Aller à l&apos;accueil
-            </Link>
+            {category ? (
+              <>
+                <h3 className="font-headline-sm text-headline-sm font-bold text-on-surface mb-2">Aucun objet dans cette catégorie</h3>
+                <p className="font-body-md text-body-md text-on-surface-variant mb-lg px-6 max-w-sm">
+                  Essayez un autre filtre, ou consultez tous vos objets.
+                </p>
+                <Link
+                  href="/search"
+                  className="px-8 py-3 rounded-full text-white font-body-lg text-body-lg font-bold shadow-md hover:opacity-90 transition-opacity"
+                  style={{ background: "linear-gradient(135deg, #0058bc, #5952af)" }}
+                >
+                  Voir tous mes objets
+                </Link>
+              </>
+            ) : (
+              <>
+                <h3 className="font-headline-sm text-headline-sm font-bold text-on-surface mb-2">Vous n&apos;avez déclaré aucun objet</h3>
+                <p className="font-body-md text-body-md text-on-surface-variant mb-lg px-6 max-w-sm">
+                  Déclarez un objet perdu ou trouvé depuis l&apos;accueil pour le suivre ici.
+                </p>
+                <Link
+                  href="/home"
+                  className="px-8 py-3 rounded-full text-white font-body-lg text-body-lg font-bold shadow-md hover:opacity-90 transition-opacity"
+                  style={{ background: "linear-gradient(135deg, #0058bc, #5952af)" }}
+                >
+                  Aller à l&apos;accueil
+                </Link>
+              </>
+            )}
           </div>
         ) : (
           <section className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-md mb-xl">

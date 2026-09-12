@@ -13,8 +13,37 @@ export default function DeclarationLocationPage() {
   const [date, setDate] = useState("2026-09-02");
   const [moment, setMoment] = useState("Après-midi");
   const [details, setDetails] = useState("");
+  const [locating, setLocating] = useState(false);
+  const [locationError, setLocationError] = useState<string | null>(null);
 
   const canContinue = location.trim().length > 0;
+
+  const useCurrentLocation = () => {
+    if (!navigator.geolocation) {
+      setLocationError("La géolocalisation n'est pas disponible sur cet appareil.");
+      return;
+    }
+    setLocationError(null);
+    setLocating(true);
+    navigator.geolocation.getCurrentPosition(
+      async (position) => {
+        const { latitude, longitude } = position.coords;
+        try {
+          const res = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${latitude}&lon=${longitude}&zoom=16`);
+          const data = await res.json();
+          setLocation(data.display_name || `${latitude.toFixed(5)}, ${longitude.toFixed(5)}`);
+        } catch {
+          setLocation(`${latitude.toFixed(5)}, ${longitude.toFixed(5)}`);
+        } finally {
+          setLocating(false);
+        }
+      },
+      () => {
+        setLocationError("Impossible d'obtenir votre position. Vérifiez les autorisations de localisation.");
+        setLocating(false);
+      },
+    );
+  };
 
   const goNext = () => {
     saveDraft({ location, date });
@@ -70,10 +99,21 @@ export default function DeclarationLocationPage() {
               </div>
             </div>
 
-            <button className="flex items-center gap-2 self-start py-2 px-1 rounded-lg text-primary font-headline-sm text-headline-sm hover:opacity-80 transition-opacity active:scale-95">
-              <span className="material-symbols-outlined text-[20px]" style={{ fontVariationSettings: "'FILL' 1" }}>my_location</span>
-              Utiliser ma position actuelle
+            <button
+              type="button"
+              onClick={useCurrentLocation}
+              disabled={locating}
+              className="flex items-center gap-2 self-start py-2 px-1 rounded-lg text-primary font-headline-sm text-headline-sm hover:opacity-80 transition-opacity active:scale-95 disabled:opacity-60"
+            >
+              <span
+                className={`material-symbols-outlined text-[20px] ${locating ? "animate-spin" : ""}`}
+                style={{ fontVariationSettings: "'FILL' 1" }}
+              >
+                {locating ? "progress_activity" : "my_location"}
+              </span>
+              {locating ? "Localisation en cours..." : "Utiliser ma position actuelle"}
             </button>
+            {locationError && <p className="font-body-md text-[13px] text-error">{locationError}</p>}
           </section>
 
           <hr className="border-outline-variant/30" />
