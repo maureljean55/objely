@@ -137,16 +137,18 @@ export default async function HomeDashboardPage({
             </svg>
             Bienvenue sur Objely&nbsp;!
           </div>
-          <h1>
-            Tout <strong>retrouvé&nbsp;!</strong>
-          </h1>
-          <p className={styles.helperNote} aria-hidden="true">
-            Une petite aide
-            <br />
-            peut faire une
-            <br />
-            grande différence
-          </p>
+          <div className={styles.heroTop}>
+            <h1>
+              Tout <strong>retrouvé&nbsp;!</strong>
+            </h1>
+            <p className={styles.helperNote} aria-hidden="true">
+              Une petite aide
+              <br />
+              peut faire une
+              <br />
+              grande différence
+            </p>
+          </div>
           <p>Perds un objet. Retrouve-le. Ou aide les autres&nbsp;!</p>
         </section>
 

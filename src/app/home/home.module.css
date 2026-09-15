@@ -149,9 +149,15 @@
    cropped photo composition, then icon badges) either carried visible
    image artifacts or added clutter the content didn't need. */
 .hero {
-  position: relative;
   display: flex;
   flex-direction: column;
+}
+
+.heroTop {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 10px;
 }
 
 .welcome {
@@ -189,15 +195,18 @@
   background-clip: text;
 }
 
-.helperNote {
-  position: absolute;
-  top: 48px;
-  right: 4px;
-  width: 130px;
+/* Specificity needs to beat .hero p (margin/max-width/color meant for the
+   body copy below) since this is also a <p>, nested under .hero. */
+.hero .helperNote {
+  flex-shrink: 0;
+  margin: 6px 4px 0 0;
+  max-width: none;
+  width: 150px;
   font-family: var(--font-caveat), cursive;
-  font-size: 22px;
+  font-size: 27px;
   font-weight: 700;
-  line-height: 1.15;
+  line-height: 1.2;
+  letter-spacing: 0.2px;
   text-align: center;
   transform: rotate(-9deg);
   background: linear-gradient(90deg, #087be8, #735af4, #a34ee9);
@@ -543,9 +552,9 @@
     font-size: 29px;
   }
 
-  .helperNote {
-    width: 110px;
-    font-size: 19px;
+  .hero .helperNote {
+    width: 128px;
+    font-size: 23px;
   }
 
   .sectionTitle h2 {
