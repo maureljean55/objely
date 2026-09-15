@@ -129,11 +129,30 @@ export default async function HomeDashboardPage({
 
         {/* Hero — plain, well-structured text, no side graphic */}
         <section className={styles.hero}>
-          <div className={styles.welcome}>Bienvenue sur Objely&nbsp;!</div>
+          <div className={styles.welcome}>
+            <svg className={styles.welcomeSpark} viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+              <path d="M12 0C12 6 14 10 20 12C14 14 12 18 12 24C12 18 10 14 4 12C10 10 12 6 12 0Z" />
+            </svg>
+            Bienvenue sur Objely&nbsp;!
+          </div>
           <h1>
             Objets perdus,
             <br />
             <strong>objets retrouvés&nbsp;!</strong>
+            <svg className={styles.heroUnderline} viewBox="0 0 220 20" fill="none" aria-hidden="true">
+              <path
+                d="M3 12C40 3 80 3 110 10C140 17 180 4 217 9"
+                stroke="url(#heroUnderlineGradient)"
+                strokeWidth="4"
+                strokeLinecap="round"
+              />
+              <defs>
+                <linearGradient id="heroUnderlineGradient" x1="0" y1="0" x2="220" y2="0">
+                  <stop stopColor="#087be8" />
+                  <stop offset="1" stopColor="#a34ee9" />
+                </linearGradient>
+              </defs>
+            </svg>
           </h1>
           <p>Perds un objet. Retrouve-le. Ou aide les autres&nbsp;!</p>
         </section>
