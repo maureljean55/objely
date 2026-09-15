@@ -175,20 +175,10 @@
 }
 
 .hero h1 {
-  position: relative;
   font-size: 40px;
   line-height: 1.05;
   letter-spacing: -1.5px;
   color: #122653;
-}
-
-.heroUnderline {
-  display: block;
-  width: 220px;
-  max-width: 80vw;
-  height: 16px;
-  margin-top: -2px;
-  margin-left: 2px;
 }
 
 .hero h1 strong {

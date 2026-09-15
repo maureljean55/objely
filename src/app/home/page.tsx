@@ -132,7 +132,7 @@ export default async function HomeDashboardPage({
           <div className={styles.welcome}>
             <svg className={styles.welcomeSpark} viewBox="0 0 32 32" fill="currentColor" aria-hidden="true">
               <path d="M13 2C13 10 15 14 22 16C15 18 13 22 13 30C13 22 11 18 4 16C11 14 13 10 13 2Z" />
-              <path d="M26 1C26 4 27 5 30 6C27 7 26 8 26 11C26 8 25 7 22 6C25 5 26 4 26 1Z" />
+              <path d="M20 2C20 5 21 6 24 7C21 8 20 9 20 12C20 9 19 8 16 7C19 6 20 5 20 2Z" />
               <path d="M6 20C6 23 7 24 10 25C7 26 6 27 6 30C6 27 5 26 2 25C5 24 6 23 6 20Z" />
             </svg>
             Bienvenue sur Objely&nbsp;!
@@ -141,20 +141,6 @@ export default async function HomeDashboardPage({
             Objets perdus,
             <br />
             <strong>objets retrouvés&nbsp;!</strong>
-            <svg className={styles.heroUnderline} viewBox="0 0 220 20" fill="none" aria-hidden="true">
-              <path
-                d="M4 13C60 -3 140 -3 178 9C186 11.5 196 5 213 7"
-                stroke="url(#heroUnderlineGradient)"
-                strokeWidth="4"
-                strokeLinecap="round"
-              />
-              <defs>
-                <linearGradient id="heroUnderlineGradient" x1="0" y1="0" x2="220" y2="0">
-                  <stop stopColor="#087be8" />
-                  <stop offset="1" stopColor="#a34ee9" />
-                </linearGradient>
-              </defs>
-            </svg>
           </h1>
           <p>Perds un objet. Retrouve-le. Ou aide les autres&nbsp;!</p>
         </section>
