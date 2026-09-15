@@ -139,14 +139,14 @@ export default async function HomeDashboardPage({
           </div>
           <div className={styles.heroTop}>
             <h1>
-              Tout <strong>retrouvé&nbsp;!</strong>
+              Objets perdus,
+              <br />
+              <strong>objets retrouvés&nbsp;!</strong>
             </h1>
             <p className={styles.helperNote} aria-hidden="true">
-              Une petite aide
+              Une petite aide peut faire
               <br />
-              peut faire une
-              <br />
-              grande différence
+              une grande différence
             </p>
           </div>
           <p>Perds un objet. Retrouve-le. Ou aide les autres&nbsp;!</p>
