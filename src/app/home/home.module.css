@@ -149,6 +149,7 @@
    cropped photo composition, then icon badges) either carried visible
    image artifacts or added clutter the content didn't need. */
 .hero {
+  position: relative;
   display: flex;
   flex-direction: column;
 }
@@ -175,13 +176,31 @@
 }
 
 .hero h1 {
-  font-size: 40px;
-  line-height: 1.05;
-  letter-spacing: -1.5px;
+  font-size: 34px;
+  line-height: 1.08;
+  letter-spacing: -1.2px;
   color: #122653;
+  max-width: 75%;
 }
 
 .hero h1 strong {
+  background: linear-gradient(90deg, #087be8, #735af4, #a34ee9);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.helperNote {
+  position: absolute;
+  top: 2px;
+  right: 4px;
+  width: 130px;
+  font-family: var(--font-caveat), cursive;
+  font-size: 22px;
+  font-weight: 700;
+  line-height: 1.15;
+  text-align: center;
+  transform: rotate(-9deg);
   background: linear-gradient(90deg, #087be8, #735af4, #a34ee9);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
@@ -522,7 +541,12 @@
   }
 
   .hero h1 {
-    font-size: 34px;
+    font-size: 29px;
+  }
+
+  .helperNote {
+    width: 110px;
+    font-size: 19px;
   }
 
   .sectionTitle h2 {

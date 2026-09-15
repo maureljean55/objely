@@ -142,6 +142,9 @@ export default async function HomeDashboardPage({
             <br />
             <strong>objets retrouvés&nbsp;!</strong>
           </h1>
+          <p className={styles.helperNote} aria-hidden="true">
+            Une petite aide peut faire une grande différence
+          </p>
           <p>Perds un objet. Retrouve-le. Ou aide les autres&nbsp;!</p>
         </section>
 
