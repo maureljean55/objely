@@ -130,8 +130,10 @@ export default async function HomeDashboardPage({
         {/* Hero — plain, well-structured text, no side graphic */}
         <section className={styles.hero}>
           <div className={styles.welcome}>
-            <svg className={styles.welcomeSpark} viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
-              <path d="M12 0C12 6 14 10 20 12C14 14 12 18 12 24C12 18 10 14 4 12C10 10 12 6 12 0Z" />
+            <svg className={styles.welcomeSpark} viewBox="0 0 32 32" fill="currentColor" aria-hidden="true">
+              <path d="M13 2C13 10 15 14 22 16C15 18 13 22 13 30C13 22 11 18 4 16C11 14 13 10 13 2Z" />
+              <path d="M26 1C26 4 27 5 30 6C27 7 26 8 26 11C26 8 25 7 22 6C25 5 26 4 26 1Z" />
+              <path d="M6 20C6 23 7 24 10 25C7 26 6 27 6 30C6 27 5 26 2 25C5 24 6 23 6 20Z" />
             </svg>
             Bienvenue sur Objely&nbsp;!
           </div>
@@ -141,7 +143,7 @@ export default async function HomeDashboardPage({
             <strong>objets retrouvés&nbsp;!</strong>
             <svg className={styles.heroUnderline} viewBox="0 0 220 20" fill="none" aria-hidden="true">
               <path
-                d="M3 12C40 3 80 3 110 10C140 17 180 4 217 9"
+                d="M4 13C60 -3 140 -3 178 9C186 11.5 196 5 213 7"
                 stroke="url(#heroUnderlineGradient)"
                 strokeWidth="4"
                 strokeLinecap="round"
