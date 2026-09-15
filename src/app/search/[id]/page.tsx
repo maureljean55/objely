@@ -2,6 +2,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { notFound } from "next/navigation";
 import BottomNav from "@/components/BottomNav";
+import RestitutionConfirmPanel from "@/components/RestitutionConfirmPanel";
 import { createClient } from "@/lib/supabase/server";
 import type { Item } from "@/lib/supabase/items";
 
@@ -16,6 +17,46 @@ export default async function MyItemDetailPage({ params }: { params: Promise<{ i
   const supabase = await createClient();
   const { data: item } = await supabase.from("items").select("*").eq("id", id).single<Item>();
   if (!item) notFound();
+
+  const {
+    data: { session },
+  } = await supabase.auth.getSession();
+  const userId = session?.user?.id ?? null;
+
+  // A restitution can only be confirmed once a meetup has been accepted in
+  // the match's chat — fetch the confirmed match for this item (at most one
+  // at a time, since a rejected match reverts both items to "searching"),
+  // then its latest appointment and who has already confirmed.
+  let restitutionPanel: { matchId: string; confirmed: boolean; bothConfirmed: boolean } | null = null;
+  if (item.status === "matched" && userId) {
+    const { data: match } = await supabase
+      .from("matches")
+      .select("id")
+      .or(`lost_item_id.eq.${id},found_item_id.eq.${id}`)
+      .eq("status", "confirmed")
+      .maybeSingle<{ id: string }>();
+
+    if (match) {
+      const [{ data: appointment }, { data: confirmations }] = await Promise.all([
+        supabase
+          .from("restitution_appointments")
+          .select("id")
+          .eq("match_id", match.id)
+          .eq("status", "accepted")
+          .maybeSingle<{ id: string }>(),
+        supabase.from("restitution_confirmations").select("user_id").eq("match_id", match.id).returns<{ user_id: string }[]>(),
+      ]);
+
+      if (appointment) {
+        const confirmedUserIds = new Set((confirmations ?? []).map((c) => c.user_id));
+        restitutionPanel = {
+          matchId: match.id,
+          confirmed: confirmedUserIds.has(userId),
+          bothConfirmed: confirmedUserIds.size >= 2,
+        };
+      }
+    }
+  }
 
   return (
     <div className="bg-background text-on-surface antialiased min-h-screen pb-24 md:pb-12">
@@ -56,7 +97,13 @@ export default async function MyItemDetailPage({ params }: { params: Promise<{ i
           </section>
         )}
 
-        {item.status === "searching" || item.status === "matched" ? (
+        {item.status === "matched" && restitutionPanel ? (
+          <RestitutionConfirmPanel
+            matchId={restitutionPanel.matchId}
+            initiallyConfirmed={restitutionPanel.confirmed}
+            initiallyBothConfirmed={restitutionPanel.bothConfirmed}
+          />
+        ) : item.status === "searching" || item.status === "matched" ? (
           <section className="bg-surface-container-lowest rounded-2xl soft-shadow p-lg flex flex-col items-center text-center gap-2">
             <div className="w-14 h-14 rounded-full bg-error-container text-on-error-container flex items-center justify-center mb-1">
               <span className="material-symbols-outlined">radar</span>

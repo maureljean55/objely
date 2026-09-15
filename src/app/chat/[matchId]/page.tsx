@@ -14,7 +14,12 @@ import {
   type Message,
 } from "@/lib/supabase/messages";
 import { uploadVoiceNote } from "@/lib/supabase/voiceNotes";
-import ChatThread, { type ChatMessage } from "@/components/ChatThread";
+import { proposeAppointment, respondToAppointment, type RestitutionAppointment } from "@/lib/supabase/restitution";
+import ChatThread, { type AppointmentInfo, type ChatMessage } from "@/components/ChatThread";
+
+function toAppointmentInfo(a: RestitutionAppointment): AppointmentInfo {
+  return { id: a.id, scheduledDate: a.scheduled_date, scheduledTime: a.scheduled_time, location: a.location, status: a.status };
+}
 
 type OtherProfile = { full_name: string | null; avatar_url: string | null };
 
@@ -27,6 +32,7 @@ export default function SecureChatPage() {
   const [match, setMatch] = useState<MatchWithItems | null>(null);
   const [otherProfile, setOtherProfile] = useState<OtherProfile>({ full_name: null, avatar_url: null });
   const [messages, setMessages] = useState<Message[]>([]);
+  const [appointments, setAppointments] = useState<RestitutionAppointment[]>([]);
   const [loadError, setLoadError] = useState(false);
 
   useEffect(() => {
@@ -50,13 +56,15 @@ export default function SecureChatPage() {
       const isLostSide = matchData.lost_item.user_id === user.id;
       const otherUserId = isLostSide ? matchData.found_item.user_id : matchData.lost_item.user_id;
 
-      // Same here: the other party's profile and the message history are
-      // independent of each other.
-      const [{ data: profile }, { data: messageData }] = await Promise.all([
+      // Same here: the other party's profile, the message history, and any
+      // restitution appointments are all independent of each other.
+      const [{ data: profile }, { data: messageData }, { data: appointmentData }] = await Promise.all([
         supabase.from("profiles").select("full_name, avatar_url").eq("id", otherUserId).maybeSingle<OtherProfile>(),
         listMessages(matchId),
+        supabase.from("restitution_appointments").select("*").eq("match_id", matchId).returns<RestitutionAppointment[]>(),
       ]);
       if (profile) setOtherProfile(profile);
+      setAppointments(appointmentData ?? []);
       setMessages(messageData ?? []);
     })();
   }, [matchId]);
@@ -94,6 +102,22 @@ export default function SecureChatPage() {
           (payload) => {
             const updated = payload.new as Message;
             setMessages((prev) => prev.map((m) => (m.id === updated.id ? updated : m)));
+          },
+        )
+        .on(
+          "postgres_changes",
+          { event: "INSERT", schema: "public", table: "restitution_appointments", filter: `match_id=eq.${matchId}` },
+          (payload) => {
+            const incoming = payload.new as RestitutionAppointment;
+            setAppointments((prev) => (prev.some((a) => a.id === incoming.id) ? prev : [...prev, incoming]));
+          },
+        )
+        .on(
+          "postgres_changes",
+          { event: "UPDATE", schema: "public", table: "restitution_appointments", filter: `match_id=eq.${matchId}` },
+          (payload) => {
+            const updated = payload.new as RestitutionAppointment;
+            setAppointments((prev) => prev.map((a) => (a.id === updated.id ? updated : a)));
           },
         )
         .subscribe();
@@ -143,6 +167,24 @@ export default function SecureChatPage() {
     return false;
   };
 
+  const handleProposeAppointment = async (date: string, time: string, location: string) => {
+    const { data, error } = await proposeAppointment(matchId, date, time, location);
+    if (!error && data) {
+      setAppointments((prev) => [...prev, data]);
+      return true;
+    }
+    return false;
+  };
+
+  const handleRespondAppointment = async (appointmentId: string, accept: boolean) => {
+    const { data, error } = await respondToAppointment(appointmentId, matchId, accept);
+    if (!error && data) {
+      setAppointments((prev) => prev.map((a) => (a.id === appointmentId ? data : a)));
+      return true;
+    }
+    return false;
+  };
+
   if (loadError) {
     return (
       <div className="bg-background text-on-background antialiased min-h-screen flex flex-col items-center justify-center px-container-margin text-center">
@@ -185,7 +227,10 @@ export default function SecureChatPage() {
     deletedAt: m.deleted_at,
     createdAt: m.created_at,
     replyToId: m.reply_to_id,
+    restitutionAppointmentId: m.restitution_appointment_id,
   }));
+
+  const appointmentsById = new Map(appointments.map((a) => [a.id, toAppointmentInfo(a)]));
 
   return (
     <ChatThread
@@ -198,6 +243,10 @@ export default function SecureChatPage() {
       onEdit={handleEdit}
       onDelete={handleDelete}
       onBack={() => router.back()}
+      restitutionEnabled
+      appointmentsById={appointmentsById}
+      onProposeAppointment={handleProposeAppointment}
+      onRespondAppointment={handleRespondAppointment}
     />
   );
 }

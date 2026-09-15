@@ -64,12 +64,6 @@ export async function awardFoundItemTrustBonus(itemId: string) {
   return supabase.rpc("award_found_item_trust_bonus", { p_item_id: itemId });
 }
 
-/** Bumps the caller's trust score for seeing a restitution through — server-side verifies they're the found-item owner on a confirmed match, and won't award it twice. */
-export async function awardRestitutionTrustBonus(matchId: string) {
-  const supabase = createClient();
-  return supabase.rpc("award_restitution_trust_bonus", { p_match_id: matchId });
-}
-
 /** Uploads a photo to the "avatars" bucket under the user's own folder and returns its public URL. */
 export async function uploadAvatarPhoto(file: File) {
   const supabase = createClient();

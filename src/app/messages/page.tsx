@@ -8,9 +8,14 @@ import { getCurrentUser } from "@/lib/auth";
 import { listMyConversations, type Conversation } from "@/lib/supabase/messages";
 import { listMyDirectConversations, type DirectConversationSummary } from "@/lib/supabase/directMessages";
 
-function previewText(body: string | null, kind: "text" | "voice" | null | undefined, deletedAt: string | null | undefined) {
+function previewText(
+  body: string | null,
+  kind: "text" | "voice" | "restitution_proposal" | null | undefined,
+  deletedAt: string | null | undefined,
+) {
   if (deletedAt) return "Message supprimé";
   if (kind === "voice") return "🎤 Note vocale";
+  if (kind === "restitution_proposal") return "📅 Rendez-vous de restitution";
   return body ?? "";
 }
 

@@ -1,18 +1,19 @@
 import { createClient } from "@/lib/supabase/client";
 import type { Item } from "@/lib/supabase/items";
-import { createNotification } from "@/lib/supabase/notifications";
+import { createNotification, type NotificationType } from "@/lib/supabase/notifications";
 
 export type Message = {
   id: string;
   match_id: string;
   sender_id: string;
   body: string | null;
-  kind: "text" | "voice";
+  kind: "text" | "voice" | "restitution_proposal";
   voice_url: string | null;
   edited_at: string | null;
   deleted_at: string | null;
   created_at: string;
   reply_to_id: string | null;
+  restitution_appointment_id: string | null;
 };
 
 export type MatchWithItems = {
@@ -83,11 +84,17 @@ export async function listMyConversations() {
   return { data: conversations, error: null };
 }
 
-async function notifyOtherParticipant(matchId: string, senderId: string, notifBody: string) {
+export async function notifyOtherParticipant(
+  matchId: string,
+  senderId: string,
+  notifBody: string,
+  type: NotificationType = "message",
+  title = "Nouveau message",
+) {
   const { data: match } = await getMatch(matchId);
   if (!match) return;
   const recipientId = match.lost_item.user_id === senderId ? match.found_item.user_id : match.lost_item.user_id;
-  await createNotification(recipientId, "message", "Nouveau message", notifBody, matchId);
+  await createNotification(recipientId, type, title, notifBody, matchId);
 }
 
 export async function sendMessage(matchId: string, body: string, replyToId: string | null = null) {

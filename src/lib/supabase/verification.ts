@@ -1,8 +1,6 @@
 import { createClient } from "@/lib/supabase/client";
 import { createNotification } from "@/lib/supabase/notifications";
-import { awardRestitutionTrustBonus } from "@/lib/supabase/profile";
 import { getMatch } from "@/lib/supabase/messages";
-import type { Item } from "@/lib/supabase/items";
 
 export type MatchVerification = {
   id: string;
@@ -57,36 +55,21 @@ export async function getLatestVerification(matchId: string) {
     .maybeSingle<MatchVerification>();
 }
 
+// The actual matches/items updates run inside the resolve_match() Postgres
+// function (security definer) — a plain client-side update can't touch the
+// item the caller doesn't own, which is exactly what approving/rejecting
+// needs to do to the *other* participant's item. See its migration
+// (20260914100000) for why: confirming only unlocks chat now — items stay
+// "matched" until both sides confirm the restitution actually happened via
+// confirmRestitution(), not the moment identity is verified.
 export async function resolveMatch(matchId: string, approved: boolean) {
   const supabase = createClient();
-  const { data: match, error } = await supabase
-    .from("matches")
-    .update({ status: approved ? "confirmed" : "rejected" })
-    .eq("id", matchId)
-    .select("lost_item_id, found_item_id, lost_item:items!matches_lost_item_id_fkey(user_id, title), found_item:items!matches_found_item_id_fkey(user_id, title)")
-    .single<{
-      lost_item_id: string;
-      found_item_id: string;
-      lost_item: Pick<Item, "user_id" | "title">;
-      found_item: Pick<Item, "user_id" | "title">;
-    }>();
+  const { data: match } = await getMatch(matchId);
+  if (!match) return { error: new Error("Correspondance introuvable.") };
 
-  if (!error && match) {
-    if (approved) {
-      await Promise.all([
-        supabase.from("items").update({ status: "recovered" }).eq("id", match.lost_item_id),
-        supabase.from("items").update({ status: "returned" }).eq("id", match.found_item_id),
-        awardRestitutionTrustBonus(matchId),
-      ]);
-    } else {
-      // A rejected match means this pairing was wrong — both items resume
-      // active searching instead of staying stuck showing "matched".
-      await Promise.all([
-        supabase.from("items").update({ status: "searching" }).eq("id", match.lost_item_id),
-        supabase.from("items").update({ status: "searching" }).eq("id", match.found_item_id),
-      ]);
-    }
+  const { error } = await supabase.rpc("resolve_match", { p_match_id: matchId, p_approved: approved });
 
+  if (!error) {
     // Only the person who lost the item needs telling — the finder is the
     // one who just took this action, so notifying them back would be noise.
     await createNotification(
@@ -94,7 +77,7 @@ export async function resolveMatch(matchId: string, approved: boolean) {
       approved ? "verification_confirmed" : "verification_rejected",
       approved ? "Correspondance confirmée !" : "Correspondance refusée",
       approved
-        ? `La restitution de "${match.found_item.title}" a été confirmée.`
+        ? `Votre correspondance pour "${match.lost_item.title}" est confirmée. Discutez avec le trouveur pour organiser la restitution.`
         : `La correspondance pour "${match.lost_item.title}" a été refusée.`,
       matchId,
     );

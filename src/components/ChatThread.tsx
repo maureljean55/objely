@@ -6,14 +6,30 @@ import Image from "next/image";
 export type ChatMessage = {
   id: string;
   senderId: string;
-  kind: "text" | "voice";
+  kind: "text" | "voice" | "restitution_proposal";
   body: string | null;
   voiceUrl: string | null;
   editedAt: string | null;
   deletedAt: string | null;
   createdAt: string;
   replyToId: string | null;
+  restitutionAppointmentId: string | null;
 };
+
+export type AppointmentInfo = {
+  id: string;
+  scheduledDate: string;
+  scheduledTime: string;
+  location: string;
+  status: "pending" | "accepted" | "declined";
+};
+
+function formatAppointmentDate(dateStr: string, timeStr: string) {
+  const date = new Date(`${dateStr}T${timeStr}`);
+  const dateLabel = date.toLocaleDateString("fr-FR", { weekday: "long", day: "numeric", month: "long" });
+  const timeLabel = date.toLocaleTimeString("fr-FR", { hour: "2-digit", minute: "2-digit" });
+  return `${dateLabel} à ${timeLabel}`;
+}
 
 function initials(name: string) {
   return name
@@ -37,6 +53,7 @@ function formatTime(iso: string) {
 function messagePreviewText(message: ChatMessage) {
   if (message.deletedAt) return "Message supprimé";
   if (message.kind === "voice") return "🎤 Note vocale";
+  if (message.kind === "restitution_proposal") return "📅 Rendez-vous de restitution";
   return message.body ?? "";
 }
 
@@ -151,6 +168,66 @@ function VoicePlayer({ url, isMine }: { url: string; isMine: boolean }) {
   );
 }
 
+function AppointmentCard({
+  appointment,
+  isMine,
+  onRespond,
+}: {
+  appointment: AppointmentInfo;
+  isMine: boolean;
+  onRespond?: (accept: boolean) => void;
+}) {
+  return (
+    <div className="min-w-[220px]">
+      <div className="flex items-center gap-2 mb-1.5">
+        <span className="material-symbols-outlined text-[20px]" style={{ fontVariationSettings: "'FILL' 1" }}>
+          event
+        </span>
+        <span className="font-headline-sm text-headline-sm">Rendez-vous de restitution</span>
+      </div>
+      <p className="font-body-md text-body-md mb-0.5 capitalize">{formatAppointmentDate(appointment.scheduledDate, appointment.scheduledTime)}</p>
+      <p className={`font-body-md text-body-md mb-2 ${isMine ? "text-on-primary/85" : "text-on-surface-variant"}`}>📍 {appointment.location}</p>
+      {appointment.status === "pending" ? (
+        !isMine && onRespond ? (
+          <div className="flex gap-2 mt-2" onPointerDown={(e) => e.stopPropagation()}>
+            <button
+              type="button"
+              onClick={(e) => {
+                e.stopPropagation();
+                onRespond(true);
+              }}
+              className="flex-1 py-1.5 rounded-full bg-primary text-on-primary font-label-md text-label-md font-semibold"
+            >
+              Accepter
+            </button>
+            <button
+              type="button"
+              onClick={(e) => {
+                e.stopPropagation();
+                onRespond(false);
+              }}
+              className="flex-1 py-1.5 rounded-full bg-surface-container-highest text-on-surface-variant font-label-md text-label-md font-semibold"
+            >
+              Refuser
+            </button>
+          </div>
+        ) : (
+          <span className={`font-label-md text-label-md ${isMine ? "text-on-primary/80" : "text-on-surface-variant"}`}>En attente de réponse...</span>
+        )
+      ) : (
+        <span
+          className={`inline-flex items-center gap-1 font-label-md text-label-md font-semibold ${
+            appointment.status === "accepted" ? "text-emerald-600" : isMine ? "text-on-primary/80" : "text-error"
+          }`}
+        >
+          <span className="material-symbols-outlined text-[16px]">{appointment.status === "accepted" ? "check_circle" : "cancel"}</span>
+          {appointment.status === "accepted" ? "Accepté" : "Refusé"}
+        </span>
+      )}
+    </div>
+  );
+}
+
 function MessageBubble({
   message,
   isMine,
@@ -158,6 +235,8 @@ function MessageBubble({
   currentUserId,
   isMenuOpen,
   replyTarget,
+  appointment,
+  onRespondAppointment,
   onLongPress,
   onContextMenu,
   onSwipeReply,
@@ -168,6 +247,8 @@ function MessageBubble({
   currentUserId: string | null;
   isMenuOpen: boolean;
   replyTarget: ChatMessage | null;
+  appointment: AppointmentInfo | null;
+  onRespondAppointment?: (appointmentId: string, accept: boolean) => void;
   onLongPress: (message: ChatMessage, x: number, y: number) => void;
   onContextMenu: (message: ChatMessage, x: number, y: number) => void;
   onSwipeReply: (message: ChatMessage) => void;
@@ -275,6 +356,16 @@ function MessageBubble({
               <p className="font-body-md text-body-md">Message supprimé</p>
             ) : message.kind === "voice" && message.voiceUrl ? (
               <VoicePlayer url={message.voiceUrl} isMine={isMine} />
+            ) : message.kind === "restitution_proposal" ? (
+              appointment ? (
+                <AppointmentCard
+                  appointment={appointment}
+                  isMine={isMine}
+                  onRespond={onRespondAppointment ? (accept) => onRespondAppointment(appointment.id, accept) : undefined}
+                />
+              ) : (
+                <p className="font-body-md text-body-md">Rendez-vous de restitution</p>
+              )
             ) : (
               <p className="font-body-md text-body-md whitespace-pre-wrap">{message.body}</p>
             )}
@@ -299,6 +390,11 @@ type Props = {
   onEdit: (messageId: string, body: string) => Promise<boolean>;
   onDelete: (messageId: string) => Promise<boolean>;
   onBack: () => void;
+  /** Only match-based chats support restitution appointments, not QR/direct conversations. */
+  restitutionEnabled?: boolean;
+  appointmentsById?: Map<string, AppointmentInfo>;
+  onProposeAppointment?: (date: string, time: string, location: string) => Promise<boolean>;
+  onRespondAppointment?: (appointmentId: string, accept: boolean) => Promise<boolean>;
 };
 
 /** Shared chat UI for both match-based conversations and QR/direct conversations — same look regardless of what started the conversation. */
@@ -312,6 +408,10 @@ export default function ChatThread({
   onEdit,
   onDelete,
   onBack,
+  restitutionEnabled = false,
+  appointmentsById,
+  onProposeAppointment,
+  onRespondAppointment,
 }: Props) {
   const [draft, setDraft] = useState("");
   const [isSending, setIsSending] = useState(false);
@@ -319,6 +419,12 @@ export default function ChatThread({
   const [replyingTo, setReplyingTo] = useState<ChatMessage | null>(null);
   const [menuMessage, setMenuMessage] = useState<ChatMessage | null>(null);
   const [menuPos, setMenuPos] = useState<{ x: number; y: number } | null>(null);
+  const [showAppointmentForm, setShowAppointmentForm] = useState(false);
+  const [apptDate, setApptDate] = useState("");
+  const [apptTime, setApptTime] = useState("");
+  const [apptLocation, setApptLocation] = useState("");
+  const [apptSubmitting, setApptSubmitting] = useState(false);
+  const [apptError, setApptError] = useState<string | null>(null);
   const [isRecording, setIsRecording] = useState(false);
   const [recordingSeconds, setRecordingSeconds] = useState(0);
   const [isUploadingVoice, setIsUploadingVoice] = useState(false);
@@ -411,6 +517,26 @@ export default function ChatThread({
   const handleDelete = async (message: ChatMessage) => {
     closeMenu();
     await onDelete(message.id);
+  };
+
+  const handleProposeAppointment = async () => {
+    if (!onProposeAppointment || !apptDate || !apptTime || !apptLocation.trim()) return;
+    setApptSubmitting(true);
+    setApptError(null);
+    const ok = await onProposeAppointment(apptDate, apptTime, apptLocation.trim());
+    setApptSubmitting(false);
+    if (ok) {
+      setShowAppointmentForm(false);
+      setApptDate("");
+      setApptTime("");
+      setApptLocation("");
+    } else {
+      setApptError("Une erreur est survenue, réessayez.");
+    }
+  };
+
+  const handleRespondAppointment = (appointmentId: string, accept: boolean) => {
+    onRespondAppointment?.(appointmentId, accept);
   };
 
   const startRecording = async () => {
@@ -511,6 +637,8 @@ export default function ChatThread({
             currentUserId={currentUserId}
             isMenuOpen={menuMessage?.id === message.id}
             replyTarget={message.replyToId ? messagesById.get(message.replyToId) ?? null : null}
+            appointment={message.restitutionAppointmentId ? appointmentsById?.get(message.restitutionAppointmentId) ?? null : null}
+            onRespondAppointment={onRespondAppointment ? handleRespondAppointment : undefined}
             onLongPress={handleLongPress}
             onContextMenu={handleLongPress}
             onSwipeReply={handleSwipeReply}
@@ -569,6 +697,16 @@ export default function ChatThread({
             </div>
           ) : (
             <div className="flex items-end gap-2">
+              {restitutionEnabled && !editingId && (
+                <button
+                  type="button"
+                  onClick={() => setShowAppointmentForm(true)}
+                  aria-label="Proposer un rendez-vous de restitution"
+                  className="p-2 bg-surface-container-high text-on-surface-variant rounded-full hover:bg-surface-container-highest transition-colors shrink-0 flex items-center justify-center h-11 w-11"
+                >
+                  <span className="material-symbols-outlined">add</span>
+                </button>
+              )}
               <div className="flex-1 bg-surface-container-low rounded-xl border border-outline-variant/30 px-4 py-2 flex items-center min-h-[44px]">
                 <textarea
                   ref={textareaRef}
@@ -622,6 +760,78 @@ export default function ChatThread({
           )}
         </div>
       </footer>
+
+      {showAppointmentForm && (
+        <div role="dialog" aria-modal="true" className="fixed inset-0 z-[100] flex items-end sm:items-center justify-center bg-black/30 backdrop-blur-sm" onClick={() => setShowAppointmentForm(false)}>
+          <div
+            className="w-full sm:w-[400px] bg-surface-container-lowest rounded-t-[28px] sm:rounded-[28px] p-lg pb-8 sm:pb-lg shadow-xl"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <h2 className="font-headline-md text-headline-md text-on-surface mb-1">Proposer un rendez-vous</h2>
+            <p className="font-body-md text-body-md text-on-surface-variant mb-lg">Choisissez une date, une heure et un lieu pour la restitution.</p>
+
+            <div className="flex flex-col gap-md">
+              <div>
+                <label className="block font-label-md text-[11px] text-outline uppercase tracking-wider mb-1.5" htmlFor="appt-date">
+                  Date
+                </label>
+                <input
+                  id="appt-date"
+                  type="date"
+                  value={apptDate}
+                  onChange={(e) => setApptDate(e.target.value)}
+                  className="w-full h-12 px-4 bg-surface-container-low border border-outline-variant/40 rounded-[14px] font-body-md text-body-md text-on-surface focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all"
+                />
+              </div>
+              <div>
+                <label className="block font-label-md text-[11px] text-outline uppercase tracking-wider mb-1.5" htmlFor="appt-time">
+                  Heure
+                </label>
+                <input
+                  id="appt-time"
+                  type="time"
+                  value={apptTime}
+                  onChange={(e) => setApptTime(e.target.value)}
+                  className="w-full h-12 px-4 bg-surface-container-low border border-outline-variant/40 rounded-[14px] font-body-md text-body-md text-on-surface focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all"
+                />
+              </div>
+              <div>
+                <label className="block font-label-md text-[11px] text-outline uppercase tracking-wider mb-1.5" htmlFor="appt-location">
+                  Lieu
+                </label>
+                <input
+                  id="appt-location"
+                  type="text"
+                  value={apptLocation}
+                  onChange={(e) => setApptLocation(e.target.value)}
+                  placeholder="Ex: Métro Châtelet, sortie 3"
+                  className="w-full h-12 px-4 bg-surface-container-low border border-outline-variant/40 rounded-[14px] font-body-md text-body-md text-on-surface placeholder:text-outline focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all"
+                />
+              </div>
+            </div>
+
+            {apptError && <p className="font-body-md text-[13px] text-error mt-3">{apptError}</p>}
+
+            <div className="flex gap-sm mt-lg">
+              <button
+                type="button"
+                onClick={() => setShowAppointmentForm(false)}
+                className="flex-1 h-12 rounded-[14px] bg-surface-container-high text-on-surface font-headline-sm text-headline-sm hover:bg-surface-container-highest transition-colors"
+              >
+                Annuler
+              </button>
+              <button
+                type="button"
+                onClick={handleProposeAppointment}
+                disabled={!apptDate || !apptTime || !apptLocation.trim() || apptSubmitting}
+                className="flex-1 h-12 rounded-[14px] bg-primary text-on-primary font-headline-sm text-headline-sm hover:opacity-90 transition-opacity disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                {apptSubmitting ? "Envoi…" : "Proposer"}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
 
       {menuMessage && menuPos && (
         <div role="dialog" aria-modal="true" className="fixed inset-0 z-[100]" onClick={closeMenu}>

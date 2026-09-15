@@ -149,6 +149,7 @@ export default function DirectMessagePage() {
     deletedAt: m.deleted_at,
     createdAt: m.created_at,
     replyToId: m.reply_to_id,
+    restitutionAppointmentId: null,
   }));
 
   return (
