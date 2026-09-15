@@ -138,12 +138,14 @@ export default async function HomeDashboardPage({
             Bienvenue sur Objely&nbsp;!
           </div>
           <h1>
-            Objets perdus,
-            <br />
-            <strong>objets retrouvés&nbsp;!</strong>
+            Tout <strong>retrouvé&nbsp;!</strong>
           </h1>
           <p className={styles.helperNote} aria-hidden="true">
-            Une petite aide peut faire une grande différence
+            Une petite aide
+            <br />
+            peut faire une
+            <br />
+            grande différence
           </p>
           <p>Perds un objet. Retrouve-le. Ou aide les autres&nbsp;!</p>
         </section>
