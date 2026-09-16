@@ -31,6 +31,8 @@ function HelpChatContent() {
   const [draft, setDraft] = useState("");
   const [isSending, setIsSending] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
+  const [sendError, setSendError] = useState<string | null>(null);
+  const [loadError, setLoadError] = useState(false);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const bottomRef = useRef<HTMLDivElement>(null);
   const pendingIdRef = useRef(0);
@@ -38,13 +40,20 @@ function HelpChatContent() {
   useEffect(() => {
     const url = resumeId ? `/api/support-chat?conversation=${resumeId}` : "/api/support-chat";
     fetch(url)
-      .then((res) => res.json())
+      .then((res) => {
+        if (!res.ok) throw new Error("request failed");
+        return res.json();
+      })
       .then((data) => {
         if (data.conversation) {
           setConversationId(data.conversation.id);
           setStatus(data.conversation.status);
         }
         setMessages(data.messages ?? []);
+        setIsLoading(false);
+      })
+      .catch(() => {
+        setLoadError(true);
         setIsLoading(false);
       });
   }, [resumeId]);
@@ -56,6 +65,7 @@ function HelpChatContent() {
   const send = async (body: string) => {
     if (!body.trim() || isSending || !conversationId) return;
     setIsSending(true);
+    setSendError(null);
     setDraft("");
     pendingIdRef.current += 1;
     const optimisticUser: SupportMessage = {
@@ -66,18 +76,24 @@ function HelpChatContent() {
     };
     setMessages((prev) => [...prev, optimisticUser]);
 
-    const res = await fetch("/api/support-chat", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ conversationId, message: body.trim() }),
-    });
-    const data = await res.json();
-    setMessages((prev) => {
-      const withoutOptimistic = prev.filter((m) => m.id !== optimisticUser.id);
-      return [...withoutOptimistic, ...(data.userMessage ? [data.userMessage] : [optimisticUser]), ...(data.botMessage ? [data.botMessage] : [])];
-    });
-    if (data.escalated) setStatus("escalated");
-    setIsSending(false);
+    try {
+      const res = await fetch("/api/support-chat", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ conversationId, message: body.trim() }),
+      });
+      if (!res.ok) throw new Error("request failed");
+      const data = await res.json();
+      setMessages((prev) => {
+        const withoutOptimistic = prev.filter((m) => m.id !== optimisticUser.id);
+        return [...withoutOptimistic, ...(data.userMessage ? [data.userMessage] : [optimisticUser]), ...(data.botMessage ? [data.botMessage] : [])];
+      });
+      if (data.escalated) setStatus("escalated");
+    } catch {
+      setSendError("Le message n'a pas pu être envoyé, réessayez.");
+    } finally {
+      setIsSending(false);
+    }
   };
 
   const showSuggestions = !isLoading && messages.length <= 1 && status === "bot";
@@ -114,7 +130,18 @@ function HelpChatContent() {
           </div>
         )}
 
-        {messages.map((message) => {
+        {loadError && (
+          <div className="flex flex-col items-center text-center py-xl gap-3">
+            <p className="font-body-md text-body-md text-on-surface-variant">
+              La conversation n&apos;a pas pu être chargée.
+            </p>
+            <Link href="/help" className="text-primary font-semibold">
+              Retour à l&apos;aide
+            </Link>
+          </div>
+        )}
+
+        {!loadError && messages.map((message) => {
           const isMine = message.sender === "user";
           return (
             <div key={message.id} className={`flex flex-col gap-1 max-w-[85%] ${isMine ? "items-end self-end" : "items-start self-start"}`}>
@@ -164,6 +191,9 @@ function HelpChatContent() {
       </main>
 
       <footer className="glass-input fixed bottom-0 inset-x-0 z-50 p-3 safe-area-pb">
+        {sendError && (
+          <p className="font-body-md text-[13px] text-error text-center mb-2 max-w-[800px] mx-auto">{sendError}</p>
+        )}
         <div className="flex items-end gap-2 max-w-[800px] mx-auto w-full">
           <button className="p-2 text-primary hover:bg-primary/10 rounded-full transition-colors shrink-0">
             <span className="material-symbols-outlined text-[26px]" style={{ fontVariationSettings: "'FILL' 0" }}>add_circle</span>

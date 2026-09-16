@@ -428,6 +428,7 @@ export default function ChatThread({
   const [isRecording, setIsRecording] = useState(false);
   const [recordingSeconds, setRecordingSeconds] = useState(0);
   const [isUploadingVoice, setIsUploadingVoice] = useState(false);
+  const [actionError, setActionError] = useState<string | null>(null);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const mediaRecorderRef = useRef<MediaRecorder | null>(null);
   const chunksRef = useRef<Blob[]>([]);
@@ -469,12 +470,15 @@ export default function ChatThread({
     const body = draft.trim();
     if (!body || isSending) return;
     setIsSending(true);
+    setActionError(null);
 
     if (editingId) {
       const ok = await onEdit(editingId, body);
       if (ok) {
         setDraft("");
         setEditingId(null);
+      } else {
+        setActionError("La modification n'a pas pu être envoyée, réessayez.");
       }
       setIsSending(false);
       return;
@@ -486,6 +490,7 @@ export default function ChatThread({
       setReplyingTo(null);
     } else {
       setDraft(body);
+      setActionError("Le message n'a pas pu être envoyé, réessayez.");
     }
     setIsSending(false);
   };
@@ -516,13 +521,15 @@ export default function ChatThread({
 
   const handleDelete = async (message: ChatMessage) => {
     closeMenu();
-    await onDelete(message.id);
+    const ok = await onDelete(message.id);
+    if (!ok) setActionError("Le message n'a pas pu être supprimé, réessayez.");
   };
 
   const handleProposeAppointment = async () => {
     if (!onProposeAppointment || !apptDate || !apptTime || !apptLocation.trim()) return;
     setApptSubmitting(true);
     setApptError(null);
+    setActionError(null);
     const ok = await onProposeAppointment(apptDate, apptTime, apptLocation.trim());
     setApptSubmitting(false);
     if (ok) {
@@ -535,8 +542,9 @@ export default function ChatThread({
     }
   };
 
-  const handleRespondAppointment = (appointmentId: string, accept: boolean) => {
-    onRespondAppointment?.(appointmentId, accept);
+  const handleRespondAppointment = async (appointmentId: string, accept: boolean) => {
+    const ok = await onRespondAppointment?.(appointmentId, accept);
+    if (!ok) setActionError("La réponse au rendez-vous n'a pas pu être envoyée, réessayez.");
   };
 
   const startRecording = async () => {
@@ -557,12 +565,12 @@ export default function ChatThread({
       };
       mediaRecorderRef.current = recorder;
       recorder.start();
+      setActionError(null);
       setIsRecording(true);
       setRecordingSeconds(0);
       recordingIntervalRef.current = setInterval(() => setRecordingSeconds((s) => s + 1), 1000);
     } catch {
-      // Permission denied or no microphone available — silently no-op,
-      // the mic button simply won't start a recording.
+      setActionError("Impossible d'accéder au microphone. Vérifiez les autorisations de l'application.");
     }
   };
 
@@ -581,7 +589,11 @@ export default function ChatThread({
         const blob = new Blob(chunksRef.current, { type: recorder.mimeType || "audio/webm" });
         setIsUploadingVoice(true);
         const sent = await onSendVoice(blob, replyingTo?.id ?? null);
-        if (sent) setReplyingTo(null);
+        if (sent) {
+          setReplyingTo(null);
+        } else {
+          setActionError("La note vocale n'a pas pu être envoyée, réessayez.");
+        }
         setIsUploadingVoice(false);
       }
       chunksRef.current = [];
@@ -667,6 +679,15 @@ export default function ChatThread({
               <span className="font-label-md text-label-md text-on-surface-variant">Modifier le message</span>
               <button type="button" onClick={cancelEditing} aria-label="Annuler la modification" className="text-on-surface-variant p-1">
                 <span className="material-symbols-outlined text-[18px]">close</span>
+              </button>
+            </div>
+          )}
+
+          {actionError && (
+            <div className="flex items-center justify-between gap-2 px-3 py-2 mb-1.5 bg-error-container/40 rounded-lg">
+              <span className="font-body-md text-[13px] text-error">{actionError}</span>
+              <button type="button" onClick={() => setActionError(null)} aria-label="Fermer" className="text-error p-1 shrink-0">
+                <span className="material-symbols-outlined text-[16px]">close</span>
               </button>
             </div>
           )}

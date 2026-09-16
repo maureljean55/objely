@@ -196,10 +196,18 @@ export default function SecureChatPage() {
     );
   }
 
+  if (!match || !currentUserId) {
+    return (
+      <div className="bg-background min-h-screen flex items-center justify-center">
+        <span className="w-8 h-8 border-4 border-primary-container/30 border-t-primary rounded-full animate-spin" />
+      </div>
+    );
+  }
+
   // The message thread only opens once the finder has confirmed the
   // owner's verification answers — before that, neither side has "le droit
   // d'écrire" yet.
-  if (match && match.status !== "confirmed") {
+  if (match.status !== "confirmed") {
     return (
       <div className="bg-background text-on-background antialiased min-h-screen flex flex-col items-center justify-center px-container-margin text-center gap-2">
         <div className="w-14 h-14 rounded-full bg-surface-container text-on-surface-variant flex items-center justify-center mb-2">

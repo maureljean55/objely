@@ -5,7 +5,8 @@ import { useRouter } from "next/navigation";
 import Link from "next/link";
 import Image from "next/image";
 import BottomNav from "@/components/BottomNav";
-import { getMyProfile, updateAvatarUrl, uploadAvatarPhoto } from "@/lib/supabase/profile";
+import { getCurrentUser } from "@/lib/auth";
+import { getMyProfile, updateAvatarUrl, updateProfile, uploadAvatarPhoto } from "@/lib/supabase/profile";
 import { AVATAR_CATEGORIES } from "@/lib/presetAvatars";
 
 function FieldGroup({ children }: { children: ReactNode }) {
@@ -16,7 +17,10 @@ function Field({ label, ...props }: { label: string } & InputHTMLAttributes<HTML
   return (
     <div className="flex items-center px-4 py-3 gap-4">
       <label className="w-24 shrink-0 font-body-lg text-body-lg text-on-surface">{label}</label>
-      <input {...props} className="flex-1 bg-transparent border-none p-0 font-body-lg text-body-lg text-on-surface-variant focus:ring-0 outline-none placeholder:text-outline" />
+      <input
+        {...props}
+        className="flex-1 bg-transparent border-none p-0 font-body-lg text-body-lg text-on-surface-variant focus:ring-0 outline-none placeholder:text-outline disabled:opacity-50 disabled:cursor-not-allowed"
+      />
     </div>
   );
 }
@@ -40,11 +44,15 @@ export default function EditProfilePage() {
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
+    getCurrentUser().then((user) => setEmail(user?.email ?? ""));
     getMyProfile().then(({ data }) => {
       if (!data) return;
       const [first, ...rest] = (data.full_name ?? "").split(" ");
       setFirstName(first ?? "");
       setLastName(rest.join(" "));
+      setPhone(data.phone ?? "");
+      setCity(data.address ?? "");
+      setBio(data.bio ?? "");
       setAvatarUrl(data.avatar_url);
     });
   }, []);
@@ -68,9 +76,22 @@ export default function EditProfilePage() {
   const handleSave = async () => {
     setIsSaving(true);
     setError(null);
+
+    const { error: saveError } = await updateProfile({
+      fullName: `${firstName} ${lastName}`.trim(),
+      phone,
+      address: city,
+      bio,
+    });
+    if (saveError) {
+      setError("Une erreur est survenue, réessayez.");
+      setIsSaving(false);
+      return;
+    }
+
     if (avatarUrl) {
-      const { error: saveError } = await updateAvatarUrl(avatarUrl);
-      if (saveError) {
+      const { error: avatarError } = await updateAvatarUrl(avatarUrl);
+      if (avatarError) {
         setError("Une erreur est survenue, réessayez.");
         setIsSaving(false);
         return;
@@ -179,10 +200,13 @@ export default function EditProfilePage() {
 
         <div className="mb-lg">
           <FieldGroup>
-            <Field label="E-mail" type="email" value={email} onChange={(e) => setEmail(e.target.value)} placeholder="Votre adresse e-mail" />
+            <Field label="E-mail" type="email" value={email} disabled />
             <Field label="Téléphone" type="tel" value={phone} onChange={(e) => setPhone(e.target.value)} placeholder="Votre numéro" />
-            <Field label="Ville" value={city} onChange={(e) => setCity(e.target.value)} placeholder="Votre ville" />
+            <Field label="Adresse" value={city} onChange={(e) => setCity(e.target.value)} placeholder="Votre adresse" />
           </FieldGroup>
+          <p className="font-label-md text-[11px] text-outline mt-2 ml-4">
+            L&apos;e-mail ne peut pas être modifié ici.
+          </p>
         </div>
 
         <section className="mb-lg">

@@ -44,9 +44,13 @@ function formatTime(dateStr: string, section: Section) {
 export default function NotificationsPage() {
   const router = useRouter();
   const [notifications, setNotifications] = useState<AppNotification[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    listMyNotifications().then(({ data }) => setNotifications(data ?? []));
+    listMyNotifications().then(({ data }) => {
+      setNotifications(data ?? []);
+      setIsLoading(false);
+    });
   }, []);
 
   const unreadCount = useMemo(() => notifications.filter((n) => !n.read).length, [notifications]);
@@ -105,7 +109,13 @@ export default function NotificationsPage() {
       </header>
 
       <main className="pt-[calc(92px+env(safe-area-inset-top))] max-w-2xl mx-auto px-container-margin">
-        {notifications.length === 0 && (
+        {isLoading && (
+          <div className="flex justify-center py-xl">
+            <span className="w-8 h-8 border-4 border-primary-container/30 border-t-primary rounded-full animate-spin" />
+          </div>
+        )}
+
+        {!isLoading && notifications.length === 0 && (
           <div className="flex flex-col items-center justify-center py-xl text-center">
             <div
               className="w-20 h-20 mb-lg rounded-full flex items-center justify-center shadow-lg"

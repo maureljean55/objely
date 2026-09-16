@@ -11,6 +11,7 @@ export type Profile = {
   full_name: string | null;
   phone: string | null;
   address: string | null;
+  bio: string | null;
   avatar_url: string | null;
   trust_score: number;
   share_phone: boolean;
@@ -41,6 +42,24 @@ export async function updateAvatarUrl(avatarUrl: string) {
   if (!user) return { error: new Error("Vous devez être connecté.") };
 
   return supabase.from("profiles").update({ avatar_url: avatarUrl }).eq("id", user.id);
+}
+
+/** Updates the editable fields on profile/edit — everything except the avatar and account email. */
+export async function updateProfile(fields: { fullName: string; phone: string; address: string; bio: string }) {
+  const supabase = createClient();
+  const { data: { session } } = await supabase.auth.getSession();
+  const user = session?.user ?? null;
+  if (!user) return { error: new Error("Vous devez être connecté.") };
+
+  return supabase
+    .from("profiles")
+    .update({
+      full_name: fields.fullName.trim() || null,
+      phone: fields.phone.trim() || null,
+      address: fields.address.trim() || null,
+      bio: fields.bio.trim() || null,
+    })
+    .eq("id", user.id);
 }
 
 export async function updateSharePhone(sharePhone: boolean) {

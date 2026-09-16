@@ -42,12 +42,14 @@ function trustTier(score: number) {
 
 function ProfileSummary({
   user,
+  authChecked,
   stats,
   avatarUrl,
   displayName,
   trustScore,
 }: {
   user: User | null;
+  authChecked: boolean;
   stats: MyItemStats;
   avatarUrl: string | null;
   displayName: string;
@@ -67,7 +69,16 @@ function ProfileSummary({
         <span className="material-symbols-outlined text-[20px]">settings</span>
       </Link>
 
-      {authenticated ? (
+      {!authChecked ? (
+        // Neither the signed-in nor the guest view yet — showing either one
+        // before getCurrentUser() resolves would flash the wrong state
+        // (guest included, since a signed-in visitor would briefly see
+        // "Connecte-toi" before their real profile pops in).
+        <section className="flex flex-col items-center pt-8 pb-6">
+          <div className="w-28 h-28 rounded-full bg-surface-container-high animate-pulse mb-4" />
+          <div className="h-6 w-40 rounded-full bg-surface-container-high animate-pulse" />
+        </section>
+      ) : authenticated ? (
         <>
           <section className="flex flex-col items-center pt-8 pb-6 animate-fadeIn">
             <div className="relative mb-4">
@@ -155,6 +166,7 @@ export default function UserProfilePage() {
   const [avatarUrl, setAvatarUrl] = useState<string | null>(null);
   const [profileName, setProfileName] = useState<string | null>(null);
   const [trustScore, setTrustScore] = useState(0);
+  const [authChecked, setAuthChecked] = useState(false);
   const displayName = profileName || (user?.user_metadata?.full_name as string | undefined) || user?.email || "";
 
   useEffect(() => {
@@ -163,6 +175,7 @@ export default function UserProfilePage() {
     // warn about a mismatch; there's no session to read during SSR anyway.
     getCurrentUser().then((u) => {
       setUser(u);
+      setAuthChecked(true);
       if (u) {
         getMyItemStats(u.id).then(setStats);
         getMyProfile().then(({ data }) => {
@@ -198,12 +211,12 @@ export default function UserProfilePage() {
         className="md:hidden fixed top-0 inset-x-0 z-40 bg-background/95 backdrop-blur-md px-container-margin pb-4 shadow-sm"
         style={{ paddingTop: "env(safe-area-inset-top)" }}
       >
-        <ProfileSummary user={user} stats={stats} avatarUrl={avatarUrl} displayName={displayName} trustScore={trustScore} />
+        <ProfileSummary user={user} authChecked={authChecked} stats={stats} avatarUrl={avatarUrl} displayName={displayName} trustScore={trustScore} />
       </div>
 
       <main className="max-w-2xl mx-auto md:mt-8 px-container-margin md:px-0 pt-[calc(392px+env(safe-area-inset-top))] md:pt-0">
         <div className="hidden md:block relative">
-          <ProfileSummary user={user} stats={stats} avatarUrl={avatarUrl} displayName={displayName} trustScore={trustScore} />
+          <ProfileSummary user={user} authChecked={authChecked} stats={stats} avatarUrl={avatarUrl} displayName={displayName} trustScore={trustScore} />
         </div>
 
         <section className="bg-surface-container-lowest rounded-[32px] soft-shadow inner-stroke overflow-hidden mb-8 animate-slideUp">
