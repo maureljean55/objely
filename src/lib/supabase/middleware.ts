@@ -8,10 +8,16 @@ const REFRESH_BUFFER_SECONDS = 60;
 // Pages that must stay reachable by an aal1 session that still owes a TOTP
 // code — the login page itself (to actually complete the challenge), the
 // auth/onboarding flow, and public/informational pages with nothing
-// account-specific to protect.
+// account-specific to protect. /forgot-password is here for the same
+// reason as /login: a pre-existing pending-2FA session (a stray cookie
+// from an earlier abandoned login attempt, or the aal1 session that a
+// recovery link's own hash just established) must never block the entry
+// point into account recovery itself — someone stuck on the 2FA screen is
+// exactly who most needs a working "forgot password" link.
 const AAL_GATE_EXEMPT_PREFIXES = [
   "/login",
   "/register",
+  "/forgot-password",
   "/auth",
   "/onboarding",
   "/offline",
