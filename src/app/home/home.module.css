@@ -202,12 +202,13 @@
    body copy below) since this is also a <p>, nested under .hero. */
 .hero .helperNote {
   position: relative;
-  flex-shrink: 0;
+  flex-shrink: 1;
+  min-width: 82px;
   margin: 4px 0 0;
   max-width: none;
-  width: 155px;
+  width: 110px;
   font-family: var(--font-caveat), cursive;
-  font-size: 15px;
+  font-size: 14px;
   font-weight: 700;
   line-height: 1.25;
   letter-spacing: 0.2px;
@@ -580,8 +581,8 @@
   }
 
   .hero .helperNote {
-    width: 132px;
-    font-size: 13px;
+    width: 92px;
+    font-size: 12px;
   }
 
   .sectionTitle h2 {
