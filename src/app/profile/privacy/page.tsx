@@ -15,12 +15,19 @@ export default function PrivacySecurityPage() {
 
   return (
     <div className="bg-background text-on-surface antialiased min-h-screen pb-32">
-      <header className="fixed top-0 inset-x-0 z-50 flex items-center justify-between px-container-margin min-h-14 pt-[env(safe-area-inset-top)] bg-surface/80 backdrop-blur-xl border-b border-outline-variant/30">
-        <Link href="/profile" aria-label="Retour" className="text-primary hover:opacity-70 transition-opacity active:scale-95 p-2 -ml-2 flex items-center justify-center">
-          <span className="material-symbols-outlined">arrow_back_ios</span>
+      <header className="fixed top-0 inset-x-0 z-50 flex items-center justify-between px-container-margin min-h-14 pt-[env(safe-area-inset-top)] bg-surface/80 backdrop-blur-xl shadow-sm">
+        <Link href="/profile" aria-label="Retour" className="text-primary hover:opacity-70 transition-opacity active:scale-95 flex items-center justify-center w-10 h-10 -ml-2 rounded-full">
+          <span className="material-symbols-outlined text-[24px]" style={{ fontVariationSettings: "'FILL' 0" }}>arrow_back_ios</span>
         </Link>
-        <h1 className="font-headline-sm text-headline-sm text-primary absolute left-1/2 -translate-x-1/2">Confidentialité & Sécurité</h1>
-        <div className="w-10" />
+        <h1 className="font-headline-sm text-headline-sm font-extrabold tracking-tight text-on-surface absolute left-1/2 -translate-x-1/2">
+          Confidentialité & Sécurité
+        </h1>
+        <div
+          className="w-8 h-8 rounded-full shrink-0 flex items-center justify-center text-white shadow-sm"
+          style={{ background: "linear-gradient(135deg, #0058bc, #5952af)" }}
+        >
+          <span className="material-symbols-outlined text-[18px]" style={{ fontVariationSettings: "'FILL' 1" }}>shield_lock</span>
+        </div>
       </header>
 
       <main className="max-w-2xl mx-auto px-container-margin pt-[calc(5rem+env(safe-area-inset-top))] pb-8 flex flex-col gap-lg">
@@ -102,38 +109,10 @@ export default function PrivacySecurityPage() {
               <span className="font-body-lg text-body-lg text-on-surface">Autoriser les messages</span>
               <Switch checked={allowMessages} onChange={setAllowMessages} />
             </label>
-            <button className="w-full flex justify-between items-center px-4 py-3 hover:bg-surface-container-low transition-colors">
-              <span className="font-body-lg text-body-lg text-on-surface">Bloquer des utilisateurs</span>
-              <span className="material-symbols-outlined text-outline">chevron_right</span>
-            </button>
           </div>
         </section>
 
         <TwoFactorAuthSection />
-
-        <section className="bg-surface-container-lowest rounded-xl soft-shadow overflow-hidden">
-          <div className="px-4 py-3 bg-surface-container-low border-b border-outline-variant/30">
-            <h3 className="font-headline-sm text-headline-sm text-on-surface flex items-center gap-2">
-              <span className="material-symbols-outlined text-on-surface-variant">manage_accounts</span>
-              Compte et sécurité
-            </h3>
-          </div>
-          <div className="divide-y divide-outline-variant/30">
-            {[
-              { icon: "key", label: "Modifier le mot de passe" },
-              { icon: "devices", label: "Appareils connectés" },
-              { icon: "history", label: "Sessions actives" },
-            ].map((item) => (
-              <button key={item.label} className="w-full flex justify-between items-center px-4 py-3 hover:bg-surface-container-low transition-colors">
-                <div className="flex items-center gap-2">
-                  <span className="material-symbols-outlined text-outline">{item.icon}</span>
-                  <span className="font-body-lg text-body-lg text-on-surface">{item.label}</span>
-                </div>
-                <span className="material-symbols-outlined text-outline">chevron_right</span>
-              </button>
-            ))}
-          </div>
-        </section>
 
         <Link
           href="/rgpd"
