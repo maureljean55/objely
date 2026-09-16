@@ -262,7 +262,6 @@ export default async function HomeDashboardPage({
           </div>
 
           <div className={styles.tipBody}>
-            <h2>Restez prudent lors d&apos;un échange</h2>
             <ul className={styles.tipList}>
               <li>
                 <span className="material-symbols-outlined">check_circle</span>
@@ -273,10 +272,6 @@ export default async function HomeDashboardPage({
                 Ne communiquez jamais vos coordonnées bancaires
               </li>
             </ul>
-            <Link href="/help" className={styles.tipButton}>
-              Voir les conseils
-              <span className="material-symbols-outlined">arrow_forward</span>
-            </Link>
           </div>
 
           <div className={styles.tipIllustration} aria-hidden="true">
