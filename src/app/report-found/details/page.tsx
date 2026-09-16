@@ -146,6 +146,15 @@ export default function ReportFoundDetailsPage() {
       </main>
 
       <div className="w-full fixed bottom-0 left-0 p-container-margin bg-background/90 backdrop-blur-xl border-t border-surface-container-highest z-40 pb-8">
+        {!canContinue && (
+          <p className="max-w-2xl mx-auto font-body-md text-[12px] text-on-surface-variant text-right mb-2">
+            {isUploadingPhotos
+              ? "Patientez pendant l'envoi des photos…"
+              : photos.length === 0
+                ? "Ajoutez une photo pour continuer."
+                : "Indiquez le nom de l'objet pour continuer."}
+          </p>
+        )}
         <div className="max-w-2xl mx-auto flex justify-between items-center gap-md">
           <Link href="/report-found" className="text-primary font-headline-sm text-headline-sm px-4 py-2 hover:opacity-80 transition-opacity">
             Retour

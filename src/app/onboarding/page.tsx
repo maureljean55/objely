@@ -29,11 +29,6 @@ export default function OnboardingStep1Page() {
         </div>
       </main>
       <footer className="w-full max-w-[1140px] px-container-margin pb-12 pt-8 flex flex-col items-center gap-6 z-10 relative bg-gradient-to-t from-background via-background to-transparent">
-        <div className="flex gap-2">
-          <div className="w-8 h-1 rounded-full bg-primary transition-all duration-300" />
-          <div className="w-2 h-1 rounded-full bg-surface-container-highest transition-all duration-300" />
-          <div className="w-2 h-1 rounded-full bg-surface-container-highest transition-all duration-300" />
-        </div>
         <Link
           href="/report-lost"
           className="w-full max-w-sm h-14 bg-primary btn-gradient text-on-primary font-headline-sm text-headline-sm rounded-[16px] flex items-center justify-center gap-2 hover:opacity-90 active:scale-[0.98] transition-all shadow-[0_10px_30px_rgba(0,88,188,0.2)]"

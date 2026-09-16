@@ -122,6 +122,20 @@ export async function signInWithGoogle(next?: string) {
   });
 }
 
+/**
+ * Sends a password-reset email. The link routes through /auth/callback
+ * (same exchangeCodeForSession path as email confirmation and OAuth) and
+ * on to /reset-password, where the recovery session lets the user set a new
+ * password directly — they don't know their old one, so changePassword()'s
+ * re-verification step doesn't apply here.
+ */
+export async function requestPasswordReset(email: string) {
+  const supabase = createClient();
+  const redirectTo = new URL("/auth/callback", window.location.origin);
+  redirectTo.searchParams.set("next", "/reset-password");
+  return supabase.auth.resetPasswordForEmail(email.trim(), { redirectTo: redirectTo.toString() });
+}
+
 /** Re-verifies the current password (Supabase's updateUser doesn't require it) before setting a new one. */
 export async function changePassword(currentPassword: string, newPassword: string) {
   const supabase = createClient();

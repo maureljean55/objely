@@ -16,6 +16,7 @@ function VerificationReviewContent() {
   const [knownDetail, setKnownDetail] = useState<string | null>(null);
   const [loadError, setLoadError] = useState(false);
   const [isResolving, setIsResolving] = useState(false);
+  const [resolveError, setResolveError] = useState<string | null>(null);
 
   useEffect(() => {
     if (!matchId) return;
@@ -37,7 +38,13 @@ function VerificationReviewContent() {
   const handleResolve = async (approved: boolean) => {
     if (!matchId) return;
     setIsResolving(true);
-    await resolveMatch(matchId, approved);
+    setResolveError(null);
+    const { error } = await resolveMatch(matchId, approved);
+    if (error) {
+      setResolveError("Une erreur est survenue, réessayez.");
+      setIsResolving(false);
+      return;
+    }
     router.push(approved ? `/chat/${matchId}` : "/activity");
   };
 
@@ -87,10 +94,16 @@ function VerificationReviewContent() {
         </div>
 
         {!verification && (
-          <div className="bg-surface-container-lowest rounded-2xl p-lg soft-shadow text-center mb-md">
+          <div className="bg-surface-container-lowest rounded-2xl p-lg soft-shadow text-center mb-md flex flex-col items-center gap-3">
+            <div className="w-12 h-12 rounded-full bg-surface-container text-on-surface-variant flex items-center justify-center">
+              <span className="material-symbols-outlined">hourglass_top</span>
+            </div>
             <p className="font-body-md text-body-md text-on-surface-variant">
-              Le déclarant n&apos;a pas encore soumis ses réponses de vérification.
+              Le déclarant n&apos;a pas encore soumis ses réponses de vérification. Vous serez averti dès que ce sera fait — vous pouvez revenir à l&apos;activité en attendant.
             </p>
+            <button type="button" onClick={() => router.push("/activity")} className="text-primary font-semibold">
+              Retour à l&apos;activité
+            </button>
           </div>
         )}
 
@@ -123,6 +136,9 @@ function VerificationReviewContent() {
 
       <div className="fixed bottom-0 inset-x-0 z-50 glass-input px-container-margin py-md safe-area-pb shadow-[0_-4px_20px_rgba(0,0,0,0.05)]">
         <div className="max-w-2xl mx-auto flex flex-col gap-sm">
+          {resolveError && (
+            <p className="font-body-md text-[13px] text-error bg-error-container/40 rounded-xl px-4 py-2 text-center">{resolveError}</p>
+          )}
           <button
             type="button"
             disabled={isResolving || !verification}

@@ -184,9 +184,12 @@ export default function UserProfilePage() {
         <div className="flex items-center gap-4">
           <div className="w-10 h-10 rounded-full bg-surface-variant overflow-hidden" />
           <span className="font-headline-sm text-headline-sm text-primary">Bonjour 👋</span>
-          <button className="w-10 h-10 rounded-full flex items-center justify-center text-on-surface-variant hover:opacity-80 transition-opacity">
+          <Link
+            href="/notifications"
+            className="w-10 h-10 rounded-full flex items-center justify-center text-on-surface-variant hover:opacity-80 transition-opacity"
+          >
             <span className="material-symbols-outlined">notifications</span>
-          </button>
+          </Link>
         </div>
       </header>
 

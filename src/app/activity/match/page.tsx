@@ -50,6 +50,7 @@ function MatchDetailContent() {
   const [verification, setVerification] = useState<MatchVerification | null>(null);
   const [loadError, setLoadError] = useState(false);
   const [isRejecting, setIsRejecting] = useState(false);
+  const [rejectError, setRejectError] = useState<string | null>(null);
 
   useEffect(() => {
     if (!matchId) return;
@@ -92,7 +93,13 @@ function MatchDetailContent() {
 
   const handleReject = async () => {
     setIsRejecting(true);
-    await resolveMatch(match.id, false);
+    setRejectError(null);
+    const { error } = await resolveMatch(match.id, false);
+    if (error) {
+      setRejectError("Une erreur est survenue, réessayez.");
+      setIsRejecting(false);
+      return;
+    }
     router.push("/activity");
   };
 
@@ -210,6 +217,9 @@ function MatchDetailContent() {
               {match.status === "rejected" ? "Correspondance refusée" : "Vous pourrez échanger dès que la vérification sera confirmée"}
             </div>
           )}
+          {rejectError && (
+            <p className="font-body-md text-[13px] text-error bg-error-container/40 rounded-xl px-4 py-2 text-center">{rejectError}</p>
+          )}
           {match.status === "pending" && (
             <button
               type="button"
@@ -217,7 +227,7 @@ function MatchDetailContent() {
               disabled={isRejecting}
               className="w-full h-12 bg-[#EBF2FF] text-primary rounded-xl font-headline-sm text-headline-sm hover:brightness-95 active:scale-[0.98] transition-all disabled:opacity-50"
             >
-              {isRejecting ? "…" : "Ce n'est pas mon objet"}
+              {isRejecting ? "…" : isLostSide ? "Ce n'est pas mon objet" : "Ce n'est pas la bonne correspondance"}
             </button>
           )}
         </div>

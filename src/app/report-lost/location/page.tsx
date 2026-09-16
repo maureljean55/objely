@@ -96,18 +96,6 @@ export default function DeclarationLocationPage() {
               />
             </div>
 
-            <div className="w-full h-48 rounded-[24px] overflow-hidden relative soft-shadow bg-surface-container">
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img
-                alt="Aperçu de la carte"
-                className="w-full h-full object-cover"
-                src="https://lh3.googleusercontent.com/aida-public/AB6AXuDkQ5S7PrVoIgHzx-1fYIrGhkmvpLA61kRqngDy1dfOBUxKBA82PPfOI5zMXpS5kSmwQx7ykIUjLoKrOgt0zXvC_13-NyfqZyVmNOOrDXr4TGZ7FaDPo3fv9-dltpjr12gnjO3tGYufEgn1H9nFO32NPIf_LwJT3pQnp1T5Y-Fr6bq45CecZtfpsLpiKwdmvpdz-2hB_-FwQ1JsKEvLTFJIgsRyF7U157auGEhh6YhprPDOPZMBufcnEw"
-              />
-              <div className="absolute inset-0 flex items-center justify-center pointer-events-none pb-8">
-                <span className="material-symbols-outlined text-[40px] text-primary" style={{ fontVariationSettings: "'FILL' 1" }}>location_on</span>
-              </div>
-            </div>
-
             <button
               type="button"
               onClick={useCurrentLocation}
@@ -183,20 +171,25 @@ export default function DeclarationLocationPage() {
         </div>
       </main>
 
-      <footer className="fixed bottom-0 left-0 w-full z-50 flex justify-between items-center px-container-margin py-md pb-8 bg-surface/80 backdrop-blur-xl rounded-t-xl shadow-lg">
-        <Link href="/report-lost/details" className="text-primary font-headline-sm text-headline-sm px-4 py-2 hover:opacity-80 transition-opacity flex items-center gap-2">
-          <span className="material-symbols-outlined text-[20px]">arrow_back</span>
-          Retour
-        </Link>
-        <button
-          type="button"
-          disabled={!canContinue}
-          onClick={goNext}
-          className="btn-gradient bg-primary text-on-primary rounded-xl px-6 py-3 flex items-center justify-center gap-2 font-headline-sm text-headline-sm shadow-[0px_10px_30px_rgba(0,88,188,0.15)] hover:opacity-90 transition-opacity disabled:opacity-50 disabled:cursor-not-allowed"
-        >
-          Continuer
-          <span className="material-symbols-outlined text-[20px]">arrow_forward</span>
-        </button>
+      <footer className="fixed bottom-0 left-0 w-full z-50 flex flex-col px-container-margin py-md pb-8 bg-surface/80 backdrop-blur-xl rounded-t-xl shadow-lg">
+        {!canContinue && (
+          <p className="font-body-md text-[12px] text-on-surface-variant text-right mb-2">Indiquez un lieu pour continuer.</p>
+        )}
+        <div className="flex justify-between items-center">
+          <Link href="/report-lost/details" className="text-primary font-headline-sm text-headline-sm px-4 py-2 hover:opacity-80 transition-opacity flex items-center gap-2">
+            <span className="material-symbols-outlined text-[20px]">arrow_back</span>
+            Retour
+          </Link>
+          <button
+            type="button"
+            disabled={!canContinue}
+            onClick={goNext}
+            className="btn-gradient bg-primary text-on-primary rounded-xl px-6 py-3 flex items-center justify-center gap-2 font-headline-sm text-headline-sm shadow-[0px_10px_30px_rgba(0,88,188,0.15)] hover:opacity-90 transition-opacity disabled:opacity-50 disabled:cursor-not-allowed"
+          >
+            Continuer
+            <span className="material-symbols-outlined text-[20px]">arrow_forward</span>
+          </button>
+        </div>
       </footer>
     </div>
   );

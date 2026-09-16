@@ -1,11 +1,12 @@
 "use client";
 
-import { useState } from "react";
-import { useRouter } from "next/navigation";
+import { useEffect, useState, type FormEvent } from "react";
 import Link from "next/link";
 import BottomNav from "@/components/BottomNav";
+import { listMyItems, type Item } from "@/lib/supabase/items";
+import { submitProblemReport, type ProblemCategory } from "@/lib/supabase/reports";
 
-const CATEGORIES = [
+const CATEGORIES: { value: ProblemCategory; label: string }[] = [
   { value: "tech", label: "Problème technique" },
   { value: "fake", label: "Faux objet" },
   { value: "info", label: "Mauvaise information" },
@@ -13,12 +14,36 @@ const CATEGORIES = [
 ];
 
 export default function ReportProblemPage() {
-  const router = useRouter();
-  const [category, setCategory] = useState("");
+  const [myItems, setMyItems] = useState<Item[]>([]);
+  const [category, setCategory] = useState<ProblemCategory | "">("");
+  const [itemId, setItemId] = useState("");
   const [description, setDescription] = useState("");
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [error, setError] = useState<string | null>(null);
   const [submitted, setSubmitted] = useState(false);
 
-  const canSubmit = category !== "" && description.trim().length > 0;
+  useEffect(() => {
+    listMyItems().then(({ data }) => setMyItems(data ?? []));
+  }, []);
+
+  const canSubmit = category !== "" && description.trim().length > 0 && !isSubmitting;
+
+  const handleSubmit = async (e: FormEvent) => {
+    e.preventDefault();
+    if (category === "" || description.trim().length === 0 || isSubmitting) return;
+    setIsSubmitting(true);
+    setError(null);
+
+    const { error: submitError } = await submitProblemReport(category, description, itemId || null);
+    setIsSubmitting(false);
+
+    if (submitError) {
+      setError("Une erreur est survenue, réessayez.");
+      return;
+    }
+
+    setSubmitted(true);
+  };
 
   return (
     <div className="bg-background text-on-surface antialiased min-h-screen pb-32">
@@ -49,14 +74,7 @@ export default function ReportProblemPage() {
             <p className="font-body-lg text-body-lg text-on-surface-variant mb-8">
               Votre signalement nous aide à améliorer Objely.
             </p>
-            <form
-              className="flex flex-col gap-lg"
-              onSubmit={(e) => {
-                e.preventDefault();
-                setSubmitted(true);
-                setTimeout(() => router.push("/profile"), 1600);
-              }}
-            >
+            <form className="flex flex-col gap-lg" onSubmit={handleSubmit}>
               <div className="bg-surface-container-lowest rounded-xl soft-shadow p-4">
                 <label className="block font-label-md text-label-md text-on-surface-variant mb-2" htmlFor="category">
                   Sélectionner une catégorie
@@ -65,7 +83,7 @@ export default function ReportProblemPage() {
                   <select
                     id="category"
                     value={category}
-                    onChange={(e) => setCategory(e.target.value)}
+                    onChange={(e) => setCategory(e.target.value as ProblemCategory)}
                     className="w-full bg-surface-container-low border border-outline-variant/50 text-on-surface font-body-lg text-body-lg rounded-lg px-4 py-3 focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-colors appearance-none"
                   >
                     <option disabled value="">Choisissez une option...</option>
@@ -77,13 +95,27 @@ export default function ReportProblemPage() {
                 </div>
               </div>
 
-              <button type="button" className="w-full bg-surface-container-lowest rounded-xl soft-shadow p-4 flex items-center justify-between active:scale-[0.98] transition-transform">
-                <div className="flex items-center gap-3 text-on-surface">
-                  <span className="material-symbols-outlined text-primary bg-primary/10 p-2 rounded-full">inventory_2</span>
-                  <span className="font-body-lg text-body-lg">Sélectionner un objet concerné</span>
+              {myItems.length > 0 && (
+                <div className="bg-surface-container-lowest rounded-xl soft-shadow p-4">
+                  <label className="block font-label-md text-label-md text-on-surface-variant mb-2" htmlFor="item">
+                    Objet concerné <span className="normal-case text-outline">(optionnel)</span>
+                  </label>
+                  <div className="relative">
+                    <select
+                      id="item"
+                      value={itemId}
+                      onChange={(e) => setItemId(e.target.value)}
+                      className="w-full bg-surface-container-low border border-outline-variant/50 text-on-surface font-body-lg text-body-lg rounded-lg px-4 py-3 focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-colors appearance-none"
+                    >
+                      <option value="">Aucun objet en particulier</option>
+                      {myItems.map((item) => (
+                        <option key={item.id} value={item.id}>{item.title}</option>
+                      ))}
+                    </select>
+                    <span className="material-symbols-outlined absolute right-4 top-1/2 -translate-y-1/2 text-outline pointer-events-none">expand_more</span>
+                  </div>
                 </div>
-                <span className="material-symbols-outlined text-outline-variant">chevron_right</span>
-              </button>
+              )}
 
               <div className="bg-surface-container-lowest rounded-xl soft-shadow p-4">
                 <label className="block font-label-md text-label-md text-on-surface-variant mb-2" htmlFor="description">
@@ -99,20 +131,16 @@ export default function ReportProblemPage() {
                 />
               </div>
 
-              <button
-                type="button"
-                className="w-full border-2 border-dashed border-primary/30 bg-primary/5 rounded-xl p-4 flex flex-col items-center justify-center gap-2 text-primary hover:bg-primary/10 transition-colors active:scale-[0.98]"
-              >
-                <span className="material-symbols-outlined text-[32px]">add_photo_alternate</span>
-                <span className="font-label-md text-label-md">Ajouter une capture d&apos;écran</span>
-              </button>
+              {error && (
+                <p className="font-body-md text-body-md text-error bg-error-container/40 rounded-xl px-4 py-3">{error}</p>
+              )}
 
               <button
                 type="submit"
                 disabled={!canSubmit}
                 className="btn-primary-gradient w-full bg-primary text-on-primary font-headline-sm text-headline-sm py-4 rounded-full shadow-[0_4px_14px_rgba(0,88,188,0.3)] active:scale-[0.98] transition-all disabled:opacity-50 disabled:cursor-not-allowed"
               >
-                Envoyer le signalement
+                {isSubmitting ? "Envoi…" : "Envoyer le signalement"}
               </button>
             </form>
           </>
