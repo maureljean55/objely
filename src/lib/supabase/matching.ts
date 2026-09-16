@@ -123,10 +123,12 @@ export async function createMatch(lostItem: MatchParty, foundItem: MatchParty, m
     .single<{ id: string; lost_item_id: string; found_item_id: string; match_percent: number }>();
 
   if (!error && match) {
-    await Promise.all([
-      supabase.from("items").update({ status: "matched" }).in("id", [lostItem.id, foundItem.id]),
-      notifyMatchCreated(match.id),
-    ]);
+    // A plain client-side .update() here only ever affects the caller's own
+    // item — "Users can update their own items" (auth.uid() = user_id) RLS
+    // silently drops the other party's row instead of erroring. Both items
+    // need flipping regardless of which side's client happens to call
+    // createMatch, so this goes through a security-definer RPC instead.
+    await Promise.all([supabase.rpc("mark_match_items_matched", { p_match_id: match.id }), notifyMatchCreated(match.id)]);
   }
 
   return { data: match, error };
