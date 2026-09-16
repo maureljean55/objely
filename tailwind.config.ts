@@ -132,12 +132,17 @@ const config: Config = {
           from: { opacity: "0", transform: "scale(0.85)" },
           to: { opacity: "1", transform: "scale(1)" },
         },
+        slideDown: {
+          from: { opacity: "0", transform: "translateY(-28px)" },
+          to: { opacity: "1", transform: "translateY(0)" },
+        },
       },
       animation: {
         float: "float 6s ease-in-out infinite",
         fadeIn: "fadeIn 0.5s ease-out",
         popIn: "popIn 0.15s cubic-bezier(0.16, 1, 0.3, 1)",
         slideUp: "slideUp 0.5s ease-out both",
+        slideDown: "slideDown 0.45s cubic-bezier(0.16, 1, 0.3, 1) both",
         dotBlink: "dotBlink 1.4s ease-in-out infinite both",
       },
     },
