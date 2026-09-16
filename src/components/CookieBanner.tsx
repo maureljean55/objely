@@ -2,18 +2,13 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
-
-const STORAGE_KEY = "objely-cookie-consent";
+import { getCookieConsent, setCookieConsent, type CookieConsent } from "@/lib/cookieConsent";
 
 export default function CookieBanner() {
   const [visible, setVisible] = useState(false);
 
   useEffect(() => {
-    try {
-      if (!localStorage.getItem(STORAGE_KEY)) setVisible(true);
-    } catch {
-      // Storage unavailable (private mode, blocked) — skip rather than nag every load.
-    }
+    if (!getCookieConsent()) setVisible(true);
   }, []);
 
   // Blocks interaction with the rest of the page while the banner is up —
@@ -27,13 +22,9 @@ export default function CookieBanner() {
     };
   }, [visible]);
 
-  const choose = (value: "accepted" | "rejected" | "dismissed") => {
+  const choose = (value: CookieConsent) => {
     setVisible(false);
-    try {
-      localStorage.setItem(STORAGE_KEY, value);
-    } catch {
-      // Best-effort: the choice just won't persist across visits.
-    }
+    setCookieConsent(value);
   };
 
   const dismiss = () => choose("dismissed");
