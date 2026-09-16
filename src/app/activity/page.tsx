@@ -1,8 +1,14 @@
+import type { Metadata } from "next";
 import Link from "next/link";
 import Image from "next/image";
 import BottomNav from "@/components/BottomNav";
 import { createClient } from "@/lib/supabase/server";
 import type { Item } from "@/lib/supabase/items";
+
+export const metadata: Metadata = {
+  title: "Activité",
+  description: "Suivez vos correspondances, messages et restitutions d'objets sur Objely.",
+};
 
 type FilterId = "all" | "matches" | "messages" | "restitutions";
 const FILTERS: { label: string; id: FilterId }[] = [

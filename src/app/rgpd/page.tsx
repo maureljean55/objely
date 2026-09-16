@@ -1,4 +1,10 @@
+import type { Metadata } from "next";
 import Link from "next/link";
+
+export const metadata: Metadata = {
+  title: "Données personnelles (RGPD)",
+  description: "Découvrez quelles données Objely collecte, pourquoi, combien de temps elles sont conservées, et comment exercer vos droits RGPD.",
+};
 
 const DATA_COLLECTED = [
   { icon: "mail", label: "Email et identifiants de connexion" },

@@ -1,7 +1,13 @@
+import type { Metadata } from "next";
 import BottomNav from "@/components/BottomNav";
 import { createClient } from "@/lib/supabase/server";
 import type { Item } from "@/lib/supabase/items";
 import MyItemsBrowser from "./MyItemsBrowser";
+
+export const metadata: Metadata = {
+  title: "Mes objets",
+  description: "Recherchez parmi les objets perdus et trouvés signalés sur Objely, près de chez vous.",
+};
 
 const NAMED_CATEGORY_IDS = new Set(["phone", "bag", "keys", "wallet", "computer"]);
 

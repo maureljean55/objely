@@ -1,6 +1,12 @@
+import type { Metadata } from "next";
 import Link from "next/link";
 import FaqAccordion from "@/components/FaqAccordion";
 import { listFaqItems } from "@/lib/supabase/faq";
+
+export const metadata: Metadata = {
+  title: "Support",
+  description: "Besoin d'aide ? Contactez l'équipe Objely ou consultez notre FAQ.",
+};
 
 export default async function HelpCenterPage() {
   const { data: faqItems } = await listFaqItems();

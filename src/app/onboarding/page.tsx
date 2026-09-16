@@ -1,4 +1,10 @@
+import type { Metadata } from "next";
 import Link from "next/link";
+
+export const metadata: Metadata = {
+  title: "Bienvenue",
+  description: "Découvrez comment Objely vous aide à retrouver vos objets perdus.",
+};
 
 export default function OnboardingStep1Page() {
   return (

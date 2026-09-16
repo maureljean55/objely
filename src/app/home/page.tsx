@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import Link from "next/link";
 import Image from "next/image";
 import BottomNav from "@/components/BottomNav";
@@ -8,6 +9,11 @@ import { createClient } from "@/lib/supabase/server";
 import { listRecentFinds } from "@/lib/supabase/publicFeed";
 import type { AppNotification } from "@/lib/supabase/notifications";
 import styles from "./home.module.css";
+
+export const metadata: Metadata = {
+  title: "Accueil",
+  description: "Déclarez un objet perdu ou trouvé, et retrouvez les derniers objets signalés près de chez vous sur Objely.",
+};
 
 const ACTIVITY_ICONS: Record<AppNotification["type"], string> = {
   match: "search",

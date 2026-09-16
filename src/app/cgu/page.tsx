@@ -1,4 +1,10 @@
+import type { Metadata } from "next";
 import Link from "next/link";
+
+export const metadata: Metadata = {
+  title: "Conditions générales d'utilisation",
+  description: "Consultez les conditions générales d'utilisation (CGU) de la plateforme Objely.",
+};
 
 const SECTIONS = [
   {
