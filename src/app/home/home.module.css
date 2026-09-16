@@ -243,56 +243,6 @@
   height: 16px;
 }
 
-.heroSearch {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  margin-top: 18px;
-}
-
-.heroSearchInput {
-  flex: 1;
-  min-width: 0;
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  height: 52px;
-  padding: 0 18px;
-  background: rgba(255, 255, 255, 0.85);
-  border-radius: 26px;
-  color: #8a93a8;
-  box-shadow: 0 8px 20px rgba(40, 70, 130, 0.08);
-}
-
-.heroSearchInput input {
-  flex: 1;
-  min-width: 0;
-  border: none;
-  outline: none;
-  background: transparent;
-  font-size: 14px;
-  color: #263556;
-}
-
-.heroSearchInput input::placeholder {
-  color: #8a93a8;
-}
-
-.heroFilterBtn {
-  flex-shrink: 0;
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  height: 52px;
-  padding: 0 18px;
-  background: rgba(102, 89, 230, 0.12);
-  color: #6650e8;
-  border-radius: 26px;
-  font-size: 14px;
-  font-weight: 700;
-  white-space: nowrap;
-}
-
 /* =========================
    ACTIONS
 ========================= */
@@ -304,6 +254,7 @@
   display: grid;
   grid-template-columns: 1fr;
   gap: 12px;
+  margin-top: -10px;
 }
 
 /* Card height is driven by its content (no fixed/min height) so the
