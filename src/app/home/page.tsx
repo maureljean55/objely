@@ -9,7 +9,7 @@ import styles from "./home.module.css";
 
 const ACTIVITY_ICONS: Record<AppNotification["type"], string> = {
   match: "search",
-  message: "chat_bubble",
+  message: "mark_chat_unread",
   verification_submitted: "lock_open",
   verification_confirmed: "check_circle",
   verification_rejected: "cancel",

@@ -392,8 +392,9 @@
   align-items: center;
   justify-content: center;
   border-radius: 50%;
-  background: rgba(102, 89, 230, 0.12);
-  color: #6650e8;
+  background: linear-gradient(135deg, #4f7cfb, #8b5cf6);
+  color: white;
+  box-shadow: 0 6px 14px -4px rgba(79, 70, 229, 0.45);
 }
 
 .activityIcon .material-symbols-outlined {
