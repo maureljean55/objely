@@ -5,6 +5,26 @@ import { NextResponse, type NextRequest } from "next/server";
 // bigger than one request's worth of clock drift/latency.
 const REFRESH_BUFFER_SECONDS = 60;
 
+// Pages that must stay reachable by an aal1 session that still owes a TOTP
+// code — the login page itself (to actually complete the challenge), the
+// auth/onboarding flow, and public/informational pages with nothing
+// account-specific to protect.
+const AAL_GATE_EXEMPT_PREFIXES = [
+  "/login",
+  "/register",
+  "/auth",
+  "/onboarding",
+  "/offline",
+  "/rgpd",
+  "/cgu",
+  "/help",
+  "/qr",
+];
+
+function isExemptFromAalGate(pathname: string) {
+  return AAL_GATE_EXEMPT_PREFIXES.some((prefix) => pathname === prefix || pathname.startsWith(`${prefix}/`));
+}
+
 export async function updateSession(request: NextRequest) {
   let supabaseResponse = NextResponse.next({ request });
 
@@ -50,6 +70,21 @@ export async function updateSession(request: NextRequest) {
   // expiry instead of on the very next request.
   if (needsRefresh) {
     await supabase.auth.getUser();
+  }
+
+  // Password-only sign-in leaves a verified-TOTP account at aal1 until the
+  // login page's MFA step runs — without this, that aal1 session would be
+  // just as good as a fully-authenticated one for every page in the app,
+  // silently skipping the second factor entirely. getAuthenticatorAssuranceLevel()
+  // is a local read here (decodes the already-fetched session's JWT; no
+  // extra network round trip), so this costs nothing extra per request.
+  if (session && !isExemptFromAalGate(request.nextUrl.pathname)) {
+    const { data: aal } = await supabase.auth.mfa.getAuthenticatorAssuranceLevel();
+    if (aal && aal.nextLevel === "aal2" && aal.currentLevel !== "aal2") {
+      const redirectUrl = new URL("/login", request.url);
+      redirectUrl.searchParams.set("next", request.nextUrl.pathname + request.nextUrl.search);
+      return NextResponse.redirect(redirectUrl);
+    }
   }
 
   return supabaseResponse;

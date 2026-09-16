@@ -1,6 +1,6 @@
 "use client";
 
-import { Suspense, useState, type FormEvent } from "react";
+import { Suspense, useEffect, useState, type FormEvent } from "react";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { signInWithPassword, getMfaChallengeStatus, verifyMfaChallenge } from "@/lib/auth";
@@ -31,6 +31,17 @@ function LoginForm() {
   });
   const [mfaFactorId, setMfaFactorId] = useState<string | null>(null);
   const [mfaCode, setMfaCode] = useState("");
+
+  // Covers two cases with the same check: proxy.ts redirects an aal1
+  // session that owes a TOTP code straight to /login, and a user might
+  // just navigate here manually while in that same state. Either way,
+  // there's already a valid password-verified session — jump straight to
+  // the code step instead of asking for the password again.
+  useEffect(() => {
+    getMfaChallengeStatus().then(({ required, factorId }) => {
+      if (required && factorId) setMfaFactorId(factorId);
+    });
+  }, []);
 
   const canSubmit = identifier.trim().length > 0 && password.length > 0 && !isSubmitting;
 
