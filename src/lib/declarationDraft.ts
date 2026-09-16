@@ -10,6 +10,8 @@ export type DeclarationDraft = {
   location?: string;
   date?: string;
   time?: string;
+  moment?: string;
+  locationDetails?: string;
   privateDetail?: string;
   hideExactLocation?: boolean;
   photos?: string[];

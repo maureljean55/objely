@@ -7,10 +7,19 @@ import { saveDraft } from "@/lib/declarationDraft";
 
 const MOMENTS = ["Matin", "Midi", "Après-midi", "Soir", "Nuit", "Je ne sais pas"];
 
+// A hardcoded literal here silently goes stale the day after it's written —
+// this used to be one, already weeks in the past. Local date parts (not
+// toISOString, which is UTC and can read as yesterday/tomorrow near
+// midnight) so the default always means "today" for whoever's using it.
+function todayISODate() {
+  const d = new Date();
+  return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
+}
+
 export default function DeclarationLocationPage() {
   const router = useRouter();
   const [location, setLocation] = useState("");
-  const [date, setDate] = useState("2026-09-02");
+  const [date, setDate] = useState(todayISODate);
   const [moment, setMoment] = useState("Après-midi");
   const [details, setDetails] = useState("");
   const [locating, setLocating] = useState(false);
@@ -46,7 +55,7 @@ export default function DeclarationLocationPage() {
   };
 
   const goNext = () => {
-    saveDraft({ location, date });
+    saveDraft({ location, date, moment, locationDetails: details });
     router.push("/report-lost/matches");
   };
 

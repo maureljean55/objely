@@ -5,10 +5,19 @@ import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { saveDraft } from "@/lib/declarationDraft";
 
+// A hardcoded literal here silently goes stale the day after it's written —
+// this used to be one, already weeks in the past. Local date parts (not
+// toISOString, which is UTC and can read as yesterday/tomorrow near
+// midnight) so the default always means "today" for whoever's using it.
+function todayISODate() {
+  const d = new Date();
+  return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
+}
+
 export default function ReportFoundLocationPage() {
   const router = useRouter();
   const [location, setLocation] = useState("");
-  const [date, setDate] = useState("2026-09-02");
+  const [date, setDate] = useState(todayISODate);
   const [time, setTime] = useState("18:30");
   const [hideExactLocation, setHideExactLocation] = useState(true);
   const [locating, setLocating] = useState(false);

@@ -29,9 +29,30 @@ export type Item = {
 };
 
 /**
+ * Folds draft fields that don't have their own column into the item's
+ * public description: "Moment approximatif" and "Précisions sur le lieu"
+ * (captured on report-lost/location but previously never saved anywhere),
+ * plus — for lost items only — "Éléments distinctifs", since nothing ever
+ * reads a lost item's item_secrets row (only found_item's secret is read,
+ * in the verification flow), so keeping it there just orphaned it silently.
+ */
+function buildDescription(draft: DeclarationDraft, type: ItemType): string | null {
+  const parts: string[] = [];
+  if (draft.description?.trim()) parts.push(draft.description.trim());
+  if (draft.moment?.trim()) parts.push(`Moment : ${draft.moment.trim()}`);
+  if (draft.locationDetails?.trim()) parts.push(draft.locationDetails.trim());
+  if (type === "lost" && draft.privateDetail?.trim()) {
+    parts.push(`Éléments distinctifs : ${draft.privateDetail.trim()}`);
+  }
+  return parts.length > 0 ? parts.join("\n\n") : null;
+}
+
+/**
  * Persists a report-lost / report-found draft (see src/lib/declarationDraft.ts)
- * as a real `items` row, plus its private verification detail in
- * `item_secrets` when one was provided.
+ * as a real `items` row. For found items, a private verification detail is
+ * also stored in `item_secrets` (checked later against a claimant's answer);
+ * lost items have no such check, so their equivalent field is folded into
+ * the public description instead of creating an orphaned secret row.
  */
 export async function createItemFromDraft(draft: DeclarationDraft, type: ItemType) {
   const supabase = createClient();
@@ -50,7 +71,7 @@ export async function createItemFromDraft(draft: DeclarationDraft, type: ItemTyp
       category_label: draft.categoryLabel ?? "Autre objet",
       category_icon: draft.categoryIcon ?? null,
       title: draft.objectName?.trim() || draft.categoryLabel || "Objet",
-      description: draft.description || null,
+      description: buildDescription(draft, type),
       brand: draft.brand || null,
       colors: draft.colors && draft.colors.length > 0 ? draft.colors : null,
       location: draft.location || null,
@@ -66,7 +87,7 @@ export async function createItemFromDraft(draft: DeclarationDraft, type: ItemTyp
   }
 
   await Promise.all([
-    draft.privateDetail && draft.privateDetail.trim().length > 0
+    type === "found" && draft.privateDetail && draft.privateDetail.trim().length > 0
       ? supabase.from("item_secrets").insert({ item_id: item.id, private_detail: draft.privateDetail.trim() })
       : null,
     type === "found" ? awardFoundItemTrustBonus(item.id) : null,

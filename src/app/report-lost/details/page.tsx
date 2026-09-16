@@ -53,15 +53,11 @@ export default function DeclarationDetailsPage() {
           <PhotoPicker photos={photos} onChange={setPhotos} onUploadingChange={setIsUploadingPhotos} />
         </div>
 
-        <form
-          className="flex flex-col gap-lg"
-          onSubmit={(e) => {
-            e.preventDefault();
-            if (!canContinue) return;
-            saveDraft({ objectName: name, description, brand, colors: colors.length > 0 ? colors : undefined, privateDetail: distinctive, photos });
-            router.push("/report-lost/location");
-          }}
-        >
+        {/* The actual "Continuer" button lives outside this form (in the fixed
+            footer below), so this can never submit it — only Enter inside a
+            field could. Just swallow that instead of duplicating the
+            saveDraft/navigate logic that already lives on the button's onClick. */}
+        <form className="flex flex-col gap-lg" onSubmit={(e) => e.preventDefault()}>
           <div>
             <label className="block font-label-md text-label-md text-outline uppercase tracking-wider mb-2" htmlFor="object-name">
               Nom de l&apos;objet
