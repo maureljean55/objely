@@ -5,12 +5,6 @@ import Link from "next/link";
 import BottomNav from "@/components/BottomNav";
 import Switch from "@/components/Switch";
 
-const HISTORY = [
-  { emoji: "🎯", bg: "bg-primary-fixed", text: "Une correspondance possible a été trouvée.", time: "Il y a 2 heures" },
-  { emoji: "💬", bg: "bg-secondary-fixed", text: "Vous avez reçu un nouveau message.", time: "Hier" },
-  { emoji: "🎉", bg: "bg-error-container", text: "Votre objet a été retrouvé.", time: "Il y a 3 jours" },
-];
-
 export default function NotificationsPage() {
   const [master, setMaster] = useState(true);
   const [objMatch, setObjMatch] = useState(true);
@@ -95,22 +89,13 @@ export default function NotificationsPage() {
           </div>
         </section>
 
-        <section>
-          <h3 className="font-label-md text-label-md text-primary mb-2 uppercase tracking-wider pl-1">Historique récent</h3>
-          <div className="flex flex-col gap-2">
-            {HISTORY.map((item) => (
-              <div key={item.text} className="flex items-start gap-4 bg-surface-container-lowest p-4 rounded-xl soft-shadow">
-                <div className={`w-10 h-10 rounded-full ${item.bg} flex items-center justify-center shrink-0`}>
-                  <span className="text-xl">{item.emoji}</span>
-                </div>
-                <div>
-                  <p className="font-body-lg text-body-lg font-medium">{item.text}</p>
-                  <p className="font-label-md text-[11px] text-on-surface-variant mt-1">{item.time}</p>
-                </div>
-              </div>
-            ))}
-          </div>
-        </section>
+        <Link
+          href="/notifications"
+          className="flex items-center justify-between bg-surface-container-lowest p-4 rounded-xl soft-shadow font-body-lg text-body-lg text-primary font-semibold hover:opacity-80 transition-opacity"
+        >
+          Voir l&apos;historique des notifications
+          <span className="material-symbols-outlined">chevron_right</span>
+        </Link>
       </main>
 
       <BottomNav active="profile" />

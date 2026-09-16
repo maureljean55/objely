@@ -9,9 +9,11 @@ import { createMatch, explainMatch, findBestMatch, type MatchCandidate } from "@
 
 const STATUS_TEXTS = ["Analyse des déclarations...", "Comparaison des informations...", "Recherche de correspondances..."];
 // Real matching query is near-instant; hold the "searching" state for a
-// minimum time so it reads as a genuine verification rather than a flash.
-const MIN_CHECKING_MS = 6000;
-const VERIFIED_FLASH_MS = 900;
+// minimum time so it reads as a genuine verification rather than an
+// instant flash — but keep it short, since this runs on every single
+// declaration and a long forced wait here is pure friction.
+const MIN_CHECKING_MS = 2200;
+const VERIFIED_FLASH_MS = 700;
 
 const CRITERION_ICONS: Record<string, string> = {
   "Même catégorie": "category",
