@@ -122,6 +122,20 @@ export async function signInWithGoogle(next?: string) {
   });
 }
 
+/** Re-verifies the current password (Supabase's updateUser doesn't require it) before setting a new one. */
+export async function changePassword(currentPassword: string, newPassword: string) {
+  const supabase = createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  if (!user?.email) return { error: { message: "Session invalide. Reconnectez-vous et réessayez." } };
+
+  const { error: reauthError } = await supabase.auth.signInWithPassword({ email: user.email, password: currentPassword });
+  if (reauthError) return { error: { message: "Mot de passe actuel incorrect." } };
+
+  return supabase.auth.updateUser({ password: newPassword });
+}
+
 export async function signUpWithPassword(email: string, password: string, metadata: Record<string, unknown>) {
   const supabase = createClient();
   return supabase.auth.signUp({
