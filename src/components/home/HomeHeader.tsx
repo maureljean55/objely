@@ -23,7 +23,7 @@ export default function HomeHeader({ avatarUrl, unreadCount }: { avatarUrl: stri
         {avatarUrl ? (
           <Image src={avatarUrl} alt="Profil" width={52} height={52} />
         ) : (
-          <span className="material-symbols-outlined" style={{ fontSize: 24 }}>
+          <span className="material-symbols-outlined" style={{ fontSize: 26, fontVariationSettings: "'FILL' 1" }}>
             person
           </span>
         )}

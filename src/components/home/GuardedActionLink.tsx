@@ -56,7 +56,7 @@ export default function GuardedActionLink({
                   boxShadow: "0 10px 20px -6px rgba(101, 80, 232, 0.55)",
                 }}
               >
-                😅
+                😢
               </span>
               <h3 className="relative font-headline-sm text-headline-sm text-on-surface font-extrabold">Oups !</h3>
               <p className="relative font-body-md text-body-md text-on-surface-variant">{message}</p>
