@@ -16,7 +16,10 @@
   position: relative;
   isolation: isolate;
   min-height: 100vh;
-  background: #f7f9ff;
+  /* Transparent so ::before's fixed gradient (identical to .header's) shows
+     through everywhere, not just behind the header — same light glow for
+     the whole scroll, not only its top ~460px. */
+  background: transparent;
   color: #263556;
   font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Segoe UI", Arial, sans-serif;
 }
