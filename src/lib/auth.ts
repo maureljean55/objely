@@ -35,18 +35,49 @@ function forgetAuthCookiesOnClose() {
   }
 }
 
+function lockoutMessage(retryAfterSeconds: number): string {
+  const minutes = Math.ceil(retryAfterSeconds / 60);
+  const delay = minutes <= 1 ? "moins d'une minute" : `${minutes} minutes`;
+  return `Trop de tentatives de connexion. Réessayez dans ${delay}.`;
+}
+
+// Lockout state lives in Postgres (login_attempts table, via the
+// check_login_lockout/register_login_attempt RPCs — see the migration for
+// why), not in anything the client controls, so clearing localStorage or
+// retrying in a private window doesn't reset it. This slows down repeated
+// wrong passwords against one account through this app's own UI; it isn't a
+// substitute for Supabase's platform-level auth rate limits (Dashboard >
+// Auth > Rate Limits), which stay the real backstop since a caller that
+// skips this app entirely and hits Supabase directly with the anon key
+// never goes through this check at all.
 export async function signInWithPassword(email: string, password: string, remember: boolean) {
   const supabase = createClient();
-  const result = await supabase.auth.signInWithPassword({ email, password });
+  const identifier = email.trim().toLowerCase();
 
-  if (!result.error) {
-    try {
-      localStorage.setItem(REMEMBER_KEY, remember ? "true" : "false");
-      sessionStorage.setItem(SESSION_ACTIVE_KEY, "true");
-    } catch {}
-
-    if (!remember) forgetAuthCookiesOnClose();
+  const { data: lockoutCheck } = await supabase.rpc("check_login_lockout", { p_identifier: identifier });
+  if (lockoutCheck?.[0]?.locked) {
+    return { error: { message: lockoutMessage(lockoutCheck[0].retry_after_seconds) } };
   }
+
+  const result = await supabase.auth.signInWithPassword({ email, password });
+  const { data: attemptResult } = await supabase.rpc("register_login_attempt", {
+    p_identifier: identifier,
+    p_success: !result.error,
+  });
+
+  if (result.error) {
+    if (attemptResult?.[0]?.locked) {
+      return { error: { message: lockoutMessage(attemptResult[0].retry_after_seconds) } };
+    }
+    return result;
+  }
+
+  try {
+    localStorage.setItem(REMEMBER_KEY, remember ? "true" : "false");
+    sessionStorage.setItem(SESSION_ACTIVE_KEY, "true");
+  } catch {}
+
+  if (!remember) forgetAuthCookiesOnClose();
 
   return result;
 }
