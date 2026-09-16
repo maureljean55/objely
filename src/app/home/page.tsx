@@ -263,10 +263,16 @@ export default async function HomeDashboardPage({
 
           <div className={styles.tipBody}>
             <h2>Restez prudent lors d&apos;un échange</h2>
-            <p>
-              Privilégiez toujours un lieu public pour remettre ou récupérer un objet, et ne communiquez jamais vos
-              coordonnées bancaires ou mots de passe.
-            </p>
+            <ul className={styles.tipList}>
+              <li>
+                <span className="material-symbols-outlined">check_circle</span>
+                Privilégiez toujours un lieu public
+              </li>
+              <li>
+                <span className="material-symbols-outlined">check_circle</span>
+                Ne communiquez jamais vos coordonnées bancaires
+              </li>
+            </ul>
             <Link href="/help" className={styles.tipButton}>
               Voir les conseils
               <span className="material-symbols-outlined">arrow_forward</span>
