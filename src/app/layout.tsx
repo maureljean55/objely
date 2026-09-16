@@ -3,7 +3,6 @@ import { Caveat, Plus_Jakarta_Sans } from "next/font/google";
 import "./globals.css";
 import ServiceWorkerRegister from "@/components/ServiceWorkerRegister";
 import SessionGuard from "@/components/SessionGuard";
-import CookieBanner from "@/components/CookieBanner";
 
 // Self-hosted at build time (no render-blocking request to fonts.googleapis.com
 // on every cold load) — exposed as a CSS variable so Tailwind's fontFamily
@@ -81,7 +80,6 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
         {children}
         <ServiceWorkerRegister />
         <SessionGuard />
-        <CookieBanner />
       </body>
     </html>
   );

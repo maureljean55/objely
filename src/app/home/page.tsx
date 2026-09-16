@@ -3,6 +3,7 @@ import Image from "next/image";
 import BottomNav from "@/components/BottomNav";
 import MessagesFab from "@/components/MessagesFab";
 import HomeHeader from "@/components/home/HomeHeader";
+import CookieBanner from "@/components/CookieBanner";
 import { createClient } from "@/lib/supabase/server";
 import { listRecentFinds } from "@/lib/supabase/publicFeed";
 import type { AppNotification } from "@/lib/supabase/notifications";
@@ -548,6 +549,7 @@ export default async function HomeDashboardPage({
       </main>
 
       {user && <MessagesFab unreadCount={unreadMessageCount ?? 0} />}
+      {user && <CookieBanner />}
 
       <BottomNav active="home" />
     </div>
