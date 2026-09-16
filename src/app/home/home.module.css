@@ -392,13 +392,15 @@
   align-items: center;
   justify-content: center;
   border-radius: 50%;
-  background: linear-gradient(135deg, #4f7cfb, #8b5cf6);
-  color: white;
-  box-shadow: 0 6px 14px -4px rgba(79, 70, 229, 0.45);
+  background: linear-gradient(135deg, #eef1fb, #f4f1fd);
 }
 
 .activityIcon .material-symbols-outlined {
   font-size: 22px;
+  background: linear-gradient(135deg, #4f7cfb, #8b5cf6);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
 }
 
 .activityBody {
