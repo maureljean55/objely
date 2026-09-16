@@ -133,17 +133,6 @@
   border-radius: 50%;
 }
 
-.online {
-  position: absolute;
-  width: 11px;
-  height: 11px;
-  background: #16bd82;
-  border-radius: 50%;
-  right: 0;
-  bottom: 1px;
-  border: 2px solid white;
-}
-
 /* =========================
    HERO
 ========================= */
