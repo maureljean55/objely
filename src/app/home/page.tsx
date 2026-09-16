@@ -2,6 +2,7 @@ import Link from "next/link";
 import Image from "next/image";
 import BottomNav from "@/components/BottomNav";
 import MessagesFab from "@/components/MessagesFab";
+import OnlineStatusDot from "@/components/OnlineStatusDot";
 import { createClient } from "@/lib/supabase/server";
 import { listRecentFinds } from "@/lib/supabase/publicFeed";
 import type { AppNotification } from "@/lib/supabase/notifications";
@@ -132,7 +133,7 @@ export default async function HomeDashboardPage({
             ) : (
               <span className="material-symbols-outlined" style={{ fontSize: 24 }}>person</span>
             )}
-            <span className={styles.online} />
+            {user && <OnlineStatusDot className={styles.online} />}
           </Link>
 
           <div className={styles.headerRight}>
