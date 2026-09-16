@@ -247,53 +247,56 @@ export default async function HomeDashboardPage({
         </section>
 
         {/* Conseils de sécurité */}
-        <section className={styles.tipCard}>
-          <div className={styles.tipGlow} aria-hidden="true" />
-          <div className={styles.tipHeader}>
-            <div className={styles.tipLabel}>
-              <span className={styles.tipLabelIcon}>
+        <section>
+          <div className={styles.sectionHeader}>
+            <div className={styles.sectionTitle}>
+              <span className={styles.sectionIcon}>
                 <span className="material-symbols-outlined" style={{ fontVariationSettings: "'FILL' 1" }}>
                   shield
                 </span>
               </span>
-              <span>Votre sécurité</span>
+              <h2>Votre sécurité</h2>
             </div>
             <span className={styles.tipPill}>Conseil</span>
           </div>
 
-          <div className={styles.tipBody}>
-            <ul className={styles.tipList}>
-              <li>
-                <span className="material-symbols-outlined">check_circle</span>
-                Privilégiez toujours un lieu public
-              </li>
-              <li>
-                <span className="material-symbols-outlined">check_circle</span>
-                Ne communiquez jamais vos coordonnées bancaires
-              </li>
-            </ul>
-          </div>
+          <div className={styles.tipCard}>
+            <div className={styles.tipGlow} aria-hidden="true" />
 
-          <div className={styles.tipIllustration} aria-hidden="true">
-            <svg className={styles.tipSparkles} viewBox="0 0 32 32" fill="url(#tipSparkleGradient)">
-              <path d="M13 2C13 10 15 14 22 16C15 18 13 22 13 30C13 22 11 18 4 16C11 14 13 10 13 2Z" />
-              <defs>
-                <linearGradient id="tipSparkleGradient" x1="4" y1="2" x2="22" y2="30" gradientUnits="userSpaceOnUse">
-                  <stop stopColor="#4f7cfb" />
-                  <stop offset="1" stopColor="#8b5cf6" />
-                </linearGradient>
-              </defs>
-            </svg>
-            <span className={styles.tipIconTile}>
-              <span className="material-symbols-outlined" style={{ fontVariationSettings: "'FILL' 1" }}>
-                lock
+            <div className={styles.tipBody}>
+              <ul className={styles.tipList}>
+                <li>
+                  <span className="material-symbols-outlined">check_circle</span>
+                  Privilégiez toujours un lieu public
+                </li>
+                <li>
+                  <span className="material-symbols-outlined">check_circle</span>
+                  Ne communiquez jamais vos coordonnées bancaires
+                </li>
+              </ul>
+            </div>
+
+            <div className={styles.tipIllustration} aria-hidden="true">
+              <svg className={styles.tipSparkles} viewBox="0 0 32 32" fill="url(#tipSparkleGradient)">
+                <path d="M13 2C13 10 15 14 22 16C15 18 13 22 13 30C13 22 11 18 4 16C11 14 13 10 13 2Z" />
+                <defs>
+                  <linearGradient id="tipSparkleGradient" x1="4" y1="2" x2="22" y2="30" gradientUnits="userSpaceOnUse">
+                    <stop stopColor="#4f7cfb" />
+                    <stop offset="1" stopColor="#8b5cf6" />
+                  </linearGradient>
+                </defs>
+              </svg>
+              <span className={styles.tipIconTile}>
+                <span className="material-symbols-outlined" style={{ fontVariationSettings: "'FILL' 1" }}>
+                  security
+                </span>
               </span>
-            </span>
-            <span className={styles.tipNote}>
-              Votre sécurité
-              <br />
-              compte&nbsp;!
-            </span>
+              <span className={styles.tipNote}>
+                Votre sécurité
+                <br />
+                compte&nbsp;!
+              </span>
+            </div>
           </div>
         </section>
 
