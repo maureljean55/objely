@@ -327,19 +327,13 @@ export default async function HomeDashboardPage({
                         <svg className={styles.activityIconSvg} viewBox="0 0 24 24" fill="none" aria-hidden="true">
                           <path
                             d="M12 3.5C7.03 3.5 3 7.06 3 11.5c0 2.24 1.02 4.26 2.68 5.7-.12 1-.5 2.02-1.18 2.98a.4.4 0 00.42.62c1.53-.32 2.76-.9 3.7-1.53.99.34 2.09.53 3.38.53 4.97 0 9-3.56 9-8s-4.03-8-9-8z"
-                            stroke="url(#activityIconGradient)"
+                            stroke="white"
                             strokeWidth="2"
                             strokeLinecap="round"
                             strokeLinejoin="round"
                           />
-                          <circle cx="19.6" cy="15.2" r="1" fill="url(#activityIconGradient)" />
-                          <circle cx="21.2" cy="18.3" r="0.75" fill="url(#activityIconGradient)" />
-                          <defs>
-                            <linearGradient id="activityIconGradient" x1="3" y1="3.5" x2="21.2" y2="18.3" gradientUnits="userSpaceOnUse">
-                              <stop stopColor="#2f6bff" />
-                              <stop offset="1" stopColor="#7c3aed" />
-                            </linearGradient>
-                          </defs>
+                          <circle cx="19.6" cy="15.2" r="1" fill="white" />
+                          <circle cx="21.2" cy="18.3" r="0.75" fill="white" />
                         </svg>
                       ) : (
                         <span className="material-symbols-outlined">{ACTIVITY_ICONS[item.type]}</span>
