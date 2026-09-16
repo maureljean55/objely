@@ -138,11 +138,14 @@ export default async function HomeDashboardPage({
             Bienvenue sur Objely&nbsp;!
           </div>
           <div className={styles.heroTop}>
-            <h1>
-              Objets perdus,
-              <br />
-              <strong>objets retrouvés&nbsp;!</strong>
-            </h1>
+            <div>
+              <h1>
+                Objets perdus,
+                <br />
+                <strong>objets retrouvés&nbsp;!</strong>
+              </h1>
+              <p>Perds un objet. Retrouve-le. Ou aide quelqu&apos;un à retrouver le sien&nbsp;!</p>
+            </div>
             <p className={styles.helperNote} aria-hidden="true">
               <svg className={styles.helperArc} viewBox="0 0 20 20" fill="none">
                 <path d="M18 18C18 8 12 2 2 2" stroke="url(#helperAccentGradient)" strokeWidth="1.8" strokeLinecap="round" />
@@ -178,7 +181,6 @@ export default async function HomeDashboardPage({
               </svg>
             </p>
           </div>
-          <p>Perds un objet. Retrouve-le. Ou aide quelqu&apos;un à retrouver le sien&nbsp;!</p>
         </section>
 
         {/* Actions */}
