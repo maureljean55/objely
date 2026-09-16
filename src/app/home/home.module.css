@@ -373,7 +373,7 @@
   overflow: hidden;
   border-radius: 28px;
   padding: 16px;
-  margin: 18px 10px 0;
+  margin: 18px 0 0;
   background: linear-gradient(160deg, #ffffff 0%, #f4f1ff 60%, #eef1ff 100%);
   box-shadow: 0 14px 34px -10px rgba(79, 70, 229, 0.18);
 }
