@@ -4,7 +4,29 @@ import BottomNav from "@/components/BottomNav";
 import MessagesFab from "@/components/MessagesFab";
 import { createClient } from "@/lib/supabase/server";
 import { listRecentFinds } from "@/lib/supabase/publicFeed";
+import type { AppNotification } from "@/lib/supabase/notifications";
 import styles from "./home.module.css";
+
+const ACTIVITY_ICONS: Record<AppNotification["type"], string> = {
+  match: "search",
+  message: "chat_bubble",
+  verification_submitted: "lock_open",
+  verification_confirmed: "check_circle",
+  verification_rejected: "cancel",
+  restitution_proposed: "event",
+  restitution_responded: "event_available",
+  restitution_confirmed: "task_alt",
+};
+
+function activityHref(item: AppNotification) {
+  if (item.type === "message" && item.direct_conversation_id) return `/dm/${item.direct_conversation_id}`;
+  if (!item.match_id) return "/activity";
+  if (item.type === "message" || item.type === "restitution_proposed" || item.type === "restitution_responded" || item.type === "restitution_confirmed") {
+    return `/chat/${item.match_id}`;
+  }
+  if (item.type === "verification_submitted") return `/activity/verification?match=${item.match_id}`;
+  return "/activity";
+}
 
 function timeAgo(dateStr: string) {
   const diffMs = Date.now() - new Date(dateStr).getTime();
@@ -38,7 +60,7 @@ export default async function HomeDashboardPage({
   }] = await Promise.all([listRecentFinds(6), supabase.auth.getSession()]);
   const user = session?.user ?? null;
 
-  const [{ count: unreadCount }, { count: unreadMessageCount }, { data: profile }] = user
+  const [{ count: unreadCount }, { count: unreadMessageCount }, { data: profile }, { data: activities }] = user
     ? await Promise.all([
         supabase.from("notifications").select("id", { count: "exact", head: true }).eq("user_id", user.id).eq("read", false),
         supabase
@@ -48,8 +70,15 @@ export default async function HomeDashboardPage({
           .eq("type", "message")
           .eq("read", false),
         supabase.from("profiles").select("avatar_url").eq("id", user.id).maybeSingle<{ avatar_url: string | null }>(),
+        supabase
+          .from("notifications")
+          .select("*")
+          .eq("user_id", user.id)
+          .order("created_at", { ascending: false })
+          .limit(3)
+          .returns<AppNotification[]>(),
       ])
-    : [{ count: 0 }, { count: 0 }, { data: null }];
+    : [{ count: 0 }, { count: 0 }, { data: null }, { data: [] as AppNotification[] }];
 
   return (
     <div className={styles.page}>
@@ -216,6 +245,51 @@ export default async function HomeDashboardPage({
             </div>
           </Link>
         </section>
+
+        {/* Activités récentes — vraies notifications */}
+        {user && (
+          <section>
+            <div className={styles.sectionHeader}>
+              <div className={styles.sectionTitle}>
+                <span className={styles.sectionIcon}>
+                  <span className="material-symbols-outlined" style={{ fontVariationSettings: "'FILL' 1" }}>
+                    auto_awesome
+                  </span>
+                </span>
+                <h2>Vos dernières activités</h2>
+              </div>
+              <Link href="/notifications" className={styles.seeAll}>
+                Voir tout
+                <span className="material-symbols-outlined">chevron_right</span>
+              </Link>
+            </div>
+
+            {activities && activities.length > 0 ? (
+              <div className={styles.activityList}>
+                {activities.map((item) => (
+                  <Link key={item.id} href={activityHref(item)} className={styles.activityCard}>
+                    <span className={styles.activityIcon}>
+                      <span className="material-symbols-outlined">{ACTIVITY_ICONS[item.type]}</span>
+                    </span>
+                    <div className={styles.activityBody}>
+                      <h3>{item.title}</h3>
+                      <p>{item.body}</p>
+                    </div>
+                    <div className={styles.activityMeta}>
+                      <span>{timeAgo(item.created_at)}</span>
+                      {!item.read && <span className={styles.activityDot} />}
+                      <span className="material-symbols-outlined">chevron_right</span>
+                    </div>
+                  </Link>
+                ))}
+              </div>
+            ) : (
+              <div className="rounded-2xl bg-white soft-shadow p-lg text-center">
+                <p className="font-body-md text-body-md text-on-surface-variant">Aucune activité pour le moment.</p>
+              </div>
+            )}
+          </section>
+        )}
 
         {/* Objets récents — vraies données */}
         <section>

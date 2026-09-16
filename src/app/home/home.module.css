@@ -365,6 +365,87 @@
 }
 
 /* =========================
+   ACTIVITÉS RÉCENTES
+========================= */
+
+.activityList {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.activityCard {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 14px;
+  background: white;
+  border-radius: 20px;
+  box-shadow: 0 8px 22px rgba(30, 60, 120, 0.08);
+}
+
+.activityIcon {
+  flex-shrink: 0;
+  width: 44px;
+  height: 44px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  background: rgba(102, 89, 230, 0.12);
+  color: #6650e8;
+}
+
+.activityIcon .material-symbols-outlined {
+  font-size: 22px;
+}
+
+.activityBody {
+  flex: 1;
+  min-width: 0;
+}
+
+.activityBody h3 {
+  font-size: 14px;
+  font-weight: 800;
+  color: #122653;
+  margin-bottom: 2px;
+}
+
+.activityBody p {
+  font-size: 12px;
+  line-height: 1.35;
+  color: #8a93a8;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+}
+
+.activityMeta {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  color: #8a93a8;
+  font-size: 11px;
+  font-weight: 600;
+}
+
+.activityDot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: #6650e8;
+}
+
+.activityMeta .material-symbols-outlined {
+  font-size: 18px;
+  color: #b7bfd6;
+}
+
+/* =========================
    OBJETS RÉCENTS
 ========================= */
 
