@@ -332,8 +332,15 @@ export default function RegisterPage() {
               className="mt-0.5 w-5 h-5 rounded-md border-outline-variant text-primary focus:ring-primary/30 shrink-0"
             />
             <span className="font-body-md text-body-md text-on-surface-variant">
-              J&apos;accepte les <span className="text-primary font-medium">Conditions générales</span> et la{" "}
-              <span className="text-primary font-medium">Politique de confidentialité</span> d&apos;Objely.
+              J&apos;accepte les{" "}
+              <Link href="/cgu" target="_blank" className="text-primary font-medium underline underline-offset-2">
+                Conditions générales
+              </Link>{" "}
+              et la{" "}
+              <Link href="/rgpd" target="_blank" className="text-primary font-medium underline underline-offset-2">
+                Politique de confidentialité
+              </Link>{" "}
+              d&apos;Objely.
             </span>
           </label>
 
