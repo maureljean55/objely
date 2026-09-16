@@ -103,6 +103,25 @@ export async function verifyMfaChallenge(factorId: string, code: string, remembe
   return result;
 }
 
+/**
+ * Redirects to Google's consent screen; Supabase creates the account on
+ * first sign-in automatically, so this covers both login and signup. The
+ * browser navigates away immediately, so there's no local session to apply
+ * "remember me" to here — /auth/callback (exchangeCodeForSession) is what
+ * actually establishes it once Google redirects back.
+ */
+export async function signInWithGoogle(next?: string) {
+  const supabase = createClient();
+  const redirectTo = new URL("/auth/callback", window.location.origin);
+  if (next && next.startsWith("/") && !next.startsWith("//")) {
+    redirectTo.searchParams.set("next", next);
+  }
+  return supabase.auth.signInWithOAuth({
+    provider: "google",
+    options: { redirectTo: redirectTo.toString() },
+  });
+}
+
 export async function signUpWithPassword(email: string, password: string, metadata: Record<string, unknown>) {
   const supabase = createClient();
   return supabase.auth.signUp({

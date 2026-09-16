@@ -3,7 +3,7 @@
 import { Suspense, useEffect, useState, type FormEvent } from "react";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
-import { signInWithPassword, getMfaChallengeStatus, verifyMfaChallenge } from "@/lib/auth";
+import { signInWithPassword, getMfaChallengeStatus, verifyMfaChallenge, signInWithGoogle } from "@/lib/auth";
 
 const HEADER_HEIGHT = "calc(172px + env(safe-area-inset-top))";
 
@@ -31,6 +31,7 @@ function LoginForm() {
   });
   const [mfaFactorId, setMfaFactorId] = useState<string | null>(null);
   const [mfaCode, setMfaCode] = useState("");
+  const [googleSubmitting, setGoogleSubmitting] = useState(false);
 
   // Covers two cases with the same check: proxy.ts redirects an aal1
   // session that owes a TOTP code straight to /login, and a user might
@@ -77,6 +78,17 @@ function LoginForm() {
     }
 
     proceedToApp();
+  };
+
+  const handleGoogleSignIn = async () => {
+    setError(null);
+    setGoogleSubmitting(true);
+    const { error: oauthError } = await signInWithGoogle(searchParams.get("next") ?? undefined);
+    if (oauthError) {
+      setError(oauthError.message);
+      setGoogleSubmitting(false);
+    }
+    // On success the browser navigates away to Google's consent screen — nothing left to do here.
   };
 
   const handleMfaSubmit = async (e: FormEvent) => {
@@ -258,10 +270,12 @@ function LoginForm() {
             <div className="flex flex-col gap-3">
               <button
                 type="button"
-                className="w-full flex items-center justify-center gap-2 py-4 rounded-2xl border border-outline-variant/60 bg-surface-container-lowest font-headline-sm text-headline-sm text-on-surface hover:bg-surface-container-low transition-colors"
+                onClick={handleGoogleSignIn}
+                disabled={googleSubmitting}
+                className="w-full flex items-center justify-center gap-2 py-4 rounded-2xl border border-outline-variant/60 bg-surface-container-lowest font-headline-sm text-headline-sm text-on-surface hover:bg-surface-container-low transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 <GoogleIcon className="w-5 h-5" />
-                Continuer avec Google
+                {googleSubmitting ? "Redirection…" : "Continuer avec Google"}
               </button>
               <button
                 type="button"
