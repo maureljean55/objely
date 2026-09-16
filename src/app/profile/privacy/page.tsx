@@ -3,15 +3,10 @@
 import { useState } from "react";
 import Link from "next/link";
 import BottomNav from "@/components/BottomNav";
-import Switch from "@/components/Switch";
 import TwoFactorAuthSection from "@/components/profile/TwoFactorAuthSection";
 
 export default function PrivacySecurityPage() {
-  const [publicProfile, setPublicProfile] = useState(true);
-  const [showPhoto, setShowPhoto] = useState(true);
-  const [sharePersonalInfo, setSharePersonalInfo] = useState(false);
   const [locationPref, setLocationPref] = useState<"approx" | "precise" | "none">("approx");
-  const [allowMessages, setAllowMessages] = useState(true);
 
   return (
     <div className="bg-background text-on-surface antialiased min-h-screen pb-32">
@@ -46,29 +41,6 @@ export default function PrivacySecurityPage() {
         <section className="bg-surface-container-lowest rounded-xl soft-shadow overflow-hidden">
           <div className="px-4 py-3 bg-surface-container-low border-b border-outline-variant/30">
             <h3 className="font-headline-sm text-headline-sm text-on-surface flex items-center gap-2">
-              <span className="material-symbols-outlined text-on-surface-variant">visibility</span>
-              Visibilité de mon profil
-            </h3>
-          </div>
-          <div className="divide-y divide-outline-variant/30">
-            <label className="flex justify-between items-center px-4 py-3 cursor-pointer">
-              <span className="font-body-lg text-body-lg text-on-surface">Profil visible publiquement</span>
-              <Switch checked={publicProfile} onChange={setPublicProfile} />
-            </label>
-            <label className="flex justify-between items-center px-4 py-3 cursor-pointer">
-              <span className="font-body-lg text-body-lg text-on-surface">Afficher la photo de profil</span>
-              <Switch checked={showPhoto} onChange={setShowPhoto} />
-            </label>
-            <label className="flex justify-between items-center px-4 py-3 cursor-pointer">
-              <span className="font-body-lg text-body-lg text-on-surface">Partager les informations personnelles</span>
-              <Switch checked={sharePersonalInfo} onChange={setSharePersonalInfo} />
-            </label>
-          </div>
-        </section>
-
-        <section className="bg-surface-container-lowest rounded-xl soft-shadow overflow-hidden">
-          <div className="px-4 py-3 bg-surface-container-low border-b border-outline-variant/30">
-            <h3 className="font-headline-sm text-headline-sm text-on-surface flex items-center gap-2">
               <span className="material-symbols-outlined text-on-surface-variant">location_on</span>
               Localisation
             </h3>
@@ -94,21 +66,6 @@ export default function PrivacySecurityPage() {
                 </div>
               </label>
             ))}
-          </div>
-        </section>
-
-        <section className="bg-surface-container-lowest rounded-xl soft-shadow overflow-hidden">
-          <div className="px-4 py-3 bg-surface-container-low border-b border-outline-variant/30">
-            <h3 className="font-headline-sm text-headline-sm text-on-surface flex items-center gap-2">
-              <span className="material-symbols-outlined text-on-surface-variant">chat</span>
-              Messagerie
-            </h3>
-          </div>
-          <div className="divide-y divide-outline-variant/30">
-            <label className="flex justify-between items-center px-4 py-3 cursor-pointer">
-              <span className="font-body-lg text-body-lg text-on-surface">Autoriser les messages</span>
-              <Switch checked={allowMessages} onChange={setAllowMessages} />
-            </label>
           </div>
         </section>
 
