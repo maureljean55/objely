@@ -69,6 +69,7 @@ export default function SettingsPage() {
         <Section title="Confidentialité">
           <Row icon="lock" label="Confidentialité & Sécurité" href="/profile/privacy" />
           <Row icon="assignment_turned_in" label="Autorisations" />
+          <Row icon="privacy_tip" label="Données personnelles (RGPD)" href="/rgpd" />
         </Section>
 
         <Section title="Assistance">

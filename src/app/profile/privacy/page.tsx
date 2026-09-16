@@ -132,6 +132,17 @@ export default function PrivacySecurityPage() {
           </div>
         </section>
 
+        <Link
+          href="/rgpd"
+          className="bg-surface-container-lowest rounded-xl soft-shadow px-4 py-3 flex items-center justify-between gap-md hover:bg-surface-container-low transition-colors"
+        >
+          <div className="flex items-center gap-2">
+            <span className="material-symbols-outlined text-primary">privacy_tip</span>
+            <span className="font-body-lg text-body-lg text-on-surface">Vos données personnelles (RGPD)</span>
+          </div>
+          <span className="material-symbols-outlined text-outline">chevron_right</span>
+        </Link>
+
         <div className="mt-2 mb-4 flex items-center justify-center gap-1 text-center">
           <span className="material-symbols-outlined text-outline text-[16px]">info</span>
           <p className="font-label-md text-[11px] text-outline">Votre adresse personnelle et vos informations sensibles ne sont jamais affichées publiquement.</p>
