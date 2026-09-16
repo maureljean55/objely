@@ -4,6 +4,7 @@ import Image from "next/image";
 import BottomNav from "@/components/BottomNav";
 import MessagesFab from "@/components/MessagesFab";
 import HomeHeader from "@/components/home/HomeHeader";
+import GuardedActionLink from "@/components/home/GuardedActionLink";
 import CookieBanner from "@/components/CookieBanner";
 import { createClient } from "@/lib/supabase/server";
 import { listRecentFinds } from "@/lib/supabase/publicFeed";
@@ -200,7 +201,12 @@ export default async function HomeDashboardPage({
 
         {/* Actions */}
         <section className={styles.actions}>
-          <Link href="/report-lost" className={`${styles.actionCard} ${styles.lost}`}>
+          <GuardedActionLink
+            href="/report-lost"
+            authenticated={!!user}
+            message="Dépêche-toi de t'inscrire et on retrouvera ton objet ensemble !"
+            className={`${styles.actionCard} ${styles.lost}`}
+          >
             <span className={styles.actionIcon}>
               <Image
                 src="/illustrations/home/mascotte-recherche.jpg"
@@ -214,9 +220,14 @@ export default async function HomeDashboardPage({
               <h2>Déclarer un objet perdu</h2>
               <p>Aide à le retrouver</p>
             </div>
-          </Link>
+          </GuardedActionLink>
 
-          <Link href="/report-found" className={`${styles.actionCard} ${styles.found}`}>
+          <GuardedActionLink
+            href="/report-found"
+            authenticated={!!user}
+            message="Dépêche-toi de t'inscrire et aidons ensemble son propriétaire à le retrouver !"
+            className={`${styles.actionCard} ${styles.found}`}
+          >
             <span className={styles.actionIcon}>
               <Image
                 src="/illustrations/home/objet-trouve.jpg"
@@ -230,7 +241,7 @@ export default async function HomeDashboardPage({
               <h2>Déclarer un objet trouvé</h2>
               <p>Rends-le à son propriétaire</p>
             </div>
-          </Link>
+          </GuardedActionLink>
         </section>
 
         {/* Conseils de sécurité */}
@@ -444,9 +455,11 @@ export default async function HomeDashboardPage({
         <h1 className="font-headline-lg text-headline-lg text-on-background">Quelque chose à retrouver ?</h1>
 
         <section className="grid grid-cols-2 gap-lg">
-          <Link
+          <GuardedActionLink
             href="/report-lost"
-            className="relative overflow-hidden text-white flex items-center gap-4 p-5 transition-transform hover:-translate-y-0.5"
+            authenticated={!!user}
+            message="Dépêche-toi de t'inscrire et on retrouvera ton objet ensemble !"
+            className="relative overflow-hidden text-white flex items-center gap-4 p-5 transition-transform hover:-translate-y-0.5 w-full text-left"
             style={{
               background: "linear-gradient(135deg, #1d72fe 0%, #2563eb 40%, #3b82f6 100%)",
               borderRadius: "46px",
@@ -479,11 +492,13 @@ export default async function HomeDashboardPage({
                 <path d="M9 18l6-6-6-6" />
               </svg>
             </span>
-          </Link>
+          </GuardedActionLink>
 
-          <Link
+          <GuardedActionLink
             href="/report-found"
-            className="relative overflow-hidden text-white flex items-center gap-4 p-5 transition-transform hover:-translate-y-0.5"
+            authenticated={!!user}
+            message="Dépêche-toi de t'inscrire et aidons ensemble son propriétaire à le retrouver !"
+            className="relative overflow-hidden text-white flex items-center gap-4 p-5 transition-transform hover:-translate-y-0.5 w-full text-left"
             style={{
               background: "linear-gradient(135deg, #a78bfa 0%, #9061f9 45%, #7e4df8 100%)",
               borderRadius: "46px",
@@ -516,7 +531,7 @@ export default async function HomeDashboardPage({
                 <path d="M9 18l6-6-6-6" />
               </svg>
             </span>
-          </Link>
+          </GuardedActionLink>
         </section>
 
         <section className="space-y-md">
