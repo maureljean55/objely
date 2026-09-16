@@ -150,11 +150,9 @@ export default async function HomeDashboardPage({
               <svg className={styles.helperArc} viewBox="0 0 20 20" fill="none">
                 <path d="M18 18C18 8 12 2 2 2" stroke="url(#helperAccentGradient)" strokeWidth="1.8" strokeLinecap="round" />
               </svg>
-              Une petite aide
+              Une petite aide peut faire
               <br />
-              peut faire une
-              <br />
-              grande différence
+              une grande différence
               <svg className={styles.helperTick} viewBox="0 0 20 20" fill="none">
                 <path d="M4 16L16 4" stroke="url(#helperAccentGradient)" strokeWidth="1.8" strokeLinecap="round" />
               </svg>

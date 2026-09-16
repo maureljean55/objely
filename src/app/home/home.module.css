@@ -205,9 +205,9 @@
   flex-shrink: 0;
   margin: 4px 0 0;
   max-width: none;
-  width: 128px;
+  width: 155px;
   font-family: var(--font-caveat), cursive;
-  font-size: 17px;
+  font-size: 15px;
   font-weight: 700;
   line-height: 1.25;
   letter-spacing: 0.2px;
@@ -580,8 +580,8 @@
   }
 
   .hero .helperNote {
-    width: 104px;
-    font-size: 14px;
+    width: 132px;
+    font-size: 13px;
   }
 
   .sectionTitle h2 {
