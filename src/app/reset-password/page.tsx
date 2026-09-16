@@ -39,9 +39,40 @@ export default function ResetPasswordPage() {
 
   useEffect(() => {
     const supabase = createClient();
-    // /auth/callback already exchanged the reset-link code for a session
-    // before redirecting here — this page just checks it actually landed,
-    // since a stale or already-used link redirects here with none.
+
+    // Supabase's recovery link redirects here with the session in a URL
+    // *hash fragment* (#access_token=...&refresh_token=...), not a ?code=
+    // query param — and this app's browser client is pinned to PKCE
+    // (@supabase/ssr forces it), which makes the client's own automatic
+    // URL detection actively reject a hash-style token as "not a valid
+    // PKCE flow url" instead of picking it up. So this parses the hash by
+    // hand and establishes the session directly via setSession() — no
+    // exchange needed, the tokens are already right there.
+    const hash = window.location.hash.startsWith("#") ? window.location.hash.slice(1) : window.location.hash;
+    const hashParams = new URLSearchParams(hash);
+    const accessToken = hashParams.get("access_token");
+    const refreshToken = hashParams.get("refresh_token");
+
+    // Clear the hash immediately either way, so the tokens don't linger in
+    // the address bar or in browser history.
+    if (hash) window.history.replaceState(null, "", window.location.pathname + window.location.search);
+
+    if (hashParams.get("error") || hashParams.get("error_code")) {
+      setHasSession(false);
+      setCheckingSession(false);
+      return;
+    }
+
+    if (accessToken && refreshToken) {
+      supabase.auth.setSession({ access_token: accessToken, refresh_token: refreshToken }).then(({ error }) => {
+        setHasSession(!error);
+        setCheckingSession(false);
+      });
+      return;
+    }
+
+    // No hash at all — either a stale bookmark, or a page refresh after the
+    // hash above already established a real (cookie-backed) session.
     supabase.auth.getSession().then(({ data }) => {
       setHasSession(!!data.session);
       setCheckingSession(false);

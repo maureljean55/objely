@@ -123,16 +123,20 @@ export async function signInWithGoogle(next?: string) {
 }
 
 /**
- * Sends a password-reset email. The link routes through /auth/callback
- * (same exchangeCodeForSession path as email confirmation and OAuth) and
- * on to /reset-password, where the recovery session lets the user set a new
- * password directly — they don't know their old one, so changePassword()'s
- * re-verification step doesn't apply here.
+ * Sends a password-reset email. Unlike OAuth and email-confirmation links,
+ * Supabase's recovery link always redirects with the session in a URL
+ * *hash fragment* (`#access_token=...`), not a `?code=` query param — a
+ * server route can never see a hash fragment (browsers strip it before the
+ * request is even sent), and this project's browser client is pinned to
+ * PKCE (@supabase/ssr forces it), which actively rejects a hash-style
+ * token as "not a valid PKCE flow url". So this can't route through
+ * /auth/callback like the others; it goes straight to /reset-password,
+ * which parses the hash itself and calls setSession() directly instead of
+ * relying on the client's own (PKCE-only) URL detection.
  */
 export async function requestPasswordReset(email: string) {
   const supabase = createClient();
-  const redirectTo = new URL("/auth/callback", window.location.origin);
-  redirectTo.searchParams.set("next", "/reset-password");
+  const redirectTo = new URL("/reset-password", window.location.origin);
   return supabase.auth.resetPasswordForEmail(email.trim(), { redirectTo: redirectTo.toString() });
 }
 
