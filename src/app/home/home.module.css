@@ -41,7 +41,7 @@
   max-width: 430px;
   margin: 0 auto;
   padding: 25px 18px 140px;
-  padding-top: calc(112px + env(safe-area-inset-top));
+  padding-top: calc(96px + env(safe-area-inset-top));
   overflow: hidden;
 }
 
