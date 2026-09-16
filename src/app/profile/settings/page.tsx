@@ -5,6 +5,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import BottomNav from "@/components/BottomNav";
 import TwoFactorAuthSection from "@/components/profile/TwoFactorAuthSection";
+import DeleteAccountButton from "@/components/profile/DeleteAccountButton";
 import { signOut } from "@/lib/auth";
 
 function Row({ icon, label, href }: { icon: string; label: string; href?: string }) {
@@ -80,9 +81,7 @@ export default function SettingsPage() {
           >
             Déconnexion
           </button>
-          <button className="font-label-md text-label-md text-outline hover:text-error transition-colors underline decoration-outline/30 underline-offset-4">
-            Supprimer mon compte
-          </button>
+          <DeleteAccountButton />
         </div>
       </main>
 
