@@ -8,9 +8,9 @@ const NAMED_CATEGORY_IDS = new Set(["phone", "bag", "keys", "wallet", "computer"
 export default async function SearchFiltersPage({
   searchParams,
 }: {
-  searchParams: Promise<{ category?: string; type?: string; status?: string }>;
+  searchParams: Promise<{ category?: string; type?: string; status?: string; q?: string }>;
 }) {
-  const { category = null, type = null, status = null } = await searchParams;
+  const { category = null, type = null, status = null, q = "" } = await searchParams;
   const supabase = await createClient();
   // Middleware already validated/refreshed the session for this request, so
   // reading it back here doesn't need a second round trip to Supabase's
@@ -48,7 +48,7 @@ export default async function SearchFiltersPage({
 
   return (
     <div className="bg-background text-on-background font-body-md min-h-screen pb-24 md:pb-0 pt-[calc(176px+env(safe-area-inset-top))] md:pt-[calc(132px+env(safe-area-inset-top))]">
-      <MyItemsBrowser items={items} hasAnyItems={hasAnyItems} filtersActive={filtersActive} category={category} type={type} status={status} />
+      <MyItemsBrowser items={items} hasAnyItems={hasAnyItems} filtersActive={filtersActive} category={category} type={type} status={status} initialQuery={q} />
       <BottomNav active="search" />
     </div>
   );

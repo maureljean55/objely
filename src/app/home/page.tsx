@@ -144,7 +144,6 @@ export default async function HomeDashboardPage({
                 <br />
                 <strong>objets retrouvés&nbsp;!</strong>
               </h1>
-              <p>Perds un objet. Retrouve-le. Ou aide quelqu&apos;un à retrouver le sien&nbsp;!</p>
             </div>
             <p className={styles.helperNote} aria-hidden="true">
               <svg className={styles.helperArc} viewBox="0 0 20 20" fill="none">
@@ -181,6 +180,17 @@ export default async function HomeDashboardPage({
               </svg>
             </p>
           </div>
+
+          <form action="/search" method="GET" className={styles.heroSearch}>
+            <div className={styles.heroSearchInput}>
+              <span className="material-symbols-outlined">search</span>
+              <input type="text" name="q" placeholder="Rechercher un objet, un lieu, une catégorie..." />
+            </div>
+            <Link href="/search" className={styles.heroFilterBtn}>
+              <span className="material-symbols-outlined">tune</span>
+              Filtrer
+            </Link>
+          </form>
         </section>
 
         {/* Actions */}

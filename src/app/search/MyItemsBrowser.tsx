@@ -46,6 +46,7 @@ export default function MyItemsBrowser({
   category,
   type,
   status,
+  initialQuery = "",
 }: {
   items: Item[];
   hasAnyItems: boolean;
@@ -53,8 +54,9 @@ export default function MyItemsBrowser({
   category: string | null;
   type: string | null;
   status: string | null;
+  initialQuery?: string;
 }) {
-  const [query, setQuery] = useState("");
+  const [query, setQuery] = useState(initialQuery);
   const [filtersOpen, setFiltersOpen] = useState(false);
 
   const visibleItems = useMemo(() => {
