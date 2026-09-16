@@ -331,28 +331,34 @@ export default async function HomeDashboardPage({
           {recentFinds && recentFinds.length > 0 ? (
             <div className={styles.objectsList}>
               {recentFinds.map((item, index) => (
-                <article key={item.id} className={styles.objectCard}>
-                  <div className={styles.objectImage}>
+                <Link key={item.id} href={`/search/${item.id}`} className={styles.objectCard}>
+                  <div className={styles.objectIcon}>
                     {item.photos?.[0] ? (
                       <Image
                         src={item.photos[0]}
                         alt={item.title}
                         fill
-                        sizes="150px"
-                        style={{ objectFit: "contain", padding: 10 }}
+                        sizes="52px"
+                        style={{ objectFit: "cover" }}
                         priority={index === 0}
                       />
                     ) : (
-                      <div className="w-full h-full flex items-center justify-center text-primary">
-                        <span className="material-symbols-outlined text-4xl">{item.category_icon || "inventory_2"}</span>
-                      </div>
+                      <span className="material-symbols-outlined">{item.category_icon || "inventory_2"}</span>
                     )}
-                    <span className={styles.verified}>✓</span>
                   </div>
-                  <span className={styles.objectTag}>{item.category_label}</span>
-                  <p className={styles.place}>📍 {item.location || "Lieu non précisé"}</p>
-                  <p className={styles.time}>{timeAgo(item.created_at)}</p>
-                </article>
+                  <div className={styles.objectInfo}>
+                    <h3>{item.title}</h3>
+                    <p className={styles.objectMetaRow}>
+                      <span className="material-symbols-outlined">location_on</span>
+                      {item.location || "Lieu non précisé"}
+                    </p>
+                    <p className={styles.objectMetaRow}>
+                      <span className="material-symbols-outlined">schedule</span>
+                      {timeAgo(item.created_at)}
+                    </p>
+                  </div>
+                  <span className={`material-symbols-outlined ${styles.objectChevron}`}>chevron_right</span>
+                </Link>
               ))}
             </div>
           ) : (
