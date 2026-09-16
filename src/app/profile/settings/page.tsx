@@ -4,6 +4,7 @@ import type { ReactNode } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import BottomNav from "@/components/BottomNav";
+import TwoFactorAuthSection from "@/components/profile/TwoFactorAuthSection";
 import { signOut } from "@/lib/auth";
 
 function Row({ icon, label, href }: { icon: string; label: string; href?: string }) {
@@ -66,8 +67,9 @@ export default function SettingsPage() {
           <Row icon="devices" label="Connexion et appareils" />
         </Section>
 
+        <TwoFactorAuthSection />
+
         <Section title="Confidentialité">
-          <Row icon="lock" label="Confidentialité & Sécurité" href="/profile/privacy" />
           <Row icon="assignment_turned_in" label="Autorisations" />
           <Row icon="privacy_tip" label="Données personnelles (RGPD)" href="/rgpd" />
         </Section>
