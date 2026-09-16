@@ -133,7 +133,18 @@ export async function changePassword(currentPassword: string, newPassword: strin
   const { error: reauthError } = await supabase.auth.signInWithPassword({ email: user.email, password: currentPassword });
   if (reauthError) return { error: { message: "Mot de passe actuel incorrect." } };
 
-  return supabase.auth.updateUser({ password: newPassword });
+  const result = await supabase.auth.updateUser({ password: newPassword });
+
+  // Both signInWithPassword and updateUser just wrote a fresh session cookie
+  // through the same forced-400-day-Max-Age storage adapter as the original
+  // login — redo the rewrite if this account opted out of persistence, or
+  // changing your password would silently re-persist a "remember me"
+  // unchecked session.
+  try {
+    if (!result.error && localStorage.getItem(REMEMBER_KEY) === "false") forgetAuthCookiesOnClose();
+  } catch {}
+
+  return result;
 }
 
 export async function signUpWithPassword(email: string, password: string, metadata: Record<string, unknown>) {
