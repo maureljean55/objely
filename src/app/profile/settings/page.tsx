@@ -66,7 +66,6 @@ export default function SettingsPage() {
         <TwoFactorAuthSection />
 
         <Section title="Confidentialité">
-          <Row icon="assignment_turned_in" label="Autorisations" />
           <Row icon="privacy_tip" label="Données personnelles (RGPD)" href="/rgpd" />
         </Section>
 
