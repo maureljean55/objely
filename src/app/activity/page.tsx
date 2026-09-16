@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import Image from "next/image";
+import { redirect } from "next/navigation";
 import BottomNav from "@/components/BottomNav";
 import { createClient } from "@/lib/supabase/server";
 import type { Item } from "@/lib/supabase/items";
@@ -48,14 +49,18 @@ export default async function ActivityPage({ searchParams }: { searchParams: Pro
     data: { session },
   } = await supabase.auth.getSession();
   const user = session?.user ?? null;
+  // Previously rendered a silently-empty activity list for a signed-out
+  // visitor instead of sending them to log in — not a data leak (nothing
+  // loads without a session), but inconsistent with what this page implies.
+  if (!user) {
+    redirect(`/login?next=${encodeURIComponent(`/activity${filter === "all" ? "" : `?filter=${filter}`}`)}`);
+  }
 
-  const { data: allMatches } = user
-    ? await supabase
-        .from("matches")
-        .select("id, match_percent, status, created_at, lost_item:items!matches_lost_item_id_fkey(*), found_item:items!matches_found_item_id_fkey(*)")
-        .order("created_at", { ascending: false })
-        .returns<MatchRow[]>()
-    : { data: [] as MatchRow[] };
+  const { data: allMatches } = await supabase
+    .from("matches")
+    .select("id, match_percent, status, created_at, lost_item:items!matches_lost_item_id_fkey(*), found_item:items!matches_found_item_id_fkey(*)")
+    .order("created_at", { ascending: false })
+    .returns<MatchRow[]>();
 
   // Hide matches referencing an item either side has since soft-deleted —
   // the declaration no longer exists to its owner, so it shouldn't keep
