@@ -50,12 +50,16 @@ export const viewport: Viewport = {
   viewportFit: "cover",
 };
 
+// No manual toggle or stored override — the app always mirrors the OS
+// setting, including a live change (e.g. the phone's scheduled dark mode
+// kicking in) while the app is already open, not just on next load.
 const THEME_INIT_SCRIPT = `
 (function () {
   try {
-    var stored = localStorage.getItem("objely-theme");
-    var dark = stored ? stored === "dark" : window.matchMedia("(prefers-color-scheme: dark)").matches;
-    document.documentElement.classList.toggle("dark", dark);
+    var mql = window.matchMedia("(prefers-color-scheme: dark)");
+    var apply = function () { document.documentElement.classList.toggle("dark", mql.matches); };
+    apply();
+    mql.addEventListener("change", apply);
   } catch (e) {}
 })();
 `;

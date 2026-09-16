@@ -4,7 +4,6 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import BottomNav from "@/components/BottomNav";
-import ThemeToggle from "@/components/ThemeToggle";
 import { getCurrentUser } from "@/lib/auth";
 import { getMyItemStats, type MyItemStats } from "@/lib/supabase/items";
 import { getMyProfile } from "@/lib/supabase/profile";
@@ -221,8 +220,6 @@ export default function UserProfilePage() {
                 <span className="material-symbols-outlined text-outline-variant">chevron_right</span>
               </Link>
             ))}
-
-            <ThemeToggle />
 
             {MENU_ITEMS_BOTTOM.map((item, i) => {
               const rowClassName = `w-full flex items-center justify-between p-lg text-left hover:bg-black/[0.02] transition-colors ${
