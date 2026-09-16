@@ -149,6 +149,21 @@ export default async function HomeDashboardPage({
               peut faire une
               <br />
               grande différence
+              <svg className={styles.helperHeart} viewBox="0 0 24 24" fill="none">
+                <path
+                  d="M12 20C12 20 3 14 3 8.5C3 5.5 5.3 3.5 8 3.5C9.8 3.5 11.2 4.5 12 5.8C12.8 4.5 14.2 3.5 16 3.5C18.7 3.5 21 5.5 21 8.5C21 14 12 20 12 20Z"
+                  stroke="url(#helperHeartGradient)"
+                  strokeWidth="1.8"
+                  strokeLinejoin="round"
+                  strokeLinecap="round"
+                />
+                <defs>
+                  <linearGradient id="helperHeartGradient" x1="3" y1="3" x2="21" y2="20">
+                    <stop stopColor="#087be8" />
+                    <stop offset="1" stopColor="#a34ee9" />
+                  </linearGradient>
+                </defs>
+              </svg>
             </p>
           </div>
           <p>Perds un objet. Retrouve-le. Ou aide les autres&nbsp;!</p>
