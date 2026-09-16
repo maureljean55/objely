@@ -1,5 +1,5 @@
 import { createClient } from "@/lib/supabase/client";
-import { notifyOtherParticipant } from "@/lib/supabase/messages";
+import { notifyMatchParticipant } from "@/lib/supabase/notifications";
 
 export type AppointmentStatus = "pending" | "accepted" | "declined";
 
@@ -34,13 +34,7 @@ export async function proposeAppointment(matchId: string, date: string, time: st
     .from("messages")
     .insert({ match_id: matchId, sender_id: user.id, kind: "restitution_proposal", restitution_appointment_id: appointment.id });
 
-  await notifyOtherParticipant(
-    matchId,
-    user.id,
-    "Un rendez-vous de restitution vous a été proposé.",
-    "restitution_proposed",
-    "Rendez-vous proposé",
-  );
+  await notifyMatchParticipant(matchId, "restitution_proposed");
 
   return { data: appointment, error: null };
 }
@@ -59,15 +53,7 @@ export async function respondToAppointment(appointmentId: string, matchId: strin
     .select()
     .single<RestitutionAppointment>();
 
-  if (!result.error) {
-    await notifyOtherParticipant(
-      matchId,
-      user.id,
-      accept ? "Votre rendez-vous de restitution a été accepté." : "Votre rendez-vous de restitution a été refusé.",
-      "restitution_responded",
-      accept ? "Rendez-vous accepté" : "Rendez-vous refusé",
-    );
-  }
+  if (!result.error) await notifyMatchParticipant(matchId, "restitution_responded", { accepted: accept });
 
   return result;
 }
@@ -104,9 +90,7 @@ export async function confirmRestitution(matchId: string) {
   const { data, error } = await supabase.rpc("confirm_restitution", { p_match_id: matchId });
   if (error) return { bothConfirmed: false, error };
 
-  if (data === true) {
-    await notifyOtherParticipant(matchId, user.id, "La restitution de l'objet est confirmée des deux côtés !", "restitution_confirmed", "Restitution confirmée");
-  }
+  if (data === true) await notifyMatchParticipant(matchId, "restitution_confirmed");
 
   return { bothConfirmed: data === true, error: null };
 }

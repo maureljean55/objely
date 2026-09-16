@@ -22,30 +22,32 @@ export type AppNotification = {
   created_at: string;
 };
 
-export async function createNotification(
-  userId: string,
-  type: NotificationType,
-  title: string,
-  body: string,
+/**
+ * Notifies the other participant of a match event. Title/body are computed
+ * server-side (notify_match_participant, security definer) from real match
+ * data for every type except "message" — where messagePreview echoes what
+ * was actually just sent, not arbitrary text. This is the only way to write
+ * a match notification; there's no client-facing INSERT policy on
+ * `notifications` for match rows anymore, so content can't be forged.
+ */
+export async function notifyMatchParticipant(
   matchId: string,
+  type: NotificationType,
+  options?: { messagePreview?: string; accepted?: boolean },
 ) {
   const supabase = createClient();
-  return supabase.from("notifications").insert({ user_id: userId, type, title, body, match_id: matchId });
+  return supabase.rpc("notify_match_participant", {
+    p_match_id: matchId,
+    p_type: type,
+    p_message_preview: options?.messagePreview ?? null,
+    p_accepted: options?.accepted ?? null,
+  });
 }
 
-export async function notifyMatchParticipants(
-  lostUserId: string,
-  foundUserId: string,
-  type: NotificationType,
-  title: string,
-  body: string,
-  matchId: string,
-) {
+/** Notifies both sides of a newly-created match — same server-side content guarantee as notifyMatchParticipant. */
+export async function notifyMatchCreated(matchId: string) {
   const supabase = createClient();
-  await supabase.from("notifications").insert([
-    { user_id: lostUserId, type, title, body, match_id: matchId },
-    { user_id: foundUserId, type, title, body, match_id: matchId },
-  ]);
+  return supabase.rpc("notify_match_created", { p_match_id: matchId });
 }
 
 export async function listMyNotifications() {

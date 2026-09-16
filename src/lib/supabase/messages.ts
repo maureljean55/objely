@@ -1,6 +1,6 @@
 import { createClient } from "@/lib/supabase/client";
 import type { Item } from "@/lib/supabase/items";
-import { createNotification, type NotificationType } from "@/lib/supabase/notifications";
+import { notifyMatchParticipant } from "@/lib/supabase/notifications";
 
 export type Message = {
   id: string;
@@ -84,19 +84,6 @@ export async function listMyConversations() {
   return { data: conversations, error: null };
 }
 
-export async function notifyOtherParticipant(
-  matchId: string,
-  senderId: string,
-  notifBody: string,
-  type: NotificationType = "message",
-  title = "Nouveau message",
-) {
-  const { data: match } = await getMatch(matchId);
-  if (!match) return;
-  const recipientId = match.lost_item.user_id === senderId ? match.found_item.user_id : match.lost_item.user_id;
-  await createNotification(recipientId, type, title, notifBody, matchId);
-}
-
 export async function sendMessage(matchId: string, body: string, replyToId: string | null = null) {
   const supabase = createClient();
   const { data: { session } } = await supabase.auth.getSession();
@@ -109,7 +96,7 @@ export async function sendMessage(matchId: string, body: string, replyToId: stri
     .select()
     .single<Message>();
 
-  if (!result.error) await notifyOtherParticipant(matchId, user.id, body.slice(0, 120));
+  if (!result.error) await notifyMatchParticipant(matchId, "message", { messagePreview: body });
 
   return result;
 }
@@ -126,7 +113,7 @@ export async function sendVoiceMessage(matchId: string, voiceUrl: string, replyT
     .select()
     .single<Message>();
 
-  if (!result.error) await notifyOtherParticipant(matchId, user.id, "Note vocale");
+  if (!result.error) await notifyMatchParticipant(matchId, "message", { messagePreview: "Note vocale" });
 
   return result;
 }

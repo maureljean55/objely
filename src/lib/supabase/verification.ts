@@ -1,5 +1,5 @@
 import { createClient } from "@/lib/supabase/client";
-import { createNotification } from "@/lib/supabase/notifications";
+import { notifyMatchParticipant } from "@/lib/supabase/notifications";
 import { getMatch } from "@/lib/supabase/messages";
 
 export type MatchVerification = {
@@ -28,18 +28,7 @@ export async function submitVerificationAnswers(matchId: string, brandAnswer: st
     .select()
     .single<MatchVerification>();
 
-  if (!result.error) {
-    const { data: match } = await getMatch(matchId);
-    if (match) {
-      await createNotification(
-        match.found_item.user_id,
-        "verification_submitted",
-        "Réponses de vérification reçues",
-        `Le déclarant a répondu aux questions pour "${match.found_item.title}". Vérifiez ses réponses.`,
-        matchId,
-      );
-    }
-  }
+  if (!result.error) await notifyMatchParticipant(matchId, "verification_submitted");
 
   return result;
 }
@@ -64,24 +53,13 @@ export async function getLatestVerification(matchId: string) {
 // confirmRestitution(), not the moment identity is verified.
 export async function resolveMatch(matchId: string, approved: boolean) {
   const supabase = createClient();
-  const { data: match } = await getMatch(matchId);
-  if (!match) return { error: new Error("Correspondance introuvable.") };
-
   const { error } = await supabase.rpc("resolve_match", { p_match_id: matchId, p_approved: approved });
 
-  if (!error) {
-    // Only the person who lost the item needs telling — the finder is the
-    // one who just took this action, so notifying them back would be noise.
-    await createNotification(
-      match.lost_item.user_id,
-      approved ? "verification_confirmed" : "verification_rejected",
-      approved ? "Correspondance confirmée !" : "Correspondance refusée",
-      approved
-        ? `Votre correspondance pour "${match.lost_item.title}" est confirmée. Discutez avec le trouveur pour organiser la restitution.`
-        : `La correspondance pour "${match.lost_item.title}" a été refusée.`,
-      matchId,
-    );
-  }
+  // Only the person who lost the item needs telling — the finder is the one
+  // who just took this action, so notifying them back would be noise.
+  // notify_match_participant always targets "the other participant", which
+  // from the finder's own call here is exactly the lost-item owner.
+  if (!error) await notifyMatchParticipant(matchId, approved ? "verification_confirmed" : "verification_rejected");
 
   return { error };
 }

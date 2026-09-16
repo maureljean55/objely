@@ -1,7 +1,7 @@
 import { createClient } from "@/lib/supabase/client";
 import type { DeclarationDraft } from "@/lib/declarationDraft";
 import type { Item, ItemType } from "@/lib/supabase/items";
-import { notifyMatchParticipants } from "@/lib/supabase/notifications";
+import { notifyMatchCreated } from "@/lib/supabase/notifications";
 
 const MATCH_THRESHOLD = 45;
 
@@ -125,14 +125,7 @@ export async function createMatch(lostItem: MatchParty, foundItem: MatchParty, m
   if (!error && match) {
     await Promise.all([
       supabase.from("items").update({ status: "matched" }).in("id", [lostItem.id, foundItem.id]),
-      notifyMatchParticipants(
-        lostItem.user_id,
-        foundItem.user_id,
-        "match",
-        "Une correspondance a été trouvée !",
-        `"${lostItem.title}" pourrait correspondre à "${foundItem.title}".`,
-        match.id,
-      ),
+      notifyMatchCreated(match.id),
     ]);
   }
 
