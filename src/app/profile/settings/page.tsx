@@ -58,10 +58,6 @@ export default function SettingsPage() {
       </header>
 
       <main className="max-w-[800px] mx-auto pt-[calc(5rem+env(safe-area-inset-top))] pb-8 px-container-margin flex flex-col gap-lg">
-        <Section title="Préférences">
-          <Row icon="language" label="Langue" />
-        </Section>
-
         <Section title="Sécurité">
           <Row icon="key" label="Mot de passe" />
           <Row icon="devices" label="Connexion et appareils" />
