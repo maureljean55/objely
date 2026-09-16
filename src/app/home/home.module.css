@@ -13,6 +13,31 @@
    short fixed header and this full-viewport layer render identical
    pixels at the same screen coordinates. */
 .page {
+  /* Neutral tokens this page's own (non-Tailwind) styles read — everything
+     here was originally hardcoded to the light mockup's palette, so dark
+     mode had no effect on it at all. Accent/brand gradients (the blue and
+     purple used on buttons, badges, icon tiles) are left as literal colors
+     throughout the file on purpose: they're already saturated with white
+     text on top and read fine unchanged in both themes — only neutral
+     surfaces and body text need a dark counterpart. */
+  --home-page-close: #f7f9ff;
+  --home-heading: #122653;
+  --home-text: #263556;
+  --home-text-muted: #8a93a8;
+  --home-text-muted-2: #6b7590;
+  --home-icon-muted: #b7bfd6;
+  --home-icon-faint: #c7cede;
+  --home-card: #ffffff;
+  --home-card-2: #f8f7ff;
+  --home-card-tip-2: #eef1ff;
+  --home-card-tip-3: #e7defc;
+  --home-glass: rgba(255, 255, 255, 0.94);
+  --home-glass-2: rgba(255, 255, 255, 0.28);
+  --home-glass-border: rgba(255, 255, 255, 0.5);
+  --home-banner-1: #fff2e9;
+  --home-banner-2: #edf5ff;
+  --home-banner-3: #e8ddff;
+
   position: relative;
   isolation: isolate;
   min-height: 100vh;
@@ -20,8 +45,28 @@
      through everywhere, not just behind the header — same light glow for
      the whole scroll, not only its top ~460px. */
   background: transparent;
-  color: #263556;
+  color: var(--home-text);
   font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Segoe UI", Arial, sans-serif;
+}
+
+:global(.dark) .page {
+  --home-page-close: #0f1014;
+  --home-heading: #eef0f6;
+  --home-text: #d7dae2;
+  --home-text-muted: #9aa0b4;
+  --home-text-muted-2: #a3a9bd;
+  --home-icon-muted: #6d7284;
+  --home-icon-faint: #565a6b;
+  --home-card: #1c1d24;
+  --home-card-2: #20222b;
+  --home-card-tip-2: #21232f;
+  --home-card-tip-3: #26212f;
+  --home-glass: rgba(28, 29, 36, 0.88);
+  --home-glass-2: rgba(255, 255, 255, 0.08);
+  --home-glass-border: rgba(255, 255, 255, 0.12);
+  --home-banner-1: #2b2420;
+  --home-banner-2: #1c232f;
+  --home-banner-3: #241f2f;
 }
 
 .page::before {
@@ -33,7 +78,7 @@
   background:
     radial-gradient(circle 460px at 50% 0px, rgba(56, 211, 255, 0.32) 0%, transparent 70%),
     radial-gradient(circle 380px at 100% 140px, rgba(145, 115, 255, 0.18) 0%, transparent 70%),
-    #f7f9ff;
+    var(--home-page-close);
 }
 
 /* =========================
@@ -72,7 +117,7 @@
   background:
     radial-gradient(circle 460px at 50% 0px, rgba(56, 211, 255, 0.32) 0%, transparent 70%),
     radial-gradient(circle 380px at 100% 140px, rgba(145, 115, 255, 0.18) 0%, transparent 70%),
-    #f7f9ff;
+    var(--home-page-close);
   box-shadow: 0 0 0 rgba(20, 40, 80, 0);
   transition: padding 0.25s ease, box-shadow 0.25s ease, background-color 0.25s ease;
 }
@@ -100,7 +145,7 @@
   justify-content: center;
   border: none;
   border-radius: 50%;
-  background: rgba(255, 255, 255, 0.94);
+  background: var(--home-glass);
   color: #4f7cfb;
   box-shadow: 0 8px 25px rgba(40, 70, 130, 0.1);
   cursor: pointer;
@@ -110,9 +155,9 @@
 .circleButton {
   width: 52px;
   height: 52px;
-  border: 1px solid rgba(255, 255, 255, 0.5);
+  border: 1px solid var(--home-glass-border);
   border-radius: 50%;
-  background: rgba(255, 255, 255, 0.28);
+  background: var(--home-glass-2);
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
   box-shadow: inset 0 1px 1px rgba(255, 255, 255, 0.6), 0 6px 16px rgba(40, 70, 130, 0.1);
@@ -122,7 +167,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  color: #263556;
+  color: var(--home-text);
   transition: width 0.25s ease, height 0.25s ease, font-size 0.25s ease;
 }
 
@@ -205,7 +250,7 @@
   font-size: 28px;
   line-height: 1.12;
   letter-spacing: -1px;
-  color: #122653;
+  color: var(--home-heading);
 }
 
 .hero h1 strong {
@@ -410,7 +455,7 @@
   border-radius: 28px;
   padding: 16px;
   margin: 18px 0 0;
-  background: linear-gradient(150deg, #ffffff 0%, #eef1ff 45%, #e7defc 100%);
+  background: linear-gradient(150deg, var(--home-card) 0%, var(--home-card-tip-2) 45%, var(--home-card-tip-3) 100%);
   box-shadow:
     0 18px 38px -14px rgba(79, 70, 229, 0.3),
     0 3px 10px rgba(40, 70, 130, 0.06),
@@ -434,7 +479,7 @@
   flex-shrink: 0;
   padding: 6px 14px;
   border-radius: 999px;
-  background: white;
+  background: var(--home-card);
   color: #6650e8;
   font-size: 12px;
   font-weight: 700;
@@ -459,7 +504,7 @@
   gap: 6px;
   font-size: 12.5px;
   line-height: 1.35;
-  color: #6b7590;
+  color: var(--home-text-muted-2);
 }
 
 .tipList .material-symbols-outlined {
@@ -534,7 +579,7 @@
   align-items: center;
   gap: 12px;
   padding: 14px;
-  background: linear-gradient(150deg, #ffffff 0%, #f8f7ff 100%);
+  background: linear-gradient(150deg, var(--home-card) 0%, var(--home-card-2) 100%);
   border-radius: 20px;
   box-shadow:
     0 12px 28px -10px rgba(79, 70, 229, 0.22),
@@ -572,14 +617,14 @@
 .activityBody h3 {
   font-size: 14px;
   font-weight: 800;
-  color: #122653;
+  color: var(--home-heading);
   margin-bottom: 2px;
 }
 
 .activityBody p {
   font-size: 12px;
   line-height: 1.35;
-  color: #8a93a8;
+  color: var(--home-text-muted);
   overflow: hidden;
   text-overflow: ellipsis;
   display: -webkit-box;
@@ -592,7 +637,7 @@
   display: flex;
   align-items: center;
   gap: 6px;
-  color: #8a93a8;
+  color: var(--home-text-muted);
   font-size: 11px;
   font-weight: 600;
 }
@@ -607,7 +652,7 @@
 
 .activityMeta .material-symbols-outlined {
   font-size: 18px;
-  color: #b7bfd6;
+  color: var(--home-icon-muted);
 }
 
 /* =========================
@@ -652,7 +697,7 @@
   font-size: 16px;
   font-weight: 800;
   letter-spacing: -0.3px;
-  color: #122653;
+  color: var(--home-heading);
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -694,7 +739,7 @@
   gap: 12px;
   min-width: 230px;
   padding: 12px;
-  background: white;
+  background: var(--home-card);
   border-radius: 20px;
   box-shadow: 0 8px 22px rgba(30, 60, 120, 0.08);
 }
@@ -725,7 +770,7 @@
 .objectInfo h3 {
   font-size: 14px;
   font-weight: 800;
-  color: #122653;
+  color: var(--home-heading);
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -737,7 +782,7 @@
   gap: 4px;
   margin-top: 3px;
   font-size: 11px;
-  color: #8a93a8;
+  color: var(--home-text-muted);
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -746,13 +791,13 @@
 .objectMetaRow .material-symbols-outlined {
   flex-shrink: 0;
   font-size: 14px;
-  color: #b7bfd6;
+  color: var(--home-icon-muted);
 }
 
 .objectChevron {
   flex-shrink: 0;
   font-size: 20px;
-  color: #c7cede;
+  color: var(--home-icon-faint);
 }
 
 /* =========================
@@ -768,13 +813,13 @@
   padding: 14px;
   min-height: 105px;
   border-radius: 27px;
-  background: linear-gradient(100deg, #fff2e9, #edf5ff, #e8ddff);
+  background: linear-gradient(100deg, var(--home-banner-1), var(--home-banner-2), var(--home-banner-3));
 }
 
 .bannerMessage {
   font-size: 12px;
   line-height: 1.4;
-  color: #172d61;
+  color: var(--home-heading);
   font-weight: 700;
 }
 
