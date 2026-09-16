@@ -54,6 +54,14 @@ function OwnershipVerificationContent() {
     );
   }
 
+  if (!match && !submitted) {
+    return (
+      <div className="bg-background min-h-screen flex items-center justify-center">
+        <span className="w-8 h-8 border-4 border-primary-container/30 border-t-primary rounded-full animate-spin" />
+      </div>
+    );
+  }
+
   if (match && match.status !== "pending" && !submitted) {
     return (
       <div className="bg-background text-on-surface antialiased min-h-screen flex flex-col items-center justify-center px-container-margin text-center gap-3">

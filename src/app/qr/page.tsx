@@ -15,6 +15,7 @@ export default function QrConnectPage() {
   const [mode, setMode] = useState<"code" | "scan">("code");
   const [userId, setUserId] = useState<string | null>(null);
   const [loggedOut, setLoggedOut] = useState(false);
+  const [authChecked, setAuthChecked] = useState(false);
   const [qrDataUrl, setQrDataUrl] = useState<string | null>(null);
   const [showNumber, setShowNumber] = useState(false);
   const [confirmOpen, setConfirmOpen] = useState(false);
@@ -25,10 +26,12 @@ export default function QrConnectPage() {
     getMyProfile().then(({ data }) => {
       if (!data) {
         setLoggedOut(true);
+        setAuthChecked(true);
         return;
       }
       setUserId(data.id);
       setShowNumber(data.share_phone);
+      setAuthChecked(true);
     });
   }, []);
 
@@ -85,7 +88,11 @@ export default function QrConnectPage() {
       </header>
 
       <main className="pt-[calc(88px+env(safe-area-inset-top))] px-container-margin max-w-md mx-auto">
-        {loggedOut ? (
+        {!authChecked ? (
+          <div className="flex justify-center pt-xl">
+            <span className="w-8 h-8 border-4 border-primary-container/30 border-t-primary rounded-full animate-spin" />
+          </div>
+        ) : loggedOut ? (
           <div className="flex flex-col items-center text-center gap-md pt-xl">
             <span className="material-symbols-outlined text-primary text-[56px]">qr_code_2</span>
             <p className="font-body-md text-body-md text-on-surface-variant max-w-xs">
