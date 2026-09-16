@@ -75,7 +75,7 @@ export default async function HomeDashboardPage({
           .select("*")
           .eq("user_id", user.id)
           .order("created_at", { ascending: false })
-          .limit(3)
+          .limit(1)
           .returns<AppNotification[]>(),
       ])
     : [{ count: 0 }, { count: 0 }, { data: null }, { data: [] as AppNotification[] }];
