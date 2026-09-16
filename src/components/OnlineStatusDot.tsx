@@ -7,7 +7,12 @@ export default function OnlineStatusDot({ className }: { className: string }) {
   const [online, setOnline] = useState(true);
 
   useEffect(() => {
-    setOnline(navigator.onLine);
+    // Not reading navigator.onLine here: it's notoriously unreliable (can
+    // report false on load in some mobile browsers/webviews even with a
+    // real connection) and, with nothing else to correct it, would leave
+    // the dot stuck hidden. The explicit offline/online events are what
+    // actually fire on real connectivity changes, so those drive state
+    // instead — starting from the optimistic "online" default above.
     const handleOnline = () => setOnline(true);
     const handleOffline = () => setOnline(false);
     window.addEventListener("online", handleOnline);
