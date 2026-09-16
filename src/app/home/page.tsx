@@ -144,11 +144,17 @@ export default async function HomeDashboardPage({
               <strong>objets retrouvés&nbsp;!</strong>
             </h1>
             <p className={styles.helperNote} aria-hidden="true">
+              <svg className={styles.helperArc} viewBox="0 0 20 20" fill="none">
+                <path d="M18 18C18 8 12 2 2 2" stroke="url(#helperAccentGradient)" strokeWidth="1.8" strokeLinecap="round" />
+              </svg>
               Une petite aide
               <br />
               peut faire une
               <br />
               grande différence
+              <svg className={styles.helperTick} viewBox="0 0 20 20" fill="none">
+                <path d="M4 16L16 4" stroke="url(#helperAccentGradient)" strokeWidth="1.8" strokeLinecap="round" />
+              </svg>
               <svg className={styles.helperHeart} viewBox="0 0 24 24" fill="none">
                 <path
                   d="M12 20C12 20 3 14 3 8.5C3 5.5 5.3 3.5 8 3.5C9.8 3.5 11.2 4.5 12 5.8C12.8 4.5 14.2 3.5 16 3.5C18.7 3.5 21 5.5 21 8.5C21 14 12 20 12 20Z"
@@ -157,8 +163,14 @@ export default async function HomeDashboardPage({
                   strokeLinejoin="round"
                   strokeLinecap="round"
                 />
+              </svg>
+              <svg width="0" height="0" style={{ position: "absolute" }}>
                 <defs>
-                  <linearGradient id="helperHeartGradient" x1="3" y1="3" x2="21" y2="20">
+                  <linearGradient id="helperAccentGradient" x1="0" y1="0" x2="20" y2="20" gradientUnits="userSpaceOnUse">
+                    <stop stopColor="#087be8" />
+                    <stop offset="1" stopColor="#a34ee9" />
+                  </linearGradient>
+                  <linearGradient id="helperHeartGradient" x1="3" y1="3" x2="21" y2="20" gradientUnits="userSpaceOnUse">
                     <stop stopColor="#087be8" />
                     <stop offset="1" stopColor="#a34ee9" />
                   </linearGradient>
@@ -166,7 +178,7 @@ export default async function HomeDashboardPage({
               </svg>
             </p>
           </div>
-          <p>Perds un objet. Retrouve-le. Ou aide les autres&nbsp;!</p>
+          <p>Perds un objet. Retrouve-le. Ou aide quelqu&apos;un à retrouver le sien&nbsp;!</p>
         </section>
 
         {/* Actions */}

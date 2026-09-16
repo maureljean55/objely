@@ -201,6 +201,7 @@
 /* Specificity needs to beat .hero p (margin/max-width/color meant for the
    body copy below) since this is also a <p>, nested under .hero. */
 .hero .helperNote {
+  position: relative;
   flex-shrink: 0;
   margin: 4px 0 0;
   max-width: none;
@@ -225,9 +226,25 @@
   margin: 2px 6px 0 auto;
 }
 
+.helperArc {
+  position: absolute;
+  top: -20px;
+  left: -18px;
+  width: 22px;
+  height: 22px;
+}
+
+.helperTick {
+  position: absolute;
+  bottom: 8px;
+  left: -22px;
+  width: 16px;
+  height: 16px;
+}
+
 .hero p {
   max-width: 320px;
-  margin-top: 16px;
+  margin-top: 6px;
   font-size: 15px;
   line-height: 1.5;
   color: #69758e;
