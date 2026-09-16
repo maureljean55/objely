@@ -53,9 +53,19 @@ export default function CookieBanner() {
               boxShadow: "0 10px 18px -6px rgba(101, 80, 232, 0.55)",
             }}
           >
-            <span className="material-symbols-outlined text-[20px]" style={{ fontVariationSettings: "'FILL' 1" }}>
-              cookie
-            </span>
+            <svg width="20" height="20" viewBox="0 0 24 24" aria-hidden="true">
+              <path
+                d="M21 12.4c-1.4.2-2.8-.5-3.5-1.8a3.3 3.3 0 0 1-4-2.4A3.3 3.3 0 0 1 9.8 4C10.5 2.8 11.7 2 13 2a9 9 0 1 1-9 9c0-.3 0-.7.05-1a3.2 3.2 0 0 0 3.9-2.4"
+                fill="none"
+                stroke="white"
+                strokeWidth="1.8"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              />
+              <circle cx="9" cy="13" r="1.15" fill="white" />
+              <circle cx="13.2" cy="15.8" r="1" fill="white" />
+              <circle cx="14.5" cy="11.2" r="0.85" fill="white" />
+            </svg>
           </span>
           <p className="font-body-md text-body-md text-on-surface-variant pt-1">
             Objely utilise des cookies nécessaires au fonctionnement du service. Consultez notre{" "}
