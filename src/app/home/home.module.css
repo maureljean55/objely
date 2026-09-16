@@ -73,6 +73,17 @@
     radial-gradient(circle 460px at 50% 0px, rgba(56, 211, 255, 0.32) 0%, transparent 70%),
     radial-gradient(circle 380px at 100% 140px, rgba(145, 115, 255, 0.18) 0%, transparent 70%),
     #f7f9ff;
+  box-shadow: 0 0 0 rgba(20, 40, 80, 0);
+  transition: padding 0.25s ease, box-shadow 0.25s ease, background-color 0.25s ease;
+}
+
+/* Compact state once the page scrolls past COMPACT_THRESHOLD (HomeHeader.tsx)
+   — tighter padding and smaller controls read as a condensed app bar, with
+   a soft shadow standing in for the glow (mostly scrolled out of view by
+   then) to keep the bar visually separated from content. */
+.headerCompact {
+  padding: calc(9px + env(safe-area-inset-top)) 18px 9px;
+  box-shadow: 0 6px 20px rgba(20, 40, 80, 0.1);
 }
 
 .headerRight {
@@ -89,6 +100,7 @@
   background: rgba(255, 255, 255, 0.94);
   box-shadow: 0 8px 25px rgba(40, 70, 130, 0.1);
   cursor: pointer;
+  transition: width 0.25s ease, height 0.25s ease;
 }
 
 .circleButton {
@@ -107,6 +119,17 @@
   align-items: center;
   justify-content: center;
   color: #263556;
+  transition: width 0.25s ease, height 0.25s ease, font-size 0.25s ease;
+}
+
+.headerCompact .profileButton,
+.headerCompact .circleButton {
+  width: 40px;
+  height: 40px;
+}
+
+.headerCompact .circleButton {
+  font-size: 18px;
 }
 
 .notificationDot {

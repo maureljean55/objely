@@ -2,6 +2,7 @@ import Link from "next/link";
 import Image from "next/image";
 import BottomNav from "@/components/BottomNav";
 import MessagesFab from "@/components/MessagesFab";
+import HomeHeader from "@/components/home/HomeHeader";
 import { createClient } from "@/lib/supabase/server";
 import { listRecentFinds } from "@/lib/supabase/publicFeed";
 import type { AppNotification } from "@/lib/supabase/notifications";
@@ -124,27 +125,7 @@ export default async function HomeDashboardPage({
       </header>
 
       <div className={`${styles.app} md:hidden`}>
-        {/* Header */}
-        <header className={styles.header}>
-          <Link href="/profile" aria-label="Profil" className={styles.profileButton}>
-            {profile?.avatar_url ? (
-              <Image src={profile.avatar_url} alt="Profil" width={52} height={52} />
-            ) : (
-              <span className="material-symbols-outlined" style={{ fontSize: 24 }}>person</span>
-            )}
-          </Link>
-
-          <div className={styles.headerRight}>
-            <Link href="/notifications" aria-label="Notifications" className={styles.circleButton}>
-              <span className="material-symbols-outlined">notifications</span>
-              {!!unreadCount && <i className={styles.notificationDot} />}
-            </Link>
-
-            <Link href="/qr" aria-label="Scanner un QR code" className={styles.circleButton}>
-              <span className="material-symbols-outlined">qr_code_scanner</span>
-            </Link>
-          </div>
-        </header>
+        <HomeHeader avatarUrl={profile?.avatar_url ?? null} unreadCount={unreadCount ?? 0} />
 
         {welcome === "1" && (
           <div className="flex items-center gap-3 rounded-2xl bg-emerald-50 border border-emerald-200/60 px-4 py-3 mb-lg animate-fadeIn">
