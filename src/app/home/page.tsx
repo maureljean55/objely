@@ -246,6 +246,56 @@ export default async function HomeDashboardPage({
           </Link>
         </section>
 
+        {/* Conseils de sécurité */}
+        <section className={styles.tipCard}>
+          <div className={styles.tipGlow} aria-hidden="true" />
+          <div className={styles.tipHeader}>
+            <div className={styles.tipLabel}>
+              <span className={styles.tipLabelIcon}>
+                <span className="material-symbols-outlined" style={{ fontVariationSettings: "'FILL' 1" }}>
+                  shield
+                </span>
+              </span>
+              <span>Votre sécurité</span>
+            </div>
+            <span className={styles.tipPill}>Conseil</span>
+          </div>
+
+          <div className={styles.tipBody}>
+            <h2>Restez prudent lors d&apos;un échange</h2>
+            <p>
+              Privilégiez toujours un lieu public pour remettre ou récupérer un objet, et ne communiquez jamais vos
+              coordonnées bancaires ou mots de passe.
+            </p>
+            <Link href="/help" className={styles.tipButton}>
+              Voir les conseils
+              <span className="material-symbols-outlined">arrow_forward</span>
+            </Link>
+          </div>
+
+          <div className={styles.tipIllustration} aria-hidden="true">
+            <svg className={styles.tipSparkles} viewBox="0 0 32 32" fill="url(#tipSparkleGradient)">
+              <path d="M13 2C13 10 15 14 22 16C15 18 13 22 13 30C13 22 11 18 4 16C11 14 13 10 13 2Z" />
+              <defs>
+                <linearGradient id="tipSparkleGradient" x1="4" y1="2" x2="22" y2="30" gradientUnits="userSpaceOnUse">
+                  <stop stopColor="#4f7cfb" />
+                  <stop offset="1" stopColor="#8b5cf6" />
+                </linearGradient>
+              </defs>
+            </svg>
+            <span className={styles.tipIconTile}>
+              <span className="material-symbols-outlined" style={{ fontVariationSettings: "'FILL' 1" }}>
+                lock
+              </span>
+            </span>
+            <span className={styles.tipNote}>
+              Votre sécurité
+              <br />
+              compte&nbsp;!
+            </span>
+          </div>
+        </section>
+
         {/* Activités récentes — vraies notifications */}
         {user && (
           <section>
