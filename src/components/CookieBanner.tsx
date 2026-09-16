@@ -27,7 +27,7 @@ export default function CookieBanner() {
     };
   }, [visible]);
 
-  const choose = (value: "accepted" | "rejected") => {
+  const choose = (value: "accepted" | "rejected" | "dismissed") => {
     setVisible(false);
     try {
       localStorage.setItem(STORAGE_KEY, value);
@@ -36,9 +36,7 @@ export default function CookieBanner() {
     }
   };
 
-  // Dismissing via the close button records no choice, so the banner
-  // returns on the next visit instead of silently counting as consent.
-  const dismiss = () => setVisible(false);
+  const dismiss = () => choose("dismissed");
 
   if (!visible) return null;
 
