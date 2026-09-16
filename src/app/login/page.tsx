@@ -3,7 +3,7 @@
 import { Suspense, useState, type FormEvent } from "react";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
-import { signInWithPassword } from "@/lib/auth";
+import { signInWithPassword, getMfaChallengeStatus, verifyMfaChallenge } from "@/lib/auth";
 
 const HEADER_HEIGHT = "calc(172px + env(safe-area-inset-top))";
 
@@ -29,8 +29,16 @@ function LoginForm() {
     const fromLink = searchParams.get("error");
     return fromLink ? friendlyAuthError(fromLink) : null;
   });
+  const [mfaFactorId, setMfaFactorId] = useState<string | null>(null);
+  const [mfaCode, setMfaCode] = useState("");
 
   const canSubmit = identifier.trim().length > 0 && password.length > 0 && !isSubmitting;
+
+  const proceedToApp = () => {
+    const next = searchParams.get("next");
+    router.push(next && next.startsWith("/") && !next.startsWith("//") ? next : "/home");
+    router.refresh();
+  };
 
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
@@ -50,9 +58,30 @@ function LoginForm() {
       return;
     }
 
-    const next = searchParams.get("next");
-    router.push(next && next.startsWith("/") && !next.startsWith("//") ? next : "/home");
-    router.refresh();
+    const { required, factorId } = await getMfaChallengeStatus();
+    if (required && factorId) {
+      setMfaFactorId(factorId);
+      setIsSubmitting(false);
+      return;
+    }
+
+    proceedToApp();
+  };
+
+  const handleMfaSubmit = async (e: FormEvent) => {
+    e.preventDefault();
+    if (!mfaFactorId || mfaCode.length < 6 || isSubmitting) return;
+    setIsSubmitting(true);
+    setError(null);
+
+    const { error: verifyError } = await verifyMfaChallenge(mfaFactorId, mfaCode, rememberMe);
+    if (verifyError) {
+      setError("Code incorrect. Réessayez.");
+      setIsSubmitting(false);
+      return;
+    }
+
+    proceedToApp();
   };
 
   return (
@@ -88,110 +117,158 @@ function LoginForm() {
         className="w-full max-w-md mx-auto px-container-margin pb-16 flex flex-col grow"
         style={{ paddingTop: HEADER_HEIGHT }}
       >
-        <h1 className="font-headline-lg-mobile text-headline-lg-mobile text-on-surface mb-2 mt-lg">Connectez-vous à Objely</h1>
-        <p className="font-body-md text-body-md text-on-surface-variant mb-xl">
-          Retrouvez vos objets et gérez vos déclarations en toute simplicité.
-        </p>
+        {mfaFactorId ? (
+          <>
+            <h1 className="font-headline-lg-mobile text-headline-lg-mobile text-on-surface mb-2 mt-lg">Vérification en deux étapes</h1>
+            <p className="font-body-md text-body-md text-on-surface-variant mb-xl">
+              Entrez le code à 6 chiffres généré par votre application d&apos;authentification.
+            </p>
 
-        <form onSubmit={handleSubmit} className="flex flex-col gap-lg">
-          <div>
-            <label htmlFor="identifier" className="block font-body-md text-body-md font-semibold text-on-surface mb-2">
-              E-mail ou numéro de téléphone
-            </label>
-            <input
-              id="identifier"
-              type="text"
-              value={identifier}
-              onChange={(e) => setIdentifier(e.target.value)}
-              placeholder="Votre e-mail ou numéro de téléphone"
-              autoComplete="username"
-              className="w-full px-4 py-4 rounded-2xl border border-outline-variant/60 bg-surface-container-lowest font-body-lg text-body-lg text-on-surface soft-shadow focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all"
-            />
-          </div>
-
-          <div>
-            <label htmlFor="password" className="block font-body-md text-body-md font-semibold text-on-surface mb-2">
-              Mot de passe
-            </label>
-            <div className="relative">
+            <form onSubmit={handleMfaSubmit} className="flex flex-col gap-lg">
               <input
-                id="password"
-                type={showPassword ? "text" : "password"}
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                placeholder="Votre mot de passe"
-                autoComplete="current-password"
-                className="w-full pr-12 px-4 py-4 rounded-2xl border border-outline-variant/60 bg-surface-container-lowest font-body-lg text-body-lg text-on-surface soft-shadow focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all"
+                type="text"
+                inputMode="numeric"
+                maxLength={6}
+                autoFocus
+                value={mfaCode}
+                onChange={(e) => setMfaCode(e.target.value.replace(/\D/g, ""))}
+                placeholder="000000"
+                className="w-full text-center tracking-[0.5em] px-4 py-4 rounded-2xl border border-outline-variant/60 bg-surface-container-lowest font-headline-sm text-headline-sm text-on-surface soft-shadow focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all"
               />
+
+              {error && (
+                <p className="font-body-md text-body-md text-error bg-error-container/40 rounded-xl px-4 py-3">{error}</p>
+              )}
+
+              <button
+                type="submit"
+                disabled={mfaCode.length < 6 || isSubmitting}
+                className="btn-gradient w-full py-4 rounded-2xl bg-primary text-on-primary font-headline-sm text-headline-sm shadow-[0px_10px_30px_rgba(0,88,188,0.25)] hover:opacity-90 transition-opacity disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                {isSubmitting ? "Vérification…" : "Vérifier"}
+              </button>
+
               <button
                 type="button"
-                onClick={() => setShowPassword((v) => !v)}
-                aria-label={showPassword ? "Masquer le mot de passe" : "Afficher le mot de passe"}
-                className="absolute right-4 top-1/2 -translate-y-1/2 text-on-surface-variant"
+                onClick={() => {
+                  setMfaFactorId(null);
+                  setMfaCode("");
+                  setError(null);
+                }}
+                className="font-body-md text-body-md text-[14px] font-semibold text-primary self-center"
               >
-                <span className="material-symbols-outlined text-[20px]">
-                  {showPassword ? "visibility_off" : "visibility"}
-                </span>
+                Retour
               </button>
-            </div>
-            <div className="flex items-center justify-between mt-3">
-              <label className="flex items-center gap-2 cursor-pointer">
+            </form>
+          </>
+        ) : (
+          <>
+            <h1 className="font-headline-lg-mobile text-headline-lg-mobile text-on-surface mb-2 mt-lg">Connectez-vous à Objely</h1>
+            <p className="font-body-md text-body-md text-on-surface-variant mb-xl">
+              Retrouvez vos objets et gérez vos déclarations en toute simplicité.
+            </p>
+
+            <form onSubmit={handleSubmit} className="flex flex-col gap-lg">
+              <div>
+                <label htmlFor="identifier" className="block font-body-md text-body-md font-semibold text-on-surface mb-2">
+                  E-mail ou numéro de téléphone
+                </label>
                 <input
-                  type="checkbox"
-                  checked={rememberMe}
-                  onChange={(e) => setRememberMe(e.target.checked)}
-                  className="w-[18px] h-[18px] rounded border-outline-variant text-primary focus:ring-primary/30"
+                  id="identifier"
+                  type="text"
+                  value={identifier}
+                  onChange={(e) => setIdentifier(e.target.value)}
+                  placeholder="Votre e-mail ou numéro de téléphone"
+                  autoComplete="username"
+                  className="w-full px-4 py-4 rounded-2xl border border-outline-variant/60 bg-surface-container-lowest font-body-lg text-body-lg text-on-surface soft-shadow focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all"
                 />
-                <span className="font-body-md text-body-md text-[14px] text-on-surface-variant">Se souvenir de moi</span>
-              </label>
-              <button type="button" className="font-body-md text-body-md text-[14px] font-semibold text-primary">
-                Mot de passe oublié ?
+              </div>
+
+              <div>
+                <label htmlFor="password" className="block font-body-md text-body-md font-semibold text-on-surface mb-2">
+                  Mot de passe
+                </label>
+                <div className="relative">
+                  <input
+                    id="password"
+                    type={showPassword ? "text" : "password"}
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    placeholder="Votre mot de passe"
+                    autoComplete="current-password"
+                    className="w-full pr-12 px-4 py-4 rounded-2xl border border-outline-variant/60 bg-surface-container-lowest font-body-lg text-body-lg text-on-surface soft-shadow focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all"
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowPassword((v) => !v)}
+                    aria-label={showPassword ? "Masquer le mot de passe" : "Afficher le mot de passe"}
+                    className="absolute right-4 top-1/2 -translate-y-1/2 text-on-surface-variant"
+                  >
+                    <span className="material-symbols-outlined text-[20px]">
+                      {showPassword ? "visibility_off" : "visibility"}
+                    </span>
+                  </button>
+                </div>
+                <div className="flex items-center justify-between mt-3">
+                  <label className="flex items-center gap-2 cursor-pointer">
+                    <input
+                      type="checkbox"
+                      checked={rememberMe}
+                      onChange={(e) => setRememberMe(e.target.checked)}
+                      className="w-[18px] h-[18px] rounded border-outline-variant text-primary focus:ring-primary/30"
+                    />
+                    <span className="font-body-md text-body-md text-[14px] text-on-surface-variant">Se souvenir de moi</span>
+                  </label>
+                  <button type="button" className="font-body-md text-body-md text-[14px] font-semibold text-primary">
+                    Mot de passe oublié ?
+                  </button>
+                </div>
+              </div>
+
+              {error && (
+                <p className="font-body-md text-body-md text-error bg-error-container/40 rounded-xl px-4 py-3">{error}</p>
+              )}
+
+              <button
+                type="submit"
+                disabled={!canSubmit}
+                className="btn-gradient w-full py-4 rounded-2xl bg-primary text-on-primary font-headline-sm text-headline-sm shadow-[0px_10px_30px_rgba(0,88,188,0.25)] hover:opacity-90 transition-opacity disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                {isSubmitting ? "Connexion…" : "Se connecter"}
+              </button>
+            </form>
+
+            <div className="flex items-center gap-3 my-6">
+              <div className="h-px flex-1 bg-outline-variant/50" />
+              <span className="font-body-md text-[13px] text-on-surface-variant whitespace-nowrap">ou</span>
+              <div className="h-px flex-1 bg-outline-variant/50" />
+            </div>
+
+            <div className="flex flex-col gap-3">
+              <button
+                type="button"
+                className="w-full flex items-center justify-center gap-2 py-4 rounded-2xl border border-outline-variant/60 bg-surface-container-lowest font-headline-sm text-headline-sm text-on-surface hover:bg-surface-container-low transition-colors"
+              >
+                <GoogleIcon className="w-5 h-5" />
+                Continuer avec Google
+              </button>
+              <button
+                type="button"
+                className="w-full flex items-center justify-center gap-2 py-4 rounded-2xl bg-black text-white font-headline-sm text-headline-sm hover:opacity-90 transition-opacity"
+              >
+                <AppleIcon className="w-5 h-5" />
+                Continuer avec Apple
               </button>
             </div>
-          </div>
 
-          {error && (
-            <p className="font-body-md text-body-md text-error bg-error-container/40 rounded-xl px-4 py-3">{error}</p>
-          )}
-
-          <button
-            type="submit"
-            disabled={!canSubmit}
-            className="btn-gradient w-full py-4 rounded-2xl bg-primary text-on-primary font-headline-sm text-headline-sm shadow-[0px_10px_30px_rgba(0,88,188,0.25)] hover:opacity-90 transition-opacity disabled:opacity-50 disabled:cursor-not-allowed"
-          >
-            {isSubmitting ? "Connexion…" : "Se connecter"}
-          </button>
-        </form>
-
-        <div className="flex items-center gap-3 my-6">
-          <div className="h-px flex-1 bg-outline-variant/50" />
-          <span className="font-body-md text-[13px] text-on-surface-variant whitespace-nowrap">ou</span>
-          <div className="h-px flex-1 bg-outline-variant/50" />
-        </div>
-
-        <div className="flex flex-col gap-3">
-          <button
-            type="button"
-            className="w-full flex items-center justify-center gap-2 py-4 rounded-2xl border border-outline-variant/60 bg-surface-container-lowest font-headline-sm text-headline-sm text-on-surface hover:bg-surface-container-low transition-colors"
-          >
-            <GoogleIcon className="w-5 h-5" />
-            Continuer avec Google
-          </button>
-          <button
-            type="button"
-            className="w-full flex items-center justify-center gap-2 py-4 rounded-2xl bg-black text-white font-headline-sm text-headline-sm hover:opacity-90 transition-opacity"
-          >
-            <AppleIcon className="w-5 h-5" />
-            Continuer avec Apple
-          </button>
-        </div>
-
-        <p className="font-body-md text-body-md text-on-surface-variant text-center mt-6">
-          Vous n&apos;avez pas encore de compte ?{" "}
-          <Link href="/register" className="text-primary font-semibold">
-            Créer un compte
-          </Link>
-        </p>
+            <p className="font-body-md text-body-md text-on-surface-variant text-center mt-6">
+              Vous n&apos;avez pas encore de compte ?{" "}
+              <Link href="/register" className="text-primary font-semibold">
+                Créer un compte
+              </Link>
+            </p>
+          </>
+        )}
 
         <p className="font-body-md text-[12px] text-on-surface-variant text-center mt-8 leading-relaxed">
           En continuant, vous acceptez les <span className="text-primary font-medium">Conditions d&apos;utilisation</span> et la{" "}

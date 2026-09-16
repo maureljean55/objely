@@ -4,6 +4,7 @@ import { useState } from "react";
 import Link from "next/link";
 import BottomNav from "@/components/BottomNav";
 import Switch from "@/components/Switch";
+import TwoFactorAuthSection from "@/components/profile/TwoFactorAuthSection";
 
 export default function PrivacySecurityPage() {
   const [publicProfile, setPublicProfile] = useState(true);
@@ -107,6 +108,8 @@ export default function PrivacySecurityPage() {
             </button>
           </div>
         </section>
+
+        <TwoFactorAuthSection />
 
         <section className="bg-surface-container-lowest rounded-xl soft-shadow overflow-hidden">
           <div className="px-4 py-3 bg-surface-container-low border-b border-outline-variant/30">

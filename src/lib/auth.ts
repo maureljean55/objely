@@ -82,6 +82,27 @@ export async function signInWithPassword(email: string, password: string, rememb
   return result;
 }
 
+/** Checks whether the just-established session still needs a TOTP code before it's fully authenticated. */
+export async function getMfaChallengeStatus(): Promise<{ required: boolean; factorId: string | null }> {
+  const supabase = createClient();
+  const { data } = await supabase.auth.mfa.getAuthenticatorAssuranceLevel();
+  if (!data || data.currentLevel === data.nextLevel) return { required: false, factorId: null };
+
+  const { data: factors } = await supabase.auth.mfa.listFactors();
+  const factorId = factors?.totp?.find((f) => f.status === "verified")?.id ?? null;
+  return { required: !!factorId, factorId };
+}
+
+export async function verifyMfaChallenge(factorId: string, code: string, remember: boolean) {
+  const supabase = createClient();
+  const result = await supabase.auth.mfa.challengeAndVerify({ factorId, code });
+  // challengeAndVerify writes a fresh session, which goes through the same
+  // forced-400-day-Max-Age storage adapter as the password step — redo the
+  // session-cookie rewrite so "remember me" unchecked still holds after MFA.
+  if (!result.error && !remember) forgetAuthCookiesOnClose();
+  return result;
+}
+
 export async function signUpWithPassword(email: string, password: string, metadata: Record<string, unknown>) {
   const supabase = createClient();
   return supabase.auth.signUp({
