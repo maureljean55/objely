@@ -397,10 +397,12 @@
 
 .activityIcon .material-symbols-outlined {
   font-size: 22px;
-  background: linear-gradient(135deg, #4f7cfb, #8b5cf6);
-  -webkit-background-clip: text;
-  background-clip: text;
-  -webkit-text-fill-color: transparent;
+  color: #6650e8;
+}
+
+.activityIconSvg {
+  width: 22px;
+  height: 22px;
 }
 
 .activityBody {
