@@ -46,6 +46,10 @@ function VerificationReviewContent() {
       return;
     }
     router.push(approved ? `/chat/${matchId}` : "/activity");
+    // Without this, /activity (or the messages list, if approved) can still
+    // show its previous cached render — status still "pending" — right
+    // after navigating there, since resolving happened on a different page.
+    router.refresh();
   };
 
   if (loadError || !matchId) {

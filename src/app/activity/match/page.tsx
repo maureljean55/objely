@@ -102,6 +102,11 @@ function MatchDetailContent() {
       return;
     }
     router.push("/activity");
+    // Without this, the activity list can still show its previous, cached
+    // render (status "pending") right after navigating back to it — this
+    // forces a fresh fetch of its server data so the new "rejected" status
+    // actually shows up instead of looking stuck.
+    router.refresh();
   };
 
   return (
