@@ -208,14 +208,8 @@ export default async function HomeDashboardPage({
             emoji="😢"
             className={`${styles.actionCard} ${styles.lost}`}
           >
-            <span className={styles.actionIcon}>
-              <Image
-                src="/illustrations/home/mascotte-recherche.jpg"
-                alt=""
-                width={66}
-                height={66}
-                className={styles.actionIconImg}
-              />
+            <span className={styles.actionIcon} style={{ fontSize: 28 }}>
+              😢
             </span>
             <div className={styles.actionBody}>
               <h2>Déclarer un objet perdu</h2>
@@ -230,14 +224,8 @@ export default async function HomeDashboardPage({
             emoji="🤝"
             className={`${styles.actionCard} ${styles.found}`}
           >
-            <span className={styles.actionIcon}>
-              <Image
-                src="/illustrations/home/objet-trouve.jpg"
-                alt=""
-                width={66}
-                height={66}
-                className={styles.actionIconImg}
-              />
+            <span className={styles.actionIcon} style={{ fontSize: 28 }}>
+              🤝
             </span>
             <div className={styles.actionBody}>
               <h2>Déclarer un objet trouvé</h2>
@@ -473,15 +461,8 @@ export default async function HomeDashboardPage({
               className="pointer-events-none absolute rounded-full blur-2xl"
               style={{ width: 160, height: 160, top: -56, left: -56, background: "rgba(255,255,255,0.2)" }}
             />
-            <div className="relative z-[1] w-20 h-20 shrink-0 flex items-center justify-center">
-              <Image
-                src="/illustrations/home/mascotte-recherche.jpg"
-                alt=""
-                width={80}
-                height={80}
-                className="rounded-2xl object-contain"
-                style={{ filter: "drop-shadow(0 8px 16px rgba(15,23,42,0.2))" }}
-              />
+            <div className="relative z-[1] w-20 h-20 shrink-0 flex items-center justify-center text-5xl">
+              😢
             </div>
             <div className="relative z-[1] flex-1 min-w-0">
               <h2 className="font-headline-lg-mobile text-headline-lg-mobile">Déclarer un objet perdu</h2>
@@ -513,15 +494,8 @@ export default async function HomeDashboardPage({
               className="pointer-events-none absolute rounded-full blur-2xl"
               style={{ width: 160, height: 160, top: -56, left: -56, background: "rgba(255,255,255,0.2)" }}
             />
-            <div className="relative z-[1] w-20 h-20 shrink-0 flex items-center justify-center">
-              <Image
-                src="/illustrations/home/objet-trouve.jpg"
-                alt=""
-                width={80}
-                height={80}
-                className="rounded-2xl object-contain"
-                style={{ filter: "drop-shadow(0 8px 16px rgba(76,29,149,0.25))" }}
-              />
+            <div className="relative z-[1] w-20 h-20 shrink-0 flex items-center justify-center text-5xl">
+              🤝
             </div>
             <div className="relative z-[1] flex-1 min-w-0">
               <h2 className="font-headline-lg-mobile text-headline-lg-mobile">Déclarer un objet trouvé</h2>
