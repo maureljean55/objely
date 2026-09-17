@@ -2,13 +2,12 @@
 
 import { useState, type ReactNode } from "react";
 import Link from "next/link";
-import Image from "next/image";
 
 export default function GuardedActionLink({
   href,
   authenticated,
   message,
-  icon = "/illustrations/home/mascot.png",
+  emoji = "😢",
   className,
   style,
   children,
@@ -16,7 +15,7 @@ export default function GuardedActionLink({
   href: string;
   authenticated: boolean;
   message: string;
-  icon?: string;
+  emoji?: string;
   className?: string;
   style?: React.CSSProperties;
   children: ReactNode;
@@ -53,13 +52,13 @@ export default function GuardedActionLink({
                 style={{ width: 180, height: 180, top: -60, left: -50, background: "linear-gradient(135deg, #5b8cff, #c084fc)" }}
               />
               <span
-                className="relative w-14 h-14 rounded-full flex items-center justify-center shrink-0"
+                className="relative w-14 h-14 rounded-full flex items-center justify-center text-[26px] shrink-0"
                 style={{
                   background: "linear-gradient(150deg, #5b8cff 0%, #8b5cf6 60%, #c084fc 100%)",
                   boxShadow: "0 10px 20px -6px rgba(101, 80, 232, 0.55)",
                 }}
               >
-                <Image src={icon} alt="" width={40} height={40} className="object-contain" />
+                {emoji}
               </span>
               <h3 className="relative font-headline-sm text-headline-sm text-on-surface font-extrabold">Oups !</h3>
               <p className="relative font-body-md text-body-md text-on-surface-variant">{message}</p>
