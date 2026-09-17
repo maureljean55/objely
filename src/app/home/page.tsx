@@ -351,7 +351,10 @@ export default async function HomeDashboardPage({
           </section>
         )}
 
-        {/* Objets récents — vraies données */}
+        {/* Objets restitués — vraies données. Montre uniquement les objets
+            déjà rendus (status "returned"), pas les objets trouvés encore
+            en attente de réclamation, pour ne pas exposer publiquement une
+            liste d'objets non réclamés. */}
         <section>
           <div className={styles.sectionHeader}>
             <div className={styles.sectionTitle}>
@@ -360,7 +363,7 @@ export default async function HomeDashboardPage({
                   shopping_bag
                 </span>
               </span>
-              <h2>Objets récemment trouvés</h2>
+              <h2>Objets récemment restitués</h2>
             </div>
             <Link href="/search" className={styles.seeAll}>
               Voir tout
@@ -404,7 +407,7 @@ export default async function HomeDashboardPage({
           ) : (
             <div className="rounded-2xl bg-white soft-shadow p-lg text-center">
               <p className="font-body-md text-body-md text-on-surface-variant">
-                Aucun objet trouvé signalé pour le moment. Revenez bientôt !
+                Aucun objet restitué pour le moment. Revenez bientôt !
               </p>
             </div>
           )}
@@ -526,7 +529,7 @@ export default async function HomeDashboardPage({
 
         <section className="space-y-md">
           <div className="flex items-center justify-between">
-            <h3 className="font-headline-sm text-headline-sm text-on-background">Objets récemment trouvés près de vous</h3>
+            <h3 className="font-headline-sm text-headline-sm text-on-background">Objets récemment restitués</h3>
             <Link href="/search" className="font-label-md text-label-md text-primary">Voir tout</Link>
           </div>
           {recentFinds && recentFinds.length > 0 ? (
@@ -545,14 +548,14 @@ export default async function HomeDashboardPage({
                     )}
                   </div>
                   <h4 className="font-headline-sm text-headline-sm text-on-background line-clamp-1 mb-0.5">{item.title}</h4>
-                  <p className="font-body-md text-body-md text-on-surface-variant">Trouvé {timeAgo(item.created_at)}</p>
+                  <p className="font-body-md text-body-md text-on-surface-variant">Restitué {timeAgo(item.created_at)}</p>
                 </div>
               ))}
             </div>
           ) : (
             <div className="rounded-2xl bg-surface-container-lowest soft-shadow p-lg text-center">
               <p className="font-body-md text-body-md text-on-surface-variant">
-                Aucun objet trouvé signalé pour le moment. Revenez bientôt !
+                Aucun objet restitué pour le moment. Revenez bientôt !
               </p>
             </div>
           )}
