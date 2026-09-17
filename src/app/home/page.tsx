@@ -209,7 +209,10 @@ export default async function HomeDashboardPage({
             className={`${styles.actionCard} ${styles.lost}`}
           >
             <span className={styles.actionIcon}>
-              <span className="material-symbols-outlined" style={{ fontSize: 28, color: "#1d5fe0" }}>
+              <span
+                className="material-symbols-outlined"
+                style={{ fontSize: 26, color: "#1d5fe0", fontVariationSettings: "'FILL' 1, 'wght' 500" }}
+              >
                 sentiment_very_dissatisfied
               </span>
             </span>
@@ -227,7 +230,10 @@ export default async function HomeDashboardPage({
             className={`${styles.actionCard} ${styles.found}`}
           >
             <span className={styles.actionIcon}>
-              <span className="material-symbols-outlined" style={{ fontSize: 28, color: "#7c3aed" }}>
+              <span
+                className="material-symbols-outlined"
+                style={{ fontSize: 26, color: "#7c3aed", fontVariationSettings: "'FILL' 1, 'wght' 500" }}
+              >
                 handshake
               </span>
             </span>
@@ -465,8 +471,14 @@ export default async function HomeDashboardPage({
               className="pointer-events-none absolute rounded-full blur-2xl"
               style={{ width: 160, height: 160, top: -56, left: -56, background: "rgba(255,255,255,0.2)" }}
             />
-            <div className="relative z-[1] w-20 h-20 shrink-0 rounded-2xl bg-white/90 flex items-center justify-center">
-              <span className="material-symbols-outlined text-4xl" style={{ color: "#1d5fe0" }}>
+            <div
+              className="relative z-[1] w-20 h-20 shrink-0 rounded-2xl flex items-center justify-center"
+              style={{ background: "linear-gradient(160deg, #ffffff, #f3f5ff)", boxShadow: "0 10px 22px -8px rgba(15, 23, 42, 0.35)" }}
+            >
+              <span
+                className="material-symbols-outlined text-4xl"
+                style={{ color: "#1d5fe0", fontVariationSettings: "'FILL' 1, 'wght' 500" }}
+              >
                 sentiment_very_dissatisfied
               </span>
             </div>
@@ -500,8 +512,14 @@ export default async function HomeDashboardPage({
               className="pointer-events-none absolute rounded-full blur-2xl"
               style={{ width: 160, height: 160, top: -56, left: -56, background: "rgba(255,255,255,0.2)" }}
             />
-            <div className="relative z-[1] w-20 h-20 shrink-0 rounded-2xl bg-white/90 flex items-center justify-center">
-              <span className="material-symbols-outlined text-4xl" style={{ color: "#7c3aed" }}>
+            <div
+              className="relative z-[1] w-20 h-20 shrink-0 rounded-2xl flex items-center justify-center"
+              style={{ background: "linear-gradient(160deg, #ffffff, #f3f5ff)", boxShadow: "0 10px 22px -8px rgba(15, 23, 42, 0.35)" }}
+            >
+              <span
+                className="material-symbols-outlined text-4xl"
+                style={{ color: "#7c3aed", fontVariationSettings: "'FILL' 1, 'wght' 500" }}
+              >
                 handshake
               </span>
             </div>
