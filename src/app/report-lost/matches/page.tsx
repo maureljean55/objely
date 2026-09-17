@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { loadDraft, type DeclarationDraft } from "@/lib/declarationDraft";
 import { createItemFromDraft } from "@/lib/supabase/items";
-import { createMatch, explainMatch, findBestMatch, type MatchCandidate } from "@/lib/supabase/matching";
+import { createMatch, findBestMatch, type MatchCandidate } from "@/lib/supabase/matching";
 import BlinkingDots from "@/components/BlinkingDots";
 
 const RADIUS = 40;
@@ -222,7 +222,7 @@ export default function DeclarationMatchesPage() {
             <div className="bg-surface-container-lowest rounded-2xl p-md soft-shadow mb-lg">
               <h4 className="font-label-md text-[11px] text-on-surface-variant uppercase mb-3">Critères de correspondance</h4>
               <ul className="space-y-3">
-                {explainMatch(draft, candidate.item).map((c) => (
+                {candidate.criteria.map((c) => (
                   <li key={c.label} className="flex items-center gap-3 text-on-surface">
                     <span
                       className={`material-symbols-outlined text-[20px] ${c.matched ? "text-primary" : "text-outline-variant"}`}

@@ -12,79 +12,48 @@ import { notifyMatchCreated } from "@/lib/supabase/notifications";
 // category/colors/brand/location/date mean the threshold is only reachable
 // with the category plus at least 3 of the 4 secondary signals.
 const MATCH_THRESHOLD = 80;
-const DATE_MATCH_WINDOW_DAYS = 5;
-const LOCATION_MIN_SHARED_WORDS = 2;
 
 type DraftLike = Pick<DeclarationDraft, "categoryId" | "colors" | "brand" | "location" | "date">;
 
-// An item can have multiple colors, so a match means any shared color
-// between the two lists rather than requiring an exact single value.
-function colorsOverlap(a: string[] | null | undefined, b: string[] | null | undefined): boolean {
-  if (!a || !b || a.length === 0 || b.length === 0) return false;
-  const setA = new Set(a.map((c) => c.trim().toLowerCase()));
-  return b.some((c) => setA.has(c.trim().toLowerCase()));
-}
-
-function normalizeWords(text: string): string[] {
-  return text
-    .toLowerCase()
-    .normalize("NFD")
-    .replace(/[̀-ͯ]/g, "")
-    .split(/[^a-z0-9]+/)
-    .filter((w) => w.length > 2);
-}
-
-// A single shared word (e.g. "paris", "rue") matches too many unrelated
-// addresses — require at least LOCATION_MIN_SHARED_WORDS in common.
-function locationsOverlap(a: string, b: string): boolean {
-  const wordsB = new Set(normalizeWords(b));
-  const shared = new Set(normalizeWords(a).filter((w) => wordsB.has(w)));
-  return shared.size >= LOCATION_MIN_SHARED_WORDS;
-}
-
 export type MatchCriterion = { label: string; matched: boolean };
 
-/** Human-readable breakdown of why (or why not) a draft matches an item. */
-export function explainMatch(draft: DraftLike, item: Item): MatchCriterion[] {
-  const colorMatch = colorsOverlap(draft.colors, item.colors);
-  const brandMatch = !!(draft.brand && item.brand && draft.brand.trim().toLowerCase() === item.brand.trim().toLowerCase());
-  const locationMatch = !!(draft.location && item.location && locationsOverlap(draft.location, item.location));
-  const dateMatch = !!(
-    draft.date &&
-    item.occurred_on &&
-    Math.abs(new Date(draft.date).getTime() - new Date(item.occurred_on).getTime()) / 86_400_000 <= DATE_MATCH_WINDOW_DAYS
-  );
+type CriteriaFlags = {
+  colors_matched: boolean;
+  brand_matched: boolean;
+  location_matched: boolean;
+  date_matched: boolean;
+};
 
+// category_matched isn't part of CriteriaFlags: find_best_match_candidate's
+// candidates are already pre-filtered to the caller's category, so it has
+// nothing to report there — only explain_match_criteria (two already-
+// declared items, which could in principle differ) returns it.
+function toCriteria(flags: CriteriaFlags, categoryMatched: boolean): MatchCriterion[] {
   return [
-    { label: "Même catégorie", matched: draft.categoryId === item.category_id },
-    { label: "Couleur similaire", matched: colorMatch },
-    { label: "Marque similaire", matched: brandMatch },
-    { label: "Zone proche", matched: locationMatch },
-    { label: "Date compatible", matched: dateMatch },
+    { label: "Même catégorie", matched: categoryMatched },
+    { label: "Couleur similaire", matched: flags.colors_matched },
+    { label: "Marque similaire", matched: flags.brand_matched },
+    { label: "Zone proche", matched: flags.location_matched },
+    { label: "Date compatible", matched: flags.date_matched },
   ];
 }
 
-/** Same breakdown as explainMatch, but for two already-declared items (e.g. an existing match). */
-export function explainItemMatch(a: Item, b: Item): MatchCriterion[] {
-  const colorMatch = colorsOverlap(a.colors, b.colors);
-  const brandMatch = !!(a.brand && b.brand && a.brand.trim().toLowerCase() === b.brand.trim().toLowerCase());
-  const locationMatch = !!(a.location && b.location && locationsOverlap(a.location, b.location));
-  const dateMatch = !!(
-    a.occurred_on &&
-    b.occurred_on &&
-    Math.abs(new Date(a.occurred_on).getTime() - new Date(b.occurred_on).getTime()) / 86_400_000 <= DATE_MATCH_WINDOW_DAYS
-  );
-
-  return [
-    { label: "Même catégorie", matched: a.category_id === b.category_id },
-    { label: "Couleur similaire", matched: colorMatch },
-    { label: "Marque similaire", matched: brandMatch },
-    { label: "Zone proche", matched: locationMatch },
-    { label: "Date compatible", matched: dateMatch },
-  ];
+/**
+ * Breakdown of why two already-declared items matched (or didn't) — e.g. for
+ * an existing match's detail page. Computed server-side (explain_match_criteria
+ * reads the real, unredacted items) so it can't disagree with the score,
+ * and the client never needs the real location just to render checkmarks.
+ */
+export async function explainItemMatch(lostItemId: string, foundItemId: string): Promise<MatchCriterion[]> {
+  const supabase = createClient();
+  const { data } = await supabase
+    .rpc("explain_match_criteria", { p_lost_item_id: lostItemId, p_found_item_id: foundItemId })
+    .single<CriteriaFlags & { category_matched: boolean }>();
+  if (!data) return [];
+  return toCriteria(data, data.category_matched);
 }
 
-export type MatchCandidate = { item: Item; score: number };
+export type MatchCandidate = { item: Item; score: number; criteria: MatchCriterion[] };
 
 /**
  * Looks for the best existing item of the opposite type that could match
@@ -106,17 +75,19 @@ export async function findBestMatch(draft: DraftLike, oppositeType: ItemType): P
       p_occurred_on: draft.date || null,
       p_opposite_type: oppositeType,
     })
-    .maybeSingle<{ item_id: string; score: number }>();
+    .maybeSingle<{ item_id: string; score: number } & CriteriaFlags>();
 
   if (!best || best.score < MATCH_THRESHOLD) return null;
 
   // items_public, not items directly: this candidate is shown before any
   // match/verification exists, so a hide_exact_location item must still
-  // only reveal its coarse location here.
+  // only reveal its coarse location here. The criteria below come from the
+  // RPC above (computed against the real location server-side), not from
+  // this possibly-redacted item, so they stay accurate either way.
   const { data: item } = await supabase.from("items_public").select("*").eq("id", best.item_id).single<Item>();
   if (!item) return null;
 
-  return { item, score: best.score };
+  return { item, score: best.score, criteria: toCriteria(best, true) };
 }
 
 type MatchParty = Pick<Item, "id" | "user_id" | "title">;

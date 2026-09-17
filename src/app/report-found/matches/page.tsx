@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { loadDraft, type DeclarationDraft } from "@/lib/declarationDraft";
 import { createItemFromDraft } from "@/lib/supabase/items";
-import { createMatch, explainMatch, findBestMatch, type MatchCandidate } from "@/lib/supabase/matching";
+import { createMatch, findBestMatch, type MatchCandidate } from "@/lib/supabase/matching";
 
 const STATUS_TEXTS = ["Analyse des déclarations...", "Comparaison des informations...", "Recherche de correspondances..."];
 // Real matching query is near-instant; hold the "searching" state for a
@@ -189,7 +189,7 @@ export default function ReportFoundMatchesPage() {
               <div className="px-md py-md border-t border-surface-variant bg-surface-container-low">
                 <span className="font-label-md text-[11px] text-on-surface-variant uppercase block mb-2">Critères validés</span>
                 <div className="flex flex-wrap gap-2">
-                  {explainMatch(draft, candidate.item)
+                  {candidate.criteria
                     .filter((c) => c.matched)
                     .map((c) => (
                       <div key={c.label} className="flex items-center gap-1 bg-surface-container-lowest border border-outline-variant/40 px-2 py-1 rounded-md">

@@ -6,7 +6,7 @@ import Image from "next/image";
 import { useRouter, useSearchParams } from "next/navigation";
 import { getCurrentUser } from "@/lib/auth";
 import { getMatch, type MatchWithItems } from "@/lib/supabase/messages";
-import { explainItemMatch } from "@/lib/supabase/matching";
+import { explainItemMatch, type MatchCriterion } from "@/lib/supabase/matching";
 import { getLatestVerification, resolveMatch, type MatchVerification } from "@/lib/supabase/verification";
 import type { Item } from "@/lib/supabase/items";
 
@@ -48,6 +48,7 @@ function MatchDetailContent() {
   const [match, setMatch] = useState<MatchWithItems | null>(null);
   const [currentUserId, setCurrentUserId] = useState<string | null>(null);
   const [verification, setVerification] = useState<MatchVerification | null>(null);
+  const [criteria, setCriteria] = useState<MatchCriterion[]>([]);
   const [loadError, setLoadError] = useState(false);
   const [isRejecting, setIsRejecting] = useState(false);
   const [rejectError, setRejectError] = useState<string | null>(null);
@@ -63,6 +64,7 @@ function MatchDetailContent() {
         setCurrentUserId(user.id);
         setMatch(data);
         setVerification(verificationRes.data ?? null);
+        explainItemMatch(data.lost_item.id, data.found_item.id).then(setCriteria);
       },
     );
   }, [matchId]);
@@ -89,7 +91,6 @@ function MatchDetailContent() {
   const isLostSide = match.lost_item.user_id === currentUserId;
   const myItem = isLostSide ? match.lost_item : match.found_item;
   const otherItem = isLostSide ? match.found_item : match.lost_item;
-  const criteria = explainItemMatch(myItem, otherItem);
 
   const handleReject = async () => {
     setIsRejecting(true);
