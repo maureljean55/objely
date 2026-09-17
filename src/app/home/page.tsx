@@ -208,8 +208,10 @@ export default async function HomeDashboardPage({
             emoji="😢"
             className={`${styles.actionCard} ${styles.lost}`}
           >
-            <span className={styles.actionIcon} style={{ fontSize: 28 }}>
-              😢
+            <span className={styles.actionIcon}>
+              <span className="material-symbols-outlined" style={{ fontSize: 28, color: "#1d5fe0" }}>
+                sentiment_very_dissatisfied
+              </span>
             </span>
             <div className={styles.actionBody}>
               <h2>Déclarer un objet perdu</h2>
@@ -461,8 +463,10 @@ export default async function HomeDashboardPage({
               className="pointer-events-none absolute rounded-full blur-2xl"
               style={{ width: 160, height: 160, top: -56, left: -56, background: "rgba(255,255,255,0.2)" }}
             />
-            <div className="relative z-[1] w-20 h-20 shrink-0 flex items-center justify-center text-5xl">
-              😢
+            <div className="relative z-[1] w-20 h-20 shrink-0 rounded-2xl bg-white/90 flex items-center justify-center">
+              <span className="material-symbols-outlined text-4xl" style={{ color: "#1d5fe0" }}>
+                sentiment_very_dissatisfied
+              </span>
             </div>
             <div className="relative z-[1] flex-1 min-w-0">
               <h2 className="font-headline-lg-mobile text-headline-lg-mobile">Déclarer un objet perdu</h2>
