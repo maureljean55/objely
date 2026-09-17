@@ -3,7 +3,16 @@ import type { DeclarationDraft } from "@/lib/declarationDraft";
 import type { Item, ItemType } from "@/lib/supabase/items";
 import { notifyMatchCreated } from "@/lib/supabase/notifications";
 
-const MATCH_THRESHOLD = 45;
+// Kept in sync with compute_match_score/find_best_match_candidate in
+// supabase/migrations/20260917150000_stricter_match_scoring.sql: category
+// plus a single weak secondary signal (e.g. one shared word in a freeform
+// location field) used to be enough to pass, which let coincidental pairs
+// reach the ownership-verification step. Uniform 20-point weights across
+// category/colors/brand/location/date mean the threshold is only reachable
+// with the category plus at least 2 of the 4 secondary signals.
+const MATCH_THRESHOLD = 60;
+const DATE_MATCH_WINDOW_DAYS = 5;
+const LOCATION_MIN_SHARED_WORDS = 2;
 
 type DraftLike = Pick<DeclarationDraft, "categoryId" | "colors" | "brand" | "location" | "date">;
 
@@ -24,21 +33,25 @@ function normalizeWords(text: string): string[] {
     .filter((w) => w.length > 2);
 }
 
+// A single shared word (e.g. "paris", "rue") matches too many unrelated
+// addresses — require at least LOCATION_MIN_SHARED_WORDS in common.
+function locationsOverlap(a: string, b: string): boolean {
+  const wordsB = new Set(normalizeWords(b));
+  const shared = new Set(normalizeWords(a).filter((w) => wordsB.has(w)));
+  return shared.size >= LOCATION_MIN_SHARED_WORDS;
+}
+
 export type MatchCriterion = { label: string; matched: boolean };
 
 /** Human-readable breakdown of why (or why not) a draft matches an item. */
 export function explainMatch(draft: DraftLike, item: Item): MatchCriterion[] {
   const colorMatch = colorsOverlap(draft.colors, item.colors);
   const brandMatch = !!(draft.brand && item.brand && draft.brand.trim().toLowerCase() === item.brand.trim().toLowerCase());
-  const locationMatch = !!(
-    draft.location &&
-    item.location &&
-    normalizeWords(draft.location).some((word) => normalizeWords(item.location!).includes(word))
-  );
+  const locationMatch = !!(draft.location && item.location && locationsOverlap(draft.location, item.location));
   const dateMatch = !!(
     draft.date &&
     item.occurred_on &&
-    Math.abs(new Date(draft.date).getTime() - new Date(item.occurred_on).getTime()) / 86_400_000 <= 14
+    Math.abs(new Date(draft.date).getTime() - new Date(item.occurred_on).getTime()) / 86_400_000 <= DATE_MATCH_WINDOW_DAYS
   );
 
   return [
@@ -54,11 +67,11 @@ export function explainMatch(draft: DraftLike, item: Item): MatchCriterion[] {
 export function explainItemMatch(a: Item, b: Item): MatchCriterion[] {
   const colorMatch = colorsOverlap(a.colors, b.colors);
   const brandMatch = !!(a.brand && b.brand && a.brand.trim().toLowerCase() === b.brand.trim().toLowerCase());
-  const locationMatch = !!(a.location && b.location && normalizeWords(a.location).some((word) => normalizeWords(b.location!).includes(word)));
+  const locationMatch = !!(a.location && b.location && locationsOverlap(a.location, b.location));
   const dateMatch = !!(
     a.occurred_on &&
     b.occurred_on &&
-    Math.abs(new Date(a.occurred_on).getTime() - new Date(b.occurred_on).getTime()) / 86_400_000 <= 14
+    Math.abs(new Date(a.occurred_on).getTime() - new Date(b.occurred_on).getTime()) / 86_400_000 <= DATE_MATCH_WINDOW_DAYS
   );
 
   return [
