@@ -71,7 +71,7 @@ export default function DeclarationMatchesPage() {
     setPublishError(null);
     const { data: item, error } = await createItemFromDraft(draft, "lost");
     if (error || !item) {
-      setPublishError("Une erreur est survenue, réessayez.");
+      setPublishError(error?.message || "Une erreur est survenue, réessayez.");
       setIsPublishing(false);
       return;
     }
@@ -327,7 +327,7 @@ export default function DeclarationMatchesPage() {
               setPublishError(null);
               const { error } = await createItemFromDraft(draft, "lost");
               if (error) {
-                setPublishError("Une erreur est survenue, réessayez.");
+                setPublishError(error.message || "Une erreur est survenue, réessayez.");
                 setIsPublishing(false);
                 return;
               }

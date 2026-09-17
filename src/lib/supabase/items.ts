@@ -62,6 +62,16 @@ export async function createItemFromDraft(draft: DeclarationDraft, type: ItemTyp
     return { data: null, error: new Error("Vous devez être connecté pour publier une déclaration.") };
   }
 
+  // Pre-check rather than parsing the RLS-violation error the insert would
+  // otherwise raise (see user_items_created_in_last_24h/the items INSERT
+  // policy in supabase/migrations/20260918120000_cap_daily_declarations.sql)
+  // — that error has no way to distinguish "rate limited" from any other
+  // policy failure, so it couldn't carry a message this specific.
+  const { data: recentCount } = await supabase.rpc("user_items_created_in_last_24h", { p_user_id: user.id });
+  if ((recentCount ?? 0) >= 2) {
+    return { data: null, error: new Error("Vous avez atteint la limite de 2 déclarations par 24 heures. Réessayez plus tard.") };
+  }
+
   const { data: item, error } = await supabase
     .from("items")
     .insert({
@@ -84,7 +94,7 @@ export async function createItemFromDraft(draft: DeclarationDraft, type: ItemTyp
     .single<Item>();
 
   if (error || !item) {
-    return { data: null, error };
+    return { data: null, error: new Error("Une erreur est survenue, réessayez.") };
   }
 
   await Promise.all([
