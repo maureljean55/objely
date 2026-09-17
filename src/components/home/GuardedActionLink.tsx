@@ -8,6 +8,7 @@ export default function GuardedActionLink({
   href,
   authenticated,
   message,
+  icon = "/illustrations/home/mascot.png",
   className,
   style,
   children,
@@ -15,6 +16,7 @@ export default function GuardedActionLink({
   href: string;
   authenticated: boolean;
   message: string;
+  icon?: string;
   className?: string;
   style?: React.CSSProperties;
   children: ReactNode;
@@ -57,7 +59,7 @@ export default function GuardedActionLink({
                   boxShadow: "0 10px 20px -6px rgba(101, 80, 232, 0.55)",
                 }}
               >
-                <Image src="/illustrations/home/mascot.png" alt="" width={40} height={40} className="object-contain" />
+                <Image src={icon} alt="" width={40} height={40} className="object-contain" />
               </span>
               <h3 className="relative font-headline-sm text-headline-sm text-on-surface font-extrabold">Oups !</h3>
               <p className="relative font-body-md text-body-md text-on-surface-variant">{message}</p>

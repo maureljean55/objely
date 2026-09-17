@@ -205,6 +205,7 @@ export default async function HomeDashboardPage({
             href="/report-lost"
             authenticated={!!user}
             message="Dépêche-toi de t'inscrire et on retrouvera ton objet ensemble !"
+            icon="/illustrations/home/mascotte-recherche.jpg"
             className={`${styles.actionCard} ${styles.lost}`}
           >
             <span className={styles.actionIcon}>
@@ -226,6 +227,7 @@ export default async function HomeDashboardPage({
             href="/report-found"
             authenticated={!!user}
             message="Dépêche-toi de t'inscrire et aidons ensemble son propriétaire à le retrouver !"
+            icon="/illustrations/home/objet-trouve.jpg"
             className={`${styles.actionCard} ${styles.found}`}
           >
             <span className={styles.actionIcon}>
@@ -459,6 +461,7 @@ export default async function HomeDashboardPage({
             href="/report-lost"
             authenticated={!!user}
             message="Dépêche-toi de t'inscrire et on retrouvera ton objet ensemble !"
+            icon="/illustrations/home/mascotte-recherche.jpg"
             className="relative overflow-hidden text-white flex items-center gap-4 p-5 transition-transform hover:-translate-y-0.5 w-full text-left"
             style={{
               background: "linear-gradient(135deg, #1d72fe 0%, #2563eb 40%, #3b82f6 100%)",
@@ -498,6 +501,7 @@ export default async function HomeDashboardPage({
             href="/report-found"
             authenticated={!!user}
             message="Dépêche-toi de t'inscrire et aidons ensemble son propriétaire à le retrouver !"
+            icon="/illustrations/home/objet-trouve.jpg"
             className="relative overflow-hidden text-white flex items-center gap-4 p-5 transition-transform hover:-translate-y-0.5 w-full text-left"
             style={{
               background: "linear-gradient(135deg, #a78bfa 0%, #9061f9 45%, #7e4df8 100%)",
