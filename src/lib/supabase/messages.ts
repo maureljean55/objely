@@ -24,13 +24,32 @@ export type MatchWithItems = {
   found_item: Item;
 };
 
+/**
+ * Fetched as two steps (not a single embedded query) because the item rows
+ * need to come from items_public rather than items directly: a pending
+ * match's found item may have hide_exact_location set, and PostgREST's
+ * embedding syntax resolves through the actual foreign key, which targets
+ * items, not a view — so it can't apply that redaction on its own.
+ */
 export async function getMatch(matchId: string) {
   const supabase = createClient();
-  return supabase
+  const { data: match, error } = await supabase
     .from("matches")
-    .select("id, match_percent, status, lost_item:items!matches_lost_item_id_fkey(*), found_item:items!matches_found_item_id_fkey(*)")
+    .select("id, match_percent, status, lost_item_id, found_item_id")
     .eq("id", matchId)
-    .single<MatchWithItems>();
+    .single<{ id: string; match_percent: number; status: MatchWithItems["status"]; lost_item_id: string; found_item_id: string }>();
+  if (error || !match) return { data: null, error };
+
+  const [{ data: lostItem }, { data: foundItem }] = await Promise.all([
+    supabase.from("items_public").select("*").eq("id", match.lost_item_id).single<Item>(),
+    supabase.from("items_public").select("*").eq("id", match.found_item_id).single<Item>(),
+  ]);
+  if (!lostItem || !foundItem) return { data: null, error: new Error("Objet introuvable.") };
+
+  return {
+    data: { id: match.id, match_percent: match.match_percent, status: match.status, lost_item: lostItem, found_item: foundItem },
+    error: null,
+  };
 }
 
 export async function listMessages(matchId: string) {

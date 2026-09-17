@@ -75,6 +75,7 @@ export async function createItemFromDraft(draft: DeclarationDraft, type: ItemTyp
       brand: draft.brand || null,
       colors: draft.colors && draft.colors.length > 0 ? draft.colors : null,
       location: draft.location || null,
+      location_public: draft.locationPublic || null,
       hide_exact_location: draft.hideExactLocation ?? false,
       occurred_on: draft.date || null,
       photos: draft.photos ?? [],
@@ -99,7 +100,7 @@ export async function createItemFromDraft(draft: DeclarationDraft, type: ItemTyp
 export async function listFoundItems(limit = 10) {
   const supabase = createClient();
   return supabase
-    .from("items")
+    .from("items_public")
     .select("*")
     .eq("type", "found")
     .in("status", ["searching", "matched"])
@@ -151,9 +152,16 @@ export async function getItemSecret(itemId: string) {
     .maybeSingle<{ private_detail: string }>();
 }
 
+/**
+ * Reads through items_public, which serves the coarse location instead of
+ * the exact one for a hide_exact_location item, unless the caller is its
+ * owner or the confirmed counterpart of a match on it. Callers that already
+ * know they're the owner (e.g. "Mes objets") should read from items
+ * directly instead.
+ */
 export async function getItem(id: string) {
   const supabase = createClient();
-  return supabase.from("items").select("*").eq("id", id).single<Item>();
+  return supabase.from("items_public").select("*").eq("id", id).single<Item>();
 }
 
 /** Uploads a photo to the "item-photos" bucket under the user's own folder and returns its public URL. */

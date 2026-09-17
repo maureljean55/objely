@@ -110,7 +110,10 @@ export async function findBestMatch(draft: DraftLike, oppositeType: ItemType): P
 
   if (!best || best.score < MATCH_THRESHOLD) return null;
 
-  const { data: item } = await supabase.from("items").select("*").eq("id", best.item_id).single<Item>();
+  // items_public, not items directly: this candidate is shown before any
+  // match/verification exists, so a hide_exact_location item must still
+  // only reveal its coarse location here.
+  const { data: item } = await supabase.from("items_public").select("*").eq("id", best.item_id).single<Item>();
   if (!item) return null;
 
   return { item, score: best.score };

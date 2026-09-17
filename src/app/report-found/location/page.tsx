@@ -14,9 +14,23 @@ function todayISODate() {
   return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
 }
 
+// When "hide exact location" is on, the person searching for their item
+// should only see this — not the street/house number. Nominatim's
+// addressdetails gives structured components instead of a flat string, so
+// the approximation is a real neighborhood/city label, not a guess at
+// where commas fall in free text.
+function approximateAddress(address: Record<string, string> | undefined): string | null {
+  if (!address) return null;
+  const area = address.suburb || address.city_district || address.neighbourhood;
+  const city = address.city || address.town || address.village || address.municipality;
+  const parts = [area, city, address.postcode].filter(Boolean);
+  return parts.length > 0 ? parts.join(", ") : null;
+}
+
 export default function ReportFoundLocationPage() {
   const router = useRouter();
   const [location, setLocation] = useState("");
+  const [locationPublic, setLocationPublic] = useState<string | null>(null);
   const [date, setDate] = useState(todayISODate);
   const [time, setTime] = useState("18:30");
   const [hideExactLocation, setHideExactLocation] = useState(true);
@@ -36,11 +50,15 @@ export default function ReportFoundLocationPage() {
       async (position) => {
         const { latitude, longitude } = position.coords;
         try {
-          const res = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${latitude}&lon=${longitude}&zoom=16`);
+          const res = await fetch(
+            `https://nominatim.openstreetmap.org/reverse?format=json&lat=${latitude}&lon=${longitude}&zoom=16&addressdetails=1`,
+          );
           const data = await res.json();
           setLocation(data.display_name || `${latitude.toFixed(5)}, ${longitude.toFixed(5)}`);
+          setLocationPublic(approximateAddress(data.address));
         } catch {
           setLocation(`${latitude.toFixed(5)}, ${longitude.toFixed(5)}`);
+          setLocationPublic(null);
         } finally {
           setLocating(false);
         }
@@ -54,7 +72,7 @@ export default function ReportFoundLocationPage() {
 
   const goNext = () => {
     if (!canContinue) return;
-    saveDraft({ location, date, time, hideExactLocation });
+    saveDraft({ location, locationPublic: locationPublic ?? undefined, date, time, hideExactLocation });
     router.push("/report-found/matches");
   };
 

@@ -53,13 +53,13 @@ export default function SecureChatPage() {
       setCurrentUserId(user.id);
       setMatch(matchData);
 
-      const isLostSide = matchData.lost_item.user_id === user.id;
-      const otherUserId = isLostSide ? matchData.found_item.user_id : matchData.lost_item.user_id;
-
       // Same here: the other party's profile, the message history, and any
-      // restitution appointments are all independent of each other.
+      // restitution appointments are all independent of each other. The
+      // other party's name/avatar comes from a security-definer RPC (not a
+      // direct profiles select) that only returns data once this match is
+      // confirmed — see get_match_participant_profile.
       const [{ data: profile }, { data: messageData }, { data: appointmentData }] = await Promise.all([
-        supabase.from("profiles").select("full_name, avatar_url").eq("id", otherUserId).maybeSingle<OtherProfile>(),
+        supabase.rpc("get_match_participant_profile", { p_match_id: matchId }).maybeSingle<OtherProfile>(),
         listMessages(matchId),
         supabase.from("restitution_appointments").select("*").eq("match_id", matchId).returns<RestitutionAppointment[]>(),
       ]);

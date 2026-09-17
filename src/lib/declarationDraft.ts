@@ -8,6 +8,7 @@ export type DeclarationDraft = {
   brand?: string;
   colors?: string[];
   location?: string;
+  locationPublic?: string;
   date?: string;
   time?: string;
   moment?: string;

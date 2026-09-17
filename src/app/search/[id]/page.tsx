@@ -15,7 +15,11 @@ function declaredDateLabel(item: Item) {
 export default async function MyItemDetailPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
   const supabase = await createClient();
-  const { data: item } = await supabase.from("items").select("*").eq("id", id).single<Item>();
+  // items_public serves the coarse location instead of the exact one for a
+  // hide_exact_location item, unless the viewer is its owner or the
+  // confirmed counterpart of a match on it — this page is reachable both
+  // from "Mes objets" (owner) and the public found-items feed (a stranger).
+  const { data: item } = await supabase.from("items_public").select("*").eq("id", id).single<Item>();
   if (!item) notFound();
 
   const {

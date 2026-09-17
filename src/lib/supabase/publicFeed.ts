@@ -11,7 +11,7 @@ const publicSupabase = createClient(process.env.NEXT_PUBLIC_SUPABASE_URL!, proce
 export const listRecentFinds = unstable_cache(
   async (limit: number) =>
     publicSupabase
-      .from("items")
+      .from("items_public")
       .select("*")
       .eq("type", "found")
       .in("status", ["searching", "matched"])
