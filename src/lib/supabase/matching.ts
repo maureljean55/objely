@@ -4,13 +4,14 @@ import type { Item, ItemType } from "@/lib/supabase/items";
 import { notifyMatchCreated } from "@/lib/supabase/notifications";
 
 // Kept in sync with compute_match_score/find_best_match_candidate in
-// supabase/migrations/20260917150000_stricter_match_scoring.sql: category
-// plus a single weak secondary signal (e.g. one shared word in a freeform
-// location field) used to be enough to pass, which let coincidental pairs
-// reach the ownership-verification step. Uniform 20-point weights across
+// supabase/migrations/20260917150000_stricter_match_scoring.sql and
+// 20260917160000_require_three_match_signals.sql: category plus a single
+// weak secondary signal (e.g. one shared word in a freeform location field)
+// used to be enough to pass, which let coincidental pairs reach the
+// ownership-verification step. Uniform 20-point weights across
 // category/colors/brand/location/date mean the threshold is only reachable
-// with the category plus at least 2 of the 4 secondary signals.
-const MATCH_THRESHOLD = 60;
+// with the category plus at least 3 of the 4 secondary signals.
+const MATCH_THRESHOLD = 80;
 const DATE_MATCH_WINDOW_DAYS = 5;
 const LOCATION_MIN_SHARED_WORDS = 2;
 
