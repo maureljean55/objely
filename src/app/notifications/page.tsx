@@ -14,6 +14,7 @@ const ICONS: Record<AppNotification["type"], { icon: string; gradient: string; f
   restitution_proposed: { icon: "event", gradient: "linear-gradient(135deg, #0058bc, #5952af)", filled: true },
   restitution_responded: { icon: "event_available", gradient: "linear-gradient(135deg, #06b6d4, #0891b2)", filled: true },
   restitution_confirmed: { icon: "task_alt", gradient: "linear-gradient(135deg, #16a34a, #15803d)", filled: true },
+  restitution_pending_confirmation: { icon: "hourglass_top", gradient: "linear-gradient(135deg, #f97316, #ef4444)", filled: true },
 };
 
 type Section = "Aujourd'hui" | "Hier" | "Plus anciennes";
@@ -70,7 +71,13 @@ export default function NotificationsPage() {
       return;
     }
     if (!item.match_id) return;
-    if (item.type === "message" || item.type === "restitution_proposed" || item.type === "restitution_responded" || item.type === "restitution_confirmed") {
+    if (
+      item.type === "message" ||
+      item.type === "restitution_proposed" ||
+      item.type === "restitution_responded" ||
+      item.type === "restitution_confirmed" ||
+      item.type === "restitution_pending_confirmation"
+    ) {
       router.push(`/chat/${item.match_id}`);
     } else if (item.type === "verification_submitted") {
       // The finder should land straight on the review screen to see the

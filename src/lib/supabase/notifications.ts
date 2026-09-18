@@ -8,7 +8,8 @@ export type NotificationType =
   | "verification_rejected"
   | "restitution_proposed"
   | "restitution_responded"
-  | "restitution_confirmed";
+  | "restitution_confirmed"
+  | "restitution_pending_confirmation";
 
 export type AppNotification = {
   id: string;

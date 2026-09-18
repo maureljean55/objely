@@ -25,12 +25,19 @@ const ACTIVITY_ICONS: Record<AppNotification["type"], string> = {
   restitution_proposed: "event",
   restitution_responded: "event_available",
   restitution_confirmed: "task_alt",
+  restitution_pending_confirmation: "hourglass_top",
 };
 
 function activityHref(item: AppNotification) {
   if (item.type === "message" && item.direct_conversation_id) return `/dm/${item.direct_conversation_id}`;
   if (!item.match_id) return "/activity";
-  if (item.type === "message" || item.type === "restitution_proposed" || item.type === "restitution_responded" || item.type === "restitution_confirmed") {
+  if (
+    item.type === "message" ||
+    item.type === "restitution_proposed" ||
+    item.type === "restitution_responded" ||
+    item.type === "restitution_confirmed" ||
+    item.type === "restitution_pending_confirmation"
+  ) {
     return `/chat/${item.match_id}`;
   }
   if (item.type === "verification_submitted") return `/activity/verification?match=${item.match_id}`;

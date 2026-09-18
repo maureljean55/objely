@@ -22,17 +22,20 @@ export async function proposeAppointment(matchId: string, date: string, time: st
   const user = session?.user ?? null;
   if (!user) return { data: null, error: new Error("Vous devez être connecté.") };
 
+  // A single RPC, not two separate inserts: the appointment row is useless
+  // without the chat message that's the only thing that actually surfaces
+  // it, so either both need to succeed or neither should — a partial
+  // failure used to leave an orphaned, invisible appointment.
   const { data: appointment, error } = await supabase
-    .from("restitution_appointments")
-    .insert({ match_id: matchId, proposed_by: user.id, scheduled_date: date, scheduled_time: time, location })
-    .select()
+    .rpc("propose_appointment", {
+      p_match_id: matchId,
+      p_scheduled_date: date,
+      p_scheduled_time: time,
+      p_location: location,
+    })
     .single<RestitutionAppointment>();
 
   if (error || !appointment) return { data: null, error };
-
-  await supabase
-    .from("messages")
-    .insert({ match_id: matchId, sender_id: user.id, kind: "restitution_proposal", restitution_appointment_id: appointment.id });
 
   await notifyMatchParticipant(matchId, "restitution_proposed");
 
@@ -90,7 +93,10 @@ export async function confirmRestitution(matchId: string) {
   const { data, error } = await supabase.rpc("confirm_restitution", { p_match_id: matchId });
   if (error) return { bothConfirmed: false, error };
 
-  if (data === true) await notifyMatchParticipant(matchId, "restitution_confirmed");
+  // Without this, confirming first leaves the other participant with no
+  // notification and no cue that it's their turn — the same "silently
+  // stuck" symptom as an unresolved verification, one step later.
+  await notifyMatchParticipant(matchId, data === true ? "restitution_confirmed" : "restitution_pending_confirmation");
 
   return { bothConfirmed: data === true, error: null };
 }
