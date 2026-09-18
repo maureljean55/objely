@@ -210,15 +210,7 @@ function MatchDetailContent() {
 
       <div className="fixed bottom-0 inset-x-0 z-50 glass-input px-container-margin py-md safe-area-pb shadow-[0_-4px_20px_rgba(0,0,0,0.05)]">
         <div className="max-w-2xl mx-auto flex flex-col gap-sm">
-          {match.status === "confirmed" ? (
-            <Link
-              href={`/chat/${match.id}`}
-              className="w-full h-14 bg-primary text-on-primary rounded-xl font-headline-sm text-headline-sm flex items-center justify-center gap-2 hover:opacity-90 active:scale-[0.98] transition-all"
-            >
-              <span className="material-symbols-outlined">forum</span>
-              Contacter le déclarant
-            </Link>
-          ) : (
+          {match.status === "confirmed" ? null : (
             <div className="w-full h-14 bg-surface-container text-on-surface-variant rounded-xl font-body-md text-body-md flex items-center justify-center gap-2 text-center px-4">
               {match.status === "rejected" ? "Correspondance refusée" : "Vous pourrez échanger dès que la vérification sera confirmée"}
             </div>
