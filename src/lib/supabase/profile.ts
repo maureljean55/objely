@@ -15,7 +15,13 @@ export type Profile = {
   avatar_url: string | null;
   trust_score: number;
   share_phone: boolean;
+  notify_matches: boolean;
+  notify_messages: boolean;
+  notify_verifications: boolean;
+  notify_restitutions: boolean;
 };
+
+export type NotificationPrefs = Pick<Profile, "notify_matches" | "notify_messages" | "notify_verifications" | "notify_restitutions">;
 
 export type PublicProfile = {
   id: string;
@@ -69,6 +75,16 @@ export async function updateSharePhone(sharePhone: boolean) {
   if (!user) return { error: new Error("Vous devez être connecté.") };
 
   return supabase.from("profiles").update({ share_phone: sharePhone }).eq("id", user.id);
+}
+
+/** Server-side gate checked in notify_match_participant/notify_match_created before a notification is ever inserted — not just a UI preference. */
+export async function updateNotificationPrefs(patch: Partial<NotificationPrefs>) {
+  const supabase = createClient();
+  const { data: { session } } = await supabase.auth.getSession();
+  const user = session?.user ?? null;
+  if (!user) return { error: new Error("Vous devez être connecté.") };
+
+  return supabase.from("profiles").update(patch).eq("id", user.id);
 }
 
 /** Fetches the safe, public-facing fields of another user's profile (e.g. after scanning their QR code). */
