@@ -9,7 +9,8 @@ export type NotificationType =
   | "restitution_proposed"
   | "restitution_responded"
   | "restitution_confirmed"
-  | "restitution_pending_confirmation";
+  | "restitution_pending_confirmation"
+  | "chat_closed";
 
 export type AppNotification = {
   id: string;

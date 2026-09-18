@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
 import {
+  closeChat,
   deleteMessage,
   editMessage,
   getMatch,
@@ -185,6 +186,13 @@ export default function SecureChatPage() {
     return false;
   };
 
+  const handleCloseChat = async () => {
+    const { error } = await closeChat(matchId);
+    if (error) return false;
+    setMatch((prev) => (prev ? { ...prev, chat_closed_at: new Date().toISOString() } : prev));
+    return true;
+  };
+
   if (loadError) {
     return (
       <div className="bg-background text-on-background antialiased min-h-screen flex flex-col items-center justify-center px-container-margin text-center">
@@ -255,6 +263,8 @@ export default function SecureChatPage() {
       appointmentsById={appointmentsById}
       onProposeAppointment={handleProposeAppointment}
       onRespondAppointment={handleRespondAppointment}
+      onCloseChat={handleCloseChat}
+      chatClosed={!!match.chat_closed_at}
     />
   );
 }

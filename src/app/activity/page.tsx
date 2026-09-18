@@ -23,6 +23,7 @@ type MatchRow = {
   id: string;
   match_percent: number;
   status: "pending" | "confirmed" | "rejected";
+  chat_closed_at: string | null;
   created_at: string;
   lost_item: Item;
   found_item: Item;
@@ -58,7 +59,9 @@ export default async function ActivityPage({ searchParams }: { searchParams: Pro
 
   const { data: allMatches } = await supabase
     .from("matches")
-    .select("id, match_percent, status, created_at, lost_item:items!matches_lost_item_id_fkey(*), found_item:items!matches_found_item_id_fkey(*)")
+    .select(
+      "id, match_percent, status, chat_closed_at, created_at, lost_item:items!matches_lost_item_id_fkey(*), found_item:items!matches_found_item_id_fkey(*)",
+    )
     .order("created_at", { ascending: false })
     .returns<MatchRow[]>();
 
@@ -153,7 +156,15 @@ export default async function ActivityPage({ searchParams }: { searchParams: Pro
                   >
                     Détails
                   </Link>
-                  {match.status === "confirmed" ? (
+                  {match.status === "confirmed" && match.chat_closed_at ? (
+                    <div
+                      aria-disabled="true"
+                      className="flex-1 h-14 text-white rounded-xl font-headline-sm text-headline-sm flex items-center justify-center shadow-sm opacity-40 blur-[1px] pointer-events-none select-none"
+                      style={{ background: "linear-gradient(135deg, #0058bc, #5952af)" }}
+                    >
+                      Discuter
+                    </div>
+                  ) : match.status === "confirmed" ? (
                     <Link
                       href={`/chat/${match.id}`}
                       className="flex-1 h-14 text-white rounded-xl font-headline-sm text-headline-sm hover:opacity-90 active:scale-[0.98] transition-all flex items-center justify-center shadow-sm"

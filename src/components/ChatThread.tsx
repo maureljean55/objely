@@ -395,6 +395,10 @@ type Props = {
   appointmentsById?: Map<string, AppointmentInfo>;
   onProposeAppointment?: (date: string, time: string, location: string) => Promise<boolean>;
   onRespondAppointment?: (appointmentId: string, accept: boolean) => Promise<boolean>;
+  /** Only match-based chats can be closed; also not offered for QR/direct conversations. */
+  onCloseChat?: () => Promise<boolean>;
+  /** True once either participant has closed this chat — hides the input entirely, keeping history read-only. */
+  chatClosed?: boolean;
 };
 
 /** Shared chat UI for both match-based conversations and QR/direct conversations — same look regardless of what started the conversation. */
@@ -412,6 +416,8 @@ export default function ChatThread({
   appointmentsById,
   onProposeAppointment,
   onRespondAppointment,
+  onCloseChat,
+  chatClosed = false,
 }: Props) {
   const [draft, setDraft] = useState("");
   const [isSending, setIsSending] = useState(false);
@@ -419,12 +425,16 @@ export default function ChatThread({
   const [replyingTo, setReplyingTo] = useState<ChatMessage | null>(null);
   const [menuMessage, setMenuMessage] = useState<ChatMessage | null>(null);
   const [menuPos, setMenuPos] = useState<{ x: number; y: number } | null>(null);
+  const [showActionsMenu, setShowActionsMenu] = useState(false);
   const [showAppointmentForm, setShowAppointmentForm] = useState(false);
   const [apptDate, setApptDate] = useState("");
   const [apptTime, setApptTime] = useState("");
   const [apptLocation, setApptLocation] = useState("");
   const [apptSubmitting, setApptSubmitting] = useState(false);
   const [apptError, setApptError] = useState<string | null>(null);
+  const [showCloseChatConfirm, setShowCloseChatConfirm] = useState(false);
+  const [isClosingChat, setIsClosingChat] = useState(false);
+  const [closeChatError, setCloseChatError] = useState<string | null>(null);
   const [isRecording, setIsRecording] = useState(false);
   const [recordingSeconds, setRecordingSeconds] = useState(0);
   const [isUploadingVoice, setIsUploadingVoice] = useState(false);
@@ -547,6 +557,19 @@ export default function ChatThread({
     if (!ok) setActionError("La réponse au rendez-vous n'a pas pu être envoyée, réessayez.");
   };
 
+  const handleCloseChat = async () => {
+    if (!onCloseChat) return;
+    setIsClosingChat(true);
+    setCloseChatError(null);
+    const ok = await onCloseChat();
+    setIsClosingChat(false);
+    if (ok) {
+      setShowCloseChatConfirm(false);
+    } else {
+      setCloseChatError("Une erreur est survenue, réessayez.");
+    }
+  };
+
   const startRecording = async () => {
     try {
       const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
@@ -660,6 +683,13 @@ export default function ChatThread({
 
       <footer className="glass-input fixed bottom-0 inset-x-0 z-50 p-3 safe-area-pb">
         <div className="max-w-7xl mx-auto w-full">
+          {chatClosed ? (
+            <div className="flex items-center justify-center gap-2 py-3 px-4 bg-surface-container-high rounded-xl text-on-surface-variant">
+              <span className="material-symbols-outlined text-[18px]">block</span>
+              <span className="font-body-md text-body-md">Cette conversation a été arrêtée.</span>
+            </div>
+          ) : (
+            <>
           {replyingTo && !editingId && (
             <div className="flex items-start gap-2 px-3 py-2 mb-1.5 bg-surface-container-high rounded-lg border-l-[3px] border-primary">
               <div className="flex-1 min-w-0">
@@ -718,15 +748,50 @@ export default function ChatThread({
             </div>
           ) : (
             <div className="flex items-end gap-2">
-              {restitutionEnabled && !editingId && (
-                <button
-                  type="button"
-                  onClick={() => setShowAppointmentForm(true)}
-                  aria-label="Proposer un rendez-vous de restitution"
-                  className="p-2 bg-surface-container-high text-on-surface-variant rounded-full hover:bg-surface-container-highest transition-colors shrink-0 flex items-center justify-center h-11 w-11"
-                >
-                  <span className="material-symbols-outlined">add</span>
-                </button>
+              {(restitutionEnabled || onCloseChat) && !editingId && (
+                <div className="relative shrink-0">
+                  <button
+                    type="button"
+                    onClick={() => setShowActionsMenu((v) => !v)}
+                    aria-label="Autres actions"
+                    className="p-2 bg-surface-container-high text-on-surface-variant rounded-full hover:bg-surface-container-highest transition-colors flex items-center justify-center h-11 w-11"
+                  >
+                    <span className="material-symbols-outlined">add</span>
+                  </button>
+                  {showActionsMenu && (
+                    <>
+                      <div className="fixed inset-0 z-[90]" onClick={() => setShowActionsMenu(false)} />
+                      <div className="absolute bottom-full left-0 mb-2 w-60 bg-surface-container-lowest rounded-xl overflow-hidden shadow-[0_8px_30px_rgba(0,0,0,0.12)] border border-outline-variant/15 py-1 z-[91] animate-popIn">
+                        {restitutionEnabled && (
+                          <button
+                            type="button"
+                            onClick={() => {
+                              setShowActionsMenu(false);
+                              setShowAppointmentForm(true);
+                            }}
+                            className="w-full py-2.5 px-3 flex items-center gap-2.5 text-on-surface font-body-md text-body-md hover:bg-surface-variant/40 transition-colors"
+                          >
+                            <span className="material-symbols-outlined text-[19px] text-on-surface-variant w-5 shrink-0">event</span>
+                            Proposer un rendez-vous
+                          </button>
+                        )}
+                        {onCloseChat && (
+                          <button
+                            type="button"
+                            onClick={() => {
+                              setShowActionsMenu(false);
+                              setShowCloseChatConfirm(true);
+                            }}
+                            className="w-full py-2.5 px-3 flex items-center gap-2.5 text-error font-body-md text-body-md hover:bg-surface-variant/40 transition-colors"
+                          >
+                            <span className="material-symbols-outlined text-[19px] w-5 shrink-0">block</span>
+                            Arrêter le chat
+                          </button>
+                        )}
+                      </div>
+                    </>
+                  )}
+                </div>
               )}
               <div className="flex-1 bg-surface-container-low rounded-xl border border-outline-variant/30 px-4 py-2 flex items-center min-h-[44px]">
                 <textarea
@@ -779,8 +844,49 @@ export default function ChatThread({
               )}
             </div>
           )}
+            </>
+          )}
         </div>
       </footer>
+
+      {showCloseChatConfirm && (
+        <div
+          role="dialog"
+          aria-modal="true"
+          className="fixed inset-0 z-[100] flex items-end sm:items-center justify-center bg-black/30 backdrop-blur-sm"
+          onClick={() => !isClosingChat && setShowCloseChatConfirm(false)}
+        >
+          <div
+            className="w-full sm:w-[400px] bg-surface-container-lowest rounded-t-[28px] sm:rounded-[28px] p-lg pb-8 sm:pb-lg shadow-xl"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <h2 className="font-headline-md text-headline-md text-on-surface mb-1">Arrêter cette conversation ?</h2>
+            <p className="font-body-md text-body-md text-on-surface-variant mb-lg">
+              {peerName} sera prévenu(e) que vous avez arrêté la conversation. Cette action est définitive — plus personne ne pourra
+              envoyer de message ici, mais l&apos;historique reste consultable.
+            </p>
+            {closeChatError && <p className="font-body-md text-[13px] text-error mb-3">{closeChatError}</p>}
+            <div className="flex gap-sm">
+              <button
+                type="button"
+                disabled={isClosingChat}
+                onClick={() => setShowCloseChatConfirm(false)}
+                className="flex-1 h-12 rounded-[14px] bg-surface-container-high text-on-surface font-headline-sm text-headline-sm hover:bg-surface-container-highest transition-colors disabled:opacity-50"
+              >
+                Annuler
+              </button>
+              <button
+                type="button"
+                disabled={isClosingChat}
+                onClick={handleCloseChat}
+                className="flex-1 h-12 rounded-[14px] bg-error text-on-error font-headline-sm text-headline-sm hover:opacity-90 transition-opacity disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                {isClosingChat ? "Arrêt…" : "Arrêter le chat"}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
 
       {showAppointmentForm && (
         <div role="dialog" aria-modal="true" className="fixed inset-0 z-[100] flex items-end sm:items-center justify-center bg-black/30 backdrop-blur-sm" onClick={() => setShowAppointmentForm(false)}>

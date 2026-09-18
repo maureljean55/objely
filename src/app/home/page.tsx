@@ -26,6 +26,7 @@ const ACTIVITY_ICONS: Record<AppNotification["type"], string> = {
   restitution_responded: "event_available",
   restitution_confirmed: "task_alt",
   restitution_pending_confirmation: "hourglass_top",
+  chat_closed: "block",
 };
 
 function activityHref(item: AppNotification) {
@@ -36,7 +37,8 @@ function activityHref(item: AppNotification) {
     item.type === "restitution_proposed" ||
     item.type === "restitution_responded" ||
     item.type === "restitution_confirmed" ||
-    item.type === "restitution_pending_confirmation"
+    item.type === "restitution_pending_confirmation" ||
+    item.type === "chat_closed"
   ) {
     return `/chat/${item.match_id}`;
   }

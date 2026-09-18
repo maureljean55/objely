@@ -15,6 +15,7 @@ const ICONS: Record<AppNotification["type"], { icon: string; gradient: string; f
   restitution_responded: { icon: "event_available", gradient: "linear-gradient(135deg, #06b6d4, #0891b2)", filled: true },
   restitution_confirmed: { icon: "task_alt", gradient: "linear-gradient(135deg, #16a34a, #15803d)", filled: true },
   restitution_pending_confirmation: { icon: "hourglass_top", gradient: "linear-gradient(135deg, #f97316, #ef4444)", filled: true },
+  chat_closed: { icon: "block", gradient: "linear-gradient(135deg, #6b7280, #4b5563)" },
 };
 
 type Section = "Aujourd'hui" | "Hier" | "Plus anciennes";
@@ -76,7 +77,8 @@ export default function NotificationsPage() {
       item.type === "restitution_proposed" ||
       item.type === "restitution_responded" ||
       item.type === "restitution_confirmed" ||
-      item.type === "restitution_pending_confirmation"
+      item.type === "restitution_pending_confirmation" ||
+      item.type === "chat_closed"
     ) {
       router.push(`/chat/${item.match_id}`);
     } else if (item.type === "verification_submitted") {

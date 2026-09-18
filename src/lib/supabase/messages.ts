@@ -20,6 +20,7 @@ export type MatchWithItems = {
   id: string;
   match_percent: number;
   status: "pending" | "confirmed" | "rejected";
+  chat_closed_at: string | null;
   lost_item: Item;
   found_item: Item;
 };
@@ -35,9 +36,16 @@ export async function getMatch(matchId: string) {
   const supabase = createClient();
   const { data: match, error } = await supabase
     .from("matches")
-    .select("id, match_percent, status, lost_item_id, found_item_id")
+    .select("id, match_percent, status, chat_closed_at, lost_item_id, found_item_id")
     .eq("id", matchId)
-    .single<{ id: string; match_percent: number; status: MatchWithItems["status"]; lost_item_id: string; found_item_id: string }>();
+    .single<{
+      id: string;
+      match_percent: number;
+      status: MatchWithItems["status"];
+      chat_closed_at: string | null;
+      lost_item_id: string;
+      found_item_id: string;
+    }>();
   if (error || !match) return { data: null, error };
 
   const [{ data: lostItem }, { data: foundItem }] = await Promise.all([
@@ -47,7 +55,14 @@ export async function getMatch(matchId: string) {
   if (!lostItem || !foundItem) return { data: null, error: new Error("Objet introuvable.") };
 
   return {
-    data: { id: match.id, match_percent: match.match_percent, status: match.status, lost_item: lostItem, found_item: foundItem },
+    data: {
+      id: match.id,
+      match_percent: match.match_percent,
+      status: match.status,
+      chat_closed_at: match.chat_closed_at,
+      lost_item: lostItem,
+      found_item: foundItem,
+    },
     error: null,
   };
 }
@@ -73,7 +88,9 @@ export async function listMyConversations() {
 
   const { data: matches, error } = await supabase
     .from("matches")
-    .select("id, match_percent, status, lost_item:items!matches_lost_item_id_fkey(*), found_item:items!matches_found_item_id_fkey(*)")
+    .select(
+      "id, match_percent, status, chat_closed_at, lost_item:items!matches_lost_item_id_fkey(*), found_item:items!matches_found_item_id_fkey(*)",
+    )
     .eq("status", "confirmed")
     .returns<MatchWithItems[]>();
 
@@ -134,6 +151,20 @@ export async function sendVoiceMessage(matchId: string, voiceUrl: string, replyT
 
   if (!result.error) await notifyMatchParticipant(matchId, "message", { messagePreview: "Note vocale" });
 
+  return result;
+}
+
+/**
+ * Either participant can end a confirmed match's conversation at any time.
+ * Doesn't touch the match's own status or delete history — it only blocks
+ * new messages (enforced server-side, not just hidden in the UI) and marks
+ * chat_closed_at so the Activity page can grey out "Discuter" for both
+ * sides.
+ */
+export async function closeChat(matchId: string) {
+  const supabase = createClient();
+  const result = await supabase.rpc("close_chat", { p_match_id: matchId }).single<{ chat_closed_at: string | null }>();
+  if (!result.error) await notifyMatchParticipant(matchId, "chat_closed");
   return result;
 }
 
