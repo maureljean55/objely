@@ -153,6 +153,7 @@ export default function CommunityPage() {
   if (isMember && currentUserId) {
     return (
       <CommunityChatThread
+        communityId={communityId}
         communityName={community.name}
         communityCoverUrl={community.cover_url}
         memberCount={community.member_count}

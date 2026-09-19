@@ -34,6 +34,7 @@ function MemberAvatar({ name, avatarUrl, size = 32 }: { name: string; avatarUrl:
 }
 
 type Props = {
+  communityId: string;
   communityName: string;
   communityCoverUrl: string | null;
   memberCount: number;
@@ -51,6 +52,7 @@ type Props = {
  * bubble here resolves its sender against the full member list, since any of N people
  * might have sent it. */
 export default function CommunityChatThread({
+  communityId,
   communityName,
   communityCoverUrl,
   memberCount,
@@ -73,6 +75,7 @@ export default function CommunityChatThread({
   const [isLeaving, setIsLeaving] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
   const [confirmError, setConfirmError] = useState<string | null>(null);
+  const [inviteCopied, setInviteCopied] = useState(false);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
 
   const membersById = new Map(members.map((m) => [m.user_id, m]));
@@ -91,6 +94,35 @@ export default function CommunityChatThread({
       setActionError("Le message n'a pas pu être envoyé, réessayez.");
     }
     setIsSending(false);
+  };
+
+  const handleInvite = async () => {
+    const url = `${window.location.origin}/communities/${communityId}`;
+    const shareData = {
+      title: communityName,
+      text: `Rejoins la communauté "${communityName}" sur Objely !`,
+      url,
+    };
+    // navigator.share opens the native share sheet on phones (the modern,
+    // expected way to pass a link to someone) — clipboard is the fallback
+    // for browsers/devices without it (most desktop browsers).
+    if (navigator.share && navigator.canShare?.(shareData) !== false) {
+      try {
+        await navigator.share(shareData);
+        return;
+      } catch {
+        // User cancelled the share sheet, or the browser rejected it — fall
+        // through to the clipboard copy instead of leaving them stuck.
+      }
+    }
+    try {
+      await navigator.clipboard.writeText(url);
+      setInviteCopied(true);
+      setTimeout(() => setInviteCopied(false), 2000);
+    } catch {
+      // Clipboard access can be denied by the browser — nothing useful to
+      // do about it beyond leaving the link unshared.
+    }
   };
 
   const handleLeave = async () => {
@@ -154,7 +186,18 @@ export default function CommunityChatThread({
           {showMenu && (
             <>
               <div className="fixed inset-0 z-[90]" onClick={() => setShowMenu(false)} />
-              <div className="absolute right-0 top-full mt-1 w-56 bg-surface-container-lowest rounded-xl overflow-hidden shadow-[0_8px_30px_rgba(0,0,0,0.12)] border border-outline-variant/15 py-1 z-[91] animate-popIn">
+              <div className="absolute right-0 top-full mt-1 w-60 bg-surface-container-lowest rounded-2xl overflow-hidden shadow-[0_8px_30px_rgba(0,0,0,0.12)] border border-outline-variant/15 py-1 z-[91] animate-popIn">
+                <button
+                  type="button"
+                  onClick={() => {
+                    setShowMenu(false);
+                    handleInvite();
+                  }}
+                  className="w-full py-2.5 px-3 flex items-center gap-2.5 text-on-surface font-body-md text-body-md hover:bg-surface-variant/40 transition-colors"
+                >
+                  <span className="material-symbols-outlined text-[19px] text-on-surface-variant w-5 shrink-0">person_add</span>
+                  Inviter des membres
+                </button>
                 <button
                   type="button"
                   onClick={() => {
@@ -297,9 +340,19 @@ export default function CommunityChatThread({
             className="w-full sm:w-[400px] max-h-[70vh] overflow-y-auto bg-surface-container-lowest rounded-t-[28px] sm:rounded-[28px] p-lg pb-8 sm:pb-lg shadow-xl"
             onClick={(e) => e.stopPropagation()}
           >
-            <h2 className="font-headline-md text-headline-md text-on-surface mb-lg">
-              {memberCount} {memberCount > 1 ? "membres" : "membre"}
-            </h2>
+            <div className="flex items-center justify-between mb-lg gap-3">
+              <h2 className="font-headline-md text-headline-md text-on-surface">
+                {memberCount} {memberCount > 1 ? "membres" : "membre"}
+              </h2>
+              <button
+                type="button"
+                onClick={handleInvite}
+                className="shrink-0 flex items-center gap-1.5 py-2 px-3.5 rounded-full bg-primary/10 text-primary font-label-md text-label-md font-semibold hover:bg-primary/15 transition-colors"
+              >
+                <span className="material-symbols-outlined text-[18px]">person_add</span>
+                Inviter
+              </button>
+            </div>
             <div className="flex flex-col gap-3">
               {members.map((member) => (
                 <div key={member.user_id} className="flex items-center gap-3">
@@ -383,6 +436,15 @@ export default function CommunityChatThread({
                 {isDeleting ? "Suppression…" : "Supprimer"}
               </button>
             </div>
+          </div>
+        </div>
+      )}
+
+      {inviteCopied && (
+        <div className="fixed bottom-[100px] inset-x-0 z-[110] flex justify-center pointer-events-none">
+          <div className="flex items-center gap-2 bg-inverse-surface text-inverse-on-surface px-4 py-2.5 rounded-full shadow-lg animate-popIn">
+            <span className="material-symbols-outlined text-[18px]">check_circle</span>
+            <span className="font-label-md text-label-md">Lien d&apos;invitation copié !</span>
           </div>
         </div>
       )}
