@@ -558,7 +558,7 @@
 
 .tipSparkles {
   position: absolute;
-  top: -8px;
+  top: -16px;
   left: 4px;
   width: 24px;
   height: 24px;
@@ -586,7 +586,7 @@
 .tipNote {
   position: absolute;
   left: -10px;
-  top: 2px;
+  top: 6px;
   width: 68px;
   font-family: var(--font-caveat), cursive;
   font-size: 15px;
