@@ -30,6 +30,8 @@ export default function ResetPasswordPage() {
   const router = useRouter();
   const [checkingSession, setCheckingSession] = useState(true);
   const [hasSession, setHasSession] = useState(false);
+  const [pendingTokenHash, setPendingTokenHash] = useState<string | null>(null);
+  const [isConfirmingLink, setIsConfirmingLink] = useState(false);
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
@@ -40,32 +42,16 @@ export default function ResetPasswordPage() {
   useEffect(() => {
     const supabase = createClient();
 
-    // Supabase's recovery link redirects here with the session in a URL
-    // *hash fragment* (#access_token=...&refresh_token=...), not a ?code=
-    // query param — and this app's browser client is pinned to PKCE
-    // (@supabase/ssr forces it), which makes the client's own automatic
-    // URL detection actively reject a hash-style token as "not a valid
-    // PKCE flow url" instead of picking it up. So this parses the hash by
-    // hand and establishes the session directly via setSession() — no
-    // exchange needed, the tokens are already right there.
-    const hash = window.location.hash.startsWith("#") ? window.location.hash.slice(1) : window.location.hash;
-    const hashParams = new URLSearchParams(hash);
-    const accessToken = hashParams.get("access_token");
-    const refreshToken = hashParams.get("refresh_token");
-
-    // Clear the hash immediately either way, so the tokens don't linger in
-    // the address bar or in browser history.
-    if (hash) window.history.replaceState(null, "", window.location.pathname + window.location.search);
-
     // A recovery link only proves the requester controls the mailbox — for
     // a 2FA-enabled account that must not be enough on its own to change
     // the password, or anyone with just the inbox could strip the second
     // factor's protection entirely. The middleware's own AAL gate can't
-    // catch this: the tokens above live only in the URL hash, which never
-    // reaches the server, so proxy.ts never sees a session to gate on this
-    // request. Checking here, client-side, right after the session is
-    // established, is the only point this can actually be enforced on the
-    // direct-link path.
+    // catch this: the tokens/token_hash below live only in the URL (hash
+    // fragment or, for the confirm-click flow, query string before it's
+    // exchanged), which never reaches the server, so proxy.ts never sees a
+    // session to gate on this request. Checking here, client-side, right
+    // after the session is established, is the only point this can
+    // actually be enforced on the direct-link path.
     async function admitOrRequireMfa() {
       const { data: aal } = await supabase.auth.mfa.getAuthenticatorAssuranceLevel();
       if (aal && aal.nextLevel === "aal2" && aal.currentLevel !== "aal2") {
@@ -75,6 +61,40 @@ export default function ResetPasswordPage() {
       setHasSession(true);
       setCheckingSession(false);
     }
+
+    // Preferred flow: the Reset Password email template links here with
+    // ?token_hash=...&type=recovery — a raw, not-yet-consumed token —
+    // instead of Supabase's default {{ .ConfirmationURL }}, which points
+    // straight at /auth/v1/verify and burns the single-use token on the
+    // very first GET it receives. Mail clients (Gmail chief among them)
+    // routinely pre-fetch links in an email to scan them for phishing
+    // before a human ever taps anything, which silently burns that kind of
+    // link before the real click happens — the user then hits "Lien
+    // invalide ou expiré" despite never having used the link themselves.
+    // Landing here with the token still unconsumed, and only exchanging it
+    // via verifyOtp() from an explicit button press (see handleConfirmLink
+    // below), means an automated prefetch — which fetches the URL but
+    // doesn't click buttons — can't burn it.
+    const searchParams = new URLSearchParams(window.location.search);
+    const tokenHash = searchParams.get("token_hash");
+    if (tokenHash && searchParams.get("type") === "recovery") {
+      setPendingTokenHash(tokenHash);
+      setCheckingSession(false);
+      return;
+    }
+
+    // Fallback: the old hash-fragment flow, for any recovery email already
+    // sent before the template above is switched over in the Supabase
+    // dashboard. Not click-gated — still vulnerable to the same prefetch
+    // issue — but keeps in-flight emails working during the transition.
+    const hash = window.location.hash.startsWith("#") ? window.location.hash.slice(1) : window.location.hash;
+    const hashParams = new URLSearchParams(hash);
+    const accessToken = hashParams.get("access_token");
+    const refreshToken = hashParams.get("refresh_token");
+
+    // Clear the hash immediately either way, so the tokens don't linger in
+    // the address bar or in browser history.
+    if (hash) window.history.replaceState(null, "", window.location.pathname + window.location.search);
 
     if (hashParams.get("error") || hashParams.get("error_code")) {
       setHasSession(false);
@@ -105,6 +125,30 @@ export default function ResetPasswordPage() {
       admitOrRequireMfa();
     });
   }, [router]);
+
+  const handleConfirmLink = async () => {
+    if (!pendingTokenHash) return;
+    setIsConfirmingLink(true);
+
+    const supabase = createClient();
+    const { error: verifyError } = await supabase.auth.verifyOtp({ token_hash: pendingTokenHash, type: "recovery" });
+    if (verifyError) {
+      setPendingTokenHash(null);
+      setHasSession(false);
+      setIsConfirmingLink(false);
+      return;
+    }
+
+    const { data: aal } = await supabase.auth.mfa.getAuthenticatorAssuranceLevel();
+    if (aal && aal.nextLevel === "aal2" && aal.currentLevel !== "aal2") {
+      router.replace("/login?next=/reset-password");
+      return;
+    }
+
+    setPendingTokenHash(null);
+    setHasSession(true);
+    setIsConfirmingLink(false);
+  };
 
   const criteria = useMemo(
     () => ({
@@ -142,6 +186,28 @@ export default function ResetPasswordPage() {
     return (
       <div className="bg-background min-h-[100dvh] flex items-center justify-center">
         <span className="w-8 h-8 border-4 border-primary-container/30 border-t-primary rounded-full animate-spin" />
+      </div>
+    );
+  }
+
+  if (pendingTokenHash) {
+    return (
+      <div className="min-h-[100dvh] bg-background flex flex-col items-center justify-center px-container-margin text-center gap-3">
+        <div className="w-16 h-16 rounded-full bg-primary/10 text-primary flex items-center justify-center mb-2">
+          <span className="material-symbols-outlined text-[32px]">lock_reset</span>
+        </div>
+        <h1 className="font-headline-lg-mobile text-headline-lg-mobile text-on-surface">Confirmer la réinitialisation</h1>
+        <p className="font-body-md text-body-md text-on-surface-variant max-w-xs">
+          Confirmez que c&apos;est bien vous qui avez demandé à changer de mot de passe.
+        </p>
+        <button
+          type="button"
+          onClick={handleConfirmLink}
+          disabled={isConfirmingLink}
+          className="btn-gradient px-6 py-3 rounded-2xl bg-primary text-on-primary font-headline-sm text-headline-sm shadow-[0px_10px_30px_rgba(0,88,188,0.25)] hover:opacity-90 transition-opacity disabled:opacity-50 disabled:cursor-not-allowed mt-2"
+        >
+          {isConfirmingLink ? "Confirmation…" : "Confirmer et continuer"}
+        </button>
       </div>
     );
   }
