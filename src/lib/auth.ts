@@ -122,6 +122,12 @@ export async function signInWithGoogle(next?: string) {
   });
 }
 
+function passwordResetLockoutMessage(retryAfterSeconds: number): string {
+  const minutes = Math.ceil(retryAfterSeconds / 60);
+  const delay = minutes <= 1 ? "moins d'une minute" : `${minutes} minutes`;
+  return `Trop de demandes de réinitialisation pour cette adresse. Réessayez dans ${delay}.`;
+}
+
 /**
  * Sends a password-reset email. Unlike OAuth and email-confirmation links,
  * Supabase's recovery link always redirects with the session in a URL
@@ -133,9 +139,30 @@ export async function signInWithGoogle(next?: string) {
  * /auth/callback like the others; it goes straight to /reset-password,
  * which parses the hash itself and calls setSession() directly instead of
  * relying on the client's own (PKCE-only) URL detection.
+ *
+ * Lockout state lives in Postgres (password_reset_attempts table, via the
+ * check_password_reset_lockout/register_password_reset_attempt RPCs — same
+ * pattern as signInWithPassword's login_attempts), because otherwise
+ * nothing here stops someone who knows a victim's address from submitting
+ * it on a loop and flooding their inbox with reset links: Supabase's own
+ * resetPasswordForEmail responds identically whether or not the address is
+ * registered, by design, so there's no natural success/failure signal to
+ * throttle on the way login does.
  */
 export async function requestPasswordReset(email: string) {
   const supabase = createClient();
+  const identifier = email.trim().toLowerCase();
+
+  const { data: lockoutCheck } = await supabase.rpc("check_password_reset_lockout", { p_identifier: identifier });
+  if (lockoutCheck?.[0]?.locked) {
+    return { error: { message: passwordResetLockoutMessage(lockoutCheck[0].retry_after_seconds) } };
+  }
+
+  const { data: attemptResult } = await supabase.rpc("register_password_reset_attempt", { p_identifier: identifier });
+  if (attemptResult?.[0]?.locked) {
+    return { error: { message: passwordResetLockoutMessage(attemptResult[0].retry_after_seconds) } };
+  }
+
   const redirectTo = new URL("/reset-password", window.location.origin);
   return supabase.auth.resetPasswordForEmail(email.trim(), { redirectTo: redirectTo.toString() });
 }

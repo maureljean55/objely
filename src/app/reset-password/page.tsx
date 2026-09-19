@@ -57,6 +57,25 @@ export default function ResetPasswordPage() {
     // the address bar or in browser history.
     if (hash) window.history.replaceState(null, "", window.location.pathname + window.location.search);
 
+    // A recovery link only proves the requester controls the mailbox — for
+    // a 2FA-enabled account that must not be enough on its own to change
+    // the password, or anyone with just the inbox could strip the second
+    // factor's protection entirely. The middleware's own AAL gate can't
+    // catch this: the tokens above live only in the URL hash, which never
+    // reaches the server, so proxy.ts never sees a session to gate on this
+    // request. Checking here, client-side, right after the session is
+    // established, is the only point this can actually be enforced on the
+    // direct-link path.
+    async function admitOrRequireMfa() {
+      const { data: aal } = await supabase.auth.mfa.getAuthenticatorAssuranceLevel();
+      if (aal && aal.nextLevel === "aal2" && aal.currentLevel !== "aal2") {
+        router.replace("/login?next=/reset-password");
+        return;
+      }
+      setHasSession(true);
+      setCheckingSession(false);
+    }
+
     if (hashParams.get("error") || hashParams.get("error_code")) {
       setHasSession(false);
       setCheckingSession(false);
@@ -65,8 +84,12 @@ export default function ResetPasswordPage() {
 
     if (accessToken && refreshToken) {
       supabase.auth.setSession({ access_token: accessToken, refresh_token: refreshToken }).then(({ error }) => {
-        setHasSession(!error);
-        setCheckingSession(false);
+        if (error) {
+          setHasSession(false);
+          setCheckingSession(false);
+          return;
+        }
+        admitOrRequireMfa();
       });
       return;
     }
@@ -74,10 +97,14 @@ export default function ResetPasswordPage() {
     // No hash at all — either a stale bookmark, or a page refresh after the
     // hash above already established a real (cookie-backed) session.
     supabase.auth.getSession().then(({ data }) => {
-      setHasSession(!!data.session);
-      setCheckingSession(false);
+      if (!data.session) {
+        setHasSession(false);
+        setCheckingSession(false);
+        return;
+      }
+      admitOrRequireMfa();
     });
-  }, []);
+  }, [router]);
 
   const criteria = useMemo(
     () => ({
