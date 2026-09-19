@@ -47,6 +47,7 @@ function ProfileSummary({
   avatarUrl,
   displayName,
   trustScore,
+  publicId,
 }: {
   user: User | null;
   authChecked: boolean;
@@ -54,6 +55,7 @@ function ProfileSummary({
   avatarUrl: string | null;
   displayName: string;
   trustScore: number;
+  publicId: number | null;
 }) {
   const authenticated = !!user;
   const tier = trustTier(trustScore);
@@ -98,6 +100,11 @@ function ProfileSummary({
                 <span className="material-symbols-outlined text-[18px]">edit</span>
               </Link>
             </div>
+            {publicId !== null && (
+              <span className="font-label-md text-[11px] text-on-surface-variant bg-surface-container-high px-2.5 py-1 rounded-full mb-2">
+                id: @{publicId}
+              </span>
+            )}
             <h1 className="font-headline-lg-mobile md:font-headline-lg text-headline-lg-mobile md:text-headline-lg text-on-surface mb-2">
               {displayName}
             </h1>
@@ -166,6 +173,7 @@ export default function UserProfilePage() {
   const [avatarUrl, setAvatarUrl] = useState<string | null>(null);
   const [profileName, setProfileName] = useState<string | null>(null);
   const [trustScore, setTrustScore] = useState(0);
+  const [publicId, setPublicId] = useState<number | null>(null);
   const [authChecked, setAuthChecked] = useState(false);
   const displayName = profileName || (user?.user_metadata?.full_name as string | undefined) || user?.email || "";
 
@@ -182,6 +190,7 @@ export default function UserProfilePage() {
           setAvatarUrl(data?.avatar_url ?? null);
           setProfileName(data?.full_name ?? null);
           setTrustScore(data?.trust_score ?? 0);
+          setPublicId(data?.public_id ?? null);
         });
       }
     });
@@ -211,12 +220,12 @@ export default function UserProfilePage() {
         className="md:hidden fixed top-0 inset-x-0 z-40 bg-background/95 backdrop-blur-md px-container-margin pb-4 shadow-sm"
         style={{ paddingTop: "env(safe-area-inset-top)" }}
       >
-        <ProfileSummary user={user} authChecked={authChecked} stats={stats} avatarUrl={avatarUrl} displayName={displayName} trustScore={trustScore} />
+        <ProfileSummary user={user} authChecked={authChecked} stats={stats} avatarUrl={avatarUrl} displayName={displayName} trustScore={trustScore} publicId={publicId} />
       </div>
 
       <main className="max-w-2xl mx-auto md:mt-8 px-container-margin md:px-0 pt-[calc(392px+env(safe-area-inset-top))] md:pt-0">
         <div className="hidden md:block relative">
-          <ProfileSummary user={user} authChecked={authChecked} stats={stats} avatarUrl={avatarUrl} displayName={displayName} trustScore={trustScore} />
+          <ProfileSummary user={user} authChecked={authChecked} stats={stats} avatarUrl={avatarUrl} displayName={displayName} trustScore={trustScore} publicId={publicId} />
         </div>
 
         <section className="bg-surface-container-lowest rounded-[32px] soft-shadow inner-stroke overflow-hidden mb-8 animate-slideUp">
