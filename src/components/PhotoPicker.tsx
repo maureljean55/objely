@@ -4,7 +4,7 @@ import { useRef, useState } from "react";
 import { uploadItemPhoto } from "@/lib/supabase/items";
 import { compressImage } from "@/lib/compressImage";
 
-const MAX_PHOTOS = 5;
+const DEFAULT_MAX_PHOTOS = 5;
 const MAX_DIMENSION = 1600;
 const JPEG_QUALITY = 0.82;
 
@@ -14,10 +14,16 @@ export default function PhotoPicker({
   photos,
   onChange,
   onUploadingChange,
+  max = DEFAULT_MAX_PHOTOS,
+  uploadFn = uploadItemPhoto,
 }: {
   photos: string[];
   onChange: (photos: string[]) => void;
   onUploadingChange?: (uploading: boolean) => void;
+  /** Caps how many photos can be added — defaults to 5. */
+  max?: number;
+  /** Where a selected file gets uploaded — defaults to the item-photos bucket. */
+  uploadFn?: (file: File) => Promise<{ url: string | null; error: unknown }>;
 }) {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [slots, setSlots] = useState<Slot[]>(() =>
@@ -34,7 +40,7 @@ export default function PhotoPicker({
   };
 
   const handleFilesSelected = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const files = Array.from(e.target.files ?? []).slice(0, MAX_PHOTOS - slotsRef.current.length);
+    const files = Array.from(e.target.files ?? []).slice(0, max - slotsRef.current.length);
     e.target.value = "";
     if (files.length === 0) return;
 
@@ -50,7 +56,7 @@ export default function PhotoPicker({
       files.map(async (file, i) => {
         const slot = newSlots[i];
         const compressed = await compressImage(file, MAX_DIMENSION, JPEG_QUALITY);
-        const { url } = await uploadItemPhoto(compressed);
+        const { url } = await uploadFn(compressed);
         applySlots(
           slotsRef.current.map((s) =>
             s.id === slot.id ? (url ? { ...s, status: "done" as const, finalUrl: url } : { ...s, status: "error" as const }) : s,
@@ -109,7 +115,7 @@ export default function PhotoPicker({
               </button>
             </div>
           ))}
-          {slots.length < MAX_PHOTOS && (
+          {slots.length < max && (
             <button
               type="button"
               onClick={() => fileInputRef.current?.click()}

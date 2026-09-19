@@ -427,20 +427,20 @@ export default async function HomeDashboardPage({
         {/* Banner */}
         <section className={styles.bottomBanner}>
           <div className={styles.bannerMessage}>
-            Un petit objet peut faire
+            Seul on va vite,
             <br />
-            une grande différence !
-            <span>💜</span>
+            ensemble on va loin !
+            <span>🤝</span>
           </div>
 
-          <Link href="/search" className={styles.bannerAction}>
-            <span>📍</span>
+          <Link href="/communities" className={styles.bannerAction}>
+            <span>👥</span>
             <div>
-              <strong>T&apos;es du coin ?</strong>
+              <strong>Une communauté ?</strong>
               <small>
-                Découvre les objets
+                Rejoins celle des
                 <br />
-                près de chez toi !
+                déclarants près de toi !
               </small>
             </div>
             <b>›</b>
