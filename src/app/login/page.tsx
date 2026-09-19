@@ -5,7 +5,7 @@ import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { signInWithPassword, getMfaChallengeStatus, verifyMfaChallenge, signInWithGoogle } from "@/lib/auth";
 
-const HEADER_HEIGHT = "calc(172px + env(safe-area-inset-top))";
+const HEADER_HEIGHT = "calc(132px + env(safe-area-inset-top))";
 
 // Supabase's own error messages for expired/reused confirmation links are in
 // English and not very reassuring — swap in a friendlier French message that
@@ -113,12 +113,12 @@ function LoginForm() {
         className="fixed top-0 inset-x-0 z-20 bg-background/95 backdrop-blur-md border-b border-outline-variant/20"
         style={{ paddingTop: "env(safe-area-inset-top)" }}
       >
-        <div className="w-full max-w-md mx-auto px-container-margin pt-4 pb-4 flex flex-col">
-          <div className="flex items-center gap-2">
+        <div className="w-full max-w-md mx-auto px-container-margin pt-3 pb-3 flex flex-col">
+          <div className="relative flex items-center justify-center">
             <Link
               href="/home"
               aria-label="Retour"
-              className="-ml-2 w-10 h-10 flex items-center justify-center rounded-full hover:bg-surface-container-high/60 transition-colors text-on-surface shrink-0"
+              className="absolute left-0 w-10 h-10 flex items-center justify-center rounded-full hover:bg-surface-container-high/60 transition-colors text-on-surface shrink-0"
             >
               <span className="material-symbols-outlined">arrow_back</span>
             </Link>
@@ -130,7 +130,7 @@ function LoginForm() {
             </div>
           </div>
 
-          <div className="flex flex-col items-center mt-2">
+          <div className="flex flex-col items-center mt-3">
             <div className="flex items-center gap-1.5 bg-primary/10 text-primary px-3 py-1.5 rounded-full">
               <span className="material-symbols-outlined text-[16px]">lock</span>
               <span className="font-label-md text-label-md">Vos données sont protégées</span>
@@ -145,7 +145,7 @@ function LoginForm() {
       >
         {mfaFactorId ? (
           <>
-            <h1 className="font-headline-lg-mobile text-headline-lg-mobile text-on-surface mb-2 mt-lg">Vérification en deux étapes</h1>
+            <h1 className="font-headline-lg-mobile text-headline-lg-mobile text-on-surface mb-2">Vérification en deux étapes</h1>
             <p className="font-body-md text-body-md text-on-surface-variant mb-xl">
               Entrez le code à 6 chiffres généré par votre application d&apos;authentification.
             </p>
@@ -189,7 +189,7 @@ function LoginForm() {
           </>
         ) : (
           <>
-            <h1 className="font-headline-lg-mobile text-headline-lg-mobile text-on-surface mb-2 mt-lg">Connectez-vous à Objely</h1>
+            <h1 className="font-headline-lg-mobile text-headline-lg-mobile text-on-surface mb-2">Connectez-vous à Objely</h1>
             <p className="font-body-md text-body-md text-on-surface-variant mb-xl">
               Retrouvez vos objets et gérez vos déclarations en toute simplicité.
             </p>
