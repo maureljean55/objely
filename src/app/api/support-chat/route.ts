@@ -41,8 +41,12 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: "Vous devez être connecté." }, { status: 401 });
   }
 
-  const { conversationId, message } = (await request.json()) as { conversationId: string; message: string };
-  if (!conversationId || !message?.trim()) {
+  const { conversationId, message, attachment } = (await request.json()) as {
+    conversationId: string;
+    message?: string;
+    attachment?: { url: string; name: string; type: string } | null;
+  };
+  if (!conversationId || (!message?.trim() && !attachment)) {
     return NextResponse.json({ error: "Message invalide." }, { status: 400 });
   }
 
@@ -57,7 +61,18 @@ export async function POST(request: Request) {
 
   const { data: userMessage, error: insertError } = await supabase
     .from("support_messages")
-    .insert({ conversation_id: conversationId, sender: "user", body: message.trim() })
+    .insert(
+      attachment
+        ? {
+            conversation_id: conversationId,
+            sender: "user",
+            kind: "attachment",
+            attachment_url: attachment.url,
+            attachment_name: attachment.name,
+            attachment_type: attachment.type,
+          }
+        : { conversation_id: conversationId, sender: "user", body: message!.trim() },
+    )
     .select()
     .single();
   if (insertError) {
@@ -71,15 +86,18 @@ export async function POST(request: Request) {
 
   const { data: history } = await supabase
     .from("support_messages")
-    .select("sender, body")
+    .select("sender, body, kind, attachment_name")
     .eq("conversation_id", conversationId)
     .order("created_at", { ascending: true })
     .limit(30);
 
   const systemPrompt = await buildSystemPrompt(supabase);
+  // The model never sees the actual file — it has no vision input here —
+  // just a text placeholder, so it can acknowledge receipt naturally
+  // instead of the turn just being blank.
   const contents = (history ?? []).map((m) => ({
     role: m.sender === "user" ? "user" : "model",
-    parts: [{ text: m.body }],
+    parts: [{ text: m.kind === "attachment" ? `[Pièce jointe envoyée : ${m.attachment_name}]` : (m.body ?? "") }],
   }));
 
   let botText = "Merci pour votre message, un conseiller va prendre le relais dès que possible.";

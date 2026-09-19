@@ -11,9 +11,18 @@ export type SupportMessage = {
   id: string;
   conversation_id: string;
   sender: "user" | "bot" | "admin";
-  body: string;
+  kind: "text" | "attachment";
+  body: string | null;
+  attachment_url: string | null;
+  attachment_name: string | null;
+  attachment_type: string | null;
   created_at: string;
 };
+
+export function supportMessagePreview(message: SupportMessage) {
+  if (message.kind === "attachment") return `📎 ${message.attachment_name ?? "Pièce jointe"}`;
+  return message.body ?? "";
+}
 
 export type SupportConversationSummary = { conversation: SupportConversation; lastMessage: SupportMessage | null };
 

@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
-import { listMySupportConversations, type SupportConversationSummary } from "@/lib/supabase/support";
+import { listMySupportConversations, supportMessagePreview, type SupportConversationSummary } from "@/lib/supabase/support";
 
 const STATUS_LABEL: Record<string, { label: string; className: string }> = {
   bot: { label: "En cours", className: "bg-primary-fixed text-on-primary-fixed-variant" },
@@ -86,7 +86,7 @@ export default function HelpHistoryPage() {
                           {lastMessage && <span className="font-label-md text-[11px] text-outline shrink-0">{timeAgo(lastMessage.created_at)}</span>}
                         </div>
                         <p className="font-body-md text-body-md text-on-surface-variant truncate mb-1.5">
-                          {lastMessage ? `${lastMessage.sender === "user" ? "Vous : " : ""}${lastMessage.body}` : "Aucun message"}
+                          {lastMessage ? `${lastMessage.sender === "user" ? "Vous : " : ""}${supportMessagePreview(lastMessage)}` : "Aucun message"}
                         </p>
                         <span className={`inline-flex items-center px-2 py-0.5 rounded-full font-label-md text-[11px] ${status.className}`}>
                           {status.label}

@@ -2,7 +2,9 @@
 
 import { Suspense, useEffect, useRef, useState } from "react";
 import Link from "next/link";
+import Image from "next/image";
 import { useSearchParams } from "next/navigation";
+import { uploadSupportAttachment } from "@/lib/supabase/supportAttachments";
 
 const SUGGESTIONS = [
   { icon: "search", label: "Problème avec une correspondance" },
@@ -13,12 +15,22 @@ const SUGGESTIONS = [
 type SupportMessage = {
   id: string;
   sender: "user" | "bot" | "admin";
-  body: string;
+  kind: "text" | "attachment";
+  body: string | null;
+  attachment_url: string | null;
+  attachment_name: string | null;
+  attachment_type: string | null;
   created_at: string;
 };
 
 function formatTime(dateStr: string) {
   return new Date(dateStr).toLocaleTimeString("fr-FR", { hour: "2-digit", minute: "2-digit" });
+}
+
+function attachmentIcon(type: string | null) {
+  if (type?.startsWith("image/")) return "image";
+  if (type === "application/pdf") return "picture_as_pdf";
+  return "description";
 }
 
 function HelpChatContent() {
@@ -33,7 +45,9 @@ function HelpChatContent() {
   const [isLoading, setIsLoading] = useState(true);
   const [sendError, setSendError] = useState<string | null>(null);
   const [loadError, setLoadError] = useState(false);
+  const [isUploading, setIsUploading] = useState(false);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
   const bottomRef = useRef<HTMLDivElement>(null);
   const pendingIdRef = useRef(0);
 
@@ -71,7 +85,11 @@ function HelpChatContent() {
     const optimisticUser: SupportMessage = {
       id: `pending-${pendingIdRef.current}`,
       sender: "user",
+      kind: "text",
       body: body.trim(),
+      attachment_url: null,
+      attachment_name: null,
+      attachment_type: null,
       created_at: new Date().toISOString(),
     };
     setMessages((prev) => [...prev, optimisticUser]);
@@ -91,6 +109,53 @@ function HelpChatContent() {
       if (data.escalated) setStatus("escalated");
     } catch {
       setSendError("Le message n'a pas pu être envoyé, réessayez.");
+    } finally {
+      setIsSending(false);
+    }
+  };
+
+  const sendAttachment = async (file: File) => {
+    if (isUploading || isSending || !conversationId) return;
+    setIsUploading(true);
+    setSendError(null);
+
+    const { url, name, type, error: uploadError } = await uploadSupportAttachment(file);
+    if (uploadError || !url) {
+      setSendError(uploadError?.message || "Le fichier n'a pas pu être envoyé, réessayez.");
+      setIsUploading(false);
+      return;
+    }
+
+    pendingIdRef.current += 1;
+    const optimisticUser: SupportMessage = {
+      id: `pending-${pendingIdRef.current}`,
+      sender: "user",
+      kind: "attachment",
+      body: null,
+      attachment_url: url,
+      attachment_name: name,
+      attachment_type: type,
+      created_at: new Date().toISOString(),
+    };
+    setMessages((prev) => [...prev, optimisticUser]);
+    setIsUploading(false);
+    setIsSending(true);
+
+    try {
+      const res = await fetch("/api/support-chat", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ conversationId, attachment: { url, name, type } }),
+      });
+      if (!res.ok) throw new Error("request failed");
+      const data = await res.json();
+      setMessages((prev) => {
+        const withoutOptimistic = prev.filter((m) => m.id !== optimisticUser.id);
+        return [...withoutOptimistic, ...(data.userMessage ? [data.userMessage] : [optimisticUser]), ...(data.botMessage ? [data.botMessage] : [])];
+      });
+      if (data.escalated) setStatus("escalated");
+    } catch {
+      setSendError("Le fichier n'a pas pu être envoyé, réessayez.");
     } finally {
       setIsSending(false);
     }
@@ -146,11 +211,30 @@ function HelpChatContent() {
           return (
             <div key={message.id} className={`flex flex-col gap-1 max-w-[85%] ${isMine ? "items-end self-end" : "items-start self-start"}`}>
               <div
-                className={`rounded-2xl px-4 py-2.5 shadow-sm whitespace-pre-line ${
-                  isMine ? "message-out text-on-primary" : "bg-surface-container message-in text-on-surface"
-                }`}
+                className={`rounded-2xl overflow-hidden shadow-sm ${
+                  message.kind === "attachment" ? "p-1.5" : "px-4 py-2.5 whitespace-pre-line"
+                } ${isMine ? "message-out text-on-primary" : "bg-surface-container message-in text-on-surface"}`}
               >
-                <p className="font-body-md text-body-md">{message.body}</p>
+                {message.kind === "attachment" ? (
+                  message.attachment_type?.startsWith("image/") ? (
+                    <a href={message.attachment_url ?? undefined} target="_blank" rel="noopener noreferrer" className="block relative w-52 h-40 rounded-xl overflow-hidden">
+                      <Image src={message.attachment_url ?? ""} alt={message.attachment_name ?? "Pièce jointe"} fill sizes="208px" className="object-cover" />
+                    </a>
+                  ) : (
+                    <a
+                      href={message.attachment_url ?? undefined}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className={`flex items-center gap-2.5 px-3 py-2.5 rounded-xl ${isMine ? "bg-white/10" : "bg-surface-container-high"}`}
+                    >
+                      <span className="material-symbols-outlined text-[22px] shrink-0">{attachmentIcon(message.attachment_type)}</span>
+                      <span className="font-body-md text-body-md truncate max-w-[160px]">{message.attachment_name ?? "Pièce jointe"}</span>
+                      <span className="material-symbols-outlined text-[18px] shrink-0">download</span>
+                    </a>
+                  )
+                ) : (
+                  <p className="font-body-md text-body-md">{message.body}</p>
+                )}
               </div>
               <span className={`font-label-md text-[11px] text-outline-variant ${isMine ? "mr-2" : "ml-2"}`}>{formatTime(message.created_at)}</span>
             </div>
@@ -195,8 +279,31 @@ function HelpChatContent() {
           <p className="font-body-md text-[13px] text-error text-center mb-2 max-w-[800px] mx-auto">{sendError}</p>
         )}
         <div className="flex items-end gap-2 max-w-[800px] mx-auto w-full">
-          <button className="p-2 text-primary hover:bg-primary/10 rounded-full transition-colors shrink-0">
-            <span className="material-symbols-outlined text-[26px]" style={{ fontVariationSettings: "'FILL' 0" }}>add_circle</span>
+          <input
+            ref={fileInputRef}
+            type="file"
+            accept="image/*,application/pdf,.doc,.docx,.txt"
+            className="hidden"
+            onChange={(e) => {
+              const file = e.target.files?.[0];
+              e.target.value = "";
+              if (file) sendAttachment(file);
+            }}
+          />
+          <button
+            type="button"
+            onClick={() => fileInputRef.current?.click()}
+            disabled={isUploading || isSending || isLoading}
+            aria-label="Joindre un fichier"
+            className="p-2 text-primary hover:bg-primary/10 rounded-full transition-colors shrink-0 disabled:opacity-50"
+          >
+            {isUploading ? (
+              <span className="w-[26px] h-[26px] flex items-center justify-center">
+                <span className="w-4 h-4 border-2 border-primary/30 border-t-primary rounded-full animate-spin" />
+              </span>
+            ) : (
+              <span className="material-symbols-outlined text-[26px]" style={{ fontVariationSettings: "'FILL' 0" }}>add_circle</span>
+            )}
           </button>
           <div className="flex-1 bg-surface-container-low rounded-3xl border border-outline-variant/30 px-4 py-2 flex items-center min-h-[44px]">
             <textarea
