@@ -186,16 +186,18 @@ export default function CommunityChatThread({
           {showMenu && (
             <>
               <div className="fixed inset-0 z-[90]" onClick={() => setShowMenu(false)} />
-              <div className="absolute right-0 top-full mt-1 w-60 bg-surface-container-lowest rounded-2xl overflow-hidden shadow-[0_8px_30px_rgba(0,0,0,0.12)] border border-outline-variant/15 py-1 z-[91] animate-popIn">
+              <div className="absolute right-0 top-full mt-2 w-64 origin-top-right bg-surface-container-lowest/95 backdrop-blur-xl rounded-[22px] overflow-hidden shadow-[0_16px_44px_rgba(0,0,0,0.18)] border border-outline-variant/15 p-1.5 z-[91] animate-popIn">
                 <button
                   type="button"
                   onClick={() => {
                     setShowMenu(false);
                     handleInvite();
                   }}
-                  className="w-full py-2.5 px-3 flex items-center gap-2.5 text-on-surface font-body-md text-body-md hover:bg-surface-variant/40 transition-colors"
+                  className="w-full py-2 px-2 flex items-center gap-3 rounded-2xl text-on-surface font-body-md text-body-md hover:bg-surface-variant/50 active:scale-[0.98] transition-all"
                 >
-                  <span className="material-symbols-outlined text-[19px] text-on-surface-variant w-5 shrink-0">person_add</span>
+                  <span className="w-9 h-9 rounded-full bg-primary/10 text-primary flex items-center justify-center shrink-0">
+                    <span className="material-symbols-outlined text-[19px]">person_add</span>
+                  </span>
                   Ajouter des membres
                 </button>
                 <button
@@ -204,11 +206,16 @@ export default function CommunityChatThread({
                     setShowMenu(false);
                     setShowMembersSheet(true);
                   }}
-                  className="w-full py-2.5 px-3 flex items-center gap-2.5 text-on-surface font-body-md text-body-md hover:bg-surface-variant/40 transition-colors"
+                  className="w-full py-2 px-2 flex items-center gap-3 rounded-2xl text-on-surface font-body-md text-body-md hover:bg-surface-variant/50 active:scale-[0.98] transition-all"
                 >
-                  <span className="material-symbols-outlined text-[19px] text-on-surface-variant w-5 shrink-0">groups</span>
+                  <span className="w-9 h-9 rounded-full bg-surface-container-high text-on-surface-variant flex items-center justify-center shrink-0">
+                    <span className="material-symbols-outlined text-[19px]">groups</span>
+                  </span>
                   Voir les membres
                 </button>
+
+                <div className="h-px bg-outline-variant/15 my-1.5 mx-3" />
+
                 {isOwner ? (
                   <button
                     type="button"
@@ -216,9 +223,11 @@ export default function CommunityChatThread({
                       setShowMenu(false);
                       setShowDeleteConfirm(true);
                     }}
-                    className="w-full py-2.5 px-3 flex items-center gap-2.5 text-error font-body-md text-body-md hover:bg-surface-variant/40 transition-colors"
+                    className="w-full py-2 px-2 flex items-center gap-3 rounded-2xl text-error font-body-md text-body-md hover:bg-error-container/30 active:scale-[0.98] transition-all"
                   >
-                    <span className="material-symbols-outlined text-[19px] w-5 shrink-0">delete</span>
+                    <span className="w-9 h-9 rounded-full bg-error/10 flex items-center justify-center shrink-0">
+                      <span className="material-symbols-outlined text-[19px]">delete</span>
+                    </span>
                     Supprimer la communauté
                   </button>
                 ) : (
@@ -228,9 +237,11 @@ export default function CommunityChatThread({
                       setShowMenu(false);
                       setShowLeaveConfirm(true);
                     }}
-                    className="w-full py-2.5 px-3 flex items-center gap-2.5 text-error font-body-md text-body-md hover:bg-surface-variant/40 transition-colors"
+                    className="w-full py-2 px-2 flex items-center gap-3 rounded-2xl text-error font-body-md text-body-md hover:bg-error-container/30 active:scale-[0.98] transition-all"
                   >
-                    <span className="material-symbols-outlined text-[19px] w-5 shrink-0">logout</span>
+                    <span className="w-9 h-9 rounded-full bg-error/10 flex items-center justify-center shrink-0">
+                      <span className="material-symbols-outlined text-[19px]">logout</span>
+                    </span>
                     Quitter la communauté
                   </button>
                 )}
