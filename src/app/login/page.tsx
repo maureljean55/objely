@@ -114,20 +114,23 @@ function LoginForm() {
         style={{ paddingTop: "env(safe-area-inset-top)" }}
       >
         <div className="w-full max-w-md mx-auto px-container-margin pt-4 pb-4 flex flex-col">
-          <Link
-            href="/home"
-            aria-label="Retour"
-            className="-ml-2 w-10 h-10 flex items-center justify-center rounded-full hover:bg-surface-container-high/60 transition-colors text-on-surface"
-          >
-            <span className="material-symbols-outlined">arrow_back</span>
-          </Link>
+          <div className="flex items-center gap-2">
+            <Link
+              href="/home"
+              aria-label="Retour"
+              className="-ml-2 w-10 h-10 flex items-center justify-center rounded-full hover:bg-surface-container-high/60 transition-colors text-on-surface shrink-0"
+            >
+              <span className="material-symbols-outlined">arrow_back</span>
+            </Link>
 
-          <div className="flex flex-col items-center mt-2">
-            <div className="flex items-center gap-2 mb-4">
+            <div className="flex items-center gap-2">
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img src="/logo/objely-mark.png" alt="" className="w-9 h-9" />
               <span className="font-headline-sm text-headline-sm font-bold text-on-surface">Objely</span>
             </div>
+          </div>
+
+          <div className="flex flex-col items-center mt-2">
             <div className="flex items-center gap-1.5 bg-primary/10 text-primary px-3 py-1.5 rounded-full">
               <span className="material-symbols-outlined text-[16px]">lock</span>
               <span className="font-label-md text-label-md">Vos données sont protégées</span>
