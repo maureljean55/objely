@@ -5,6 +5,7 @@ import BottomNav from "@/components/BottomNav";
 import HomeHeader from "@/components/home/HomeHeader";
 import GuardedActionLink from "@/components/home/GuardedActionLink";
 import CookieBanner from "@/components/CookieBanner";
+import EntryDisclaimer from "@/components/EntryDisclaimer";
 import { createClient } from "@/lib/supabase/server";
 import { listRecentFinds } from "@/lib/supabase/publicFeed";
 import type { AppNotification } from "@/lib/supabase/notifications";
@@ -93,6 +94,8 @@ export default async function HomeDashboardPage({
 
   return (
     <div className={styles.page}>
+      {!user && <EntryDisclaimer />}
+
       {/* Desktop nav — the mockup this page follows only targets phone
           widths (its own breakpoint tops out at 430px), so wider screens
           keep the app's existing simple top nav instead of an invented
