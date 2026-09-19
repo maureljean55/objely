@@ -6,11 +6,56 @@ import { requestPasswordReset } from "@/lib/auth";
 
 const HEADER_HEIGHT = "calc(172px + env(safe-area-inset-top))";
 
+// Recovery e-mails sent through Supabase's default (SMTP-less) provider get
+// silently burned by Gmail's link-prefetching before the real click lands —
+// see the reset-password page's own comments. Fixing that for real needs a
+// custom email template, which needs custom SMTP, which needs a domain we
+// don't have yet. Until then, turning the flow off with a clear message
+// beats leaving a "forgot password" link that quietly fails for anyone
+// using Gmail. Flip this back on once SMTP + the token_hash template are in
+// place.
+const FORGOT_PASSWORD_ENABLED = false;
+
 export default function ForgotPasswordPage() {
   const [email, setEmail] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [sent, setSent] = useState(false);
+
+  if (!FORGOT_PASSWORD_ENABLED) {
+    return (
+      <div className="min-h-[100dvh] bg-background flex flex-col">
+        <div
+          className="fixed top-0 inset-x-0 z-20 bg-background/95 backdrop-blur-md border-b border-outline-variant/20"
+          style={{ paddingTop: "env(safe-area-inset-top)" }}
+        >
+          <div className="w-full max-w-md mx-auto px-container-margin pt-4 pb-4 flex flex-col">
+            <Link
+              href="/login"
+              aria-label="Retour"
+              className="-ml-2 w-10 h-10 flex items-center justify-center rounded-full hover:bg-surface-container-high/60 transition-colors text-on-surface"
+            >
+              <span className="material-symbols-outlined">arrow_back</span>
+            </Link>
+          </div>
+        </div>
+
+        <main className="w-full max-w-md mx-auto px-container-margin pb-16 flex flex-col items-center justify-center grow text-center gap-3">
+          <div className="w-16 h-16 rounded-full bg-surface-container-high text-on-surface-variant flex items-center justify-center mb-2">
+            <span className="material-symbols-outlined text-[32px]">construction</span>
+          </div>
+          <h1 className="font-headline-lg-mobile text-headline-lg-mobile text-on-surface">Pas encore disponible</h1>
+          <p className="font-body-md text-body-md text-on-surface-variant max-w-xs">
+            La réinitialisation de mot de passe en ligne n&apos;est pas encore disponible. Contactez le support pour
+            retrouver l&apos;accès à votre compte.
+          </p>
+          <Link href="/login" className="text-primary font-semibold mt-2">
+            Retour à la connexion
+          </Link>
+        </main>
+      </div>
+    );
+  }
 
   const canSubmit = email.trim().length > 0 && !isSubmitting;
 
