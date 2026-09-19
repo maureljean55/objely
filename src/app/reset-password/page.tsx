@@ -222,6 +222,11 @@ export default function ResetPasswordPage() {
         <p className="font-body-md text-body-md text-on-surface-variant max-w-xs">
           Ce lien de réinitialisation n&apos;est plus valable. Demandez-en un nouveau.
         </p>
+        <p className="font-body-md text-[13px] text-on-surface-variant max-w-xs">
+          Si vous avez cliqué dessus depuis l&apos;application Gmail, celle-ci l&apos;ouvre parfois elle-même pour le
+          vérifier avant vous, ce qui l&apos;invalide. Essayez plutôt de l&apos;ouvrir dans Safari ou Chrome (appui long sur
+          le lien puis &laquo; Ouvrir dans... &raquo;).
+        </p>
         <Link href="/forgot-password" className="text-primary font-semibold mt-2">
           Réinitialiser mon mot de passe
         </Link>
