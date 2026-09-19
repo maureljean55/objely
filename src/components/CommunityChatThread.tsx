@@ -196,7 +196,7 @@ export default function CommunityChatThread({
                   className="w-full py-2.5 px-3 flex items-center gap-2.5 text-on-surface font-body-md text-body-md hover:bg-surface-variant/40 transition-colors"
                 >
                   <span className="material-symbols-outlined text-[19px] text-on-surface-variant w-5 shrink-0">person_add</span>
-                  Inviter des membres
+                  Ajouter des membres
                 </button>
                 <button
                   type="button"
@@ -350,7 +350,7 @@ export default function CommunityChatThread({
                 className="shrink-0 flex items-center gap-1.5 py-2 px-3.5 rounded-full bg-primary/10 text-primary font-label-md text-label-md font-semibold hover:bg-primary/15 transition-colors"
               >
                 <span className="material-symbols-outlined text-[18px]">person_add</span>
-                Inviter
+                Ajouter
               </button>
             </div>
             <div className="flex flex-col gap-3">
