@@ -126,7 +126,7 @@ function LoginForm() {
             <div className="flex items-center gap-2">
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img src="/logo/objely-mark.png" alt="" className="w-9 h-9" />
-              <span className="font-headline-sm text-headline-sm font-bold text-on-surface">Objely</span>
+              <span className="font-headline-sm text-headline-md font-bold text-on-surface">Objely</span>
             </div>
           </div>
 
