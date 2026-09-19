@@ -46,7 +46,7 @@ type Props = {
   onLeave: () => Promise<boolean>;
   onDeleteCommunity: () => Promise<boolean>;
   /** Adds a member by their public ID. Resolves to an error message to show, or null on success. */
-  onAddMember: (publicId: number) => Promise<string | null>;
+  onAddMember: (publicId: string) => Promise<string | null>;
 };
 
 /** WhatsApp-style group chat: unlike ChatThread (built for exactly two parties), every
@@ -102,9 +102,9 @@ export default function CommunityChatThread({
   };
 
   const handleAddMemberSubmit = async () => {
-    const publicId = Number.parseInt(addMemberInput.trim(), 10);
-    if (!Number.isInteger(publicId) || publicId <= 0) {
-      setAddMemberError("Entrez un identifiant valide.");
+    const publicId = addMemberInput.trim().toUpperCase();
+    if (!/^[A-Z0-9]{7}$/.test(publicId)) {
+      setAddMemberError("Entrez les 7 caractères de l'identifiant.");
       return;
     }
     setIsAddingMember(true);
@@ -463,17 +463,20 @@ export default function CommunityChatThread({
           >
             <h2 className="font-headline-md text-headline-md text-on-surface mb-1">Ajouter un membre</h2>
             <p className="font-body-md text-body-md text-on-surface-variant mb-lg">
-              Entrez l&apos;identifiant public de cette personne, visible sur sa page de profil.
+              Entrez le code à 7 caractères affiché sur la page de profil de cette personne.
             </p>
             <div className="flex items-center gap-2 bg-surface-container-low rounded-2xl border border-outline-variant/30 px-4 h-14 focus-within:border-primary transition-colors">
               <span className="font-headline-sm text-headline-sm text-on-surface-variant shrink-0">@</span>
               <input
-                type="number"
-                inputMode="numeric"
+                type="text"
+                autoCapitalize="characters"
+                autoCorrect="off"
+                spellCheck={false}
                 autoFocus
+                maxLength={7}
                 value={addMemberInput}
                 onChange={(e) => {
-                  setAddMemberInput(e.target.value);
+                  setAddMemberInput(e.target.value.toUpperCase().replace(/[^A-Z0-9]/g, "").slice(0, 7));
                   setAddMemberError(null);
                 }}
                 onKeyDown={(e) => {
@@ -482,8 +485,8 @@ export default function CommunityChatThread({
                     handleAddMemberSubmit();
                   }
                 }}
-                placeholder="42"
-                className="w-full bg-transparent border-none p-0 focus:ring-0 font-body-md text-body-lg text-on-surface placeholder-outline"
+                placeholder="K7M2PQD"
+                className="w-full bg-transparent border-none p-0 focus:ring-0 font-mono text-body-lg tracking-[0.2em] text-on-surface placeholder-outline"
               />
             </div>
             {addMemberError && <p className="font-body-md text-[13px] text-error mt-3">{addMemberError}</p>}
@@ -498,7 +501,7 @@ export default function CommunityChatThread({
               </button>
               <button
                 type="button"
-                disabled={isAddingMember || !addMemberInput.trim()}
+                disabled={isAddingMember || addMemberInput.length !== 7}
                 onClick={handleAddMemberSubmit}
                 className="flex-1 h-12 rounded-[14px] bg-primary text-on-primary font-headline-sm text-headline-sm hover:opacity-90 transition-opacity disabled:opacity-50 disabled:cursor-not-allowed"
               >

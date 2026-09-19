@@ -138,7 +138,7 @@ export async function leaveCommunity(id: string) {
 /** Adds someone straight into the community by their permanent public_id
  * (shown on their own profile as "id: @<number>") — no invite link needed,
  * they just appear as a member and can chat immediately. */
-export async function addCommunityMemberByPublicId(id: string, publicId: number) {
+export async function addCommunityMemberByPublicId(id: string, publicId: string) {
   const supabase = createClient();
   const { error } = await supabase.rpc("add_community_member_by_public_id", {
     p_community_id: id,

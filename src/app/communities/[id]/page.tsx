@@ -118,7 +118,7 @@ export default function CommunityPage() {
     return false;
   };
 
-  const handleAddMember = async (publicId: number) => {
+  const handleAddMember = async (publicId: string) => {
     const { error } = await addCommunityMemberByPublicId(communityId, publicId);
     if (error) return error;
     setCommunity((prev) => (prev ? { ...prev, member_count: prev.member_count + 1 } : prev));

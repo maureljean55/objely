@@ -8,7 +8,7 @@ const AVATAR_JPEG_QUALITY = 0.85;
 
 export type Profile = {
   id: string;
-  public_id: number;
+  public_id: string;
   full_name: string | null;
   phone: string | null;
   address: string | null;

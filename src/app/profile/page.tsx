@@ -55,10 +55,23 @@ function ProfileSummary({
   avatarUrl: string | null;
   displayName: string;
   trustScore: number;
-  publicId: number | null;
+  publicId: string | null;
 }) {
   const authenticated = !!user;
   const tier = trustTier(trustScore);
+  const [copied, setCopied] = useState(false);
+
+  const handleCopyId = async () => {
+    if (!publicId) return;
+    try {
+      await navigator.clipboard.writeText(publicId);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    } catch {
+      // Clipboard access can be denied by the browser — nothing useful to
+      // do about it beyond leaving the code unselected.
+    }
+  };
 
   return (
     <>
@@ -100,11 +113,6 @@ function ProfileSummary({
                 <span className="material-symbols-outlined text-[18px]">edit</span>
               </Link>
             </div>
-            {publicId !== null && (
-              <span className="font-label-md text-[11px] text-on-surface-variant bg-surface-container-high px-2.5 py-1 rounded-full mb-2">
-                id: @{publicId}
-              </span>
-            )}
             <h1 className="font-headline-lg-mobile md:font-headline-lg text-headline-lg-mobile md:text-headline-lg text-on-surface mb-2">
               {displayName}
             </h1>
@@ -136,6 +144,37 @@ function ProfileSummary({
               </div>
             ))}
           </section>
+
+          {publicId !== null && (
+            <section className="animate-slideUp mt-3">
+              <div className="relative overflow-hidden bg-surface-container-lowest rounded-[24px] p-4 flex items-center gap-3 soft-shadow inner-stroke">
+                <div
+                  className="absolute -right-6 -top-10 w-28 h-28 rounded-full opacity-[0.07]"
+                  style={{ background: "linear-gradient(135deg, #0058bc, #8b5cf6)" }}
+                />
+                <div
+                  className="relative w-11 h-11 rounded-full flex items-center justify-center text-white shrink-0 shadow-sm"
+                  style={{ background: "linear-gradient(135deg, #0058bc, #8b5cf6)" }}
+                >
+                  <span className="material-symbols-outlined text-[20px]">fingerprint</span>
+                </div>
+                <div className="relative min-w-0 flex-1">
+                  <p className="font-label-md text-label-md text-on-surface-variant">Identifiant public</p>
+                  <p className="font-mono text-headline-sm text-headline-sm tracking-[0.2em] text-on-surface truncate">
+                    @{publicId}
+                  </p>
+                </div>
+                <button
+                  type="button"
+                  onClick={handleCopyId}
+                  aria-label="Copier l'identifiant"
+                  className="relative shrink-0 w-10 h-10 rounded-full flex items-center justify-center text-primary hover:bg-primary/10 active:scale-95 transition-all"
+                >
+                  <span className="material-symbols-outlined text-[20px]">{copied ? "check" : "content_copy"}</span>
+                </button>
+              </div>
+            </section>
+          )}
         </>
       ) : (
         <section className="flex flex-col items-center text-center pt-10 pb-6 animate-fadeIn">
@@ -173,7 +212,7 @@ export default function UserProfilePage() {
   const [avatarUrl, setAvatarUrl] = useState<string | null>(null);
   const [profileName, setProfileName] = useState<string | null>(null);
   const [trustScore, setTrustScore] = useState(0);
-  const [publicId, setPublicId] = useState<number | null>(null);
+  const [publicId, setPublicId] = useState<string | null>(null);
   const [authChecked, setAuthChecked] = useState(false);
   const displayName = profileName || (user?.user_metadata?.full_name as string | undefined) || user?.email || "";
 
