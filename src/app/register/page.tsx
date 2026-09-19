@@ -23,7 +23,7 @@ const COUNTRIES = [
   { code: "TN", dial: "+216", flag: "🇹🇳", name: "Tunisie" },
 ] as const;
 
-const HEADER_HEIGHT = "calc(172px + env(safe-area-inset-top))";
+const HEADER_HEIGHT = "calc(148px + env(safe-area-inset-top))";
 
 const STRENGTH_LEVELS = [
   { label: "Très faible", className: "bg-error" },
@@ -129,27 +129,27 @@ export default function RegisterPage() {
         className="fixed top-0 inset-x-0 z-20 bg-background/95 backdrop-blur-md border-b border-outline-variant/20"
         style={{ paddingTop: "env(safe-area-inset-top)" }}
       >
-        <div className="w-full max-w-md mx-auto px-container-margin pt-4 pb-4 flex flex-col">
-          <div className="flex items-center justify-between">
+        <div className="w-full max-w-md mx-auto px-container-margin pt-3 pb-3 flex flex-col">
+          <div className="relative flex items-center justify-center">
             <Link
               href="/login"
               aria-label="Retour"
-              className="-ml-2 w-10 h-10 flex items-center justify-center rounded-full hover:bg-surface-container-high/60 transition-colors text-on-surface"
+              className="absolute left-0 w-10 h-10 flex items-center justify-center rounded-full hover:bg-surface-container-high/60 transition-colors text-on-surface shrink-0"
             >
               <span className="material-symbols-outlined">arrow_back</span>
             </Link>
+
+            <div className="flex items-center gap-2">
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img src="/logo/objely-mark.png" alt="" className="w-9 h-9" />
+              <span className="font-headline-sm text-headline-md font-bold text-on-surface">Objely</span>
+            </div>
+          </div>
+
+          <div className="flex flex-col items-center gap-1.5 mt-3">
             <div className="flex items-center gap-1.5 text-on-surface-variant">
               <span className="w-1.5 h-1.5 rounded-full bg-primary" />
               <span className="font-label-md text-label-md">Inscription sécurisée</span>
-            </div>
-            <div className="w-10" />
-          </div>
-
-          <div className="flex flex-col items-center mt-2">
-            <div className="flex items-center gap-2 mb-4">
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img src="/logo/objely-mark.png" alt="" className="w-9 h-9" />
-              <span className="font-headline-sm text-headline-sm font-bold text-on-surface">Objely</span>
             </div>
             <div className="flex items-center gap-1.5 bg-primary/10 text-primary px-3 py-1.5 rounded-full">
               <span className="material-symbols-outlined text-[16px]">lock</span>
@@ -163,7 +163,7 @@ export default function RegisterPage() {
         className="w-full max-w-md mx-auto px-container-margin pb-16 flex flex-col grow"
         style={{ paddingTop: HEADER_HEIGHT }}
       >
-        <h1 className="font-headline-lg-mobile text-headline-lg-mobile text-on-surface mb-2 mt-lg">Créer un compte</h1>
+        <h1 className="font-headline-lg-mobile text-headline-lg-mobile text-on-surface mb-2">Créer un compte</h1>
         <p className="font-body-md text-body-md text-on-surface-variant mb-xl">
           Rejoignez Objely pour sécuriser, inventorier et retrouver tous vos objets en un instant.
         </p>
