@@ -52,13 +52,20 @@ function HelpChatContent() {
   const pendingIdRef = useRef(0);
 
   useEffect(() => {
+    // Without this, an in-flight request from a previous invocation of this
+    // effect (React Strict Mode's double-invoke in dev, or a fast re-render)
+    // can resolve AFTER a newer one and overwrite fresh state with stale
+    // data — e.g. showing the just-archived conversation's old messages
+    // instead of the brand-new one just created for it.
+    let cancelled = false;
     const url = resumeId ? `/api/support-chat?conversation=${resumeId}` : "/api/support-chat";
-    fetch(url)
+    fetch(url, { cache: "no-store" })
       .then((res) => {
         if (!res.ok) throw new Error("request failed");
         return res.json();
       })
       .then((data) => {
+        if (cancelled) return;
         if (data.conversation) {
           setConversationId(data.conversation.id);
           setStatus(data.conversation.status);
@@ -67,9 +74,13 @@ function HelpChatContent() {
         setIsLoading(false);
       })
       .catch(() => {
+        if (cancelled) return;
         setLoadError(true);
         setIsLoading(false);
       });
+    return () => {
+      cancelled = true;
+    };
   }, [resumeId]);
 
   useEffect(() => {
