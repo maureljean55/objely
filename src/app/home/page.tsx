@@ -2,7 +2,6 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import Image from "next/image";
 import BottomNav from "@/components/BottomNav";
-import MessagesFab from "@/components/MessagesFab";
 import HomeHeader from "@/components/home/HomeHeader";
 import GuardedActionLink from "@/components/home/GuardedActionLink";
 import CookieBanner from "@/components/CookieBanner";
@@ -78,15 +77,9 @@ export default async function HomeDashboardPage({
   }] = await Promise.all([listRecentFinds(6), supabase.auth.getSession()]);
   const user = session?.user ?? null;
 
-  const [{ count: unreadCount }, { count: unreadMessageCount }, { data: profile }, { data: activities }] = user
+  const [{ count: unreadCount }, { data: profile }, { data: activities }] = user
     ? await Promise.all([
         supabase.from("notifications").select("id", { count: "exact", head: true }).eq("user_id", user.id).eq("read", false),
-        supabase
-          .from("notifications")
-          .select("id", { count: "exact", head: true })
-          .eq("user_id", user.id)
-          .eq("type", "message")
-          .eq("read", false),
         supabase.from("profiles").select("avatar_url").eq("id", user.id).maybeSingle<{ avatar_url: string | null }>(),
         supabase
           .from("notifications")
@@ -96,7 +89,7 @@ export default async function HomeDashboardPage({
           .limit(1)
           .returns<AppNotification[]>(),
       ])
-    : [{ count: 0 }, { count: 0 }, { data: null }, { data: [] as AppNotification[] }];
+    : [{ count: 0 }, { data: null }, { data: [] as AppNotification[] }];
 
   return (
     <div className={styles.page}>
@@ -571,7 +564,6 @@ export default async function HomeDashboardPage({
         </section>
       </main>
 
-      {user && <MessagesFab unreadCount={unreadMessageCount ?? 0} />}
       {user && <CookieBanner />}
 
       <BottomNav active="home" />
