@@ -17,24 +17,6 @@ export default function SplashPage() {
 
   useEffect(() => {
     const timer = setTimeout(() => {
-      // /onboarding was built but nothing ever linked to it — every visitor,
-      // first time or not, always landed straight on /home. Show it exactly
-      // once per browser instead, gated by a flag set the moment we send
-      // someone there (not when they finish it, so closing the tab mid-way
-      // doesn't re-show it forever).
-      let alreadySeen = true;
-      try {
-        alreadySeen = localStorage.getItem("objely-onboarding-seen") === "true";
-      } catch {}
-
-      if (!alreadySeen) {
-        try {
-          localStorage.setItem("objely-onboarding-seen", "true");
-        } catch {}
-        router.replace("/onboarding");
-        return;
-      }
-
       router.replace("/home");
     }, 2800);
     return () => clearTimeout(timer);
