@@ -3,6 +3,7 @@ import Link from "next/link";
 import Image from "next/image";
 import BottomNav from "@/components/BottomNav";
 import HomeHeader from "@/components/home/HomeHeader";
+import Greeting from "@/components/home/Greeting";
 import GuardedActionLink from "@/components/home/GuardedActionLink";
 import CookieBanner from "@/components/CookieBanner";
 import EntryDisclaimer from "@/components/EntryDisclaimer";
@@ -81,7 +82,11 @@ export default async function HomeDashboardPage({
   const [{ count: unreadCount }, { data: profile }, { data: activities }] = user
     ? await Promise.all([
         supabase.from("notifications").select("id", { count: "exact", head: true }).eq("user_id", user.id).eq("read", false),
-        supabase.from("profiles").select("avatar_url").eq("id", user.id).maybeSingle<{ avatar_url: string | null }>(),
+        supabase
+          .from("profiles")
+          .select("avatar_url, full_name")
+          .eq("id", user.id)
+          .maybeSingle<{ avatar_url: string | null; full_name: string | null }>(),
         supabase
           .from("notifications")
           .select("*")
@@ -105,10 +110,11 @@ export default async function HomeDashboardPage({
         className="hidden md:flex justify-between items-center w-full px-container-margin pb-base max-w-7xl mx-auto sticky top-0 z-50 bg-background/80 backdrop-blur-md"
         style={{ paddingTop: "calc(0.5rem + env(safe-area-inset-top))" }}
       >
-        <div className="flex items-center gap-sm">
+        <div className="flex items-center gap-md">
           <div className="px-3 py-1.5 rounded-xl bg-surface-container-lowest shadow-sm">
             <span className="font-headline-sm text-headline-sm text-on-surface">Objely</span>
           </div>
+          {user && <Greeting fullName={profile?.full_name ?? null} className="font-headline-sm text-headline-sm text-on-surface font-bold" />}
         </div>
         <nav className="flex gap-gutter">
           <Link className="text-primary font-label-md text-label-md hover:opacity-80 transition-opacity flex flex-col items-center" href="/home">
@@ -138,7 +144,7 @@ export default async function HomeDashboardPage({
       </header>
 
       <div className={`${styles.app} md:hidden`}>
-        <HomeHeader avatarUrl={profile?.avatar_url ?? null} unreadCount={unreadCount ?? 0} />
+        <HomeHeader avatarUrl={profile?.avatar_url ?? null} fullName={profile?.full_name ?? null} unreadCount={unreadCount ?? 0} />
 
         {welcome === "1" && (
           <div className="flex items-center gap-3 rounded-2xl bg-emerald-50 border border-emerald-200/60 px-4 py-3 mb-lg animate-fadeIn">

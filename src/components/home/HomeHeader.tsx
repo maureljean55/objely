@@ -3,11 +3,20 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
+import Greeting from "@/components/home/Greeting";
 import styles from "@/app/home/home.module.css";
 
 const COMPACT_THRESHOLD = 24;
 
-export default function HomeHeader({ avatarUrl, unreadCount }: { avatarUrl: string | null; unreadCount: number }) {
+export default function HomeHeader({
+  avatarUrl,
+  fullName,
+  unreadCount,
+}: {
+  avatarUrl: string | null;
+  fullName: string | null;
+  unreadCount: number;
+}) {
   const [compact, setCompact] = useState(false);
 
   useEffect(() => {
@@ -19,15 +28,18 @@ export default function HomeHeader({ avatarUrl, unreadCount }: { avatarUrl: stri
 
   return (
     <header className={`${styles.header} ${compact ? styles.headerCompact : ""}`}>
-      <Link href="/profile" aria-label="Profil" className={styles.profileButton}>
-        {avatarUrl ? (
-          <Image src={avatarUrl} alt="Profil" width={52} height={52} />
-        ) : (
-          <span className="material-symbols-outlined" style={{ fontSize: 26, fontVariationSettings: "'FILL' 1" }}>
-            person
-          </span>
-        )}
-      </Link>
+      <div className={styles.headerLeft}>
+        <Link href="/profile" aria-label="Profil" className={styles.profileButton}>
+          {avatarUrl ? (
+            <Image src={avatarUrl} alt="Profil" width={52} height={52} />
+          ) : (
+            <span className="material-symbols-outlined" style={{ fontSize: 26, fontVariationSettings: "'FILL' 1" }}>
+              person
+            </span>
+          )}
+        </Link>
+        {!compact && <Greeting fullName={fullName} className={styles.greeting} />}
+      </div>
 
       <div className={styles.headerRight}>
         <Link href="/notifications" aria-label="Notifications" className={styles.circleButton}>

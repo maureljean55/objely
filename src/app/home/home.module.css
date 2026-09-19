@@ -137,6 +137,22 @@
   gap: 9px;
 }
 
+.headerLeft {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-width: 0;
+}
+
+.greeting {
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--home-heading, var(--home-text));
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
 .profileButton {
   width: 52px;
   height: 52px;
