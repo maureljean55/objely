@@ -8,6 +8,7 @@ import { getCurrentUser } from "@/lib/auth";
 import GuardedActionLink from "@/components/home/GuardedActionLink";
 import CommunityChatThread from "@/components/CommunityChatThread";
 import {
+  addCommunityMemberByPublicId,
   deleteCommunity,
   getCommunity,
   getMyMembership,
@@ -117,6 +118,14 @@ export default function CommunityPage() {
     return false;
   };
 
+  const handleAddMember = async (publicId: number) => {
+    const { error } = await addCommunityMemberByPublicId(communityId, publicId);
+    if (error) return error;
+    setCommunity((prev) => (prev ? { ...prev, member_count: prev.member_count + 1 } : prev));
+    await loadMemberData();
+    return null;
+  };
+
   const handleLeave = async () => {
     const { error } = await leaveCommunity(communityId);
     if (error) return false;
@@ -153,7 +162,6 @@ export default function CommunityPage() {
   if (isMember && currentUserId) {
     return (
       <CommunityChatThread
-        communityId={communityId}
         communityName={community.name}
         communityCoverUrl={community.cover_url}
         memberCount={community.member_count}
@@ -165,6 +173,7 @@ export default function CommunityPage() {
         onBack={() => router.push("/communities")}
         onLeave={handleLeave}
         onDeleteCommunity={handleDeleteCommunity}
+        onAddMember={handleAddMember}
       />
     );
   }

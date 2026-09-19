@@ -135,6 +135,23 @@ export async function leaveCommunity(id: string) {
   return { error };
 }
 
+/** Adds someone straight into the community by their permanent public_id
+ * (shown on their own profile as "id: @<number>") — no invite link needed,
+ * they just appear as a member and can chat immediately. */
+export async function addCommunityMemberByPublicId(id: string, publicId: number) {
+  const supabase = createClient();
+  const { error } = await supabase.rpc("add_community_member_by_public_id", {
+    p_community_id: id,
+    p_public_id: publicId,
+  });
+  if (!error) return { error: null };
+
+  const message = error.message ?? "";
+  if (message.includes("No user found")) return { error: "Aucun utilisateur ne correspond à cet identifiant." };
+  if (message.includes("already a member")) return { error: "Cette personne est déjà membre de la communauté." };
+  return { error: "Impossible d'ajouter ce membre, réessayez." };
+}
+
 export async function deleteCommunity(id: string) {
   const supabase = createClient();
   const { error } = await supabase.from("communities").delete().eq("id", id);

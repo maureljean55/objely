@@ -34,7 +34,6 @@ function MemberAvatar({ name, avatarUrl, size = 32 }: { name: string; avatarUrl:
 }
 
 type Props = {
-  communityId: string;
   communityName: string;
   communityCoverUrl: string | null;
   memberCount: number;
@@ -46,13 +45,14 @@ type Props = {
   onBack: () => void;
   onLeave: () => Promise<boolean>;
   onDeleteCommunity: () => Promise<boolean>;
+  /** Adds a member by their public ID. Resolves to an error message to show, or null on success. */
+  onAddMember: (publicId: number) => Promise<string | null>;
 };
 
 /** WhatsApp-style group chat: unlike ChatThread (built for exactly two parties), every
  * bubble here resolves its sender against the full member list, since any of N people
  * might have sent it. */
 export default function CommunityChatThread({
-  communityId,
   communityName,
   communityCoverUrl,
   memberCount,
@@ -64,6 +64,7 @@ export default function CommunityChatThread({
   onBack,
   onLeave,
   onDeleteCommunity,
+  onAddMember,
 }: Props) {
   const [draft, setDraft] = useState("");
   const [isSending, setIsSending] = useState(false);
@@ -72,10 +73,14 @@ export default function CommunityChatThread({
   const [showMembersSheet, setShowMembersSheet] = useState(false);
   const [showLeaveConfirm, setShowLeaveConfirm] = useState(false);
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
+  const [showAddMemberSheet, setShowAddMemberSheet] = useState(false);
+  const [addMemberInput, setAddMemberInput] = useState("");
+  const [isAddingMember, setIsAddingMember] = useState(false);
+  const [addMemberError, setAddMemberError] = useState<string | null>(null);
+  const [memberAdded, setMemberAdded] = useState(false);
   const [isLeaving, setIsLeaving] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
   const [confirmError, setConfirmError] = useState<string | null>(null);
-  const [inviteCopied, setInviteCopied] = useState(false);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
 
   const membersById = new Map(members.map((m) => [m.user_id, m]));
@@ -96,33 +101,24 @@ export default function CommunityChatThread({
     setIsSending(false);
   };
 
-  const handleInvite = async () => {
-    const url = `${window.location.origin}/communities/${communityId}`;
-    const shareData = {
-      title: communityName,
-      text: `Rejoins la communauté "${communityName}" sur Objely !`,
-      url,
-    };
-    // navigator.share opens the native share sheet on phones (the modern,
-    // expected way to pass a link to someone) — clipboard is the fallback
-    // for browsers/devices without it (most desktop browsers).
-    if (navigator.share && navigator.canShare?.(shareData) !== false) {
-      try {
-        await navigator.share(shareData);
-        return;
-      } catch {
-        // User cancelled the share sheet, or the browser rejected it — fall
-        // through to the clipboard copy instead of leaving them stuck.
-      }
+  const handleAddMemberSubmit = async () => {
+    const publicId = Number.parseInt(addMemberInput.trim(), 10);
+    if (!Number.isInteger(publicId) || publicId <= 0) {
+      setAddMemberError("Entrez un identifiant valide.");
+      return;
     }
-    try {
-      await navigator.clipboard.writeText(url);
-      setInviteCopied(true);
-      setTimeout(() => setInviteCopied(false), 2000);
-    } catch {
-      // Clipboard access can be denied by the browser — nothing useful to
-      // do about it beyond leaving the link unshared.
+    setIsAddingMember(true);
+    setAddMemberError(null);
+    const error = await onAddMember(publicId);
+    setIsAddingMember(false);
+    if (error) {
+      setAddMemberError(error);
+      return;
     }
+    setShowAddMemberSheet(false);
+    setAddMemberInput("");
+    setMemberAdded(true);
+    setTimeout(() => setMemberAdded(false), 2000);
   };
 
   const handleLeave = async () => {
@@ -191,7 +187,7 @@ export default function CommunityChatThread({
                   type="button"
                   onClick={() => {
                     setShowMenu(false);
-                    handleInvite();
+                    setShowAddMemberSheet(true);
                   }}
                   className="w-full py-2 px-2 flex items-center gap-3 rounded-2xl text-on-surface font-body-md text-body-md hover:bg-surface-variant/50 active:scale-[0.98] transition-all"
                 >
@@ -357,7 +353,10 @@ export default function CommunityChatThread({
               </h2>
               <button
                 type="button"
-                onClick={handleInvite}
+                onClick={() => {
+                  setShowMembersSheet(false);
+                  setShowAddMemberSheet(true);
+                }}
                 className="shrink-0 flex items-center gap-1.5 py-2 px-3.5 rounded-full bg-primary/10 text-primary font-label-md text-label-md font-semibold hover:bg-primary/15 transition-colors"
               >
                 <span className="material-symbols-outlined text-[18px]">person_add</span>
@@ -451,11 +450,70 @@ export default function CommunityChatThread({
         </div>
       )}
 
-      {inviteCopied && (
+      {showAddMemberSheet && (
+        <div
+          role="dialog"
+          aria-modal="true"
+          className="fixed inset-0 z-[100] flex items-end sm:items-center justify-center bg-black/30 backdrop-blur-sm"
+          onClick={() => !isAddingMember && setShowAddMemberSheet(false)}
+        >
+          <div
+            className="w-full sm:w-[400px] bg-surface-container-lowest rounded-t-[28px] sm:rounded-[28px] p-lg pb-8 sm:pb-lg shadow-xl"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <h2 className="font-headline-md text-headline-md text-on-surface mb-1">Ajouter un membre</h2>
+            <p className="font-body-md text-body-md text-on-surface-variant mb-lg">
+              Entrez l&apos;identifiant public de cette personne, visible sur sa page de profil.
+            </p>
+            <div className="flex items-center gap-2 bg-surface-container-low rounded-2xl border border-outline-variant/30 px-4 h-14 focus-within:border-primary transition-colors">
+              <span className="font-headline-sm text-headline-sm text-on-surface-variant shrink-0">@</span>
+              <input
+                type="number"
+                inputMode="numeric"
+                autoFocus
+                value={addMemberInput}
+                onChange={(e) => {
+                  setAddMemberInput(e.target.value);
+                  setAddMemberError(null);
+                }}
+                onKeyDown={(e) => {
+                  if (e.key === "Enter") {
+                    e.preventDefault();
+                    handleAddMemberSubmit();
+                  }
+                }}
+                placeholder="42"
+                className="w-full bg-transparent border-none p-0 focus:ring-0 font-body-md text-body-lg text-on-surface placeholder-outline"
+              />
+            </div>
+            {addMemberError && <p className="font-body-md text-[13px] text-error mt-3">{addMemberError}</p>}
+            <div className="flex gap-sm mt-lg">
+              <button
+                type="button"
+                disabled={isAddingMember}
+                onClick={() => setShowAddMemberSheet(false)}
+                className="flex-1 h-12 rounded-[14px] bg-surface-container-high text-on-surface font-headline-sm text-headline-sm hover:bg-surface-container-highest transition-colors disabled:opacity-50"
+              >
+                Annuler
+              </button>
+              <button
+                type="button"
+                disabled={isAddingMember || !addMemberInput.trim()}
+                onClick={handleAddMemberSubmit}
+                className="flex-1 h-12 rounded-[14px] bg-primary text-on-primary font-headline-sm text-headline-sm hover:opacity-90 transition-opacity disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                {isAddingMember ? "Ajout…" : "Ajouter"}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {memberAdded && (
         <div className="fixed bottom-[100px] inset-x-0 z-[110] flex justify-center pointer-events-none">
           <div className="flex items-center gap-2 bg-inverse-surface text-inverse-on-surface px-4 py-2.5 rounded-full shadow-lg animate-popIn">
             <span className="material-symbols-outlined text-[18px]">check_circle</span>
-            <span className="font-label-md text-label-md">Lien d&apos;invitation copié !</span>
+            <span className="font-label-md text-label-md">Membre ajouté !</span>
           </div>
         </div>
       )}
