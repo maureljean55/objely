@@ -24,7 +24,7 @@ function toAppointmentInfo(a: RestitutionAppointment): AppointmentInfo {
   return { id: a.id, scheduledDate: a.scheduled_date, scheduledTime: a.scheduled_time, location: a.location, status: a.status };
 }
 
-type OtherProfile = { full_name: string | null; avatar_url: string | null };
+type OtherProfile = { id: string | null; full_name: string | null; avatar_url: string | null };
 
 export default function SecureChatPage() {
   const router = useRouter();
@@ -33,7 +33,7 @@ export default function SecureChatPage() {
 
   const [currentUserId, setCurrentUserId] = useState<string | null>(null);
   const [match, setMatch] = useState<MatchWithItems | null>(null);
-  const [otherProfile, setOtherProfile] = useState<OtherProfile>({ full_name: null, avatar_url: null });
+  const [otherProfile, setOtherProfile] = useState<OtherProfile>({ id: null, full_name: null, avatar_url: null });
   const [messages, setMessages] = useState<Message[]>([]);
   const [appointments, setAppointments] = useState<RestitutionAppointment[]>([]);
   const [loadError, setLoadError] = useState(false);
@@ -277,6 +277,7 @@ export default function SecureChatPage() {
 
   return (
     <ChatThread
+      peerId={otherProfile.id}
       peerName={otherProfile.full_name || "Utilisateur Objely"}
       peerAvatarUrl={otherProfile.avatar_url}
       currentUserId={currentUserId}

@@ -189,6 +189,7 @@ export default function DirectMessagePage() {
 
   return (
     <ChatThread
+      peerId={peer?.id ?? null}
       peerName={peer?.full_name || "Utilisateur Objely"}
       peerAvatarUrl={peer?.avatar_url ?? null}
       currentUserId={currentUserId}

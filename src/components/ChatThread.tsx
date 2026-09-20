@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState, type PointerEvent as ReactPointerEvent } from "react";
 import Image from "next/image";
+import { useCall } from "@/lib/calling/CallProvider";
 
 export type ChatMessage = {
   id: string;
@@ -415,6 +416,7 @@ function MessageBubble({
 }
 
 type Props = {
+  peerId: string | null;
   peerName: string;
   peerAvatarUrl: string | null;
   currentUserId: string | null;
@@ -439,6 +441,7 @@ type Props = {
 
 /** Shared chat UI for both match-based conversations and QR/direct conversations — same look regardless of what started the conversation. */
 export default function ChatThread({
+  peerId,
   peerName,
   peerAvatarUrl,
   currentUserId,
@@ -457,6 +460,7 @@ export default function ChatThread({
   onCloseChat,
   chatClosed = false,
 }: Props) {
+  const { status: callStatus, startCall } = useCall();
   const [draft, setDraft] = useState("");
   const [isSending, setIsSending] = useState(false);
   const [editingId, setEditingId] = useState<string | null>(null);
@@ -725,7 +729,19 @@ export default function ChatThread({
           </div>
           <h1 className="font-headline-sm text-headline-sm text-on-surface">{peerName}</h1>
         </div>
-        <div className="w-9" />
+        {peerId && !chatClosed ? (
+          <button
+            type="button"
+            onClick={() => startCall({ id: peerId, name: peerName, avatarUrl: peerAvatarUrl })}
+            disabled={callStatus !== "idle"}
+            aria-label={`Appeler ${peerName}`}
+            className="w-9 h-9 flex items-center justify-center rounded-full hover:bg-surface-container-high/50 transition-colors text-primary disabled:opacity-40"
+          >
+            <span className="material-symbols-outlined" style={{ fontVariationSettings: "'FILL' 1" }}>call</span>
+          </button>
+        ) : (
+          <div className="w-9" />
+        )}
       </header>
 
       <main className="min-h-screen px-container-margin py-md pt-[calc(92px+env(safe-area-inset-top))] pb-[140px] flex flex-col gap-md">
