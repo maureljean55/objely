@@ -308,8 +308,9 @@ export default function CallProvider({ children }: { children: ReactNode }) {
         }
       });
 
-      // Best-effort wake-up in case the callee's app isn't open to receive
-      // the Realtime broadcast above — see src/app/api/calls/ring/route.ts.
+      // Backup path in case the client-side broadcast above doesn't land
+      // (flaky mobile connection, slow handshake) and/or the callee's app
+      // is closed — see src/app/api/calls/ring/route.ts.
       fetch("/api/calls/ring", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -318,6 +319,7 @@ export default function CallProvider({ children }: { children: ReactNode }) {
           callId,
           callerName: meRef.current.name,
           callerAvatarUrl: meRef.current.avatarUrl,
+          sdp: offer,
         }),
       }).catch(() => {});
 
