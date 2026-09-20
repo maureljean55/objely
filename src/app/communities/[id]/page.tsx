@@ -7,26 +7,52 @@ import { createClient } from "@/lib/supabase/client";
 import { getCurrentUser } from "@/lib/auth";
 import GuardedActionLink from "@/components/home/GuardedActionLink";
 import CommunityChatThread from "@/components/CommunityChatThread";
+import { getItem, listMyItems, type Item } from "@/lib/supabase/items";
 import {
-  addCommunityMemberByPublicId,
   deleteCommunity,
   getCommunity,
   getMyMembership,
   hasPendingJoinRequest,
   leaveCommunity,
-  listCommunityJoinRequests,
   listCommunityMembers,
   listCommunityMessages,
   markCommunityRead,
-  removeCommunityMember,
   requestJoinCommunity,
-  respondToJoinRequest,
+  sendCommunityItemShare,
   sendCommunityMessage,
-  type CommunityJoinRequest,
+  toggleCommunityMessageReaction,
   type CommunityMember,
   type CommunityMessage,
+  type CommunityMessageReaction,
   type CommunityWithCount,
 } from "@/lib/supabase/communities";
+
+/** Realtime's postgres_changes payload is the raw row — no PostgREST embeds
+ * — so an item_share message that arrives (or comes back from the send
+ * RPC) needs its shared item fetched separately before it can render. */
+async function enrichMessage(message: CommunityMessage): Promise<CommunityMessage> {
+  if (message.kind !== "item_share" || message.shared_item || !message.shared_item_id) {
+    return { ...message, reactions: message.reactions ?? [] };
+  }
+  const { data: item } = await getItem(message.shared_item_id);
+  return {
+    ...message,
+    reactions: message.reactions ?? [],
+    shared_item: item
+      ? {
+          id: item.id,
+          type: item.type,
+          status: item.status,
+          title: item.title,
+          category_icon: item.category_icon,
+          photos: item.photos,
+          location: item.location,
+          occurred_on: item.occurred_on,
+          deleted_at: item.deleted_at,
+        }
+      : null,
+  };
+}
 
 export default function CommunityPage() {
   const router = useRouter();
@@ -38,23 +64,23 @@ export default function CommunityPage() {
   const [membership, setMembership] = useState<{ role: "owner" | "member" } | null>(null);
   const [members, setMembers] = useState<CommunityMember[]>([]);
   const [messages, setMessages] = useState<CommunityMessage[]>([]);
+  const [myItems, setMyItems] = useState<Item[]>([]);
   const [isJoining, setIsJoining] = useState(false);
   const [joinError, setJoinError] = useState<string | null>(null);
   const [joinRequested, setJoinRequested] = useState(false);
-  const [joinRequests, setJoinRequests] = useState<CommunityJoinRequest[]>([]);
 
   const isMember = !!membership;
   const isOwner = membership?.role === "owner";
 
-  const loadMemberData = async (owner: boolean) => {
-    const [{ data: memberList }, { data: messageList }, { data: requests }] = await Promise.all([
+  const loadMemberData = async () => {
+    const [{ data: memberList }, { data: messageList }, { data: itemList }] = await Promise.all([
       listCommunityMembers(communityId),
       listCommunityMessages(communityId),
-      owner ? listCommunityJoinRequests(communityId) : Promise.resolve({ data: [] as CommunityJoinRequest[] }),
+      listMyItems(),
     ]);
     setMembers(memberList ?? []);
     setMessages(messageList ?? []);
-    setJoinRequests(requests ?? []);
+    setMyItems(itemList ?? []);
   };
 
   useEffect(() => {
@@ -67,7 +93,7 @@ export default function CommunityPage() {
       const { data: myMembership } = await getMyMembership(communityId);
       setMembership(myMembership);
       if (myMembership) {
-        await loadMemberData(myMembership.role === "owner");
+        await loadMemberData();
         await markCommunityRead(communityId);
       } else if (user) {
         const { data: pending } = await hasPendingJoinRequest(communityId);
@@ -101,7 +127,43 @@ export default function CommunityPage() {
           { event: "INSERT", schema: "public", table: "community_messages", filter: `community_id=eq.${communityId}` },
           (payload) => {
             const incoming = payload.new as CommunityMessage;
-            setMessages((prev) => (prev.some((m) => m.id === incoming.id) ? prev : [...prev, incoming]));
+            setMessages((prev) => {
+              if (prev.some((m) => m.id === incoming.id)) return prev;
+              return [...prev, { ...incoming, reactions: [] }];
+            });
+            if (incoming.kind === "item_share") {
+              enrichMessage(incoming).then((full) => {
+                setMessages((prev) => prev.map((m) => (m.id === full.id ? { ...full, reactions: m.reactions } : m)));
+              });
+            }
+          },
+        )
+        .on(
+          "postgres_changes",
+          { event: "INSERT", schema: "public", table: "community_message_reactions" },
+          (payload) => {
+            const reaction = payload.new as CommunityMessageReaction & { message_id: string };
+            setMessages((prev) =>
+              prev.map((m) =>
+                m.id === reaction.message_id && !m.reactions.some((r) => r.user_id === reaction.user_id && r.emoji === reaction.emoji)
+                  ? { ...m, reactions: [...m.reactions, { user_id: reaction.user_id, emoji: reaction.emoji }] }
+                  : m,
+              ),
+            );
+          },
+        )
+        .on(
+          "postgres_changes",
+          { event: "DELETE", schema: "public", table: "community_message_reactions" },
+          (payload) => {
+            const reaction = payload.old as CommunityMessageReaction & { message_id: string };
+            setMessages((prev) =>
+              prev.map((m) =>
+                m.id === reaction.message_id
+                  ? { ...m, reactions: m.reactions.filter((r) => !(r.user_id === reaction.user_id && r.emoji === reaction.emoji)) }
+                  : m,
+              ),
+            );
           },
         )
         .subscribe();
@@ -132,38 +194,60 @@ export default function CommunityPage() {
       return;
     }
     setMembership({ role: "member" });
-    await Promise.all([loadMemberData(false), refreshCommunity()]);
+    await Promise.all([loadMemberData(), refreshCommunity()]);
     await markCommunityRead(communityId);
   };
 
   const handleSend = async (body: string) => {
     const { data, error } = await sendCommunityMessage(communityId, body);
     if (!error && data) {
-      setMessages((prev) => [...prev, data]);
+      setMessages((prev) => [...prev, { ...data, reactions: [] }]);
       return true;
     }
     return false;
   };
 
-  const handleAddMember = async (publicId: string) => {
-    const { error } = await addCommunityMemberByPublicId(communityId, publicId);
-    if (error) return error;
-    await Promise.all([loadMemberData(isOwner), refreshCommunity()]);
-    return null;
+  const handleShareItem = async (itemId: string) => {
+    const { data, error } = await sendCommunityItemShare(communityId, itemId);
+    if (error || !data) return false;
+    const full = await enrichMessage(data);
+    setMessages((prev) => (prev.some((m) => m.id === full.id) ? prev : [...prev, full]));
+    return true;
   };
 
-  const handleRemoveMember = async (userId: string) => {
-    const { error } = await removeCommunityMember(communityId, userId);
-    if (error) return "Impossible de retirer ce membre, réessayez.";
-    await Promise.all([loadMemberData(isOwner), refreshCommunity()]);
-    return null;
-  };
-
-  const handleRespondToJoinRequest = async (requestId: string, approve: boolean) => {
-    const { error } = await respondToJoinRequest(requestId, approve);
-    if (error) return "Impossible de traiter cette demande, réessayez.";
-    await Promise.all([loadMemberData(isOwner), refreshCommunity()]);
-    return null;
+  const handleToggleReaction = async (messageId: string, emoji: string) => {
+    if (!currentUserId) return;
+    // Optimistic: toggle locally first, since the realtime echo of our own
+    // write arrives a beat later and a visible delay on your own tap reads
+    // as broken, not just slow.
+    setMessages((prev) =>
+      prev.map((m) => {
+        if (m.id !== messageId) return m;
+        const already = m.reactions.some((r) => r.user_id === currentUserId && r.emoji === emoji);
+        return {
+          ...m,
+          reactions: already
+            ? m.reactions.filter((r) => !(r.user_id === currentUserId && r.emoji === emoji))
+            : [...m.reactions, { user_id: currentUserId, emoji }],
+        };
+      }),
+    );
+    const { error } = await toggleCommunityMessageReaction(messageId, emoji);
+    if (error) {
+      // Roll back on failure by re-toggling.
+      setMessages((prev) =>
+        prev.map((m) => {
+          if (m.id !== messageId) return m;
+          const already = m.reactions.some((r) => r.user_id === currentUserId && r.emoji === emoji);
+          return {
+            ...m,
+            reactions: already
+              ? m.reactions.filter((r) => !(r.user_id === currentUserId && r.emoji === emoji))
+              : [...m.reactions, { user_id: currentUserId, emoji }],
+          };
+        }),
+      );
+    }
   };
 
   const handleLeave = async () => {
@@ -202,6 +286,7 @@ export default function CommunityPage() {
   if (isMember && currentUserId) {
     return (
       <CommunityChatThread
+        communityId={communityId}
         communityName={community.name}
         communityCoverUrl={community.cover_url}
         memberCount={community.member_count}
@@ -209,14 +294,13 @@ export default function CommunityPage() {
         isOwner={isOwner}
         members={members}
         messages={messages}
-        joinRequests={joinRequests}
+        myItems={myItems}
         onSend={handleSend}
+        onShareItem={handleShareItem}
+        onToggleReaction={handleToggleReaction}
         onBack={() => router.push("/communities")}
         onLeave={handleLeave}
         onDeleteCommunity={handleDeleteCommunity}
-        onAddMember={handleAddMember}
-        onRemoveMember={handleRemoveMember}
-        onRespondToJoinRequest={handleRespondToJoinRequest}
       />
     );
   }

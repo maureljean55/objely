@@ -1,8 +1,12 @@
 "use client";
 
 import { useRef, useState } from "react";
+import Link from "next/link";
 import Image from "next/image";
-import type { CommunityJoinRequest, CommunityMember, CommunityMessage } from "@/lib/supabase/communities";
+import type { CommunityMember, CommunityMessage } from "@/lib/supabase/communities";
+import type { Item } from "@/lib/supabase/items";
+
+const QUICK_REACTIONS = ["👍", "❤️", "😂", "😮", "😢", "🙏"];
 
 function initials(name: string) {
   return name
@@ -33,7 +37,133 @@ function MemberAvatar({ name, avatarUrl, size = 32 }: { name: string; avatarUrl:
   );
 }
 
+function ReactionBar({
+  message,
+  currentUserId,
+  isMine,
+  onToggle,
+}: {
+  message: CommunityMessage;
+  currentUserId: string;
+  isMine: boolean;
+  onToggle: (emoji: string) => void;
+}) {
+  const [pickerOpen, setPickerOpen] = useState(false);
+
+  const grouped = new Map<string, number>();
+  for (const r of message.reactions) grouped.set(r.emoji, (grouped.get(r.emoji) ?? 0) + 1);
+
+  return (
+    <div className={`relative flex items-center gap-1 flex-wrap px-1 ${isMine ? "justify-end" : "justify-start"}`}>
+      {[...grouped.entries()].map(([emoji, count]) => {
+        const mine = message.reactions.some((r) => r.user_id === currentUserId && r.emoji === emoji);
+        return (
+          <button
+            key={emoji}
+            type="button"
+            onClick={() => onToggle(emoji)}
+            className={`flex items-center gap-0.5 px-1.5 py-0.5 rounded-full text-[11px] border transition-colors ${
+              mine ? "bg-primary/15 border-primary/40 text-primary" : "bg-surface-container-lowest border-outline-variant/30 text-on-surface-variant"
+            }`}
+          >
+            <span>{emoji}</span>
+            <span className="font-label-md">{count}</span>
+          </button>
+        );
+      })}
+      <button
+        type="button"
+        onClick={() => setPickerOpen((v) => !v)}
+        aria-label="Réagir"
+        className="w-5 h-5 flex items-center justify-center rounded-full text-on-surface-variant hover:bg-surface-container-high transition-colors"
+      >
+        <span className="material-symbols-outlined text-[14px]">add_reaction</span>
+      </button>
+      {pickerOpen && (
+        <>
+          <div className="fixed inset-0 z-[90]" onClick={() => setPickerOpen(false)} />
+          <div
+            className={`absolute bottom-full mb-1 z-[91] flex items-center gap-1 bg-surface-container-lowest rounded-full shadow-[0_8px_24px_rgba(0,0,0,0.15)] border border-outline-variant/15 px-2 py-1.5 animate-popIn ${
+              isMine ? "right-0" : "left-0"
+            }`}
+          >
+            {QUICK_REACTIONS.map((emoji) => (
+              <button
+                key={emoji}
+                type="button"
+                onClick={() => {
+                  onToggle(emoji);
+                  setPickerOpen(false);
+                }}
+                className="text-[18px] w-7 h-7 flex items-center justify-center rounded-full hover:bg-surface-container-high transition-colors active:scale-90"
+              >
+                {emoji}
+              </button>
+            ))}
+          </div>
+        </>
+      )}
+    </div>
+  );
+}
+
+const STATUS_LABEL: Record<string, { label: string; className: string }> = {
+  searching: { label: "Recherche active", className: "bg-error-container text-on-error-container" },
+  matched: { label: "Correspondance trouvée", className: "bg-primary-fixed text-primary" },
+  recovered: { label: "Retrouvé", className: "bg-[#e8f5e9] text-[#2e7d32]" },
+  returned: { label: "Restitué", className: "bg-[#e8f5e9] text-[#2e7d32]" },
+};
+
+function SharedItemCard({ message }: { message: CommunityMessage }) {
+  const item = message.shared_item;
+  if (!item || item.deleted_at) {
+    return <p className="font-body-md text-body-md italic">Cet objet n&apos;est plus disponible.</p>;
+  }
+  const status = STATUS_LABEL[item.status] ?? STATUS_LABEL.searching;
+
+  return (
+    <div className="w-64">
+      <div className="flex items-center justify-between mb-2">
+        <span className="flex items-center gap-1 font-label-md text-[10px] font-semibold text-primary uppercase tracking-wider">
+          <span className="material-symbols-outlined text-[14px]">sell</span>
+          Objet partagé
+        </span>
+        <span className={`px-2 py-0.5 rounded-full font-label-md text-[10px] font-semibold ${status.className}`}>
+          {item.type === "lost" ? "Objet perdu" : "Objet trouvé"}
+        </span>
+      </div>
+      <div className="flex gap-2.5 mb-2.5">
+        <div className="relative w-16 h-16 rounded-xl overflow-hidden bg-surface-container-high text-on-surface-variant flex items-center justify-center shrink-0">
+          {item.photos?.[0] ? (
+            <Image alt={item.title} src={item.photos[0]} fill sizes="64px" className="object-cover" />
+          ) : (
+            <span className="material-symbols-outlined">{item.category_icon || "inventory_2"}</span>
+          )}
+        </div>
+        <div className="min-w-0 flex-1 text-left">
+          <p className="font-body-lg text-body-lg font-semibold text-on-surface truncate">{item.title}</p>
+          {item.location && (
+            <p className="font-label-md text-[11px] text-on-surface-variant truncate flex items-center gap-1">
+              <span className="material-symbols-outlined text-[13px]">location_on</span>
+              {item.location}
+            </p>
+          )}
+        </div>
+      </div>
+      <Link
+        href={`/search/${item.id}`}
+        className="w-full flex items-center justify-center gap-1.5 py-2.5 rounded-xl text-white font-label-md text-label-md font-semibold shadow-sm"
+        style={{ background: "linear-gradient(135deg, #0058bc, #5952af)" }}
+      >
+        Voir l&apos;objet
+        <span className="material-symbols-outlined text-[16px]">arrow_forward</span>
+      </Link>
+    </div>
+  );
+}
+
 type Props = {
+  communityId: string;
   communityName: string;
   communityCoverUrl: string | null;
   memberCount: number;
@@ -41,24 +171,20 @@ type Props = {
   isOwner: boolean;
   members: CommunityMember[];
   messages: CommunityMessage[];
-  /** Owner-only: pending requests to join a private community. */
-  joinRequests: CommunityJoinRequest[];
+  myItems: Item[];
   onSend: (body: string) => Promise<boolean>;
+  onShareItem: (itemId: string) => Promise<boolean>;
+  onToggleReaction: (messageId: string, emoji: string) => void;
   onBack: () => void;
   onLeave: () => Promise<boolean>;
   onDeleteCommunity: () => Promise<boolean>;
-  /** Adds a member by their public ID. Resolves to an error message to show, or null on success. */
-  onAddMember: (publicId: string) => Promise<string | null>;
-  /** Removes a member. Resolves to an error message to show, or null on success. */
-  onRemoveMember: (userId: string) => Promise<string | null>;
-  /** Approves or declines a pending join request. Resolves to an error message to show, or null on success. */
-  onRespondToJoinRequest: (requestId: string, approve: boolean) => Promise<string | null>;
 };
 
 /** WhatsApp-style group chat: unlike ChatThread (built for exactly two parties), every
  * bubble here resolves its sender against the full member list, since any of N people
  * might have sent it. */
 export default function CommunityChatThread({
+  communityId,
   communityName,
   communityCoverUrl,
   memberCount,
@@ -66,33 +192,22 @@ export default function CommunityChatThread({
   isOwner,
   members,
   messages,
-  joinRequests,
+  myItems,
   onSend,
+  onShareItem,
+  onToggleReaction,
   onBack,
   onLeave,
   onDeleteCommunity,
-  onAddMember,
-  onRemoveMember,
-  onRespondToJoinRequest,
 }: Props) {
   const [draft, setDraft] = useState("");
   const [isSending, setIsSending] = useState(false);
   const [actionError, setActionError] = useState<string | null>(null);
   const [showMenu, setShowMenu] = useState(false);
-  const [showMembersSheet, setShowMembersSheet] = useState(false);
-  const [showJoinRequestsSheet, setShowJoinRequestsSheet] = useState(false);
-  const [respondingId, setRespondingId] = useState<string | null>(null);
-  const [joinRequestsError, setJoinRequestsError] = useState<string | null>(null);
   const [showLeaveConfirm, setShowLeaveConfirm] = useState(false);
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
-  const [showAddMemberSheet, setShowAddMemberSheet] = useState(false);
-  const [addMemberInput, setAddMemberInput] = useState("");
-  const [isAddingMember, setIsAddingMember] = useState(false);
-  const [addMemberError, setAddMemberError] = useState<string | null>(null);
-  const [memberAdded, setMemberAdded] = useState(false);
-  const [removeTarget, setRemoveTarget] = useState<CommunityMember | null>(null);
-  const [isRemovingMember, setIsRemovingMember] = useState(false);
-  const [removeError, setRemoveError] = useState<string | null>(null);
+  const [showSharePicker, setShowSharePicker] = useState(false);
+  const [sharingItemId, setSharingItemId] = useState<string | null>(null);
   const [isLeaving, setIsLeaving] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
   const [confirmError, setConfirmError] = useState<string | null>(null);
@@ -116,45 +231,16 @@ export default function CommunityChatThread({
     setIsSending(false);
   };
 
-  const handleAddMemberSubmit = async () => {
-    const publicId = addMemberInput.trim().toUpperCase();
-    if (!/^[A-Z0-9]{7}$/.test(publicId)) {
-      setAddMemberError("Entrez les 7 caractères de l'identifiant.");
-      return;
+  const handleShareItem = async (itemId: string) => {
+    setSharingItemId(itemId);
+    setActionError(null);
+    const ok = await onShareItem(itemId);
+    setSharingItemId(null);
+    if (ok) {
+      setShowSharePicker(false);
+    } else {
+      setActionError("L'objet n'a pas pu être partagé, réessayez.");
     }
-    setIsAddingMember(true);
-    setAddMemberError(null);
-    const error = await onAddMember(publicId);
-    setIsAddingMember(false);
-    if (error) {
-      setAddMemberError(error);
-      return;
-    }
-    setShowAddMemberSheet(false);
-    setAddMemberInput("");
-    setMemberAdded(true);
-    setTimeout(() => setMemberAdded(false), 2000);
-  };
-
-  const handleRemoveMemberConfirm = async () => {
-    if (!removeTarget) return;
-    setIsRemovingMember(true);
-    setRemoveError(null);
-    const error = await onRemoveMember(removeTarget.user_id);
-    setIsRemovingMember(false);
-    if (error) {
-      setRemoveError(error);
-      return;
-    }
-    setRemoveTarget(null);
-  };
-
-  const handleRespondToJoinRequest = async (requestId: string, approve: boolean) => {
-    setRespondingId(requestId);
-    setJoinRequestsError(null);
-    const error = await onRespondToJoinRequest(requestId, approve);
-    setRespondingId(null);
-    if (error) setJoinRequestsError(error);
   };
 
   const handleLeave = async () => {
@@ -190,7 +276,7 @@ export default function CommunityChatThread({
           </span>
         </button>
 
-        <button type="button" onClick={() => setShowMembersSheet(true)} className="flex items-center gap-2 min-w-0">
+        <Link href={`/communities/${communityId}/info`} className="flex items-center gap-2 min-w-0">
           <div className="relative w-8 h-8 rounded-full overflow-hidden bg-surface-container-high flex items-center justify-center text-on-surface-variant shrink-0">
             {communityCoverUrl ? (
               <Image alt={communityName} src={communityCoverUrl} fill sizes="32px" className="object-cover" />
@@ -204,7 +290,7 @@ export default function CommunityChatThread({
               {memberCount} {memberCount > 1 ? "membres" : "membre"}
             </p>
           </div>
-        </button>
+        </Link>
 
         <div className="relative">
           <button
@@ -219,53 +305,16 @@ export default function CommunityChatThread({
             <>
               <div className="fixed inset-0 z-[90]" onClick={() => setShowMenu(false)} />
               <div className="absolute right-0 top-full mt-2 w-72 origin-top-right bg-surface-container-lowest rounded-[20px] overflow-hidden shadow-[0_2px_8px_rgba(0,0,0,0.06),0_20px_48px_-12px_rgba(0,0,0,0.22)] border border-outline-variant/10 p-1 z-[91] animate-popIn">
-                {isOwner && (
-                  <button
-                    type="button"
-                    onClick={() => {
-                      setShowMenu(false);
-                      setShowAddMemberSheet(true);
-                    }}
-                    className="w-full py-3 px-3.5 flex items-center gap-3.5 rounded-[14px] text-on-surface font-body-md text-body-md hover:bg-surface-variant/50 active:bg-surface-variant/70 transition-colors"
-                  >
-                    <span className="w-5 flex justify-center shrink-0 text-on-surface-variant">
-                      <span className="material-symbols-outlined text-[20px]">person_add</span>
-                    </span>
-                    Ajouter des membres
-                  </button>
-                )}
-                <button
-                  type="button"
-                  onClick={() => {
-                    setShowMenu(false);
-                    setShowMembersSheet(true);
-                  }}
+                <Link
+                  href={`/communities/${communityId}/info`}
+                  onClick={() => setShowMenu(false)}
                   className="w-full py-3 px-3.5 flex items-center gap-3.5 rounded-[14px] text-on-surface font-body-md text-body-md hover:bg-surface-variant/50 active:bg-surface-variant/70 transition-colors"
                 >
                   <span className="w-5 flex justify-center shrink-0 text-on-surface-variant">
-                    <span className="material-symbols-outlined text-[20px]">groups</span>
+                    <span className="material-symbols-outlined text-[20px]">info</span>
                   </span>
-                  Voir les membres
-                </button>
-
-                {isOwner && joinRequests.length > 0 && (
-                  <button
-                    type="button"
-                    onClick={() => {
-                      setShowMenu(false);
-                      setShowJoinRequestsSheet(true);
-                    }}
-                    className="w-full py-3 px-3.5 flex items-center gap-3.5 rounded-[14px] text-on-surface font-body-md text-body-md hover:bg-surface-variant/50 active:bg-surface-variant/70 transition-colors"
-                  >
-                    <span className="w-5 flex justify-center shrink-0 text-on-surface-variant">
-                      <span className="material-symbols-outlined text-[20px]">how_to_reg</span>
-                    </span>
-                    <span className="flex-1 text-left">Demandes en attente</span>
-                    <span className="shrink-0 min-w-[20px] h-5 px-1.5 rounded-full bg-primary text-on-primary font-label-md text-[11px] font-semibold flex items-center justify-center">
-                      {joinRequests.length}
-                    </span>
-                  </button>
-                )}
+                  Informations et membres
+                </Link>
 
                 <div className="h-px bg-outline-variant/15 my-1 mx-3.5" />
 
@@ -304,7 +353,7 @@ export default function CommunityChatThread({
         </div>
       </header>
 
-      <main className="min-h-screen px-container-margin py-md pt-[calc(92px+env(safe-area-inset-top))] pb-[120px] flex flex-col gap-md">
+      <main className="min-h-screen px-container-margin py-md pt-[calc(92px+env(safe-area-inset-top))] pb-[130px] flex flex-col gap-md">
         {messages.length === 0 && (
           <p className="font-body-md text-body-md text-on-surface-variant text-center">
             Aucun message pour le moment. Lancez la discussion !
@@ -315,6 +364,7 @@ export default function CommunityChatThread({
           const isMine = message.sender_id === currentUserId;
           const isDeleted = !!message.deleted_at;
           const name = nameFor(message.sender_id);
+          const isItemShare = message.kind === "item_share" && !isDeleted;
           return (
             <div key={message.id} className={`flex gap-2 max-w-[85%] ${isMine ? "self-end flex-row-reverse" : "self-start"}`}>
               {!isMine && <MemberAvatar name={name} avatarUrl={avatarFor(message.sender_id)} />}
@@ -323,7 +373,7 @@ export default function CommunityChatThread({
                   <span className="font-label-md text-[11px] font-semibold text-primary px-1">{name}</span>
                 )}
                 <div
-                  className={`rounded-2xl px-4 py-2.5 shadow-sm ${
+                  className={`rounded-2xl shadow-sm ${isItemShare ? "p-3" : "px-4 py-2.5"} ${
                     isDeleted
                       ? "bg-surface-container-high text-on-surface-variant italic"
                       : isMine
@@ -331,10 +381,22 @@ export default function CommunityChatThread({
                         : "bg-surface-container message-in text-on-surface"
                   }`}
                 >
-                  <p className="font-body-md text-body-md whitespace-pre-wrap">
-                    {isDeleted ? "Message supprimé" : message.body}
-                  </p>
+                  {isDeleted ? (
+                    <p className="font-body-md text-body-md">Message supprimé</p>
+                  ) : isItemShare ? (
+                    <SharedItemCard message={message} />
+                  ) : (
+                    <p className="font-body-md text-body-md whitespace-pre-wrap">{message.body}</p>
+                  )}
                 </div>
+                {!isDeleted && (
+                  <ReactionBar
+                    message={message}
+                    currentUserId={currentUserId}
+                    isMine={isMine}
+                    onToggle={(emoji) => onToggleReaction(message.id, emoji)}
+                  />
+                )}
                 <div className={`flex items-center gap-1 font-label-md text-[10px] text-outline px-1 ${isMine ? "justify-end" : "justify-start"}`}>
                   <span>{formatTime(message.created_at)}</span>
                 </div>
@@ -356,6 +418,14 @@ export default function CommunityChatThread({
           )}
 
           <div className="flex items-end gap-2">
+            <button
+              type="button"
+              onClick={() => setShowSharePicker(true)}
+              aria-label="Partager un objet"
+              className="p-2 bg-surface-container-high text-on-surface-variant rounded-full hover:bg-surface-container-highest transition-colors shrink-0 flex items-center justify-center h-11 w-11"
+            >
+              <span className="material-symbols-outlined">add</span>
+            </button>
             <div className="flex-1 bg-surface-container-low rounded-xl border border-outline-variant/30 px-4 py-2 flex items-center min-h-[44px]">
               <textarea
                 ref={textareaRef}
@@ -394,107 +464,47 @@ export default function CommunityChatThread({
         </div>
       </footer>
 
-      {showMembersSheet && (
+      {showSharePicker && (
         <div
           role="dialog"
           aria-modal="true"
           className="fixed inset-0 z-[100] flex items-end sm:items-center justify-center bg-black/30 backdrop-blur-sm"
-          onClick={() => setShowMembersSheet(false)}
+          onClick={() => setShowSharePicker(false)}
         >
           <div
-            className="w-full sm:w-[400px] max-h-[70vh] overflow-y-auto bg-surface-container-lowest rounded-t-[28px] sm:rounded-[28px] p-lg pb-8 sm:pb-lg shadow-xl"
+            className="w-full sm:w-[420px] max-h-[70vh] overflow-y-auto bg-surface-container-lowest rounded-t-[28px] sm:rounded-[28px] p-lg pb-8 sm:pb-lg shadow-xl"
             onClick={(e) => e.stopPropagation()}
           >
-            <div className="flex items-center justify-between mb-lg gap-3">
-              <h2 className="font-headline-md text-headline-md text-on-surface">
-                {memberCount} {memberCount > 1 ? "membres" : "membre"}
-              </h2>
-              {isOwner && (
-                <button
-                  type="button"
-                  onClick={() => {
-                    setShowMembersSheet(false);
-                    setShowAddMemberSheet(true);
-                  }}
-                  className="shrink-0 flex items-center gap-1.5 py-2 px-3.5 rounded-full bg-primary/10 text-primary font-label-md text-label-md font-semibold hover:bg-primary/15 transition-colors"
-                >
-                  <span className="material-symbols-outlined text-[18px]">person_add</span>
-                  Ajouter
-                </button>
-              )}
-            </div>
-            <div className="flex flex-col gap-3">
-              {members.map((member) => (
-                <div key={member.user_id} className="flex items-center gap-3">
-                  <MemberAvatar name={member.full_name || "Utilisateur Objely"} avatarUrl={member.avatar_url} size={40} />
-                  <div className="min-w-0 flex-1">
-                    <p className="font-body-md text-body-md text-on-surface truncate">{member.full_name || "Utilisateur Objely"}</p>
-                  </div>
-                  {member.role === "owner" && (
-                    <span className="font-label-md text-[11px] text-primary bg-primary/10 px-2 py-1 rounded-full shrink-0">Propriétaire</span>
-                  )}
-                  {isOwner && member.role !== "owner" && member.user_id !== currentUserId && (
-                    <button
-                      type="button"
-                      onClick={() => {
-                        setShowMembersSheet(false);
-                        setRemoveTarget(member);
-                      }}
-                      aria-label={`Retirer ${member.full_name || "ce membre"}`}
-                      className="shrink-0 w-8 h-8 rounded-full flex items-center justify-center text-error hover:bg-error-container/30 transition-colors"
-                    >
-                      <span className="material-symbols-outlined text-[18px]">person_remove</span>
-                    </button>
-                  )}
-                </div>
-              ))}
-            </div>
-          </div>
-        </div>
-      )}
-
-      {showJoinRequestsSheet && (
-        <div
-          role="dialog"
-          aria-modal="true"
-          className="fixed inset-0 z-[100] flex items-end sm:items-center justify-center bg-black/30 backdrop-blur-sm"
-          onClick={() => setShowJoinRequestsSheet(false)}
-        >
-          <div
-            className="w-full sm:w-[400px] max-h-[70vh] overflow-y-auto bg-surface-container-lowest rounded-t-[28px] sm:rounded-[28px] p-lg pb-8 sm:pb-lg shadow-xl"
-            onClick={(e) => e.stopPropagation()}
-          >
-            <h2 className="font-headline-md text-headline-md text-on-surface mb-lg">Demandes en attente</h2>
-            {joinRequestsError && <p className="font-body-md text-[13px] text-error mb-3">{joinRequestsError}</p>}
-            {joinRequests.length === 0 ? (
-              <p className="font-body-md text-body-md text-on-surface-variant">Aucune demande en attente.</p>
+            <h2 className="font-headline-md text-headline-md text-on-surface mb-lg">Partager un objet</h2>
+            {myItems.length === 0 ? (
+              <p className="font-body-md text-body-md text-on-surface-variant">
+                Vous n&apos;avez aucun objet déclaré à partager pour le moment.
+              </p>
             ) : (
-              <div className="flex flex-col gap-3">
-                {joinRequests.map((request) => (
-                  <div key={request.id} className="flex items-center gap-3">
-                    <MemberAvatar name={request.full_name || "Utilisateur Objely"} avatarUrl={request.avatar_url} size={40} />
-                    <div className="min-w-0 flex-1">
-                      <p className="font-body-md text-body-md text-on-surface truncate">{request.full_name || "Utilisateur Objely"}</p>
+              <div className="flex flex-col gap-2">
+                {myItems.map((item) => (
+                  <button
+                    key={item.id}
+                    type="button"
+                    onClick={() => handleShareItem(item.id)}
+                    disabled={sharingItemId !== null}
+                    className="w-full flex items-center gap-3 p-2.5 rounded-2xl hover:bg-surface-variant/40 transition-colors disabled:opacity-50"
+                  >
+                    <div className="relative w-12 h-12 rounded-xl overflow-hidden bg-surface-container-high text-on-surface-variant flex items-center justify-center shrink-0">
+                      {item.photos?.[0] ? (
+                        <Image alt={item.title} src={item.photos[0]} fill sizes="48px" className="object-cover" />
+                      ) : (
+                        <span className="material-symbols-outlined">{item.category_icon || "inventory_2"}</span>
+                      )}
                     </div>
-                    <button
-                      type="button"
-                      onClick={() => handleRespondToJoinRequest(request.id, false)}
-                      disabled={respondingId === request.id}
-                      aria-label={`Refuser ${request.full_name || "cette demande"}`}
-                      className="shrink-0 w-8 h-8 rounded-full flex items-center justify-center text-error hover:bg-error-container/30 transition-colors disabled:opacity-50"
-                    >
-                      <span className="material-symbols-outlined text-[18px]">close</span>
-                    </button>
-                    <button
-                      type="button"
-                      onClick={() => handleRespondToJoinRequest(request.id, true)}
-                      disabled={respondingId === request.id}
-                      aria-label={`Accepter ${request.full_name || "cette demande"}`}
-                      className="shrink-0 w-8 h-8 rounded-full flex items-center justify-center bg-primary text-on-primary hover:opacity-90 transition-opacity disabled:opacity-50"
-                    >
-                      <span className="material-symbols-outlined text-[18px]">check</span>
-                    </button>
-                  </div>
+                    <div className="min-w-0 flex-1 text-left">
+                      <p className="font-body-md text-body-md text-on-surface truncate">{item.title}</p>
+                      <p className="font-label-md text-[11px] text-on-surface-variant">{item.type === "lost" ? "Objet perdu" : "Objet trouvé"}</p>
+                    </div>
+                    {sharingItemId === item.id && (
+                      <span className="w-4 h-4 border-2 border-primary-container/30 border-t-primary rounded-full animate-spin shrink-0" />
+                    )}
+                  </button>
                 ))}
               </div>
             )}
@@ -568,114 +578,6 @@ export default function CommunityChatThread({
                 {isDeleting ? "Suppression…" : "Supprimer"}
               </button>
             </div>
-          </div>
-        </div>
-      )}
-
-      {removeTarget && (
-        <div
-          role="dialog"
-          aria-modal="true"
-          className="fixed inset-0 z-[100] flex items-end sm:items-center justify-center bg-black/30 backdrop-blur-sm"
-          onClick={() => !isRemovingMember && setRemoveTarget(null)}
-        >
-          <div className="w-full sm:w-[400px] bg-surface-container-lowest rounded-t-[28px] sm:rounded-[28px] p-lg pb-8 sm:pb-lg shadow-xl" onClick={(e) => e.stopPropagation()}>
-            <h2 className="font-headline-md text-headline-md text-on-surface mb-1">
-              Retirer {removeTarget.full_name || "ce membre"} ?
-            </h2>
-            <p className="font-body-md text-body-md text-on-surface-variant mb-lg">
-              Cette personne ne fera plus partie de {communityName} et ne recevra plus les messages du groupe.
-            </p>
-            {removeError && <p className="font-body-md text-[13px] text-error mb-3">{removeError}</p>}
-            <div className="flex gap-sm">
-              <button
-                type="button"
-                disabled={isRemovingMember}
-                onClick={() => setRemoveTarget(null)}
-                className="flex-1 h-12 rounded-[14px] bg-surface-container-high text-on-surface font-headline-sm text-headline-sm hover:bg-surface-container-highest transition-colors disabled:opacity-50"
-              >
-                Annuler
-              </button>
-              <button
-                type="button"
-                disabled={isRemovingMember}
-                onClick={handleRemoveMemberConfirm}
-                className="flex-1 h-12 rounded-[14px] bg-error text-on-error font-headline-sm text-headline-sm hover:opacity-90 transition-opacity disabled:opacity-50 disabled:cursor-not-allowed"
-              >
-                {isRemovingMember ? "Retrait…" : "Retirer"}
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
-
-      {showAddMemberSheet && (
-        <div
-          role="dialog"
-          aria-modal="true"
-          className="fixed inset-0 z-[100] flex items-end sm:items-center justify-center bg-black/30 backdrop-blur-sm"
-          onClick={() => !isAddingMember && setShowAddMemberSheet(false)}
-        >
-          <div
-            className="w-full sm:w-[400px] bg-surface-container-lowest rounded-t-[28px] sm:rounded-[28px] p-lg pb-8 sm:pb-lg shadow-xl"
-            onClick={(e) => e.stopPropagation()}
-          >
-            <h2 className="font-headline-md text-headline-md text-on-surface mb-1">Ajouter un membre</h2>
-            <p className="font-body-md text-body-md text-on-surface-variant mb-lg">
-              Entrez le code à 7 caractères affiché sur la page de profil de cette personne.
-            </p>
-            <div className="flex items-center gap-2 bg-surface-container-low rounded-2xl border border-outline-variant/30 px-4 h-14 focus-within:border-primary transition-colors">
-              <span className="font-headline-sm text-headline-sm text-on-surface-variant shrink-0">@</span>
-              <input
-                type="text"
-                autoCapitalize="characters"
-                autoCorrect="off"
-                spellCheck={false}
-                autoFocus
-                maxLength={7}
-                value={addMemberInput}
-                onChange={(e) => {
-                  setAddMemberInput(e.target.value.toUpperCase().replace(/[^A-Z0-9]/g, "").slice(0, 7));
-                  setAddMemberError(null);
-                }}
-                onKeyDown={(e) => {
-                  if (e.key === "Enter") {
-                    e.preventDefault();
-                    handleAddMemberSubmit();
-                  }
-                }}
-                placeholder="K7M2PQD"
-                className="w-full bg-transparent border-none p-0 focus:ring-0 font-mono text-body-lg tracking-[0.2em] text-on-surface placeholder-outline"
-              />
-            </div>
-            {addMemberError && <p className="font-body-md text-[13px] text-error mt-3">{addMemberError}</p>}
-            <div className="flex gap-sm mt-lg">
-              <button
-                type="button"
-                disabled={isAddingMember}
-                onClick={() => setShowAddMemberSheet(false)}
-                className="flex-1 h-12 rounded-[14px] bg-surface-container-high text-on-surface font-headline-sm text-headline-sm hover:bg-surface-container-highest transition-colors disabled:opacity-50"
-              >
-                Annuler
-              </button>
-              <button
-                type="button"
-                disabled={isAddingMember || addMemberInput.length !== 7}
-                onClick={handleAddMemberSubmit}
-                className="flex-1 h-12 rounded-[14px] bg-primary text-on-primary font-headline-sm text-headline-sm hover:opacity-90 transition-opacity disabled:opacity-50 disabled:cursor-not-allowed"
-              >
-                {isAddingMember ? "Ajout…" : "Ajouter"}
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
-
-      {memberAdded && (
-        <div className="fixed bottom-[100px] inset-x-0 z-[110] flex justify-center pointer-events-none">
-          <div className="flex items-center gap-2 bg-inverse-surface text-inverse-on-surface px-4 py-2.5 rounded-full shadow-lg animate-popIn">
-            <span className="material-symbols-outlined text-[18px]">check_circle</span>
-            <span className="font-label-md text-label-md">Membre ajouté !</span>
           </div>
         </div>
       )}

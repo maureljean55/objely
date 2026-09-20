@@ -23,16 +23,33 @@ export type CommunityMember = {
   joined_at: string;
 };
 
+export type SharedItemSummary = {
+  id: string;
+  type: "lost" | "found";
+  status: "searching" | "matched" | "recovered" | "returned";
+  title: string;
+  category_icon: string | null;
+  photos: string[];
+  location: string | null;
+  occurred_on: string | null;
+  deleted_at: string | null;
+};
+
+export type CommunityMessageReaction = { user_id: string; emoji: string };
+
 export type CommunityMessage = {
   id: string;
   community_id: string;
   sender_id: string;
   body: string | null;
-  kind: "text" | "voice";
+  kind: "text" | "voice" | "item_share";
   voice_url: string | null;
   edited_at: string | null;
   deleted_at: string | null;
   reply_to_id: string | null;
+  shared_item_id: string | null;
+  shared_item: SharedItemSummary | null;
+  reactions: CommunityMessageReaction[];
   created_at: string;
 };
 
@@ -253,11 +270,13 @@ export async function listCommunityMembers(id: string) {
 // messages actually shown are always the latest ones.
 const RECENT_MESSAGES_LIMIT = 300;
 
+const SHARED_ITEM_FIELDS = "id, type, status, title, category_icon, photos, location, occurred_on, deleted_at";
+
 export async function listCommunityMessages(id: string) {
   const supabase = createClient();
   const { data, error } = await supabase
     .from("community_messages")
-    .select("*")
+    .select(`*, shared_item:items(${SHARED_ITEM_FIELDS}), reactions:community_message_reactions(user_id, emoji)`)
     .eq("community_id", id)
     .order("created_at", { ascending: false })
     .limit(RECENT_MESSAGES_LIMIT)
@@ -272,9 +291,43 @@ export async function sendCommunityMessage(id: string, body: string, replyToId: 
     .single<CommunityMessage>();
 }
 
+/** Shares one of the caller's own declared items into the community chat. */
+export async function sendCommunityItemShare(id: string, itemId: string) {
+  const supabase = createClient();
+  return supabase.rpc("send_community_item_share", { p_community_id: id, p_item_id: itemId }).single<CommunityMessage>();
+}
+
 export async function deleteCommunityMessage(messageId: string) {
   const supabase = createClient();
   return supabase.rpc("delete_community_message", { p_message_id: messageId }).single<CommunityMessage>();
+}
+
+/** Toggles the caller's reaction with this emoji on a message. Resolves to whether it's now on (true) or off (false). */
+export async function toggleCommunityMessageReaction(messageId: string, emoji: string) {
+  const supabase = createClient();
+  return supabase.rpc("toggle_community_message_reaction", { p_message_id: messageId, p_emoji: emoji }).single<boolean>();
+}
+
+/** Real count of items shared into this community's chat, for the Informations et membres screen. */
+export async function getCommunitySharedItemsCount(id: string) {
+  const supabase = createClient();
+  const { data, error } = await supabase.rpc("count_community_shared_items", { p_community_id: id }).maybeSingle<number>();
+  return { data: data ?? 0, error };
+}
+
+/** Every item shared into this community's chat, most recent first. */
+export async function listCommunitySharedItems(id: string) {
+  const supabase = createClient();
+  const { data, error } = await supabase
+    .from("community_messages")
+    .select(`shared_item:items(${SHARED_ITEM_FIELDS})`)
+    .eq("community_id", id)
+    .eq("kind", "item_share")
+    .is("deleted_at", null)
+    .order("created_at", { ascending: false })
+    .returns<{ shared_item: SharedItemSummary | null }[]>();
+  if (error) return { data: [] as SharedItemSummary[], error };
+  return { data: (data ?? []).map((row) => row.shared_item).filter((item): item is SharedItemSummary => !!item), error: null };
 }
 
 export async function uploadCommunityCoverPhoto(file: File) {
