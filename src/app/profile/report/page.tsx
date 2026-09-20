@@ -4,14 +4,11 @@ import { useEffect, useState, type FormEvent } from "react";
 import Link from "next/link";
 import BottomNav from "@/components/BottomNav";
 import { listMyItems, type Item } from "@/lib/supabase/items";
-import { submitProblemReport, type ProblemCategory } from "@/lib/supabase/reports";
+import { submitProblemReport, CATEGORY_LABELS, type ProblemCategory } from "@/lib/supabase/reports";
 
-const CATEGORIES: { value: ProblemCategory; label: string }[] = [
-  { value: "tech", label: "Problème technique" },
-  { value: "fake", label: "Faux objet" },
-  { value: "info", label: "Mauvaise information" },
-  { value: "other", label: "Autre" },
-];
+const CATEGORIES: { value: ProblemCategory; label: string }[] = (
+  Object.entries(CATEGORY_LABELS) as [ProblemCategory, string][]
+).map(([value, label]) => ({ value, label }));
 
 export default function ReportProblemPage() {
   const [myItems, setMyItems] = useState<Item[]>([]);
@@ -84,7 +81,7 @@ export default function ReportProblemPage() {
                     id="category"
                     value={category}
                     onChange={(e) => setCategory(e.target.value as ProblemCategory)}
-                    className="w-full bg-surface-container-low border border-outline-variant/50 text-on-surface font-body-lg text-body-lg rounded-lg px-4 py-3 focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-colors appearance-none"
+                    className="w-full appearance-none bg-none bg-surface-container-low border border-outline-variant/50 text-on-surface font-body-lg text-body-lg rounded-lg px-4 py-3 focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-colors"
                   >
                     <option disabled value="">Choisissez une option...</option>
                     {CATEGORIES.map((c) => (
@@ -105,7 +102,7 @@ export default function ReportProblemPage() {
                       id="item"
                       value={itemId}
                       onChange={(e) => setItemId(e.target.value)}
-                      className="w-full bg-surface-container-low border border-outline-variant/50 text-on-surface font-body-lg text-body-lg rounded-lg px-4 py-3 focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-colors appearance-none"
+                      className="w-full appearance-none bg-none bg-surface-container-low border border-outline-variant/50 text-on-surface font-body-lg text-body-lg rounded-lg px-4 py-3 focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-colors"
                     >
                       <option value="">Aucun objet en particulier</option>
                       {myItems.map((item) => (
