@@ -45,17 +45,19 @@ export default function NotificationsPage() {
 
   return (
     <div className="bg-background text-on-surface antialiased min-h-screen pb-32">
-      <header className="sticky top-0 w-full z-30 bg-surface/80 backdrop-blur-xl shadow-sm flex items-center justify-between px-container-margin min-h-14 pt-[env(safe-area-inset-top)]">
-        <Link href="/profile" aria-label="Retour" className="flex items-center justify-center p-2 -ml-2 text-primary hover:opacity-70 active:scale-95 transition-transform">
-          <span className="material-symbols-outlined text-2xl">arrow_back_ios</span>
+      <header className="fixed top-0 inset-x-0 z-50 flex items-center justify-between px-container-margin min-h-14 pt-[env(safe-area-inset-top)] bg-surface/80 backdrop-blur-xl border-b border-outline-variant/30">
+        <Link
+          href="/profile"
+          aria-label="Retour"
+          className="w-10 h-10 flex items-center justify-center text-primary hover:opacity-70 transition-opacity active:scale-95"
+        >
+          <span className="material-symbols-outlined">arrow_back_ios</span>
         </Link>
-        <h1 className="font-headline-sm text-headline-sm font-extrabold tracking-tight text-on-surface absolute left-1/2 -translate-x-1/2">Notifications</h1>
-        <Link href="/profile/settings" aria-label="Paramètres" className="flex items-center justify-center p-2 -mr-2 text-primary hover:opacity-70 active:scale-95 transition-transform">
-          <span className="material-symbols-outlined">settings</span>
-        </Link>
+        <h1 className="font-headline-sm text-headline-sm text-on-surface absolute left-1/2 -translate-x-1/2">Notifications</h1>
+        <div className="w-10 h-10" />
       </header>
 
-      <main className="max-w-2xl mx-auto px-container-margin pt-lg pb-8 flex flex-col gap-xl">
+      <main className="max-w-2xl mx-auto pt-[calc(5rem+env(safe-area-inset-top))] px-container-margin pb-8 flex flex-col gap-xl">
         {saveError && (
           <p className="font-body-md text-[13px] text-error bg-error-container/40 rounded-xl px-4 py-2 text-center">{saveError}</p>
         )}
