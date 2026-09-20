@@ -188,7 +188,7 @@ function ProfileSummary({
             Bienvenue sur Objely
           </h1>
           <p className="font-body-md text-body-md text-on-surface-variant text-center max-w-xs mb-5">
-            Connecte-toi pour déclarer tes objets et suivre tes retrouvailles.
+            Connectez-vous pour déclarer vos objets et suivre vos retrouvailles.
           </p>
           <Link
             href="/login"

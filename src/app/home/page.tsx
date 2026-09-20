@@ -5,7 +5,6 @@ import BottomNav from "@/components/BottomNav";
 import HomeHeader from "@/components/home/HomeHeader";
 import Greeting from "@/components/home/Greeting";
 import GuardedActionLink from "@/components/home/GuardedActionLink";
-import CookieBanner from "@/components/CookieBanner";
 import EntryDisclaimer from "@/components/EntryDisclaimer";
 import { createClient } from "@/lib/supabase/server";
 import { listRecentFinds } from "@/lib/supabase/publicFeed";
@@ -217,7 +216,7 @@ export default async function HomeDashboardPage({
           <GuardedActionLink
             href="/report-lost"
             authenticated={!!user}
-            message="Dépêche-toi de t'inscrire et on retrouvera ton objet ensemble !"
+            message="Dépêchez-vous de vous inscrire et on retrouvera votre objet ensemble !"
             emoji="😢"
             className={`${styles.actionCard} ${styles.lost}`}
           >
@@ -228,14 +227,14 @@ export default async function HomeDashboardPage({
             </span>
             <div className={styles.actionBody}>
               <h2>Déclarer un objet perdu</h2>
-              <p>Aide à le retrouver</p>
+              <p>Aidez à le retrouver</p>
             </div>
           </GuardedActionLink>
 
           <GuardedActionLink
             href="/report-found"
             authenticated={!!user}
-            message="Dépêche-toi de t'inscrire et aidons ensemble son propriétaire à le retrouver !"
+            message="Dépêchez-vous de vous inscrire et aidons ensemble son propriétaire à le retrouver !"
             emoji="🤝"
             className={`${styles.actionCard} ${styles.found}`}
           >
@@ -246,7 +245,7 @@ export default async function HomeDashboardPage({
             </span>
             <div className={styles.actionBody}>
               <h2>Déclarer un objet trouvé</h2>
-              <p>Rends-le à son propriétaire</p>
+              <p>Rendez-le à son propriétaire</p>
             </div>
           </GuardedActionLink>
         </section>
@@ -440,9 +439,9 @@ export default async function HomeDashboardPage({
             <div>
               <strong>Une communauté ?</strong>
               <small>
-                Rejoins celle des
+                Rejoignez celle des
                 <br />
-                déclarants près de toi !
+                déclarants près de vous !
               </small>
             </div>
             <b>›</b>
@@ -468,7 +467,7 @@ export default async function HomeDashboardPage({
           <GuardedActionLink
             href="/report-lost"
             authenticated={!!user}
-            message="Dépêche-toi de t'inscrire et on retrouvera ton objet ensemble !"
+            message="Dépêchez-vous de vous inscrire et on retrouvera votre objet ensemble !"
             emoji="😢"
             className="relative overflow-hidden text-white flex items-center gap-4 p-5 transition-transform hover:-translate-y-0.5 w-full text-left"
             style={{
@@ -490,7 +489,7 @@ export default async function HomeDashboardPage({
             </div>
             <div className="relative z-[1] flex-1 min-w-0">
               <h2 className="font-headline-lg-mobile text-headline-lg-mobile">Déclarer un objet perdu</h2>
-              <p className="mt-1 font-body-md text-body-md text-white/90 truncate">Aide à le retrouver</p>
+              <p className="mt-1 font-body-md text-body-md text-white/90 truncate">Aidez à le retrouver</p>
             </div>
             <span
               className="relative z-[1] shrink-0 w-10 h-10 rounded-full bg-white flex items-center justify-center text-[#1e6bfb]"
@@ -505,7 +504,7 @@ export default async function HomeDashboardPage({
           <GuardedActionLink
             href="/report-found"
             authenticated={!!user}
-            message="Dépêche-toi de t'inscrire et aidons ensemble son propriétaire à le retrouver !"
+            message="Dépêchez-vous de vous inscrire et aidons ensemble son propriétaire à le retrouver !"
             emoji="🤝"
             className="relative overflow-hidden text-white flex items-center gap-4 p-5 transition-transform hover:-translate-y-0.5 w-full text-left"
             style={{
@@ -527,7 +526,7 @@ export default async function HomeDashboardPage({
             </div>
             <div className="relative z-[1] flex-1 min-w-0">
               <h2 className="font-headline-lg-mobile text-headline-lg-mobile">Déclarer un objet trouvé</h2>
-              <p className="mt-1 font-body-md text-body-md text-white/90 truncate">Rends-le à son propriétaire</p>
+              <p className="mt-1 font-body-md text-body-md text-white/90 truncate">Rendez-le à son propriétaire</p>
             </div>
             <span
               className="relative z-[1] shrink-0 w-10 h-10 rounded-full bg-white flex items-center justify-center text-[#8b5cf6]"
@@ -574,8 +573,6 @@ export default async function HomeDashboardPage({
           )}
         </section>
       </main>
-
-      {user && <CookieBanner />}
 
       <BottomNav active="home" />
     </div>
