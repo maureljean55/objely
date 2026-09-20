@@ -201,7 +201,7 @@ export default function CommunityChatThread({
           {showMenu && (
             <>
               <div className="fixed inset-0 z-[90]" onClick={() => setShowMenu(false)} />
-              <div className="absolute right-0 top-full mt-2 w-72 origin-top-right bg-surface-container-lowest/98 backdrop-blur-2xl rounded-[20px] overflow-hidden shadow-[0_2px_8px_rgba(0,0,0,0.06),0_20px_48px_-12px_rgba(0,0,0,0.22)] border border-outline-variant/10 p-1 z-[91] animate-popIn">
+              <div className="absolute right-0 top-full mt-2 w-72 origin-top-right bg-surface-container-lowest rounded-[20px] overflow-hidden shadow-[0_2px_8px_rgba(0,0,0,0.06),0_20px_48px_-12px_rgba(0,0,0,0.22)] border border-outline-variant/10 p-1 z-[91] animate-popIn">
                 {isOwner && (
                   <button
                     type="button"

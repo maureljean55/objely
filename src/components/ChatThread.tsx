@@ -963,7 +963,7 @@ export default function ChatThread({
       {menuMessage && menuPos && (
         <div role="dialog" aria-modal="true" className="fixed inset-0 z-[100]" onClick={closeMenu}>
           <div
-            className="absolute bg-surface-container-lowest/95 backdrop-blur-xl rounded-xl overflow-hidden shadow-[0_8px_30px_rgba(0,0,0,0.12)] border border-outline-variant/15 py-1 origin-top-left animate-popIn"
+            className="absolute bg-surface-container-lowest rounded-xl overflow-hidden shadow-[0_8px_30px_rgba(0,0,0,0.12)] border border-outline-variant/15 py-1 origin-top-left animate-popIn"
             style={{ ...clampMenuPosition(menuPos.x, menuPos.y, menuRowCount), width: MENU_WIDTH }}
             onClick={(e) => e.stopPropagation()}
           >
