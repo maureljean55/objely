@@ -16,6 +16,7 @@ const ICONS: Record<AppNotification["type"], { icon: string; gradient: string; f
   restitution_confirmed: { icon: "task_alt", gradient: "linear-gradient(135deg, #16a34a, #15803d)", filled: true },
   restitution_pending_confirmation: { icon: "hourglass_top", gradient: "linear-gradient(135deg, #f97316, #ef4444)", filled: true },
   chat_closed: { icon: "block", gradient: "linear-gradient(135deg, #6b7280, #4b5563)" },
+  community_added: { icon: "groups", gradient: "linear-gradient(135deg, #3276e8, #916af4)", filled: true },
 };
 
 type Section = "Aujourd'hui" | "Hier" | "Plus anciennes";
@@ -69,6 +70,10 @@ export default function NotificationsPage() {
     }
     if (item.type === "message" && item.direct_conversation_id) {
       router.push(`/dm/${item.direct_conversation_id}`);
+      return;
+    }
+    if (item.type === "community_added" && item.community_id) {
+      router.push(`/communities/${item.community_id}`);
       return;
     }
     if (!item.match_id) return;

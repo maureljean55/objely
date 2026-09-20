@@ -16,6 +16,7 @@ import {
   leaveCommunity,
   listCommunityMembers,
   listCommunityMessages,
+  removeCommunityMember,
   sendCommunityMessage,
   type CommunityMember,
   type CommunityMessage,
@@ -96,6 +97,11 @@ export default function CommunityPage() {
     };
   }, [communityId, isMember]);
 
+  const refreshCommunity = async () => {
+    const { data } = await getCommunity(communityId);
+    if (data) setCommunity(data);
+  };
+
   const handleJoin = async () => {
     setIsJoining(true);
     setJoinError(null);
@@ -106,7 +112,7 @@ export default function CommunityPage() {
       return;
     }
     setMembership({ role: "member" });
-    await loadMemberData();
+    await Promise.all([loadMemberData(), refreshCommunity()]);
   };
 
   const handleSend = async (body: string) => {
@@ -121,8 +127,14 @@ export default function CommunityPage() {
   const handleAddMember = async (publicId: string) => {
     const { error } = await addCommunityMemberByPublicId(communityId, publicId);
     if (error) return error;
-    setCommunity((prev) => (prev ? { ...prev, member_count: prev.member_count + 1 } : prev));
-    await loadMemberData();
+    await Promise.all([loadMemberData(), refreshCommunity()]);
+    return null;
+  };
+
+  const handleRemoveMember = async (userId: string) => {
+    const { error } = await removeCommunityMember(communityId, userId);
+    if (error) return "Impossible de retirer ce membre, réessayez.";
+    await Promise.all([loadMemberData(), refreshCommunity()]);
     return null;
   };
 
@@ -134,7 +146,7 @@ export default function CommunityPage() {
   };
 
   const handleDeleteCommunity = async () => {
-    const { error } = await deleteCommunity(communityId);
+    const { error } = await deleteCommunity(communityId, community?.cover_url);
     if (error) return false;
     router.push("/communities");
     return true;
@@ -174,6 +186,7 @@ export default function CommunityPage() {
         onLeave={handleLeave}
         onDeleteCommunity={handleDeleteCommunity}
         onAddMember={handleAddMember}
+        onRemoveMember={handleRemoveMember}
       />
     );
   }

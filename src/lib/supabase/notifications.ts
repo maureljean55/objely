@@ -10,7 +10,8 @@ export type NotificationType =
   | "restitution_responded"
   | "restitution_confirmed"
   | "restitution_pending_confirmation"
-  | "chat_closed";
+  | "chat_closed"
+  | "community_added";
 
 export type AppNotification = {
   id: string;
@@ -20,6 +21,7 @@ export type AppNotification = {
   body: string;
   match_id: string | null;
   direct_conversation_id: string | null;
+  community_id: string | null;
   read: boolean;
   created_at: string;
 };

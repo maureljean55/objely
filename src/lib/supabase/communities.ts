@@ -136,8 +136,9 @@ export async function leaveCommunity(id: string) {
 }
 
 /** Adds someone straight into the community by their permanent public_id
- * (shown on their own profile as "id: @<number>") — no invite link needed,
- * they just appear as a member and can chat immediately. */
+ * (shown on their own profile as "@<code>") — owner-only (see
+ * add_community_member_by_public_id's RLS-equivalent check), and notifies
+ * the person added since they never took any action themselves. */
 export async function addCommunityMemberByPublicId(id: string, publicId: string) {
   const supabase = createClient();
   const { error } = await supabase.rpc("add_community_member_by_public_id", {
@@ -147,13 +148,35 @@ export async function addCommunityMemberByPublicId(id: string, publicId: string)
   if (!error) return { error: null };
 
   const message = error.message ?? "";
+  if (message.includes("Only the owner")) return { error: "Seul le propriétaire peut ajouter des membres." };
   if (message.includes("No user found")) return { error: "Aucun utilisateur ne correspond à cet identifiant." };
   if (message.includes("already a member")) return { error: "Cette personne est déjà membre de la communauté." };
   return { error: "Impossible d'ajouter ce membre, réessayez." };
 }
 
-export async function deleteCommunity(id: string) {
+/** Owner-only: removes a member (not the owner, not yourself — see leaveCommunity/deleteCommunity for those). */
+export async function removeCommunityMember(id: string, userId: string) {
   const supabase = createClient();
+  const { error } = await supabase.rpc("remove_community_member", { p_community_id: id, p_user_id: userId });
+  return { error };
+}
+
+const COMMUNITY_COVERS_BUCKET = "community-covers";
+
+function storagePathFromPublicUrl(url: string, bucket: string): string | null {
+  const marker = `/object/public/${bucket}/`;
+  const idx = url.indexOf(marker);
+  if (idx === -1) return null;
+  return decodeURIComponent(url.slice(idx + marker.length));
+}
+
+/** Deletes the community and, best-effort, its cover photo — otherwise the file stays orphaned in storage forever. */
+export async function deleteCommunity(id: string, coverUrl?: string | null) {
+  const supabase = createClient();
+  if (coverUrl) {
+    const path = storagePathFromPublicUrl(coverUrl, COMMUNITY_COVERS_BUCKET);
+    if (path) await supabase.storage.from(COMMUNITY_COVERS_BUCKET).remove([path]);
+  }
   const { error } = await supabase.from("communities").delete().eq("id", id);
   return { error };
 }
@@ -164,14 +187,23 @@ export async function listCommunityMembers(id: string) {
   return { data: (data ?? []) as CommunityMember[], error };
 }
 
+// PostgREST caps unbounded selects at config.toml's max_rows (1000) — for a
+// community whose history has grown past that, an ascending unlimited query
+// would silently return the OLDEST 1000 and drop everything recent instead.
+// Fetching the most recent N descending, then reversing, guarantees the
+// messages actually shown are always the latest ones.
+const RECENT_MESSAGES_LIMIT = 300;
+
 export async function listCommunityMessages(id: string) {
   const supabase = createClient();
-  return supabase
+  const { data, error } = await supabase
     .from("community_messages")
     .select("*")
     .eq("community_id", id)
-    .order("created_at", { ascending: true })
+    .order("created_at", { ascending: false })
+    .limit(RECENT_MESSAGES_LIMIT)
     .returns<CommunityMessage[]>();
+  return { data: data ? [...data].reverse() : data, error };
 }
 
 export async function sendCommunityMessage(id: string, body: string, replyToId: string | null = null) {

@@ -47,6 +47,8 @@ type Props = {
   onDeleteCommunity: () => Promise<boolean>;
   /** Adds a member by their public ID. Resolves to an error message to show, or null on success. */
   onAddMember: (publicId: string) => Promise<string | null>;
+  /** Removes a member. Resolves to an error message to show, or null on success. */
+  onRemoveMember: (userId: string) => Promise<string | null>;
 };
 
 /** WhatsApp-style group chat: unlike ChatThread (built for exactly two parties), every
@@ -65,6 +67,7 @@ export default function CommunityChatThread({
   onLeave,
   onDeleteCommunity,
   onAddMember,
+  onRemoveMember,
 }: Props) {
   const [draft, setDraft] = useState("");
   const [isSending, setIsSending] = useState(false);
@@ -78,6 +81,9 @@ export default function CommunityChatThread({
   const [isAddingMember, setIsAddingMember] = useState(false);
   const [addMemberError, setAddMemberError] = useState<string | null>(null);
   const [memberAdded, setMemberAdded] = useState(false);
+  const [removeTarget, setRemoveTarget] = useState<CommunityMember | null>(null);
+  const [isRemovingMember, setIsRemovingMember] = useState(false);
+  const [removeError, setRemoveError] = useState<string | null>(null);
   const [isLeaving, setIsLeaving] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
   const [confirmError, setConfirmError] = useState<string | null>(null);
@@ -119,6 +125,19 @@ export default function CommunityChatThread({
     setAddMemberInput("");
     setMemberAdded(true);
     setTimeout(() => setMemberAdded(false), 2000);
+  };
+
+  const handleRemoveMemberConfirm = async () => {
+    if (!removeTarget) return;
+    setIsRemovingMember(true);
+    setRemoveError(null);
+    const error = await onRemoveMember(removeTarget.user_id);
+    setIsRemovingMember(false);
+    if (error) {
+      setRemoveError(error);
+      return;
+    }
+    setRemoveTarget(null);
   };
 
   const handleLeave = async () => {
@@ -182,35 +201,37 @@ export default function CommunityChatThread({
           {showMenu && (
             <>
               <div className="fixed inset-0 z-[90]" onClick={() => setShowMenu(false)} />
-              <div className="absolute right-0 top-full mt-2 w-64 origin-top-right bg-surface-container-lowest/95 backdrop-blur-xl rounded-[22px] overflow-hidden shadow-[0_16px_44px_rgba(0,0,0,0.18)] border border-outline-variant/15 p-1.5 z-[91] animate-popIn">
-                <button
-                  type="button"
-                  onClick={() => {
-                    setShowMenu(false);
-                    setShowAddMemberSheet(true);
-                  }}
-                  className="w-full py-2 px-2 flex items-center gap-3 rounded-2xl text-on-surface font-body-md text-body-md hover:bg-surface-variant/50 active:scale-[0.98] transition-all"
-                >
-                  <span className="w-9 h-9 rounded-full bg-primary/10 text-primary flex items-center justify-center shrink-0">
-                    <span className="material-symbols-outlined text-[19px]">person_add</span>
-                  </span>
-                  Ajouter des membres
-                </button>
+              <div className="absolute right-0 top-full mt-2 w-72 origin-top-right bg-surface-container-lowest/98 backdrop-blur-2xl rounded-[20px] overflow-hidden shadow-[0_2px_8px_rgba(0,0,0,0.06),0_20px_48px_-12px_rgba(0,0,0,0.22)] border border-outline-variant/10 p-1 z-[91] animate-popIn">
+                {isOwner && (
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setShowMenu(false);
+                      setShowAddMemberSheet(true);
+                    }}
+                    className="w-full py-3 px-3.5 flex items-center gap-3.5 rounded-[14px] text-on-surface font-body-md text-body-md hover:bg-surface-variant/50 active:bg-surface-variant/70 transition-colors"
+                  >
+                    <span className="w-5 flex justify-center shrink-0 text-on-surface-variant">
+                      <span className="material-symbols-outlined text-[20px]">person_add</span>
+                    </span>
+                    Ajouter des membres
+                  </button>
+                )}
                 <button
                   type="button"
                   onClick={() => {
                     setShowMenu(false);
                     setShowMembersSheet(true);
                   }}
-                  className="w-full py-2 px-2 flex items-center gap-3 rounded-2xl text-on-surface font-body-md text-body-md hover:bg-surface-variant/50 active:scale-[0.98] transition-all"
+                  className="w-full py-3 px-3.5 flex items-center gap-3.5 rounded-[14px] text-on-surface font-body-md text-body-md hover:bg-surface-variant/50 active:bg-surface-variant/70 transition-colors"
                 >
-                  <span className="w-9 h-9 rounded-full bg-surface-container-high text-on-surface-variant flex items-center justify-center shrink-0">
-                    <span className="material-symbols-outlined text-[19px]">groups</span>
+                  <span className="w-5 flex justify-center shrink-0 text-on-surface-variant">
+                    <span className="material-symbols-outlined text-[20px]">groups</span>
                   </span>
                   Voir les membres
                 </button>
 
-                <div className="h-px bg-outline-variant/15 my-1.5 mx-3" />
+                <div className="h-px bg-outline-variant/15 my-1 mx-3.5" />
 
                 {isOwner ? (
                   <button
@@ -219,10 +240,10 @@ export default function CommunityChatThread({
                       setShowMenu(false);
                       setShowDeleteConfirm(true);
                     }}
-                    className="w-full py-2 px-2 flex items-center gap-3 rounded-2xl text-error font-body-md text-body-md hover:bg-error-container/30 active:scale-[0.98] transition-all"
+                    className="w-full py-3 px-3.5 flex items-center gap-3.5 rounded-[14px] text-error font-body-md text-body-md hover:bg-error-container/25 active:bg-error-container/40 transition-colors"
                   >
-                    <span className="w-9 h-9 rounded-full bg-error/10 flex items-center justify-center shrink-0">
-                      <span className="material-symbols-outlined text-[19px]">delete</span>
+                    <span className="w-5 flex justify-center shrink-0">
+                      <span className="material-symbols-outlined text-[20px]">delete</span>
                     </span>
                     Supprimer la communauté
                   </button>
@@ -233,10 +254,10 @@ export default function CommunityChatThread({
                       setShowMenu(false);
                       setShowLeaveConfirm(true);
                     }}
-                    className="w-full py-2 px-2 flex items-center gap-3 rounded-2xl text-error font-body-md text-body-md hover:bg-error-container/30 active:scale-[0.98] transition-all"
+                    className="w-full py-3 px-3.5 flex items-center gap-3.5 rounded-[14px] text-error font-body-md text-body-md hover:bg-error-container/25 active:bg-error-container/40 transition-colors"
                   >
-                    <span className="w-9 h-9 rounded-full bg-error/10 flex items-center justify-center shrink-0">
-                      <span className="material-symbols-outlined text-[19px]">logout</span>
+                    <span className="w-5 flex justify-center shrink-0">
+                      <span className="material-symbols-outlined text-[20px]">logout</span>
                     </span>
                     Quitter la communauté
                   </button>
@@ -305,6 +326,7 @@ export default function CommunityChatThread({
                 className="w-full bg-transparent border-none p-0 focus:ring-0 resize-none font-body-md text-body-md text-on-surface placeholder-outline max-h-32"
                 placeholder="Message..."
                 rows={1}
+                maxLength={4000}
                 value={draft}
                 onChange={(e) => {
                   setDraft(e.target.value);
@@ -351,17 +373,19 @@ export default function CommunityChatThread({
               <h2 className="font-headline-md text-headline-md text-on-surface">
                 {memberCount} {memberCount > 1 ? "membres" : "membre"}
               </h2>
-              <button
-                type="button"
-                onClick={() => {
-                  setShowMembersSheet(false);
-                  setShowAddMemberSheet(true);
-                }}
-                className="shrink-0 flex items-center gap-1.5 py-2 px-3.5 rounded-full bg-primary/10 text-primary font-label-md text-label-md font-semibold hover:bg-primary/15 transition-colors"
-              >
-                <span className="material-symbols-outlined text-[18px]">person_add</span>
-                Ajouter
-              </button>
+              {isOwner && (
+                <button
+                  type="button"
+                  onClick={() => {
+                    setShowMembersSheet(false);
+                    setShowAddMemberSheet(true);
+                  }}
+                  className="shrink-0 flex items-center gap-1.5 py-2 px-3.5 rounded-full bg-primary/10 text-primary font-label-md text-label-md font-semibold hover:bg-primary/15 transition-colors"
+                >
+                  <span className="material-symbols-outlined text-[18px]">person_add</span>
+                  Ajouter
+                </button>
+              )}
             </div>
             <div className="flex flex-col gap-3">
               {members.map((member) => (
@@ -372,6 +396,19 @@ export default function CommunityChatThread({
                   </div>
                   {member.role === "owner" && (
                     <span className="font-label-md text-[11px] text-primary bg-primary/10 px-2 py-1 rounded-full shrink-0">Propriétaire</span>
+                  )}
+                  {isOwner && member.role !== "owner" && member.user_id !== currentUserId && (
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setShowMembersSheet(false);
+                        setRemoveTarget(member);
+                      }}
+                      aria-label={`Retirer ${member.full_name || "ce membre"}`}
+                      className="shrink-0 w-8 h-8 rounded-full flex items-center justify-center text-error hover:bg-error-container/30 transition-colors"
+                    >
+                      <span className="material-symbols-outlined text-[18px]">person_remove</span>
+                    </button>
                   )}
                 </div>
               ))}
@@ -444,6 +481,43 @@ export default function CommunityChatThread({
                 className="flex-1 h-12 rounded-[14px] bg-error text-on-error font-headline-sm text-headline-sm hover:opacity-90 transition-opacity disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 {isDeleting ? "Suppression…" : "Supprimer"}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {removeTarget && (
+        <div
+          role="dialog"
+          aria-modal="true"
+          className="fixed inset-0 z-[100] flex items-end sm:items-center justify-center bg-black/30 backdrop-blur-sm"
+          onClick={() => !isRemovingMember && setRemoveTarget(null)}
+        >
+          <div className="w-full sm:w-[400px] bg-surface-container-lowest rounded-t-[28px] sm:rounded-[28px] p-lg pb-8 sm:pb-lg shadow-xl" onClick={(e) => e.stopPropagation()}>
+            <h2 className="font-headline-md text-headline-md text-on-surface mb-1">
+              Retirer {removeTarget.full_name || "ce membre"} ?
+            </h2>
+            <p className="font-body-md text-body-md text-on-surface-variant mb-lg">
+              Cette personne ne fera plus partie de {communityName} et ne recevra plus les messages du groupe.
+            </p>
+            {removeError && <p className="font-body-md text-[13px] text-error mb-3">{removeError}</p>}
+            <div className="flex gap-sm">
+              <button
+                type="button"
+                disabled={isRemovingMember}
+                onClick={() => setRemoveTarget(null)}
+                className="flex-1 h-12 rounded-[14px] bg-surface-container-high text-on-surface font-headline-sm text-headline-sm hover:bg-surface-container-highest transition-colors disabled:opacity-50"
+              >
+                Annuler
+              </button>
+              <button
+                type="button"
+                disabled={isRemovingMember}
+                onClick={handleRemoveMemberConfirm}
+                className="flex-1 h-12 rounded-[14px] bg-error text-on-error font-headline-sm text-headline-sm hover:opacity-90 transition-opacity disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                {isRemovingMember ? "Retrait…" : "Retirer"}
               </button>
             </div>
           </div>
