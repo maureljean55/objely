@@ -55,7 +55,7 @@ function MyCommunityRow({ community, last }: { community: CommunityWithCount; la
   return (
     <Link
       href={`/communities/${community.id}`}
-      className="group p-3 rounded-2xl bg-surface-container-lowest shadow-sm hover:shadow-md transition-all active:scale-[0.99] flex items-center gap-3"
+      className="group p-3 rounded-2xl bg-surface-container-lowest soft-shadow inner-stroke hover:shadow-[0px_10px_30px_rgba(0,88,188,0.14)] transition-all active:scale-[0.99] flex items-center gap-3"
     >
       <CommunityCover community={community} />
       <div className="flex-1 min-w-0">
@@ -114,7 +114,7 @@ function DiscoveryCard({
   };
 
   return (
-    <div className="p-3 rounded-2xl bg-surface-container-lowest shadow-sm flex flex-col gap-2">
+    <div className="p-3 rounded-2xl bg-surface-container-lowest soft-shadow inner-stroke flex flex-col gap-2">
       <div className="flex items-start justify-between gap-2">
         <Link href={`/communities/${community.id}`} className="flex items-center gap-3 min-w-0">
           <CommunityCover community={community} size={44} />
@@ -164,14 +164,12 @@ export default function CommunitiesBrowser({
   allCommunities,
   myCommunities,
   lastMessages,
-  myAvatarUrl,
   weeklyRecoveredCount,
   authenticated,
 }: {
   allCommunities: CommunityWithCount[];
   myCommunities: CommunityWithCount[];
   lastMessages: CommunityLastMessage[];
-  myAvatarUrl: string | null;
   weeklyRecoveredCount: number;
   authenticated: boolean;
 }) {
@@ -190,29 +188,9 @@ export default function CommunitiesBrowser({
 
   return (
     <div className="flex flex-col gap-lg">
-      {/* Hero: page title, own avatar, subtitle */}
-      <div className="flex flex-col gap-1">
-        <div className="flex items-center justify-between">
-          <h2 className="font-headline-lg text-headline-lg text-on-surface tracking-tight">Communautés</h2>
-          {authenticated && (
-            <Link href="/profile" className="relative shrink-0">
-              <div className="w-10 h-10 rounded-full bg-surface-container-high overflow-hidden shadow-sm">
-                {myAvatarUrl ? (
-                  <Image alt="Mon profil" src={myAvatarUrl} width={40} height={40} className="w-full h-full object-cover" />
-                ) : (
-                  <span className="material-symbols-outlined w-full h-full flex items-center justify-center text-on-surface-variant">
-                    person
-                  </span>
-                )}
-              </div>
-              <span className="absolute bottom-0 right-0 w-3 h-3 rounded-full bg-primary ring-2 ring-surface" />
-            </Link>
-          )}
-        </div>
-        <p className="font-body-md text-body-md text-on-surface-variant">
-          Échange, partage et retrouve des personnes qui te ressemblent.
-        </p>
-      </div>
+      <p className="font-body-md text-body-md text-on-surface-variant">
+        Échange, partage et retrouve des personnes qui te ressemblent.
+      </p>
 
       {/* Search + quick create */}
       <div className="flex items-center gap-2">
@@ -256,8 +234,11 @@ export default function CommunitiesBrowser({
       )}
 
       {authenticated && myCommunities.length > 0 && weeklyRecoveredCount > 0 && (
-        <div className="p-3 rounded-2xl bg-surface-container-low shadow-sm flex items-center gap-3">
-          <div className="w-10 h-10 rounded-xl bg-surface-container-lowest flex items-center justify-center text-secondary shrink-0 shadow-sm">
+        <div className="p-3 rounded-2xl bg-surface-container-lowest soft-shadow inner-stroke flex items-center gap-3">
+          <div
+            className="w-10 h-10 rounded-xl flex items-center justify-center text-white shrink-0 shadow-sm"
+            style={{ background: "linear-gradient(135deg, #5952af, #8b5cf6)" }}
+          >
             <span className="material-symbols-outlined text-[22px]">diversity_1</span>
           </div>
           <div className="flex-1 min-w-0">
