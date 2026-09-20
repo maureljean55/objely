@@ -4,6 +4,7 @@ import { createContext, useCallback, useContext, useEffect, useRef, useState, ty
 import type { RealtimeChannel } from "@supabase/supabase-js";
 import { createClient } from "@/lib/supabase/client";
 import { getMyProfile } from "@/lib/supabase/profile";
+import { subscribeToPush } from "@/lib/push/subscribe";
 import CallOverlay from "@/components/calling/CallOverlay";
 
 // No TURN server — only public STUN. Works over most home/mobile networks
@@ -55,6 +56,7 @@ export default function CallProvider({ children }: { children: ReactNode }) {
   const remoteAudioRef = useRef<HTMLAudioElement | null>(null);
   const pendingCandidatesRef = useRef<RTCIceCandidateInit[]>([]);
   const incomingOfferRef = useRef<IncomingOffer | null>(null);
+  const lastOfferRef = useRef<{ callId: string; sdp: RTCSessionDescriptionInit } | null>(null);
   const ringTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const startedAtRef = useRef<number | null>(null);
   const statusRef = useRef<CallStatus>("idle");
@@ -79,6 +81,7 @@ export default function CallProvider({ children }: { children: ReactNode }) {
     if (remoteAudioRef.current) remoteAudioRef.current.srcObject = null;
     pendingCandidatesRef.current = [];
     incomingOfferRef.current = null;
+    lastOfferRef.current = null;
     startedAtRef.current = null;
     if (callChannelRef.current) {
       const supabase = createClient();
@@ -92,7 +95,7 @@ export default function CallProvider({ children }: { children: ReactNode }) {
   }, [clearRingTimeout]);
 
   const joinCallChannel = useCallback(
-    (callId: string) => {
+    (callId: string, onSubscribed?: () => void) => {
       const supabase = createClient();
       const channel = supabase
         .channel(`call:${callId}`)
@@ -121,12 +124,64 @@ export default function CallProvider({ children }: { children: ReactNode }) {
           if (statusRef.current === "outgoing" && reason === "decline") setError("Appel refusé.");
           teardown();
         })
-        .subscribe();
+        // The callee's device may only wake up (via a push notification)
+        // after missing the original Realtime "ring" entirely — this lets
+        // it ask the still-waiting caller to resend the offer it already
+        // has in memory, instead of needing anything replayed server-side.
+        .on("broadcast", { event: "request-offer" }, () => {
+          const last = lastOfferRef.current;
+          if (last?.callId !== callId || !meRef.current) return;
+          channel.send({ type: "broadcast", event: "offer-resend", payload: { from: meRef.current, sdp: last.sdp } });
+        })
+        .on("broadcast", { event: "offer-resend" }, ({ payload }) => {
+          if (statusRef.current !== "idle" || incomingOfferRef.current) return;
+          incomingOfferRef.current = { callId, from: payload.from, sdp: payload.sdp };
+          setPeer(payload.from);
+          setStatus("incoming");
+        })
+        .subscribe((subStatus) => {
+          if (subStatus === "SUBSCRIBED") onSubscribed?.();
+        });
 
       callChannelRef.current = channel;
     },
     [clearRingTimeout, teardown],
   );
+
+  // Resumes a call after this device was woken up by a push notification
+  // (see public/sw.js's notificationclick, which reopens the app at
+  // `/?call=<callId>`) rather than by the Realtime "ring" — that broadcast
+  // has no replay for a client that wasn't connected yet to receive it.
+  const resumeCallFromPush = useCallback(
+    (callId: string) => {
+      if (statusRef.current !== "idle") return;
+      joinCallChannel(callId, () => {
+        callChannelRef.current?.send({ type: "broadcast", event: "request-offer", payload: {} });
+      });
+      // The caller may already have given up (its own 30s ring timeout) by
+      // the time this device opens the notification — don't wait forever
+      // for an offer that's never coming.
+      setTimeout(() => {
+        if (statusRef.current === "idle") teardown();
+      }, 10000);
+    },
+    [joinCallChannel, teardown],
+  );
+
+  // Picks up a `?call=<id>` left by the push notification's click handler,
+  // once, on first mount — then strips it so a later refresh of the same
+  // URL doesn't try to resume a call that's long over.
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    const params = new URLSearchParams(window.location.search);
+    const callId = params.get("call");
+    if (!callId) return;
+    params.delete("call");
+    const query = params.toString();
+    window.history.replaceState({}, "", `${window.location.pathname}${query ? `?${query}` : ""}`);
+    resumeCallFromPush(callId);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const createPeerConnection = useCallback(() => {
     const pc = new RTCPeerConnection({ iceServers: ICE_SERVERS });
@@ -164,6 +219,7 @@ export default function CallProvider({ children }: { children: ReactNode }) {
         name: profile?.full_name || (user.user_metadata?.full_name as string | undefined) || "Utilisateur Objely",
         avatarUrl: profile?.avatar_url ?? null,
       };
+      void subscribeToPush(user.id);
 
       const channel = supabase
         .channel(`calls:user:${user.id}`)
@@ -237,6 +293,7 @@ export default function CallProvider({ children }: { children: ReactNode }) {
 
       const offer = await pc.createOffer();
       await pc.setLocalDescription(offer);
+      lastOfferRef.current = { callId, sdp: offer };
 
       const supabase = createClient();
       const ringChannel = supabase.channel(`calls:user:${target.id}`);
@@ -250,6 +307,19 @@ export default function CallProvider({ children }: { children: ReactNode }) {
           setTimeout(() => supabase.removeChannel(ringChannel), 1000);
         }
       });
+
+      // Best-effort wake-up in case the callee's app isn't open to receive
+      // the Realtime broadcast above — see src/app/api/calls/ring/route.ts.
+      fetch("/api/calls/ring", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          targetUserId: target.id,
+          callId,
+          callerName: meRef.current.name,
+          callerAvatarUrl: meRef.current.avatarUrl,
+        }),
+      }).catch(() => {});
 
       ringTimeoutRef.current = setTimeout(() => {
         setError("Pas de réponse.");

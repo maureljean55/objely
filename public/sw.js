@@ -58,3 +58,46 @@ self.addEventListener("fetch", (event) => {
     );
   }
 });
+
+// Wakes the app for an incoming call even when it's closed or the phone is
+// locked — sent by src/app/api/calls/ring/route.ts right after the caller
+// broadcasts over Realtime, which only reaches an already-open, connected
+// tab on its own.
+self.addEventListener("push", (event) => {
+  if (!event.data) return;
+  let data;
+  try {
+    data = event.data.json();
+  } catch {
+    return;
+  }
+  if (data.type !== "call") return;
+
+  event.waitUntil(
+    self.registration.showNotification(`Appel de ${data.callerName}`, {
+      body: "Appuyez pour répondre",
+      icon: "/icons/icon-192.png",
+      tag: `call-${data.callId}`,
+      requireInteraction: true,
+      vibrate: [300, 150, 300, 150, 300],
+      data: { url: `/?call=${encodeURIComponent(data.callId)}` },
+    })
+  );
+});
+
+self.addEventListener("notificationclick", (event) => {
+  event.notification.close();
+  const url = event.notification.data && event.notification.data.url ? event.notification.data.url : "/";
+
+  event.waitUntil(
+    self.clients.matchAll({ type: "window", includeUncontrolled: true }).then((clientList) => {
+      for (const client of clientList) {
+        if ("focus" in client) {
+          if ("navigate" in client) client.navigate(url);
+          return client.focus();
+        }
+      }
+      return self.clients.openWindow(url);
+    })
+  );
+});
