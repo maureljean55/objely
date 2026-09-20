@@ -34,6 +34,15 @@ export type CommunityMessage = {
   created_at: string;
 };
 
+export type CommunityLastMessage = {
+  community_id: string;
+  last_message_body: string | null;
+  last_message_kind: "text" | "voice" | null;
+  last_message_deleted_at: string | null;
+  last_message_sender_name: string | null;
+  last_message_created_at: string | null;
+};
+
 export type CreateCommunityInput = {
   name: string;
   description?: string;

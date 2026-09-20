@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
-import type { CommunityWithCount } from "@/lib/supabase/communities";
+import type { CommunityLastMessage, CommunityWithCount } from "@/lib/supabase/communities";
 import CommunitiesBrowser from "./CommunitiesBrowser";
 
 export const metadata: Metadata = {
@@ -28,10 +28,18 @@ export default async function CommunitiesPage() {
     .returns<CommunityWithCount[]>();
 
   let myCommunities: CommunityWithCount[] = [];
+  let lastMessages: CommunityLastMessage[] = [];
+  let myAvatarUrl: string | null = null;
   if (user) {
-    const { data: memberships } = await supabase.from("community_members").select("community_id").eq("user_id", user.id);
+    const [{ data: memberships }, { data: lastMessageRows }, { data: myProfile }] = await Promise.all([
+      supabase.from("community_members").select("community_id").eq("user_id", user.id),
+      supabase.rpc("list_my_communities_with_last_message"),
+      supabase.from("profiles").select("avatar_url").eq("id", user.id).maybeSingle<{ avatar_url: string | null }>(),
+    ]);
     const myIds = new Set((memberships ?? []).map((m) => m.community_id));
     myCommunities = (allCommunities ?? []).filter((c) => myIds.has(c.id));
+    lastMessages = (lastMessageRows ?? []) as CommunityLastMessage[];
+    myAvatarUrl = myProfile?.avatar_url ?? null;
   }
 
   return (
@@ -49,7 +57,13 @@ export default async function CommunitiesPage() {
       </header>
 
       <main className="max-w-[800px] mx-auto pt-[calc(5rem+env(safe-area-inset-top))] pb-8 px-container-margin flex flex-col gap-lg">
-        <CommunitiesBrowser allCommunities={allCommunities ?? []} myCommunities={myCommunities} authenticated={!!user} />
+        <CommunitiesBrowser
+          allCommunities={allCommunities ?? []}
+          myCommunities={myCommunities}
+          lastMessages={lastMessages}
+          myAvatarUrl={myAvatarUrl}
+          authenticated={!!user}
+        />
       </main>
     </div>
   );
