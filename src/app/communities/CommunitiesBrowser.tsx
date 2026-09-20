@@ -6,7 +6,7 @@ import Link from "next/link";
 import Image from "next/image";
 import GuardedActionLink from "@/components/home/GuardedActionLink";
 import type { CommunityLastMessage, CommunityWithCount } from "@/lib/supabase/communities";
-import { joinCommunity } from "@/lib/supabase/communities";
+import { requestJoinCommunity } from "@/lib/supabase/communities";
 
 function formatMessageTime(dateStr: string) {
   const date = new Date(dateStr);
@@ -51,6 +51,7 @@ function CommunityCover({ community, size = 48 }: { community: CommunityWithCoun
 
 function MyCommunityRow({ community, last }: { community: CommunityWithCount; last: CommunityLastMessage | undefined }) {
   const preview = lastMessagePreview(last);
+  const unread = last?.unread_count ?? 0;
   return (
     <Link
       href={`/communities/${community.id}`}
@@ -62,15 +63,22 @@ function MyCommunityRow({ community, last }: { community: CommunityWithCount; la
           <h4 className="font-body-lg text-body-lg font-semibold text-on-surface truncate">{community.name}</h4>
           {preview && <span className="font-label-md text-[11px] text-on-surface-variant shrink-0">{preview.time}</span>}
         </div>
-        {preview ? (
-          <p className="font-body-md text-[13px] text-on-surface-variant truncate">
-            <span className="font-medium text-on-surface">{preview.senderFirstName}:</span> {preview.text}
-          </p>
-        ) : (
-          <p className="font-label-md text-[13px] text-on-surface-variant truncate">
-            {community.member_count} {community.member_count > 1 ? "membres" : "membre"}
-          </p>
-        )}
+        <div className="flex items-center justify-between gap-2 mt-0.5">
+          {preview ? (
+            <p className="font-body-md text-[13px] text-on-surface-variant truncate">
+              <span className="font-medium text-on-surface">{preview.senderFirstName}:</span> {preview.text}
+            </p>
+          ) : (
+            <p className="font-label-md text-[13px] text-on-surface-variant truncate">
+              {community.member_count} {community.member_count > 1 ? "membres" : "membre"}
+            </p>
+          )}
+          {unread > 0 && (
+            <span className="shrink-0 min-w-[20px] h-5 px-1.5 rounded-full text-on-primary font-label-md text-[11px] font-semibold flex items-center justify-center shadow-sm" style={{ background: "linear-gradient(135deg, #5952af, #0058bc)" }}>
+              {unread}
+            </span>
+          )}
+        </div>
       </div>
     </Link>
   );
@@ -86,15 +94,20 @@ function DiscoveryCard({
   onJoined: () => void;
 }) {
   const [isJoining, setIsJoining] = useState(false);
+  const [requested, setRequested] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   const handleJoin = async () => {
     setIsJoining(true);
     setError(null);
-    const { error: joinError } = await joinCommunity(community.id);
+    const { status, error: joinError } = await requestJoinCommunity(community.id);
     setIsJoining(false);
-    if (joinError) {
+    if (joinError || !status) {
       setError("Impossible de rejoindre, réessayez.");
+      return;
+    }
+    if (status === "requested") {
+      setRequested(true);
       return;
     }
     onJoined();
@@ -106,23 +119,17 @@ function DiscoveryCard({
         <Link href={`/communities/${community.id}`} className="flex items-center gap-3 min-w-0">
           <CommunityCover community={community} size={44} />
           <div className="min-w-0">
-            <h4 className="font-body-lg text-body-lg font-semibold text-on-surface truncate">{community.name}</h4>
+            <h4 className="font-body-lg text-body-lg font-semibold text-on-surface truncate flex items-center gap-1">
+              {community.name}
+              {community.is_private && <span className="material-symbols-outlined text-[14px] text-on-surface-variant shrink-0">lock</span>}
+            </h4>
             <p className="font-label-md text-[11px] text-on-surface-variant truncate">
               {community.member_count} {community.member_count > 1 ? "membres" : "membre"}
               {community.ville_quartier ? ` · ${community.ville_quartier}` : ""}
             </p>
           </div>
         </Link>
-        {authenticated ? (
-          <button
-            type="button"
-            onClick={handleJoin}
-            disabled={isJoining}
-            className="shrink-0 h-8 px-4 rounded-full bg-surface-container-high text-primary font-label-md text-label-md font-semibold hover:bg-primary hover:text-on-primary active:scale-95 transition-all disabled:opacity-50"
-          >
-            {isJoining ? "…" : "Rejoindre"}
-          </button>
-        ) : (
+        {!authenticated ? (
           <GuardedActionLink
             href="/communities"
             authenticated={false}
@@ -132,6 +139,19 @@ function DiscoveryCard({
           >
             Rejoindre
           </GuardedActionLink>
+        ) : requested ? (
+          <span className="shrink-0 h-8 px-4 rounded-full bg-surface-container-high text-on-surface-variant font-label-md text-label-md font-semibold flex items-center">
+            Demande envoyée
+          </span>
+        ) : (
+          <button
+            type="button"
+            onClick={handleJoin}
+            disabled={isJoining}
+            className="shrink-0 h-8 px-4 rounded-full bg-surface-container-high text-primary font-label-md text-label-md font-semibold hover:bg-primary hover:text-on-primary active:scale-95 transition-all disabled:opacity-50"
+          >
+            {isJoining ? "…" : community.is_private ? "Demander" : "Rejoindre"}
+          </button>
         )}
       </div>
       {community.description && <p className="font-body-md text-[13px] text-on-surface-variant">{community.description}</p>}
@@ -145,12 +165,14 @@ export default function CommunitiesBrowser({
   myCommunities,
   lastMessages,
   myAvatarUrl,
+  weeklyRecoveredCount,
   authenticated,
 }: {
   allCommunities: CommunityWithCount[];
   myCommunities: CommunityWithCount[];
   lastMessages: CommunityLastMessage[];
   myAvatarUrl: string | null;
+  weeklyRecoveredCount: number;
   authenticated: boolean;
 }) {
   const router = useRouter();
@@ -231,6 +253,21 @@ export default function CommunitiesBrowser({
             ))}
           </div>
         </section>
+      )}
+
+      {authenticated && myCommunities.length > 0 && weeklyRecoveredCount > 0 && (
+        <div className="p-3 rounded-2xl bg-surface-container-low shadow-sm flex items-center gap-3">
+          <div className="w-10 h-10 rounded-xl bg-surface-container-lowest flex items-center justify-center text-secondary shrink-0 shadow-sm">
+            <span className="material-symbols-outlined text-[22px]">diversity_1</span>
+          </div>
+          <div className="flex-1 min-w-0">
+            <h5 className="font-label-md text-label-md text-on-surface font-semibold">Partage circulaire actif</h5>
+            <p className="font-label-md text-[11px] text-on-surface-variant truncate">
+              {weeklyRecoveredCount} objet{weeklyRecoveredCount > 1 ? "s" : ""} retrouvé{weeklyRecoveredCount > 1 ? "s" : ""} par des
+              membres de vos communautés cette semaine.
+            </p>
+          </div>
+        </div>
       )}
 
       <section className="flex flex-col gap-2">

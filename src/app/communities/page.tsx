@@ -30,16 +30,19 @@ export default async function CommunitiesPage() {
   let myCommunities: CommunityWithCount[] = [];
   let lastMessages: CommunityLastMessage[] = [];
   let myAvatarUrl: string | null = null;
+  let weeklyRecoveredCount = 0;
   if (user) {
-    const [{ data: memberships }, { data: lastMessageRows }, { data: myProfile }] = await Promise.all([
+    const [{ data: memberships }, { data: lastMessageRows }, { data: myProfile }, { data: weeklyCount }] = await Promise.all([
       supabase.from("community_members").select("community_id").eq("user_id", user.id),
       supabase.rpc("list_my_communities_with_last_message"),
       supabase.from("profiles").select("avatar_url").eq("id", user.id).maybeSingle<{ avatar_url: string | null }>(),
+      supabase.rpc("my_communities_weekly_recovered_count").maybeSingle<number>(),
     ]);
     const myIds = new Set((memberships ?? []).map((m) => m.community_id));
     myCommunities = (allCommunities ?? []).filter((c) => myIds.has(c.id));
     lastMessages = (lastMessageRows ?? []) as CommunityLastMessage[];
     myAvatarUrl = myProfile?.avatar_url ?? null;
+    weeklyRecoveredCount = weeklyCount ?? 0;
   }
 
   return (
@@ -62,6 +65,7 @@ export default async function CommunitiesPage() {
           myCommunities={myCommunities}
           lastMessages={lastMessages}
           myAvatarUrl={myAvatarUrl}
+          weeklyRecoveredCount={weeklyRecoveredCount}
           authenticated={!!user}
         />
       </main>

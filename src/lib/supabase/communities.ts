@@ -7,6 +7,8 @@ export type Community = {
   description: string | null;
   ville_quartier: string | null;
   cover_url: string | null;
+  is_private: boolean;
+  allow_member_invites: boolean;
   created_at: string;
   updated_at: string;
 };
@@ -41,6 +43,15 @@ export type CommunityLastMessage = {
   last_message_deleted_at: string | null;
   last_message_sender_name: string | null;
   last_message_created_at: string | null;
+  unread_count: number;
+};
+
+export type CommunityJoinRequest = {
+  id: string;
+  user_id: string;
+  full_name: string | null;
+  avatar_url: string | null;
+  created_at: string;
 };
 
 export type CreateCommunityInput = {
@@ -48,6 +59,8 @@ export type CreateCommunityInput = {
   description?: string;
   villeQuartier?: string;
   coverUrl?: string;
+  isPrivate?: boolean;
+  allowMemberInvites?: boolean;
 };
 
 /** Full directory, most recent first — visible to anyone, signed in or not. */
@@ -116,20 +129,57 @@ export async function createCommunity(input: CreateCommunityInput) {
       p_description: input.description ?? null,
       p_ville_quartier: input.villeQuartier ?? null,
       p_cover_url: input.coverUrl ?? null,
+      p_is_private: input.isPrivate ?? false,
+      p_allow_member_invites: input.allowMemberInvites ?? true,
     })
     .single<string>();
 }
 
-export async function joinCommunity(id: string) {
+/**
+ * Joins a public community outright, or — for a private one — files a
+ * pending request the owner has to approve (see respondToJoinRequest).
+ * Resolves to which of the two happened, or null on failure.
+ */
+export async function requestJoinCommunity(id: string): Promise<{ status: "joined" | "requested" | null; error: unknown }> {
   const supabase = createClient();
-  const {
-    data: { session },
-  } = await supabase.auth.getSession();
-  const userId = session?.user?.id;
-  if (!userId) return { error: new Error("Vous devez être connecté.") };
+  const { data, error } = await supabase.rpc("request_join_community", { p_community_id: id }).single<string>();
+  if (error) return { status: null, error };
+  return { status: data as "joined" | "requested", error: null };
+}
 
-  const { error } = await supabase.from("community_members").insert({ community_id: id, user_id: userId, role: "member" });
+/** True if the current user already has a pending request to join this (private) community. */
+export async function hasPendingJoinRequest(id: string) {
+  const supabase = createClient();
+  const { data, error } = await supabase.rpc("get_my_join_request_status", { p_community_id: id }).maybeSingle<string>();
+  return { data: data === "pending", error };
+}
+
+/** Owner-only: pending requests to join, oldest first. */
+export async function listCommunityJoinRequests(id: string) {
+  const supabase = createClient();
+  const { data, error } = await supabase.rpc("list_community_join_requests", { p_community_id: id });
+  return { data: (data ?? []) as CommunityJoinRequest[], error };
+}
+
+/** Owner-only: approves (adds as member) or declines a pending join request. */
+export async function respondToJoinRequest(requestId: string, approve: boolean) {
+  const supabase = createClient();
+  const { error } = await supabase.rpc("respond_to_join_request", { p_request_id: requestId, p_approve: approve });
   return { error };
+}
+
+/** Marks this community's messages as read up to now, for the unread badge on the directory. */
+export async function markCommunityRead(id: string) {
+  const supabase = createClient();
+  const { error } = await supabase.rpc("mark_community_read", { p_community_id: id });
+  return { error };
+}
+
+/** Items recovered/returned this week by anyone sharing a community with the caller. */
+export async function getMyCommunitiesWeeklyRecoveredCount() {
+  const supabase = createClient();
+  const { data, error } = await supabase.rpc("my_communities_weekly_recovered_count").maybeSingle<number>();
+  return { data: data ?? 0, error };
 }
 
 export async function leaveCommunity(id: string) {

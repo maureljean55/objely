@@ -2,7 +2,7 @@
 
 import { useRef, useState } from "react";
 import Image from "next/image";
-import type { CommunityMember, CommunityMessage } from "@/lib/supabase/communities";
+import type { CommunityJoinRequest, CommunityMember, CommunityMessage } from "@/lib/supabase/communities";
 
 function initials(name: string) {
   return name
@@ -41,6 +41,8 @@ type Props = {
   isOwner: boolean;
   members: CommunityMember[];
   messages: CommunityMessage[];
+  /** Owner-only: pending requests to join a private community. */
+  joinRequests: CommunityJoinRequest[];
   onSend: (body: string) => Promise<boolean>;
   onBack: () => void;
   onLeave: () => Promise<boolean>;
@@ -49,6 +51,8 @@ type Props = {
   onAddMember: (publicId: string) => Promise<string | null>;
   /** Removes a member. Resolves to an error message to show, or null on success. */
   onRemoveMember: (userId: string) => Promise<string | null>;
+  /** Approves or declines a pending join request. Resolves to an error message to show, or null on success. */
+  onRespondToJoinRequest: (requestId: string, approve: boolean) => Promise<string | null>;
 };
 
 /** WhatsApp-style group chat: unlike ChatThread (built for exactly two parties), every
@@ -62,18 +66,23 @@ export default function CommunityChatThread({
   isOwner,
   members,
   messages,
+  joinRequests,
   onSend,
   onBack,
   onLeave,
   onDeleteCommunity,
   onAddMember,
   onRemoveMember,
+  onRespondToJoinRequest,
 }: Props) {
   const [draft, setDraft] = useState("");
   const [isSending, setIsSending] = useState(false);
   const [actionError, setActionError] = useState<string | null>(null);
   const [showMenu, setShowMenu] = useState(false);
   const [showMembersSheet, setShowMembersSheet] = useState(false);
+  const [showJoinRequestsSheet, setShowJoinRequestsSheet] = useState(false);
+  const [respondingId, setRespondingId] = useState<string | null>(null);
+  const [joinRequestsError, setJoinRequestsError] = useState<string | null>(null);
   const [showLeaveConfirm, setShowLeaveConfirm] = useState(false);
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const [showAddMemberSheet, setShowAddMemberSheet] = useState(false);
@@ -138,6 +147,14 @@ export default function CommunityChatThread({
       return;
     }
     setRemoveTarget(null);
+  };
+
+  const handleRespondToJoinRequest = async (requestId: string, approve: boolean) => {
+    setRespondingId(requestId);
+    setJoinRequestsError(null);
+    const error = await onRespondToJoinRequest(requestId, approve);
+    setRespondingId(null);
+    if (error) setJoinRequestsError(error);
   };
 
   const handleLeave = async () => {
@@ -230,6 +247,25 @@ export default function CommunityChatThread({
                   </span>
                   Voir les membres
                 </button>
+
+                {isOwner && joinRequests.length > 0 && (
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setShowMenu(false);
+                      setShowJoinRequestsSheet(true);
+                    }}
+                    className="w-full py-3 px-3.5 flex items-center gap-3.5 rounded-[14px] text-on-surface font-body-md text-body-md hover:bg-surface-variant/50 active:bg-surface-variant/70 transition-colors"
+                  >
+                    <span className="w-5 flex justify-center shrink-0 text-on-surface-variant">
+                      <span className="material-symbols-outlined text-[20px]">how_to_reg</span>
+                    </span>
+                    <span className="flex-1 text-left">Demandes en attente</span>
+                    <span className="shrink-0 min-w-[20px] h-5 px-1.5 rounded-full bg-primary text-on-primary font-label-md text-[11px] font-semibold flex items-center justify-center">
+                      {joinRequests.length}
+                    </span>
+                  </button>
+                )}
 
                 <div className="h-px bg-outline-variant/15 my-1 mx-3.5" />
 
@@ -413,6 +449,55 @@ export default function CommunityChatThread({
                 </div>
               ))}
             </div>
+          </div>
+        </div>
+      )}
+
+      {showJoinRequestsSheet && (
+        <div
+          role="dialog"
+          aria-modal="true"
+          className="fixed inset-0 z-[100] flex items-end sm:items-center justify-center bg-black/30 backdrop-blur-sm"
+          onClick={() => setShowJoinRequestsSheet(false)}
+        >
+          <div
+            className="w-full sm:w-[400px] max-h-[70vh] overflow-y-auto bg-surface-container-lowest rounded-t-[28px] sm:rounded-[28px] p-lg pb-8 sm:pb-lg shadow-xl"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <h2 className="font-headline-md text-headline-md text-on-surface mb-lg">Demandes en attente</h2>
+            {joinRequestsError && <p className="font-body-md text-[13px] text-error mb-3">{joinRequestsError}</p>}
+            {joinRequests.length === 0 ? (
+              <p className="font-body-md text-body-md text-on-surface-variant">Aucune demande en attente.</p>
+            ) : (
+              <div className="flex flex-col gap-3">
+                {joinRequests.map((request) => (
+                  <div key={request.id} className="flex items-center gap-3">
+                    <MemberAvatar name={request.full_name || "Utilisateur Objely"} avatarUrl={request.avatar_url} size={40} />
+                    <div className="min-w-0 flex-1">
+                      <p className="font-body-md text-body-md text-on-surface truncate">{request.full_name || "Utilisateur Objely"}</p>
+                    </div>
+                    <button
+                      type="button"
+                      onClick={() => handleRespondToJoinRequest(request.id, false)}
+                      disabled={respondingId === request.id}
+                      aria-label={`Refuser ${request.full_name || "cette demande"}`}
+                      className="shrink-0 w-8 h-8 rounded-full flex items-center justify-center text-error hover:bg-error-container/30 transition-colors disabled:opacity-50"
+                    >
+                      <span className="material-symbols-outlined text-[18px]">close</span>
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => handleRespondToJoinRequest(request.id, true)}
+                      disabled={respondingId === request.id}
+                      aria-label={`Accepter ${request.full_name || "cette demande"}`}
+                      className="shrink-0 w-8 h-8 rounded-full flex items-center justify-center bg-primary text-on-primary hover:opacity-90 transition-opacity disabled:opacity-50"
+                    >
+                      <span className="material-symbols-outlined text-[18px]">check</span>
+                    </button>
+                  </div>
+                ))}
+              </div>
+            )}
           </div>
         </div>
       )}

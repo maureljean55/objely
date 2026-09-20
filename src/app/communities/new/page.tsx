@@ -15,6 +15,8 @@ export default function NewCommunityPage() {
   const [villeQuartier, setVilleQuartier] = useState("");
   const [cover, setCover] = useState<string[]>([]);
   const [isUploadingCover, setIsUploadingCover] = useState(false);
+  const [isPrivate, setIsPrivate] = useState(false);
+  const [allowMemberInvites, setAllowMemberInvites] = useState(true);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -40,6 +42,8 @@ export default function NewCommunityPage() {
       description: description.trim() || undefined,
       villeQuartier: villeQuartier.trim() || undefined,
       coverUrl: cover[0],
+      isPrivate,
+      allowMemberInvites,
     });
 
     if (createError || !id) {
@@ -131,6 +135,59 @@ export default function NewCommunityPage() {
               placeholder="Ex: Un groupe pour s'entraider à retrouver les objets perdus dans le quartier."
               className="w-full bg-surface-container-lowest border border-surface-container-highest rounded-[16px] px-4 py-4 font-body-lg text-body-lg text-on-surface soft-shadow focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all resize-none"
             />
+          </div>
+
+          <div>
+            <label className="block font-label-md text-label-md text-outline uppercase tracking-wider mb-2">Type d&apos;accès</label>
+            <div className="p-1 rounded-[16px] bg-surface-container-lowest border border-surface-container-highest flex items-center gap-1">
+              <button
+                type="button"
+                onClick={() => setIsPrivate(false)}
+                className={`flex-1 py-2.5 rounded-xl font-label-md text-label-md font-semibold flex items-center justify-center gap-1.5 transition-all ${
+                  !isPrivate ? "bg-primary text-on-primary shadow-sm" : "text-on-surface-variant"
+                }`}
+              >
+                <span className="material-symbols-outlined text-[16px]">public</span>
+                Public
+              </button>
+              <button
+                type="button"
+                onClick={() => setIsPrivate(true)}
+                className={`flex-1 py-2.5 rounded-xl font-label-md text-label-md font-semibold flex items-center justify-center gap-1.5 transition-all ${
+                  isPrivate ? "bg-primary text-on-primary shadow-sm" : "text-on-surface-variant"
+                }`}
+              >
+                <span className="material-symbols-outlined text-[16px]">lock</span>
+                Privé
+              </button>
+            </div>
+            <p className="font-label-md text-[12px] text-on-surface-variant mt-2">
+              {isPrivate
+                ? "L'accès nécessite votre approbation pour chaque demande."
+                : "Tout le monde peut découvrir et rejoindre librement."}
+            </p>
+          </div>
+
+          <div className="flex items-center justify-between p-4 rounded-[16px] bg-surface-container-lowest border border-surface-container-highest">
+            <div className="flex flex-col pr-3">
+              <span className="font-label-md text-label-md text-on-surface font-semibold">Invitations libres</span>
+              <span className="font-label-md text-[12px] text-on-surface-variant">Autoriser les membres à ajouter d&apos;autres personnes</span>
+            </div>
+            <button
+              type="button"
+              role="switch"
+              aria-checked={allowMemberInvites}
+              onClick={() => setAllowMemberInvites((v) => !v)}
+              className={`shrink-0 w-12 h-7 rounded-full p-[2px] transition-colors relative flex items-center ${
+                allowMemberInvites ? "bg-primary" : "bg-surface-container-highest"
+              }`}
+            >
+              <span
+                className={`w-6 h-6 rounded-full bg-surface-container-lowest shadow-sm transform transition-transform ${
+                  allowMemberInvites ? "translate-x-5" : "translate-x-0"
+                }`}
+              />
+            </button>
           </div>
 
           {error && <p className="font-body-md text-[13px] text-error bg-error-container/40 rounded-xl px-4 py-3">{error}</p>}

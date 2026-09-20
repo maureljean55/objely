@@ -12,12 +12,17 @@ import {
   deleteCommunity,
   getCommunity,
   getMyMembership,
-  joinCommunity,
+  hasPendingJoinRequest,
   leaveCommunity,
+  listCommunityJoinRequests,
   listCommunityMembers,
   listCommunityMessages,
+  markCommunityRead,
   removeCommunityMember,
+  requestJoinCommunity,
+  respondToJoinRequest,
   sendCommunityMessage,
+  type CommunityJoinRequest,
   type CommunityMember,
   type CommunityMessage,
   type CommunityWithCount,
@@ -35,16 +40,21 @@ export default function CommunityPage() {
   const [messages, setMessages] = useState<CommunityMessage[]>([]);
   const [isJoining, setIsJoining] = useState(false);
   const [joinError, setJoinError] = useState<string | null>(null);
+  const [joinRequested, setJoinRequested] = useState(false);
+  const [joinRequests, setJoinRequests] = useState<CommunityJoinRequest[]>([]);
 
   const isMember = !!membership;
+  const isOwner = membership?.role === "owner";
 
-  const loadMemberData = async () => {
-    const [{ data: memberList }, { data: messageList }] = await Promise.all([
+  const loadMemberData = async (owner: boolean) => {
+    const [{ data: memberList }, { data: messageList }, { data: requests }] = await Promise.all([
       listCommunityMembers(communityId),
       listCommunityMessages(communityId),
+      owner ? listCommunityJoinRequests(communityId) : Promise.resolve({ data: [] as CommunityJoinRequest[] }),
     ]);
     setMembers(memberList ?? []);
     setMessages(messageList ?? []);
+    setJoinRequests(requests ?? []);
   };
 
   useEffect(() => {
@@ -56,7 +66,13 @@ export default function CommunityPage() {
 
       const { data: myMembership } = await getMyMembership(communityId);
       setMembership(myMembership);
-      if (myMembership) await loadMemberData();
+      if (myMembership) {
+        await loadMemberData(myMembership.role === "owner");
+        await markCommunityRead(communityId);
+      } else if (user) {
+        const { data: pending } = await hasPendingJoinRequest(communityId);
+        setJoinRequested(!!pending);
+      }
     })();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [communityId]);
@@ -105,14 +121,19 @@ export default function CommunityPage() {
   const handleJoin = async () => {
     setIsJoining(true);
     setJoinError(null);
-    const { error } = await joinCommunity(communityId);
+    const { status, error } = await requestJoinCommunity(communityId);
     setIsJoining(false);
-    if (error) {
+    if (error || !status) {
       setJoinError("Impossible de rejoindre la communauté, réessayez.");
       return;
     }
+    if (status === "requested") {
+      setJoinRequested(true);
+      return;
+    }
     setMembership({ role: "member" });
-    await Promise.all([loadMemberData(), refreshCommunity()]);
+    await Promise.all([loadMemberData(false), refreshCommunity()]);
+    await markCommunityRead(communityId);
   };
 
   const handleSend = async (body: string) => {
@@ -127,14 +148,21 @@ export default function CommunityPage() {
   const handleAddMember = async (publicId: string) => {
     const { error } = await addCommunityMemberByPublicId(communityId, publicId);
     if (error) return error;
-    await Promise.all([loadMemberData(), refreshCommunity()]);
+    await Promise.all([loadMemberData(isOwner), refreshCommunity()]);
     return null;
   };
 
   const handleRemoveMember = async (userId: string) => {
     const { error } = await removeCommunityMember(communityId, userId);
     if (error) return "Impossible de retirer ce membre, réessayez.";
-    await Promise.all([loadMemberData(), refreshCommunity()]);
+    await Promise.all([loadMemberData(isOwner), refreshCommunity()]);
+    return null;
+  };
+
+  const handleRespondToJoinRequest = async (requestId: string, approve: boolean) => {
+    const { error } = await respondToJoinRequest(requestId, approve);
+    if (error) return "Impossible de traiter cette demande, réessayez.";
+    await Promise.all([loadMemberData(isOwner), refreshCommunity()]);
     return null;
   };
 
@@ -178,15 +206,17 @@ export default function CommunityPage() {
         communityCoverUrl={community.cover_url}
         memberCount={community.member_count}
         currentUserId={currentUserId}
-        isOwner={membership?.role === "owner"}
+        isOwner={isOwner}
         members={members}
         messages={messages}
+        joinRequests={joinRequests}
         onSend={handleSend}
         onBack={() => router.push("/communities")}
         onLeave={handleLeave}
         onDeleteCommunity={handleDeleteCommunity}
         onAddMember={handleAddMember}
         onRemoveMember={handleRemoveMember}
+        onRespondToJoinRequest={handleRespondToJoinRequest}
       />
     );
   }
@@ -203,12 +233,20 @@ export default function CommunityPage() {
         )}
       </div>
       <h1 className="font-headline-lg-mobile text-headline-lg-mobile text-on-surface">{community.name}</h1>
-      {community.ville_quartier && (
-        <span className="flex items-center gap-1.5 bg-primary/10 text-primary px-3 py-1.5 rounded-full font-label-md text-label-md">
-          <span className="material-symbols-outlined text-[16px]">location_on</span>
-          {community.ville_quartier}
-        </span>
-      )}
+      <div className="flex items-center gap-2 flex-wrap justify-center">
+        {community.ville_quartier && (
+          <span className="flex items-center gap-1.5 bg-primary/10 text-primary px-3 py-1.5 rounded-full font-label-md text-label-md">
+            <span className="material-symbols-outlined text-[16px]">location_on</span>
+            {community.ville_quartier}
+          </span>
+        )}
+        {community.is_private && (
+          <span className="flex items-center gap-1.5 bg-surface-container-high text-on-surface-variant px-3 py-1.5 rounded-full font-label-md text-label-md">
+            <span className="material-symbols-outlined text-[16px]">lock</span>
+            Privée
+          </span>
+        )}
+      </div>
       <p className="font-body-md text-body-md text-on-surface-variant max-w-xs">
         {community.description || "Rejoignez cette communauté pour échanger avec les autres déclarants."}
       </p>
@@ -219,14 +257,21 @@ export default function CommunityPage() {
       {joinError && <p className="font-body-md text-[13px] text-error">{joinError}</p>}
 
       {currentUserId ? (
-        <button
-          type="button"
-          onClick={handleJoin}
-          disabled={isJoining}
-          className="btn-gradient px-6 py-3 rounded-2xl bg-primary text-on-primary font-headline-sm text-headline-sm shadow-[0px_10px_30px_rgba(0,88,188,0.25)] hover:opacity-90 transition-opacity disabled:opacity-50 disabled:cursor-not-allowed mt-2"
-        >
-          {isJoining ? "Adhésion…" : "Rejoindre"}
-        </button>
+        joinRequested ? (
+          <span className="flex items-center gap-2 px-5 py-3 rounded-2xl bg-surface-container-high text-on-surface-variant font-headline-sm text-headline-sm mt-2">
+            <span className="material-symbols-outlined text-[20px]">hourglass_top</span>
+            Demande envoyée
+          </span>
+        ) : (
+          <button
+            type="button"
+            onClick={handleJoin}
+            disabled={isJoining}
+            className="btn-gradient px-6 py-3 rounded-2xl bg-primary text-on-primary font-headline-sm text-headline-sm shadow-[0px_10px_30px_rgba(0,88,188,0.25)] hover:opacity-90 transition-opacity disabled:opacity-50 disabled:cursor-not-allowed mt-2"
+          >
+            {isJoining ? "…" : community.is_private ? "Demander à rejoindre" : "Rejoindre"}
+          </button>
+        )
       ) : (
         <GuardedActionLink
           href="/communities"
