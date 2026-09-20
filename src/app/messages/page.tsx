@@ -10,12 +10,13 @@ import { listMyDirectConversations, type DirectConversationSummary } from "@/lib
 
 function previewText(
   body: string | null,
-  kind: "text" | "voice" | "restitution_proposal" | null | undefined,
+  kind: "text" | "voice" | "restitution_proposal" | "attachment" | null | undefined,
   deletedAt: string | null | undefined,
 ) {
   if (deletedAt) return "Message supprimé";
   if (kind === "voice") return "🎤 Note vocale";
   if (kind === "restitution_proposal") return "📅 Rendez-vous de restitution";
+  if (kind === "attachment") return "📎 Pièce jointe";
   return body ?? "";
 }
 

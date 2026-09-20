@@ -9,12 +9,14 @@ import {
   editMessage,
   getMatch,
   listMessages,
+  sendAttachmentMessage,
   sendMessage,
   sendVoiceMessage,
   type MatchWithItems,
   type Message,
 } from "@/lib/supabase/messages";
 import { uploadVoiceNote } from "@/lib/supabase/voiceNotes";
+import { uploadMessageFile, uploadMessageImage } from "@/lib/supabase/messageAttachments";
 import { proposeAppointment, respondToAppointment, type RestitutionAppointment } from "@/lib/supabase/restitution";
 import ChatThread, { type AppointmentInfo, type ChatMessage } from "@/components/ChatThread";
 
@@ -150,6 +152,28 @@ export default function SecureChatPage() {
     return false;
   };
 
+  const handleSendImage = async (file: File, replyToId: string | null) => {
+    const { url, name, type, error: uploadError } = await uploadMessageImage(file);
+    if (uploadError || !url || !name || !type) return false;
+    const { data, error } = await sendAttachmentMessage(matchId, { url, name, type }, replyToId);
+    if (!error && data) {
+      setMessages((prev) => [...prev, data]);
+      return true;
+    }
+    return false;
+  };
+
+  const handleSendFile = async (file: File, replyToId: string | null) => {
+    const { url, name, type, error: uploadError } = await uploadMessageFile(file);
+    if (uploadError || !url || !name || !type) return false;
+    const { data, error } = await sendAttachmentMessage(matchId, { url, name, type }, replyToId);
+    if (!error && data) {
+      setMessages((prev) => [...prev, data]);
+      return true;
+    }
+    return false;
+  };
+
   const handleEdit = async (messageId: string, body: string) => {
     const { data, error } = await editMessage(messageId, body);
     if (!error && data) {
@@ -244,6 +268,9 @@ export default function SecureChatPage() {
     createdAt: m.created_at,
     replyToId: m.reply_to_id,
     restitutionAppointmentId: m.restitution_appointment_id,
+    attachmentUrl: m.attachment_url,
+    attachmentName: m.attachment_name,
+    attachmentType: m.attachment_type,
   }));
 
   const appointmentsById = new Map(appointments.map((a) => [a.id, toAppointmentInfo(a)]));
@@ -256,6 +283,8 @@ export default function SecureChatPage() {
       messages={chatMessages}
       onSend={handleSend}
       onSendVoice={handleSendVoice}
+      onSendImage={handleSendImage}
+      onSendFile={handleSendFile}
       onEdit={handleEdit}
       onDelete={handleDelete}
       onBack={() => router.back()}

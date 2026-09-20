@@ -7,13 +7,16 @@ export type Message = {
   match_id: string;
   sender_id: string;
   body: string | null;
-  kind: "text" | "voice" | "restitution_proposal";
+  kind: "text" | "voice" | "restitution_proposal" | "attachment";
   voice_url: string | null;
   edited_at: string | null;
   deleted_at: string | null;
   created_at: string;
   reply_to_id: string | null;
   restitution_appointment_id: string | null;
+  attachment_url: string | null;
+  attachment_name: string | null;
+  attachment_type: string | null;
 };
 
 export type MatchWithItems = {
@@ -150,6 +153,35 @@ export async function sendVoiceMessage(matchId: string, voiceUrl: string, replyT
     .single<Message>();
 
   if (!result.error) await notifyMatchParticipant(matchId, "message", { messagePreview: "Note vocale" });
+
+  return result;
+}
+
+export async function sendAttachmentMessage(
+  matchId: string,
+  attachment: { url: string; name: string; type: string },
+  replyToId: string | null = null,
+) {
+  const supabase = createClient();
+  const { data: { session } } = await supabase.auth.getSession();
+  const user = session?.user ?? null;
+  if (!user) return { data: null, error: new Error("Vous devez être connecté.") };
+
+  const result = await supabase
+    .from("messages")
+    .insert({
+      match_id: matchId,
+      sender_id: user.id,
+      kind: "attachment",
+      attachment_url: attachment.url,
+      attachment_name: attachment.name,
+      attachment_type: attachment.type,
+      reply_to_id: replyToId,
+    })
+    .select()
+    .single<Message>();
+
+  if (!result.error) await notifyMatchParticipant(matchId, "message", { messagePreview: attachment.name });
 
   return result;
 }

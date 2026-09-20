@@ -8,12 +8,14 @@ import {
   editDirectMessage,
   getDirectConversationPeer,
   listDirectMessages,
+  sendAttachmentDirectMessage,
   sendDirectMessage,
   sendVoiceDirectMessage,
   type ConversationPeer,
   type DirectMessage,
 } from "@/lib/supabase/directMessages";
 import { uploadVoiceNote } from "@/lib/supabase/voiceNotes";
+import { uploadMessageFile, uploadMessageImage } from "@/lib/supabase/messageAttachments";
 import ChatThread, { type ChatMessage } from "@/components/ChatThread";
 
 export default function DirectMessagePage() {
@@ -110,6 +112,28 @@ export default function DirectMessagePage() {
     return false;
   };
 
+  const handleSendImage = async (file: File, replyToId: string | null) => {
+    const { url, name, type, error: uploadError } = await uploadMessageImage(file);
+    if (uploadError || !url || !name || !type) return false;
+    const { data, error } = await sendAttachmentDirectMessage(conversationId, { url, name, type }, replyToId);
+    if (!error && data) {
+      setMessages((prev) => [...prev, data]);
+      return true;
+    }
+    return false;
+  };
+
+  const handleSendFile = async (file: File, replyToId: string | null) => {
+    const { url, name, type, error: uploadError } = await uploadMessageFile(file);
+    if (uploadError || !url || !name || !type) return false;
+    const { data, error } = await sendAttachmentDirectMessage(conversationId, { url, name, type }, replyToId);
+    if (!error && data) {
+      setMessages((prev) => [...prev, data]);
+      return true;
+    }
+    return false;
+  };
+
   const handleEdit = async (messageId: string, body: string) => {
     const { data, error } = await editDirectMessage(messageId, body);
     if (!error && data) {
@@ -158,6 +182,9 @@ export default function DirectMessagePage() {
     createdAt: m.created_at,
     replyToId: m.reply_to_id,
     restitutionAppointmentId: null,
+    attachmentUrl: m.attachment_url,
+    attachmentName: m.attachment_name,
+    attachmentType: m.attachment_type,
   }));
 
   return (
@@ -168,6 +195,8 @@ export default function DirectMessagePage() {
       messages={chatMessages}
       onSend={handleSend}
       onSendVoice={handleSendVoice}
+      onSendImage={handleSendImage}
+      onSendFile={handleSendFile}
       onEdit={handleEdit}
       onDelete={handleDelete}
       onBack={() => router.back()}

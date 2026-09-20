@@ -5,12 +5,15 @@ export type DirectMessage = {
   conversation_id: string;
   sender_id: string;
   body: string | null;
-  kind: "text" | "voice";
+  kind: "text" | "voice" | "attachment";
   voice_url: string | null;
   edited_at: string | null;
   deleted_at: string | null;
   created_at: string;
   reply_to_id: string | null;
+  attachment_url: string | null;
+  attachment_name: string | null;
+  attachment_type: string | null;
 };
 
 export type ConversationPeer = {
@@ -25,7 +28,7 @@ export type DirectConversationSummary = {
   other_full_name: string | null;
   other_avatar_url: string | null;
   last_message_body: string | null;
-  last_message_kind: "text" | "voice" | null;
+  last_message_kind: "text" | "voice" | "attachment" | null;
   last_message_deleted_at: string | null;
   last_message_sender_id: string | null;
   last_message_created_at: string | null;
@@ -66,6 +69,23 @@ export async function sendVoiceDirectMessage(conversationId: string, voiceUrl: s
     .single<DirectMessage>();
 }
 
+export async function sendAttachmentDirectMessage(
+  conversationId: string,
+  attachment: { url: string; name: string; type: string },
+  replyToId: string | null = null,
+) {
+  const supabase = createClient();
+  return supabase
+    .rpc("send_direct_message", {
+      p_conversation_id: conversationId,
+      p_attachment_url: attachment.url,
+      p_attachment_name: attachment.name,
+      p_attachment_type: attachment.type,
+      p_reply_to_id: replyToId,
+    })
+    .single<DirectMessage>();
+}
+
 export async function editDirectMessage(messageId: string, body: string) {
   const supabase = createClient();
   return supabase.rpc("edit_direct_message", { p_message_id: messageId, p_body: body }).single<DirectMessage>();
@@ -80,4 +100,10 @@ export async function listMyDirectConversations() {
   const supabase = createClient();
   const { data, error } = await supabase.rpc("list_my_direct_conversations");
   return { data: (data ?? []) as DirectConversationSummary[], error };
+}
+
+/** Hides the conversation from the caller's inbox. Reappears for both sides if either one sends a new message. */
+export async function deleteDirectConversation(conversationId: string) {
+  const supabase = createClient();
+  return supabase.rpc("delete_direct_conversation", { p_conversation_id: conversationId });
 }

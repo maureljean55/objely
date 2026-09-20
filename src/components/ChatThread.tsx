@@ -6,7 +6,7 @@ import Image from "next/image";
 export type ChatMessage = {
   id: string;
   senderId: string;
-  kind: "text" | "voice" | "restitution_proposal";
+  kind: "text" | "voice" | "restitution_proposal" | "attachment";
   body: string | null;
   voiceUrl: string | null;
   editedAt: string | null;
@@ -14,6 +14,9 @@ export type ChatMessage = {
   createdAt: string;
   replyToId: string | null;
   restitutionAppointmentId: string | null;
+  attachmentUrl: string | null;
+  attachmentName: string | null;
+  attachmentType: string | null;
 };
 
 export type AppointmentInfo = {
@@ -54,7 +57,13 @@ function messagePreviewText(message: ChatMessage) {
   if (message.deletedAt) return "Message supprimé";
   if (message.kind === "voice") return "🎤 Note vocale";
   if (message.kind === "restitution_proposal") return "📅 Rendez-vous de restitution";
+  if (message.kind === "attachment") return message.attachmentType?.startsWith("image/") ? "📷 Photo" : "📄 Fichier";
   return message.body ?? "";
+}
+
+function attachmentIcon(type: string | null) {
+  if (type === "application/pdf") return "picture_as_pdf";
+  return "description";
 }
 
 const LONG_PRESS_MS = 450;
@@ -240,6 +249,7 @@ function MessageBubble({
   onLongPress,
   onContextMenu,
   onSwipeReply,
+  onOpenImage,
 }: {
   message: ChatMessage;
   isMine: boolean;
@@ -252,6 +262,7 @@ function MessageBubble({
   onLongPress: (message: ChatMessage, x: number, y: number) => void;
   onContextMenu: (message: ChatMessage, x: number, y: number) => void;
   onSwipeReply: (message: ChatMessage) => void;
+  onOpenImage: (url: string) => void;
 }) {
   const isDeleted = !!message.deletedAt;
   const [dragX, setDragX] = useState(0);
@@ -334,7 +345,9 @@ function MessageBubble({
               onContextMenu(message, e.clientX, e.clientY);
             }}
             style={{ transform: `translateX(${dragX}px)`, transition: isDragging ? "none" : "transform 200ms ease-out" }}
-            className={`rounded-2xl px-4 py-2.5 shadow-sm select-none ${isMenuOpen ? "shadow-[0_0_0_4px_rgba(0,88,188,0.18)]" : ""} ${
+            className={`rounded-2xl shadow-sm select-none ${!isDeleted && message.kind === "attachment" ? "p-1.5" : "px-4 py-2.5"} ${
+              isMenuOpen ? "shadow-[0_0_0_4px_rgba(0,88,188,0.18)]" : ""
+            } ${
               isDeleted
                 ? "bg-surface-container-high text-on-surface-variant italic"
                 : isMine
@@ -366,6 +379,27 @@ function MessageBubble({
               ) : (
                 <p className="font-body-md text-body-md">Rendez-vous de restitution</p>
               )
+            ) : message.kind === "attachment" && message.attachmentUrl ? (
+              message.attachmentType?.startsWith("image/") ? (
+                <button
+                  type="button"
+                  onClick={() => onOpenImage(message.attachmentUrl as string)}
+                  className="block relative w-52 h-40 rounded-xl overflow-hidden"
+                >
+                  <Image src={message.attachmentUrl} alt={message.attachmentName ?? "Photo"} fill sizes="208px" className="object-cover" />
+                </button>
+              ) : (
+                <a
+                  href={message.attachmentUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className={`flex items-center gap-2.5 px-3 py-2.5 rounded-xl text-left ${isMine ? "bg-white/10" : "bg-surface-container-high"}`}
+                >
+                  <span className="material-symbols-outlined text-[22px] shrink-0">{attachmentIcon(message.attachmentType)}</span>
+                  <span className="font-body-md text-body-md truncate max-w-[160px]">{message.attachmentName ?? "Pièce jointe"}</span>
+                  <span className="material-symbols-outlined text-[18px] shrink-0">download</span>
+                </a>
+              )
             ) : (
               <p className="font-body-md text-body-md whitespace-pre-wrap">{message.body}</p>
             )}
@@ -387,6 +421,8 @@ type Props = {
   messages: ChatMessage[];
   onSend: (body: string, replyToId: string | null) => Promise<boolean>;
   onSendVoice: (blob: Blob, replyToId: string | null) => Promise<boolean>;
+  onSendImage: (file: File, replyToId: string | null) => Promise<boolean>;
+  onSendFile: (file: File, replyToId: string | null) => Promise<boolean>;
   onEdit: (messageId: string, body: string) => Promise<boolean>;
   onDelete: (messageId: string) => Promise<boolean>;
   onBack: () => void;
@@ -409,6 +445,8 @@ export default function ChatThread({
   messages,
   onSend,
   onSendVoice,
+  onSendImage,
+  onSendFile,
   onEdit,
   onDelete,
   onBack,
@@ -438,8 +476,14 @@ export default function ChatThread({
   const [isRecording, setIsRecording] = useState(false);
   const [recordingSeconds, setRecordingSeconds] = useState(0);
   const [isUploadingVoice, setIsUploadingVoice] = useState(false);
+  const [showAttachMenu, setShowAttachMenu] = useState(false);
+  const [isUploadingAttachment, setIsUploadingAttachment] = useState(false);
+  const [lightboxUrl, setLightboxUrl] = useState<string | null>(null);
   const [actionError, setActionError] = useState<string | null>(null);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
+  const cameraInputRef = useRef<HTMLInputElement>(null);
+  const galleryInputRef = useRef<HTMLInputElement>(null);
+  const pdfInputRef = useRef<HTMLInputElement>(null);
   const mediaRecorderRef = useRef<MediaRecorder | null>(null);
   const chunksRef = useRef<Blob[]>([]);
   const streamRef = useRef<MediaStream | null>(null);
@@ -624,6 +668,41 @@ export default function ChatThread({
     recorder.stop();
   };
 
+  const handlePickSource = (input: HTMLInputElement | null) => {
+    setShowAttachMenu(false);
+    input?.click();
+  };
+
+  const handleImageSelected = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    e.target.value = "";
+    if (!file || isUploadingAttachment) return;
+    setIsUploadingAttachment(true);
+    setActionError(null);
+    const sent = await onSendImage(file, replyingTo?.id ?? null);
+    if (sent) {
+      setReplyingTo(null);
+    } else {
+      setActionError("La photo n'a pas pu être envoyée, réessayez.");
+    }
+    setIsUploadingAttachment(false);
+  };
+
+  const handleFileSelected = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    e.target.value = "";
+    if (!file || isUploadingAttachment) return;
+    setIsUploadingAttachment(true);
+    setActionError(null);
+    const sent = await onSendFile(file, replyingTo?.id ?? null);
+    if (sent) {
+      setReplyingTo(null);
+    } else {
+      setActionError("Le fichier n'a pas pu être envoyé, réessayez.");
+    }
+    setIsUploadingAttachment(false);
+  };
+
   const menuIsOwn = menuMessage?.senderId === currentUserId;
   const menuRowCount = menuMessage ? (menuMessage.kind === "text" ? 1 : 0) + (menuIsOwn ? (menuMessage.kind === "text" ? 2 : 1) : 0) : 0;
 
@@ -677,6 +756,7 @@ export default function ChatThread({
             onLongPress={handleLongPress}
             onContextMenu={handleLongPress}
             onSwipeReply={handleSwipeReply}
+            onOpenImage={setLightboxUrl}
           />
         ))}
       </main>
@@ -816,6 +896,59 @@ export default function ChatThread({
                   }}
                 />
               </div>
+              {!editingId && (
+                <div className="relative shrink-0">
+                  <input ref={cameraInputRef} type="file" accept="image/*" capture="environment" className="hidden" onChange={handleImageSelected} />
+                  <input ref={galleryInputRef} type="file" accept="image/*" className="hidden" onChange={handleImageSelected} />
+                  <input ref={pdfInputRef} type="file" accept="application/pdf" className="hidden" onChange={handleFileSelected} />
+                  <button
+                    type="button"
+                    onClick={() => setShowAttachMenu((v) => !v)}
+                    disabled={isUploadingAttachment}
+                    aria-label="Joindre une photo ou un fichier"
+                    className="p-2 bg-surface-container-high text-on-surface-variant rounded-full hover:bg-surface-container-highest transition-colors flex items-center justify-center h-11 w-11 disabled:opacity-50"
+                  >
+                    {isUploadingAttachment ? (
+                      <span className="w-5 h-5 border-2 border-outline-variant/60 border-t-on-surface-variant rounded-full animate-spin" />
+                    ) : (
+                      <span className="material-symbols-outlined" style={{ fontVariationSettings: "'FILL' 0" }}>
+                        add_photo_alternate
+                      </span>
+                    )}
+                  </button>
+                  {showAttachMenu && (
+                    <>
+                      <div className="fixed inset-0 z-[90]" onClick={() => setShowAttachMenu(false)} />
+                      <div className="absolute bottom-full right-0 mb-2 w-64 bg-surface-container-lowest rounded-xl overflow-hidden shadow-[0_8px_30px_rgba(0,0,0,0.12)] border border-outline-variant/15 py-1 z-[91] animate-popIn">
+                        <button
+                          type="button"
+                          onClick={() => handlePickSource(cameraInputRef.current)}
+                          className="w-full py-2.5 px-3 flex items-center gap-2.5 text-on-surface font-body-md text-body-md hover:bg-surface-variant/40 transition-colors"
+                        >
+                          <span className="material-symbols-outlined text-[19px] text-primary w-5 shrink-0">photo_camera</span>
+                          Prendre une photo
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => handlePickSource(galleryInputRef.current)}
+                          className="w-full py-2.5 px-3 flex items-center gap-2.5 text-on-surface font-body-md text-body-md hover:bg-surface-variant/40 transition-colors"
+                        >
+                          <span className="material-symbols-outlined text-[19px] text-primary w-5 shrink-0">image</span>
+                          Choisir dans la galerie
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => handlePickSource(pdfInputRef.current)}
+                          className="w-full py-2.5 px-3 flex items-center gap-2.5 text-on-surface font-body-md text-body-md hover:bg-surface-variant/40 transition-colors"
+                        >
+                          <span className="material-symbols-outlined text-[19px] text-primary w-5 shrink-0">picture_as_pdf</span>
+                          Envoyer un PDF
+                        </button>
+                      </div>
+                    </>
+                  )}
+                </div>
+              )}
               {draft.trim() || editingId ? (
                 <button
                   type="button"
@@ -997,6 +1130,28 @@ export default function ChatThread({
                 Supprimer
               </button>
             )}
+          </div>
+        </div>
+      )}
+
+      {lightboxUrl && (
+        <div
+          role="dialog"
+          aria-modal="true"
+          className="fixed inset-0 z-[110] bg-black/90 flex items-center justify-center p-4"
+          onClick={() => setLightboxUrl(null)}
+        >
+          <button
+            type="button"
+            onClick={() => setLightboxUrl(null)}
+            aria-label="Fermer"
+            className="absolute top-4 right-4 w-10 h-10 rounded-full bg-white/10 text-white flex items-center justify-center"
+            style={{ top: "calc(1rem + env(safe-area-inset-top))" }}
+          >
+            <span className="material-symbols-outlined">close</span>
+          </button>
+          <div className="relative w-full h-full max-w-2xl">
+            <Image src={lightboxUrl} alt="Photo" fill sizes="100vw" className="object-contain" />
           </div>
         </div>
       )}
