@@ -224,7 +224,7 @@ export default function CommunitiesBrowser({
             value={query}
             onChange={(e) => setQuery(e.target.value)}
             placeholder="Rechercher une communauté..."
-            className="w-full h-12 pl-11 pr-4 rounded-xl bg-surface-container-lowest text-on-surface placeholder:text-on-surface-variant/70 font-body-md text-body-md shadow-sm outline-none focus:ring-2 focus:ring-primary/20 transition-all"
+            className="w-full h-12 pl-11 pr-4 rounded-xl bg-surface-container-lowest border border-transparent text-on-surface placeholder:text-on-surface-variant/70 font-body-md text-body-md soft-shadow inner-stroke outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary/30 transition-all"
           />
         </div>
         <GuardedActionLink

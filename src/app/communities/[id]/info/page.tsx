@@ -32,13 +32,13 @@ function initials(name: string) {
 function MemberAvatar({ name, avatarUrl, size = 44 }: { name: string; avatarUrl: string | null; size?: number }) {
   return (
     <div
-      className="relative shrink-0 rounded-full overflow-hidden bg-surface-container-highest text-on-surface-variant flex items-center justify-center"
-      style={{ width: size, height: size }}
+      className="relative shrink-0 rounded-full overflow-hidden text-white flex items-center justify-center shadow-sm ring-2 ring-surface-container-lowest"
+      style={{ width: size, height: size, background: avatarUrl ? undefined : "linear-gradient(135deg, #0058bc, #5952af)" }}
     >
       {avatarUrl ? (
         <Image alt={name} src={avatarUrl} fill sizes={`${size}px`} className="object-cover" />
       ) : (
-        <span className="font-label-md text-label-md">{initials(name)}</span>
+        <span className="font-label-md text-label-md font-semibold">{initials(name)}</span>
       )}
     </div>
   );
@@ -180,22 +180,29 @@ export default function CommunityInfoPage() {
 
   return (
     <div className="bg-background text-on-surface antialiased min-h-screen pb-24">
-      <header className="fixed top-0 inset-x-0 z-50 flex items-center justify-between px-container-margin min-h-14 pt-[env(safe-area-inset-top)] bg-surface/80 backdrop-blur-xl border-b border-outline-variant/30">
+      <header className="fixed top-0 inset-x-0 z-50 flex items-center justify-between gap-2 px-container-margin min-h-14 pt-[env(safe-area-inset-top)] bg-surface/80 backdrop-blur-xl border-b border-outline-variant/30">
         <button
           type="button"
           onClick={() => router.push(`/communities/${communityId}`)}
           aria-label="Retour"
-          className="w-10 h-10 flex items-center justify-center text-primary hover:opacity-70 transition-opacity active:scale-95"
+          className="w-10 h-10 shrink-0 flex items-center justify-center text-primary hover:opacity-70 transition-opacity active:scale-95"
         >
           <span className="material-symbols-outlined">arrow_back_ios</span>
         </button>
-        <h1 className="font-headline-sm text-headline-sm text-on-surface absolute left-1/2 -translate-x-1/2">Informations et membres</h1>
-        <div className="w-10 h-10" />
+        <h1 className="flex-1 font-headline-sm text-headline-sm text-on-surface text-center truncate">Informations et membres</h1>
+        <div className="w-10 h-10 shrink-0" />
       </header>
 
       <main className="max-w-[800px] mx-auto pt-[calc(5rem+env(safe-area-inset-top))] pb-8 px-container-margin flex flex-col gap-lg">
-        <section className="bg-surface-container-lowest rounded-[24px] p-lg shadow-sm flex flex-col items-center text-center gap-2">
-          <div className="relative w-20 h-20 rounded-[24px] overflow-hidden bg-surface-container-high text-on-surface-variant flex items-center justify-center mb-1 shrink-0">
+        <section className="relative overflow-hidden bg-surface-container-lowest rounded-[28px] p-lg soft-shadow inner-stroke flex flex-col items-center text-center gap-2">
+          <div
+            className="pointer-events-none absolute -right-10 -top-16 w-40 h-40 rounded-full opacity-[0.08]"
+            style={{ background: "linear-gradient(135deg, #0058bc, #8b5cf6)" }}
+          />
+          <div
+            className="relative w-20 h-20 rounded-[24px] overflow-hidden text-white flex items-center justify-center mb-1 shrink-0 shadow-md"
+            style={{ background: community.cover_url ? undefined : "linear-gradient(135deg, #0058bc, #5952af)" }}
+          >
             {community.cover_url ? (
               <Image alt={community.name} src={community.cover_url} fill sizes="80px" className="object-cover" />
             ) : (
@@ -204,19 +211,21 @@ export default function CommunityInfoPage() {
               </span>
             )}
           </div>
-          <h2 className="font-headline-md text-headline-md text-on-surface">{community.name}</h2>
-          <p className="font-label-md text-label-md text-on-surface-variant flex items-center gap-1.5">
-            <span className="material-symbols-outlined text-[16px]">{community.is_private ? "lock" : "public"}</span>
+          <h2 className="relative font-headline-md text-headline-md text-on-surface font-bold">{community.name}</h2>
+          <p className="relative font-label-md text-label-md text-on-surface-variant flex items-center gap-1.5 bg-surface-container-high px-3 py-1 rounded-full">
+            <span className="material-symbols-outlined text-[15px]">{community.is_private ? "lock" : "public"}</span>
             {community.is_private ? "Communauté privée" : "Communauté publique"} · {community.member_count}{" "}
             {community.member_count > 1 ? "membres" : "membre"}
           </p>
-          {community.description && <p className="font-body-md text-body-md text-on-surface-variant">{community.description}</p>}
+          {community.description && (
+            <p className="relative font-body-md text-body-md text-on-surface-variant max-w-sm">{community.description}</p>
+          )}
 
-          <div className="flex items-center gap-2 w-full mt-2">
+          <div className="relative flex items-center gap-2 w-full mt-2">
             <button
               type="button"
               onClick={handleCopyInvite}
-              className="flex-1 h-11 rounded-full bg-surface-container-high text-primary font-label-md text-label-md font-semibold flex items-center justify-center gap-1.5 hover:bg-surface-container-highest transition-colors"
+              className="flex-1 h-11 rounded-full border border-primary/25 bg-primary/[0.06] text-primary font-label-md text-label-md font-semibold flex items-center justify-center gap-1.5 hover:bg-primary/10 transition-colors"
             >
               <span className="material-symbols-outlined text-[18px]">{copied ? "check" : "link"}</span>
               {copied ? "Lien copié" : "Inviter"}
@@ -225,7 +234,7 @@ export default function CommunityInfoPage() {
               <button
                 type="button"
                 onClick={() => setShowAddMemberSheet(true)}
-                className="flex-1 h-11 rounded-full text-white font-label-md text-label-md font-semibold flex items-center justify-center gap-1.5"
+                className="flex-1 h-11 rounded-full text-white font-label-md text-label-md font-semibold flex items-center justify-center gap-1.5 shadow-[0px_8px_20px_rgba(0,88,188,0.28)] hover:opacity-90 transition-opacity"
                 style={{ background: "linear-gradient(135deg, #0058bc, #5952af)" }}
               >
                 <span className="material-symbols-outlined text-[18px]">person_add</span>
@@ -239,7 +248,7 @@ export default function CommunityInfoPage() {
           <section className="flex flex-col gap-2">
             <h3 className="font-body-lg text-body-lg font-semibold text-on-surface">Demandes en attente ({joinRequests.length})</h3>
             {joinRequestsError && <p className="font-body-md text-[13px] text-error">{joinRequestsError}</p>}
-            <div className="bg-surface-container-lowest rounded-[20px] shadow-sm divide-y divide-outline-variant/20 overflow-hidden">
+            <div className="bg-surface-container-lowest rounded-[20px] soft-shadow inner-stroke divide-y divide-outline-variant/15 overflow-hidden">
               {joinRequests.map((request) => (
                 <div key={request.id} className="flex items-center gap-3 p-3">
                   <MemberAvatar name={request.full_name || "Utilisateur Objely"} avatarUrl={request.avatar_url} size={40} />
@@ -285,17 +294,17 @@ export default function CommunityInfoPage() {
               value={query}
               onChange={(e) => setQuery(e.target.value)}
               placeholder="Rechercher un membre..."
-              className="w-full h-12 pl-11 pr-4 rounded-xl bg-surface-container-lowest text-on-surface placeholder:text-on-surface-variant/70 font-body-md text-body-md shadow-sm outline-none focus:ring-2 focus:ring-primary/20 transition-all"
+              className="w-full h-12 pl-11 pr-4 rounded-xl bg-surface-container-lowest border border-transparent text-on-surface placeholder:text-on-surface-variant/70 font-body-md text-body-md soft-shadow inner-stroke outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary/30 transition-all"
             />
           </div>
-          <div className="bg-surface-container-lowest rounded-[20px] shadow-sm divide-y divide-outline-variant/20 overflow-hidden">
+          <div className="bg-surface-container-lowest rounded-[20px] soft-shadow inner-stroke divide-y divide-outline-variant/15 overflow-hidden">
             {visibleMembers.map((member) => (
-              <div key={member.user_id} className="flex items-center gap-3 p-3">
+              <div key={member.user_id} className="flex items-center gap-3 p-3.5 hover:bg-surface-variant/20 transition-colors">
                 <MemberAvatar name={member.full_name || "Utilisateur Objely"} avatarUrl={member.avatar_url} />
                 <div className="min-w-0 flex-1">
-                  <p className="font-body-md text-body-md text-on-surface truncate">{member.full_name || "Utilisateur Objely"}</p>
+                  <p className="font-body-lg text-body-lg font-semibold text-on-surface truncate">{member.full_name || "Utilisateur Objely"}</p>
                   <span
-                    className={`inline-block mt-0.5 px-2 py-0.5 rounded-full font-label-md text-[11px] font-semibold ${
+                    className={`inline-block mt-1 px-2 py-0.5 rounded-full font-label-md text-[11px] font-semibold ${
                       member.role === "owner" ? "bg-secondary/15 text-secondary" : "bg-surface-container-high text-on-surface-variant"
                     }`}
                   >
@@ -307,7 +316,7 @@ export default function CommunityInfoPage() {
                     type="button"
                     onClick={() => setRemoveTarget(member)}
                     aria-label={`Retirer ${member.full_name || "ce membre"}`}
-                    className="shrink-0 w-8 h-8 rounded-full flex items-center justify-center text-error hover:bg-error-container/30 transition-colors"
+                    className="shrink-0 w-9 h-9 rounded-full flex items-center justify-center text-error hover:bg-error-container/30 transition-colors"
                   >
                     <span className="material-symbols-outlined text-[18px]">person_remove</span>
                   </button>
@@ -319,9 +328,12 @@ export default function CommunityInfoPage() {
 
         <Link
           href={`/communities/${communityId}/info/objects`}
-          className="flex items-center gap-3 p-lg rounded-[20px] bg-surface-container-low shadow-sm hover:shadow-md transition-all"
+          className="flex items-center gap-3 p-lg rounded-[20px] bg-surface-container-lowest soft-shadow inner-stroke hover:shadow-[0px_10px_30px_rgba(89,82,175,0.14)] transition-all"
         >
-          <div className="w-11 h-11 rounded-xl bg-surface-container-lowest flex items-center justify-center text-secondary shrink-0 shadow-sm">
+          <div
+            className="w-11 h-11 rounded-xl flex items-center justify-center text-white shrink-0 shadow-sm"
+            style={{ background: "linear-gradient(135deg, #5952af, #8b5cf6)" }}
+          >
             <span className="material-symbols-outlined text-[22px]">inventory_2</span>
           </div>
           <div className="flex-1 min-w-0">
