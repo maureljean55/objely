@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import BottomNav from "@/components/BottomNav";
@@ -129,7 +129,7 @@ function ProfileSummary({
             </div>
           </section>
 
-          <section className="grid grid-cols-3 gap-3 animate-slideUp">
+          <section className="grid grid-cols-3 gap-3 animate-fadeIn">
             {STATS_META.map((meta) => (
               <div key={meta.key} className="bg-surface-container-lowest rounded-[24px] p-4 flex flex-col items-center justify-center gap-1 soft-shadow inner-stroke">
                 <span className="material-symbols-outlined text-[20px]" style={{ color: meta.color }}>
@@ -146,7 +146,7 @@ function ProfileSummary({
           </section>
 
           {publicId !== null && (
-            <section className="animate-slideUp mt-3">
+            <section className="animate-fadeIn mt-3">
               <div className="relative overflow-hidden bg-surface-container-lowest rounded-[24px] p-4 flex items-center gap-3 soft-shadow inner-stroke">
                 <div
                   className="absolute -right-6 -top-10 w-28 h-28 rounded-full opacity-[0.07]"
@@ -216,6 +216,24 @@ export default function UserProfilePage() {
   const [authChecked, setAuthChecked] = useState(false);
   const displayName = profileName || (user?.user_metadata?.full_name as string | undefined) || user?.email || "";
 
+  // The pinned mobile header's height varies with its content (e.g. the
+  // public ID card only rendering once publicId loads), so the spacer below
+  // that reserves room for it in the scrolling flow is measured rather than
+  // a fixed guess — a hardcoded value silently drifts out of sync and ends
+  // up hiding whatever is first in the menu list underneath the header.
+  const mobileHeaderRef = useRef<HTMLDivElement>(null);
+  const [mobileHeaderHeight, setMobileHeaderHeight] = useState(0);
+
+  useEffect(() => {
+    const el = mobileHeaderRef.current;
+    if (!el) return;
+    const update = () => setMobileHeaderHeight(el.offsetHeight);
+    update();
+    const observer = new ResizeObserver(update);
+    observer.observe(el);
+    return () => observer.disconnect();
+  }, []);
+
   useEffect(() => {
     // Read after mount (not as a lazy initial state) so the server-rendered
     // guest markup matches the client's first render and hydration doesn't
@@ -256,13 +274,17 @@ export default function UserProfilePage() {
 
       {/* Mobile: photo through stats stays pinned while the menu list below scrolls */}
       <div
+        ref={mobileHeaderRef}
         className="md:hidden fixed top-0 inset-x-0 z-40 bg-background/95 backdrop-blur-md px-container-margin pb-4 shadow-sm"
         style={{ paddingTop: "env(safe-area-inset-top)" }}
       >
         <ProfileSummary user={user} authChecked={authChecked} stats={stats} avatarUrl={avatarUrl} displayName={displayName} trustScore={trustScore} publicId={publicId} />
       </div>
 
-      <main className="max-w-2xl mx-auto md:mt-8 px-container-margin md:px-0 pt-[calc(392px+env(safe-area-inset-top))] md:pt-0">
+      <main className="max-w-2xl mx-auto md:mt-8 px-container-margin md:px-0 md:pt-0">
+        {/* Spacer reserving room for the pinned header above (mobile only, see mobileHeaderHeight) */}
+        <div className="md:hidden" style={{ height: mobileHeaderHeight }} />
+
         <div className="hidden md:block relative">
           <ProfileSummary user={user} authChecked={authChecked} stats={stats} avatarUrl={avatarUrl} displayName={displayName} trustScore={trustScore} publicId={publicId} />
         </div>
