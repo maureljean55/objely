@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
-import { saveDraft } from "@/lib/declarationDraft";
+import { loadDraft, saveDraft } from "@/lib/declarationDraft";
 
 // A hardcoded literal here silently goes stale the day after it's written —
 // this used to be one, already weeks in the past. Local date parts (not
@@ -29,11 +29,11 @@ function approximateAddress(address: Record<string, string> | undefined): string
 
 export default function ReportFoundLocationPage() {
   const router = useRouter();
-  const [location, setLocation] = useState("");
-  const [locationPublic, setLocationPublic] = useState<string | null>(null);
-  const [date, setDate] = useState(todayISODate);
-  const [time, setTime] = useState("18:30");
-  const [hideExactLocation, setHideExactLocation] = useState(true);
+  const [location, setLocation] = useState(() => loadDraft().location ?? "");
+  const [locationPublic, setLocationPublic] = useState<string | null>(() => loadDraft().locationPublic ?? null);
+  const [date, setDate] = useState(() => loadDraft().date ?? todayISODate());
+  const [time, setTime] = useState(() => loadDraft().time ?? "18:30");
+  const [hideExactLocation, setHideExactLocation] = useState(() => loadDraft().hideExactLocation ?? true);
   const [locating, setLocating] = useState(false);
   const [locationError, setLocationError] = useState<string | null>(null);
 

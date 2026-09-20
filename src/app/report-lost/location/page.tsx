@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
-import { saveDraft } from "@/lib/declarationDraft";
+import { loadDraft, saveDraft } from "@/lib/declarationDraft";
 
 const MOMENTS = ["Matin", "Midi", "Après-midi", "Soir", "Nuit", "Je ne sais pas"];
 
@@ -18,10 +18,10 @@ function todayISODate() {
 
 export default function DeclarationLocationPage() {
   const router = useRouter();
-  const [location, setLocation] = useState("");
-  const [date, setDate] = useState(todayISODate);
-  const [moment, setMoment] = useState("Après-midi");
-  const [details, setDetails] = useState("");
+  const [location, setLocation] = useState(() => loadDraft().location ?? "");
+  const [date, setDate] = useState(() => loadDraft().date ?? todayISODate());
+  const [moment, setMoment] = useState(() => loadDraft().moment ?? "Après-midi");
+  const [details, setDetails] = useState(() => loadDraft().locationDetails ?? "");
   const [locating, setLocating] = useState(false);
   const [locationError, setLocationError] = useState<string | null>(null);
 

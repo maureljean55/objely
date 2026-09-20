@@ -3,19 +3,19 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
-import { saveDraft } from "@/lib/declarationDraft";
+import { loadDraft, saveDraft } from "@/lib/declarationDraft";
 import PhotoPicker from "@/components/PhotoPicker";
 
 const COLORS = ["Noir", "Blanc", "Gris", "Bleu", "Rouge", "Vert", "Marron", "Autre"];
 
 export default function ReportFoundDetailsPage() {
   const router = useRouter();
-  const [name, setName] = useState("");
-  const [brand, setBrand] = useState("");
-  const [colors, setColors] = useState<string[]>([]);
-  const [description, setDescription] = useState("");
-  const [privateDetail, setPrivateDetail] = useState("");
-  const [photos, setPhotos] = useState<string[]>([]);
+  const [name, setName] = useState(() => loadDraft().objectName ?? "");
+  const [brand, setBrand] = useState(() => loadDraft().brand ?? "");
+  const [colors, setColors] = useState<string[]>(() => loadDraft().colors ?? []);
+  const [description, setDescription] = useState(() => loadDraft().description ?? "");
+  const [privateDetail, setPrivateDetail] = useState(() => loadDraft().privateDetail ?? "");
+  const [photos, setPhotos] = useState<string[]>(() => loadDraft().photos ?? []);
   const [isUploadingPhotos, setIsUploadingPhotos] = useState(false);
 
   const canContinue = name.trim().length > 0 && photos.length > 0 && !isUploadingPhotos;

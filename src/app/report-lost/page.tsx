@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
-import { saveDraft } from "@/lib/declarationDraft";
+import { loadDraft, saveDraft } from "@/lib/declarationDraft";
 
 const CATEGORIES = [
   {
@@ -47,7 +47,7 @@ const CATEGORIES = [
 
 export default function ReportLostCategoryPage() {
   const router = useRouter();
-  const [selected, setSelected] = useState<string | null>(null);
+  const [selected, setSelected] = useState<string | null>(() => loadDraft().categoryId ?? null);
 
   return (
     <div className="font-body-md text-on-surface antialiased min-h-screen flex flex-col bg-background">
