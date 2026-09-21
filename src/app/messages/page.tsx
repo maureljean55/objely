@@ -5,7 +5,7 @@ import Link from "next/link";
 import Image from "next/image";
 import BottomNav from "@/components/BottomNav";
 import { getCurrentUser } from "@/lib/auth";
-import { listMyConversations, deleteMatchConversation, type Conversation } from "@/lib/supabase/messages";
+import { listMyConversations, type Conversation } from "@/lib/supabase/messages";
 import {
   listMyDirectConversations,
   deleteDirectConversation,
@@ -52,7 +52,7 @@ const TABS: { id: Tab; label: string }[] = [
 export default function MessagesPage() {
   const [rows, setRows] = useState<Row[] | null>(null);
   const [currentUserId, setCurrentUserId] = useState<string | null>(null);
-  const [deleteTarget, setDeleteTarget] = useState<{ kind: "match" | "direct"; conversationId: string; peerName: string } | null>(null);
+  const [deleteTarget, setDeleteTarget] = useState<{ conversationId: string; peerName: string } | null>(null);
   const [isDeleting, setIsDeleting] = useState(false);
   const [deleteError, setDeleteError] = useState<string | null>(null);
   const [query, setQuery] = useState("");
@@ -91,17 +91,13 @@ export default function MessagesPage() {
     if (!deleteTarget) return;
     setIsDeleting(true);
     setDeleteError(null);
-    const { error } =
-      deleteTarget.kind === "direct"
-        ? await deleteDirectConversation(deleteTarget.conversationId)
-        : await deleteMatchConversation(deleteTarget.conversationId);
+    const { error } = await deleteDirectConversation(deleteTarget.conversationId);
     setIsDeleting(false);
     if (error) {
       setDeleteError("Impossible de supprimer la conversation. Réessayez.");
       return;
     }
-    const key = `${deleteTarget.kind}-${deleteTarget.conversationId}`;
-    setRows((prev) => (prev ?? []).filter((row) => row.key !== key));
+    setRows((prev) => (prev ?? []).filter((row) => row.key !== `direct-${deleteTarget.conversationId}`));
     setDeleteTarget(null);
   };
 
@@ -141,7 +137,7 @@ export default function MessagesPage() {
     <div className="bg-background text-on-surface min-h-screen flex flex-col antialiased pb-28">
       <header className="sticky top-0 w-full z-30 bg-surface/80 backdrop-blur-xl shadow-sm pt-[env(safe-area-inset-top)]">
         <div className="px-container-margin pt-md pb-md flex flex-col gap-md">
-          <h1 className="font-headline-lg-mobile text-headline-lg-mobile text-on-surface font-bold tracking-tight">Message center</h1>
+          <h1 className="font-headline-lg-mobile text-headline-lg-mobile text-on-surface font-bold tracking-tight text-center">Message center</h1>
 
           <div className="relative">
             <span className="material-symbols-outlined absolute left-3.5 top-1/2 -translate-y-1/2 text-on-surface-variant text-[19px]">search</span>
@@ -229,55 +225,46 @@ export default function MessagesPage() {
                 const isClosed = !!match.chat_closed_at;
                 const declarerName = otherProfile?.full_name || "Utilisateur Objely";
                 return (
-                  <div key={row.key} className="flex items-stretch gap-2 rounded-2xl bg-surface-container-lowest shadow-sm overflow-hidden">
-                    <Link
-                      href={`/chat/${match.id}`}
-                      className="flex-1 min-w-0 flex items-start gap-3 p-3.5 active:scale-[0.99] transition-transform"
-                    >
-                      <div className="relative shrink-0 w-12 h-12 rounded-full overflow-hidden bg-surface-container-high flex items-center justify-center text-on-surface-variant">
-                        {otherProfile?.avatar_url ? (
-                          <Image alt={declarerName} src={otherProfile.avatar_url} fill sizes="48px" className="object-cover" />
+                  <Link
+                    key={row.key}
+                    href={`/chat/${match.id}`}
+                    className="flex items-start gap-3 p-3.5 rounded-2xl bg-surface-container-lowest shadow-sm active:scale-[0.99] transition-transform"
+                  >
+                    <div className="relative shrink-0 w-12 h-12 rounded-full overflow-hidden bg-surface-container-high flex items-center justify-center text-on-surface-variant">
+                      {otherProfile?.avatar_url ? (
+                        <Image alt={declarerName} src={otherProfile.avatar_url} fill sizes="48px" className="object-cover" />
+                      ) : (
+                        <span className="material-symbols-outlined">person</span>
+                      )}
+                    </div>
+                    <div className="flex flex-col min-w-0 flex-1 gap-1">
+                      <div className="flex items-center justify-between gap-2">
+                        <h3 className="font-headline-sm text-headline-sm text-on-surface font-semibold truncate">{declarerName}</h3>
+                        {lastMessage && <span className="font-label-md text-[11px] text-outline shrink-0">{timeAgo(lastMessage.created_at)}</span>}
+                      </div>
+                      <div className="flex items-center gap-1.5 flex-wrap">
+                        <div className="flex items-center gap-1 px-2 py-0.5 rounded-full bg-surface-container text-on-surface font-label-md text-[11px]">
+                          <span className="font-semibold">{match.match_percent}% de correspondance</span>
+                        </div>
+                        {isClosed ? (
+                          <div className="flex items-center gap-1 px-2 py-0.5 rounded-full bg-surface-container-high text-on-surface font-label-md text-[11px]">
+                            <span className="material-symbols-outlined text-[12px] text-primary">check_circle</span>
+                            <span className="font-medium">Restitué</span>
+                          </div>
                         ) : (
-                          <span className="material-symbols-outlined">person</span>
+                          <div className="flex items-center gap-1 px-2 py-0.5 rounded-full bg-surface-variant text-on-surface font-label-md text-[11px]">
+                            <span className="w-1.5 h-1.5 rounded-full bg-primary" />
+                            <span className="font-semibold">Conversation active</span>
+                          </div>
                         )}
                       </div>
-                      <div className="flex flex-col min-w-0 flex-1 gap-1">
-                        <div className="flex items-center justify-between gap-2">
-                          <h3 className="font-headline-sm text-headline-sm text-on-surface font-semibold truncate">{declarerName}</h3>
-                          {lastMessage && <span className="font-label-md text-[11px] text-outline shrink-0">{timeAgo(lastMessage.created_at)}</span>}
-                        </div>
-                        <div className="flex items-center gap-1.5 flex-wrap">
-                          <div className="flex items-center gap-1 px-2 py-0.5 rounded-full bg-surface-container text-on-surface font-label-md text-[11px]">
-                            <span className="font-semibold">{match.match_percent}% de correspondance</span>
-                          </div>
-                          {isClosed ? (
-                            <div className="flex items-center gap-1 px-2 py-0.5 rounded-full bg-surface-container-high text-on-surface font-label-md text-[11px]">
-                              <span className="material-symbols-outlined text-[12px] text-primary">check_circle</span>
-                              <span className="font-medium">Restitué</span>
-                            </div>
-                          ) : (
-                            <div className="flex items-center gap-1 px-2 py-0.5 rounded-full bg-surface-variant text-on-surface font-label-md text-[11px]">
-                              <span className="w-1.5 h-1.5 rounded-full bg-primary" />
-                              <span className="font-semibold">Conversation active</span>
-                            </div>
-                          )}
-                        </div>
-                        <p className="font-body-md text-body-md text-[13px] text-on-surface-variant truncate">
-                          {lastMessage
-                            ? `${isMine ? "Vous : " : ""}${previewText(lastMessage.body, lastMessage.kind, lastMessage.deleted_at)}`
-                            : "Aucun message pour le moment — dites bonjour !"}
-                        </p>
-                      </div>
-                    </Link>
-                    <button
-                      type="button"
-                      onClick={() => setDeleteTarget({ kind: "match", conversationId: match.id, peerName: declarerName })}
-                      aria-label={`Supprimer la conversation avec ${declarerName}`}
-                      className="shrink-0 w-11 flex items-center justify-center text-on-surface-variant hover:text-error hover:bg-error-container/20 transition-colors"
-                    >
-                      <span className="material-symbols-outlined text-[20px]">delete</span>
-                    </button>
-                  </div>
+                      <p className="font-body-md text-body-md text-[13px] text-on-surface-variant truncate">
+                        {lastMessage
+                          ? `${isMine ? "Vous : " : ""}${previewText(lastMessage.body, lastMessage.kind, lastMessage.deleted_at)}`
+                          : "Aucun message pour le moment — dites bonjour !"}
+                      </p>
+                    </div>
+                  </Link>
                 );
               }
 
@@ -310,7 +297,7 @@ export default function MessagesPage() {
                   </Link>
                   <button
                     type="button"
-                    onClick={() => setDeleteTarget({ kind: "direct", conversationId: conversation.conversation_id, peerName })}
+                    onClick={() => setDeleteTarget({ conversationId: conversation.conversation_id, peerName })}
                     aria-label={`Supprimer la conversation avec ${peerName}`}
                     className="shrink-0 w-11 flex items-center justify-center text-on-surface-variant hover:text-error hover:bg-error-container/20 transition-colors"
                   >

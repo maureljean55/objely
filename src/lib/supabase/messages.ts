@@ -24,8 +24,6 @@ export type MatchWithItems = {
   match_percent: number;
   status: "pending" | "confirmed" | "rejected";
   chat_closed_at: string | null;
-  deleted_by_lost_user_at?: string | null;
-  deleted_by_found_user_at?: string | null;
   lost_item: Item;
   found_item: Item;
 };
@@ -95,7 +93,7 @@ export async function getMatchParticipantProfile(matchId: string) {
   return supabase.rpc("get_match_participant_profile", { p_match_id: matchId }).maybeSingle<MatchParticipantProfile>();
 }
 
-/** Every confirmed match the current user is part of and hasn't deleted, newest activity first. */
+/** Every confirmed match the current user is part of, newest activity first. */
 export async function listMyConversations() {
   const supabase = createClient();
   const { data: { session } } = await supabase.auth.getSession();
@@ -105,20 +103,14 @@ export async function listMyConversations() {
   const { data: matches, error } = await supabase
     .from("matches")
     .select(
-      "id, match_percent, status, chat_closed_at, deleted_by_lost_user_at, deleted_by_found_user_at, lost_item:items!matches_lost_item_id_fkey(*), found_item:items!matches_found_item_id_fkey(*)",
+      "id, match_percent, status, chat_closed_at, lost_item:items!matches_lost_item_id_fkey(*), found_item:items!matches_found_item_id_fkey(*)",
     )
     .eq("status", "confirmed")
     .returns<MatchWithItems[]>();
 
   if (error || !matches || matches.length === 0) return { data: [], error };
 
-  const visibleMatches = matches.filter((match) => {
-    const isLostSide = match.lost_item.user_id === user.id;
-    return isLostSide ? !match.deleted_by_lost_user_at : !match.deleted_by_found_user_at;
-  });
-  if (visibleMatches.length === 0) return { data: [], error: null };
-
-  const matchIds = visibleMatches.map((m) => m.id);
+  const matchIds = matches.map((m) => m.id);
   const [{ data: recentMessages }, profileResults] = await Promise.all([
     supabase
       .from("messages")
@@ -137,7 +129,7 @@ export async function listMyConversations() {
   const profileByMatch = new Map<string, MatchParticipantProfile | null>();
   matchIds.forEach((id, index) => profileByMatch.set(id, profileResults[index].data ?? null));
 
-  const conversations: Conversation[] = visibleMatches.map((match) => ({
+  const conversations: Conversation[] = matches.map((match) => ({
     match,
     lastMessage: lastByMatch.get(match.id) ?? null,
     otherProfile: profileByMatch.get(match.id) ?? null,
@@ -150,12 +142,6 @@ export async function listMyConversations() {
   });
 
   return { data: conversations, error: null };
-}
-
-/** Hides a match conversation from the caller's inbox. Reappears for both sides if either sends a new message. */
-export async function deleteMatchConversation(matchId: string) {
-  const supabase = createClient();
-  return supabase.rpc("delete_match_conversation", { p_match_id: matchId });
 }
 
 export async function sendMessage(matchId: string, body: string, replyToId: string | null = null) {
