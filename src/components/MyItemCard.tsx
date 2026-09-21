@@ -172,30 +172,46 @@ export default function MyItemCard({ item, match }: { item: Item; match?: { id: 
       </article>
 
       {step === "menu" && (
-        <DialogShell>
-          <div className="flex flex-col w-full">
-            <Link
-              href={`/search/${item.id}`}
-              className="w-full py-3 text-center border-b border-surface-variant/50 text-on-surface font-body-lg text-body-lg active:bg-surface-variant/50 transition-colors"
-            >
-              Voir les détails
-            </Link>
-            <button
-              type="button"
-              onClick={() => setStep("resolved")}
-              className="w-full py-3 text-center text-error font-headline-sm text-headline-sm active:bg-surface-variant/50 transition-colors"
-            >
-              Supprimer la déclaration
-            </button>
+        <div
+          role="dialog"
+          aria-modal="true"
+          className="fixed inset-0 z-[100] flex items-end justify-center bg-black/30 backdrop-blur-sm"
+          onClick={() => setStep("closed")}
+        >
+          <div className="w-full max-w-[420px] px-3 pb-3 safe-area-pb flex flex-col gap-2" onClick={(e) => e.stopPropagation()}>
+            <div className="bg-surface-container-lowest/95 backdrop-blur-xl rounded-3xl overflow-hidden shadow-2xl">
+              <div className="px-4 pt-3 pb-2.5 text-center border-b border-outline-variant/20">
+                <p className="font-label-md text-[12px] text-on-surface-variant truncate">{item.title}</p>
+              </div>
+              <Link
+                href={`/search/${item.id}`}
+                className="w-full py-3.5 px-4 flex items-center gap-3 text-on-surface font-body-lg text-body-lg active:bg-surface-container-high/60 transition-colors border-b border-outline-variant/20"
+              >
+                <span className="w-9 h-9 rounded-full bg-primary/10 text-primary flex items-center justify-center shrink-0">
+                  <span className="material-symbols-outlined text-[19px]">visibility</span>
+                </span>
+                Voir les détails
+              </Link>
+              <button
+                type="button"
+                onClick={() => setStep("resolved")}
+                className="w-full py-3.5 px-4 flex items-center gap-3 text-error font-body-lg text-body-lg font-semibold active:bg-error-container/30 transition-colors"
+              >
+                <span className="w-9 h-9 rounded-full bg-error-container text-error flex items-center justify-center shrink-0">
+                  <span className="material-symbols-outlined text-[19px]">delete</span>
+                </span>
+                Supprimer la déclaration
+              </button>
+            </div>
             <button
               type="button"
               onClick={() => setStep("closed")}
-              className="w-full py-3 text-center border-t border-surface-variant/50 text-on-surface-variant font-body-lg text-body-lg active:bg-surface-variant/50 transition-colors"
+              className="w-full py-3.5 bg-surface-container-lowest/95 backdrop-blur-xl rounded-3xl text-center text-primary font-headline-sm text-headline-sm shadow-2xl active:bg-surface-container-high/60 transition-colors"
             >
               Annuler
             </button>
           </div>
-        </DialogShell>
+        </div>
       )}
 
       {step === "resolved" && (
