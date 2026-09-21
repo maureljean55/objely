@@ -1,4 +1,4 @@
-const CACHE_VERSION = "objely-cache-v3";
+const CACHE_VERSION = "objely-cache-v4";
 const APP_SHELL = ["/", "/offline", "/manifest.webmanifest", "/icons/icon-192.png", "/icons/icon-512.png"];
 
 self.addEventListener("install", (event) => {
