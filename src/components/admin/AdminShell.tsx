@@ -7,7 +7,6 @@ import { useState } from "react";
 const NAV_ITEMS = [
   { href: "/admin/signalements", label: "Signalements" },
   { href: "/admin/support", label: "Support" },
-  { href: "/admin/identity-verifications", label: "Identité" },
 ];
 
 export default function AdminShell({
