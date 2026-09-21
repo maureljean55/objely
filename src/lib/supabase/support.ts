@@ -11,6 +11,7 @@ export type SupportMessage = {
   id: string;
   conversation_id: string;
   sender: "user" | "bot" | "admin";
+  sender_name?: string | null;
   kind: "text" | "attachment";
   body: string | null;
   attachment_url: string | null;
@@ -24,7 +25,14 @@ export function supportMessagePreview(message: SupportMessage) {
   return message.body ?? "";
 }
 
-export type SupportConversationSummary = { conversation: SupportConversation; lastMessage: SupportMessage | null };
+export type SupportConversationSummary = {
+  conversation: SupportConversation;
+  lastMessage: SupportMessage | null;
+  // The most recent admin reply's name, if any — lets the history list show
+  // who answered instead of a generic "waiting for an advisor" status once
+  // someone's actually answered (same signal as the chat page's banner).
+  adminName: string | null;
+};
 
 /** Every support conversation the current user has ever had, newest activity first. */
 export async function listMySupportConversations() {
@@ -51,13 +59,18 @@ export async function listMySupportConversations() {
     .returns<SupportMessage[]>();
 
   const lastByConversation = new Map<string, SupportMessage>();
+  const lastAdminNameByConversation = new Map<string, string>();
   for (const message of recentMessages ?? []) {
     if (!lastByConversation.has(message.conversation_id)) lastByConversation.set(message.conversation_id, message);
+    if (message.sender === "admin" && message.sender_name && !lastAdminNameByConversation.has(message.conversation_id)) {
+      lastAdminNameByConversation.set(message.conversation_id, message.sender_name);
+    }
   }
 
   const summaries: SupportConversationSummary[] = conversations.map((conversation) => ({
     conversation,
     lastMessage: lastByConversation.get(conversation.id) ?? null,
+    adminName: lastAdminNameByConversation.get(conversation.id) ?? null,
   }));
   summaries.sort((a, b) => {
     const aTime = a.lastMessage?.created_at ?? a.conversation.created_at;

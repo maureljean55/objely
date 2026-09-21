@@ -67,8 +67,11 @@ export default function HelpHistoryPage() {
 
         {conversations !== null && conversations.length > 0 && (
           <ul className="flex flex-col rounded-xl overflow-hidden bg-surface-container-lowest border border-outline-variant/30 shadow-sm">
-            {conversations.map(({ conversation, lastMessage }, i) => {
-              const status = STATUS_LABEL[conversation.status];
+            {conversations.map(({ conversation, lastMessage, adminName }, i) => {
+              const status =
+                conversation.status === "escalated" && adminName
+                  ? { label: `Répondu par ${adminName}`, className: "bg-emerald-500/15 text-emerald-700" }
+                  : STATUS_LABEL[conversation.status];
               return (
                 <li key={conversation.id} className={i < conversations.length - 1 ? "border-b border-outline-variant/30" : ""}>
                   <Link href={`/help/chat?conversation=${conversation.id}`} className="block px-md py-4 hover:bg-surface-container-low transition-colors">
@@ -82,7 +85,9 @@ export default function HelpHistoryPage() {
                       </div>
                       <div className="flex-1 min-w-0">
                         <div className="flex items-center justify-between mb-1">
-                          <span className="font-label-md text-label-md text-on-surface font-semibold truncate pr-2">Service client Objely</span>
+                          <span className="font-label-md text-label-md text-on-surface font-semibold truncate pr-2">
+                            {conversation.status === "escalated" && adminName ? adminName : "Service client Objely"}
+                          </span>
                           {lastMessage && <span className="font-label-md text-[11px] text-outline shrink-0">{timeAgo(lastMessage.created_at)}</span>}
                         </div>
                         <p className="font-body-md text-body-md text-on-surface-variant truncate mb-1.5">
