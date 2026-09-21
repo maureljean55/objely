@@ -93,6 +93,7 @@ export default async function ActivityPage({ searchParams }: { searchParams: Pro
   return (
     <div className="bg-background text-on-background font-body-md antialiased min-h-screen pb-28 md:pb-12">
       <header className="glass-header fixed top-0 inset-x-0 z-50 flex items-center justify-between px-container-margin min-h-16 pt-[env(safe-area-inset-top)] w-full shadow-[0_1px_0_rgba(0,0,0,0.05)]">
+        <div className="w-10 h-10" />
         <h1 className="font-headline-sm text-headline-sm text-on-surface">Activité</h1>
         <div className="w-10 h-10" />
       </header>
