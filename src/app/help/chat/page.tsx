@@ -5,6 +5,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { useSearchParams } from "next/navigation";
 import { uploadSupportAttachment } from "@/lib/supabase/supportAttachments";
+import { createClient } from "@/lib/supabase/client";
 
 const SUGGESTIONS = [
   { icon: "search", label: "Problème avec une correspondance" },
@@ -15,6 +16,7 @@ const SUGGESTIONS = [
 type SupportMessage = {
   id: string;
   sender: "user" | "bot" | "admin";
+  sender_name?: string | null;
   kind: "text" | "attachment";
   body: string | null;
   attachment_url: string | null;
@@ -86,6 +88,50 @@ function HelpChatContent() {
   useEffect(() => {
     bottomRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages]);
+
+  // Without this, an admin's reply (or the bot handing off) only ever
+  // showed up on the next manual reload — the page fetched history once on
+  // mount and never again. Same pattern as messages/community_messages:
+  // explicitly set Realtime's websocket auth before subscribing.
+  useEffect(() => {
+    if (!conversationId) return;
+    const supabase = createClient();
+    let channel: ReturnType<typeof supabase.channel> | null = null;
+    let cancelled = false;
+
+    (async () => {
+      const {
+        data: { session },
+      } = await supabase.auth.getSession();
+      if (cancelled || !session) return;
+      supabase.realtime.setAuth(session.access_token);
+
+      channel = supabase
+        .channel(`support_messages:${conversationId}`)
+        .on(
+          "postgres_changes",
+          { event: "INSERT", schema: "public", table: "support_messages", filter: `conversation_id=eq.${conversationId}` },
+          (payload) => {
+            const incoming = payload.new as SupportMessage;
+            setMessages((prev) => (prev.some((m) => m.id === incoming.id) ? prev : [...prev, incoming]));
+          },
+        )
+        .on(
+          "postgres_changes",
+          { event: "UPDATE", schema: "public", table: "support_conversations", filter: `id=eq.${conversationId}` },
+          (payload) => {
+            const updated = payload.new as { status: "bot" | "escalated" | "closed" };
+            setStatus(updated.status);
+          },
+        )
+        .subscribe();
+    })();
+
+    return () => {
+      cancelled = true;
+      if (channel) supabase.removeChannel(channel);
+    };
+  }, [conversationId]);
 
   const send = async (body: string) => {
     if (!body.trim() || isSending || !conversationId) return;
@@ -173,6 +219,10 @@ function HelpChatContent() {
   };
 
   const showSuggestions = !isLoading && messages.length <= 1 && status === "bot";
+  // The most recent admin reply's name — once someone's actually answered,
+  // the header should say who, not the generic placeholder, and the "a
+  // human has been notified" banner (below) no longer applies.
+  const adminName = [...messages].reverse().find((m) => m.sender === "admin")?.sender_name || null;
 
   return (
     <div className="bg-background text-on-background font-body-md antialiased">
@@ -190,9 +240,11 @@ function HelpChatContent() {
             <span className="absolute bottom-0 right-0 w-3 h-3 bg-emerald-500 border-2 border-surface rounded-full" />
           </div>
           <div className="flex flex-col">
-            <h1 className="font-headline-sm text-headline-sm text-on-surface">{status === "escalated" ? "Conseiller Objely" : "Assistant Objely"}</h1>
+            <h1 className="font-headline-sm text-headline-sm text-on-surface">
+              {status === "escalated" ? adminName || "Conseiller Objely" : "Assistant Objely"}
+            </h1>
             <span className="font-label-md text-[11px] text-outline">
-              {status === "escalated" ? "Un conseiller va vous répondre" : "Répond instantanément"}
+              {status === "escalated" ? (adminName ? "Conseiller humain" : "Un conseiller va vous répondre") : "Répond instantanément"}
             </span>
           </div>
         </div>
@@ -252,7 +304,7 @@ function HelpChatContent() {
           );
         })}
 
-        {status === "escalated" && (
+        {status === "escalated" && !adminName && (
           <div className="bg-secondary/10 text-secondary rounded-2xl px-4 py-3 text-center font-body-md text-[13px] mx-auto">
             Un conseiller humain a été prévenu et prendra le relais ici dès que possible.
           </div>
