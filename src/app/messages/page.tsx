@@ -5,7 +5,7 @@ import Link from "next/link";
 import Image from "next/image";
 import BottomNav from "@/components/BottomNav";
 import { getCurrentUser } from "@/lib/auth";
-import { listMyConversations, type Conversation } from "@/lib/supabase/messages";
+import { listMyConversations, deleteMatchConversation, type Conversation } from "@/lib/supabase/messages";
 import {
   listMyDirectConversations,
   deleteDirectConversation,
@@ -52,7 +52,7 @@ const TABS: { id: Tab; label: string }[] = [
 export default function MessagesPage() {
   const [rows, setRows] = useState<Row[] | null>(null);
   const [currentUserId, setCurrentUserId] = useState<string | null>(null);
-  const [deleteTarget, setDeleteTarget] = useState<{ conversationId: string; peerName: string } | null>(null);
+  const [deleteTarget, setDeleteTarget] = useState<{ kind: "match" | "direct"; conversationId: string; peerName: string } | null>(null);
   const [isDeleting, setIsDeleting] = useState(false);
   const [deleteError, setDeleteError] = useState<string | null>(null);
   const [query, setQuery] = useState("");
@@ -91,13 +91,17 @@ export default function MessagesPage() {
     if (!deleteTarget) return;
     setIsDeleting(true);
     setDeleteError(null);
-    const { error } = await deleteDirectConversation(deleteTarget.conversationId);
+    const { error } =
+      deleteTarget.kind === "direct"
+        ? await deleteDirectConversation(deleteTarget.conversationId)
+        : await deleteMatchConversation(deleteTarget.conversationId);
     setIsDeleting(false);
     if (error) {
       setDeleteError("Impossible de supprimer la conversation. Réessayez.");
       return;
     }
-    setRows((prev) => (prev ?? []).filter((row) => row.key !== `direct-${deleteTarget.conversationId}`));
+    const key = `${deleteTarget.kind}-${deleteTarget.conversationId}`;
+    setRows((prev) => (prev ?? []).filter((row) => row.key !== key));
     setDeleteTarget(null);
   };
 
@@ -123,8 +127,9 @@ export default function MessagesPage() {
       if (row.kind === "match") {
         const isLostSide = row.conversation.match.lost_item.user_id === currentUserId;
         const otherItem = isLostSide ? row.conversation.match.found_item : row.conversation.match.lost_item;
+        const declarerName = row.conversation.otherProfile?.full_name ?? "";
         const lastBody = row.conversation.lastMessage?.body ?? "";
-        return [otherItem.title, lastBody].some((f) => f.toLowerCase().includes(q));
+        return [otherItem.title, declarerName, lastBody].some((f) => f.toLowerCase().includes(q));
       }
       const peerName = row.conversation.other_full_name || "Utilisateur Objely";
       const lastBody = row.conversation.last_message_body ?? "";
@@ -135,21 +140,8 @@ export default function MessagesPage() {
   return (
     <div className="bg-background text-on-surface min-h-screen flex flex-col antialiased pb-28">
       <header className="sticky top-0 w-full z-30 bg-surface/80 backdrop-blur-xl shadow-sm pt-[env(safe-area-inset-top)]">
-        <div className="flex items-center justify-between px-container-margin min-h-14">
-          <Link href="/profile" aria-label="Retour" className="flex items-center justify-center p-2 -ml-2 text-on-surface hover:opacity-70 active:scale-95 transition-transform">
-            <span className="material-symbols-outlined text-2xl">arrow_back_ios</span>
-          </Link>
-          <div className="w-8 h-8" />
-        </div>
-        <div className="px-container-margin pb-md flex flex-col gap-md">
-          <div>
-            <h1 className="font-headline-lg-mobile text-headline-lg-mobile text-on-surface font-bold tracking-tight">Messages</h1>
-            {rows !== null && (
-              <p className="font-body-md text-body-md text-[13px] text-on-surface-variant">
-                {rows.length === 0 ? "Aucun échange" : rows.length === 1 ? "1 échange en direct" : `${rows.length} échanges en direct`}
-              </p>
-            )}
-          </div>
+        <div className="px-container-margin pt-md pb-md flex flex-col gap-md">
+          <h1 className="font-headline-lg-mobile text-headline-lg-mobile text-on-surface font-bold tracking-tight">Message center</h1>
 
           <div className="relative">
             <span className="material-symbols-outlined absolute left-3.5 top-1/2 -translate-y-1/2 text-on-surface-variant text-[19px]">search</span>
@@ -232,54 +224,60 @@ export default function MessagesPage() {
           <div className="flex flex-col gap-2.5">
             {visibleRows.map((row) => {
               if (row.kind === "match") {
-                const { match, lastMessage } = row.conversation;
-                const isLostSide = match.lost_item.user_id === currentUserId;
-                const otherItem = isLostSide ? match.found_item : match.lost_item;
+                const { match, lastMessage, otherProfile } = row.conversation;
                 const isMine = lastMessage?.sender_id === currentUserId;
                 const isClosed = !!match.chat_closed_at;
+                const declarerName = otherProfile?.full_name || "Utilisateur Objely";
                 return (
-                  <Link
-                    key={row.key}
-                    href={`/chat/${match.id}`}
-                    className="flex items-start gap-3 p-3.5 rounded-2xl bg-surface-container-lowest shadow-sm active:scale-[0.99] transition-transform"
-                  >
-                    <div className="relative shrink-0 w-12 h-12 rounded-full overflow-hidden bg-surface-container-high flex items-center justify-center text-primary">
-                      {otherItem.photos?.[0] ? (
-                        <Image alt={otherItem.title} src={otherItem.photos[0]} fill sizes="48px" className="object-cover" />
-                      ) : (
-                        <span className="material-symbols-outlined" style={{ fontVariationSettings: "'FILL' 1" }}>
-                          {otherItem.category_icon || "inventory_2"}
-                        </span>
-                      )}
-                    </div>
-                    <div className="flex flex-col min-w-0 flex-1 gap-1">
-                      <div className="flex items-center justify-between gap-2">
-                        <h3 className="font-headline-sm text-headline-sm text-on-surface font-semibold truncate">{otherItem.title}</h3>
-                        {lastMessage && <span className="font-label-md text-[11px] text-outline shrink-0">{timeAgo(lastMessage.created_at)}</span>}
-                      </div>
-                      <div className="flex items-center gap-1.5 flex-wrap">
-                        <div className="flex items-center gap-1 px-2 py-0.5 rounded-full bg-surface-container text-on-surface font-label-md text-[11px]">
-                          <span className="font-semibold">{match.match_percent}% de correspondance</span>
-                        </div>
-                        {isClosed ? (
-                          <div className="flex items-center gap-1 px-2 py-0.5 rounded-full bg-surface-container-high text-on-surface font-label-md text-[11px]">
-                            <span className="material-symbols-outlined text-[12px] text-primary">check_circle</span>
-                            <span className="font-medium">Restitué</span>
-                          </div>
+                  <div key={row.key} className="flex items-stretch gap-2 rounded-2xl bg-surface-container-lowest shadow-sm overflow-hidden">
+                    <Link
+                      href={`/chat/${match.id}`}
+                      className="flex-1 min-w-0 flex items-start gap-3 p-3.5 active:scale-[0.99] transition-transform"
+                    >
+                      <div className="relative shrink-0 w-12 h-12 rounded-full overflow-hidden bg-surface-container-high flex items-center justify-center text-on-surface-variant">
+                        {otherProfile?.avatar_url ? (
+                          <Image alt={declarerName} src={otherProfile.avatar_url} fill sizes="48px" className="object-cover" />
                         ) : (
-                          <div className="flex items-center gap-1 px-2 py-0.5 rounded-full bg-surface-variant text-on-surface font-label-md text-[11px]">
-                            <span className="w-1.5 h-1.5 rounded-full bg-primary" />
-                            <span className="font-semibold">Conversation active</span>
-                          </div>
+                          <span className="material-symbols-outlined">person</span>
                         )}
                       </div>
-                      <p className="font-body-md text-body-md text-[13px] text-on-surface-variant truncate">
-                        {lastMessage
-                          ? `${isMine ? "Vous : " : ""}${previewText(lastMessage.body, lastMessage.kind, lastMessage.deleted_at)}`
-                          : "Aucun message pour le moment — dites bonjour !"}
-                      </p>
-                    </div>
-                  </Link>
+                      <div className="flex flex-col min-w-0 flex-1 gap-1">
+                        <div className="flex items-center justify-between gap-2">
+                          <h3 className="font-headline-sm text-headline-sm text-on-surface font-semibold truncate">{declarerName}</h3>
+                          {lastMessage && <span className="font-label-md text-[11px] text-outline shrink-0">{timeAgo(lastMessage.created_at)}</span>}
+                        </div>
+                        <div className="flex items-center gap-1.5 flex-wrap">
+                          <div className="flex items-center gap-1 px-2 py-0.5 rounded-full bg-surface-container text-on-surface font-label-md text-[11px]">
+                            <span className="font-semibold">{match.match_percent}% de correspondance</span>
+                          </div>
+                          {isClosed ? (
+                            <div className="flex items-center gap-1 px-2 py-0.5 rounded-full bg-surface-container-high text-on-surface font-label-md text-[11px]">
+                              <span className="material-symbols-outlined text-[12px] text-primary">check_circle</span>
+                              <span className="font-medium">Restitué</span>
+                            </div>
+                          ) : (
+                            <div className="flex items-center gap-1 px-2 py-0.5 rounded-full bg-surface-variant text-on-surface font-label-md text-[11px]">
+                              <span className="w-1.5 h-1.5 rounded-full bg-primary" />
+                              <span className="font-semibold">Conversation active</span>
+                            </div>
+                          )}
+                        </div>
+                        <p className="font-body-md text-body-md text-[13px] text-on-surface-variant truncate">
+                          {lastMessage
+                            ? `${isMine ? "Vous : " : ""}${previewText(lastMessage.body, lastMessage.kind, lastMessage.deleted_at)}`
+                            : "Aucun message pour le moment — dites bonjour !"}
+                        </p>
+                      </div>
+                    </Link>
+                    <button
+                      type="button"
+                      onClick={() => setDeleteTarget({ kind: "match", conversationId: match.id, peerName: declarerName })}
+                      aria-label={`Supprimer la conversation avec ${declarerName}`}
+                      className="shrink-0 w-11 flex items-center justify-center text-on-surface-variant hover:text-error hover:bg-error-container/20 transition-colors"
+                    >
+                      <span className="material-symbols-outlined text-[20px]">delete</span>
+                    </button>
+                  </div>
                 );
               }
 
@@ -312,7 +310,7 @@ export default function MessagesPage() {
                   </Link>
                   <button
                     type="button"
-                    onClick={() => setDeleteTarget({ conversationId: conversation.conversation_id, peerName })}
+                    onClick={() => setDeleteTarget({ kind: "direct", conversationId: conversation.conversation_id, peerName })}
                     aria-label={`Supprimer la conversation avec ${peerName}`}
                     className="shrink-0 w-11 flex items-center justify-center text-on-surface-variant hover:text-error hover:bg-error-container/20 transition-colors"
                   >
