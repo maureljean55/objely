@@ -16,6 +16,8 @@ export type Profile = {
   avatar_url: string | null;
   trust_score: number;
   identity_verified_at: string | null;
+  suspended_at: string | null;
+  suspended_reason: string | null;
   share_phone: boolean;
   notify_matches: boolean;
   notify_messages: boolean;

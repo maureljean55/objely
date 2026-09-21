@@ -30,6 +30,16 @@ function isExemptFromAalGate(pathname: string) {
   return AAL_GATE_EXEMPT_PREFIXES.some((prefix) => pathname === prefix || pathname.startsWith(`${prefix}/`));
 }
 
+// A suspended account is redirected to /suspended from everywhere else in
+// the app — except these: the page itself, and the informational/support
+// pages the suspended screen links out to (a support contact link that
+// bounces straight back to /suspended would be worse than not having one).
+const SUSPENSION_GATE_EXEMPT_PREFIXES = ["/suspended", "/help", "/rgpd", "/cgu"];
+
+function isExemptFromSuspensionGate(pathname: string) {
+  return SUSPENSION_GATE_EXEMPT_PREFIXES.some((prefix) => pathname === prefix || pathname.startsWith(`${prefix}/`));
+}
+
 export async function updateSession(request: NextRequest): Promise<{ response: NextResponse; userId: string | null }> {
   let supabaseResponse = NextResponse.next({ request });
 
@@ -75,6 +85,22 @@ export async function updateSession(request: NextRequest): Promise<{ response: N
   // expiry instead of on the very next request.
   if (needsRefresh) {
     await supabase.auth.getUser();
+  }
+
+  // Suspension is enforced for real via Supabase Auth's own ban (blocks
+  // sign-in and token refresh — see setUserSuspended in the admin portal),
+  // but a session issued before the ban stays cryptographically valid until
+  // it naturally expires. This check is what makes the suspended screen show
+  // up right away instead of whenever that session happens to lapse.
+  if (session && !isExemptFromSuspensionGate(request.nextUrl.pathname)) {
+    const { data: profile } = await supabase
+      .from("profiles")
+      .select("suspended_at")
+      .eq("id", session.user.id)
+      .maybeSingle<{ suspended_at: string | null }>();
+    if (profile?.suspended_at) {
+      return { response: NextResponse.redirect(new URL("/suspended", request.url)), userId: session.user.id };
+    }
   }
 
   // Password-only sign-in leaves a verified-TOTP account at aal1 until the
