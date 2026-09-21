@@ -41,14 +41,6 @@ type Row =
   | { kind: "match"; key: string; lastMessageAt: string | null; conversation: Conversation }
   | { kind: "direct"; key: string; lastMessageAt: string | null; conversation: DirectConversationSummary };
 
-type Tab = "all" | "matches" | "direct" | "closed";
-const TABS: { id: Tab; label: string }[] = [
-  { id: "all", label: "Toutes" },
-  { id: "matches", label: "Correspondances" },
-  { id: "direct", label: "Directs" },
-  { id: "closed", label: "Restituées" },
-];
-
 export default function MessagesPage() {
   const [rows, setRows] = useState<Row[] | null>(null);
   const [currentUserId, setCurrentUserId] = useState<string | null>(null);
@@ -56,7 +48,6 @@ export default function MessagesPage() {
   const [isDeleting, setIsDeleting] = useState(false);
   const [deleteError, setDeleteError] = useState<string | null>(null);
   const [query, setQuery] = useState("");
-  const [tab, setTab] = useState<Tab>("all");
 
   useEffect(() => {
     Promise.all([getCurrentUser(), listMyConversations(), listMyDirectConversations()]).then(
@@ -101,22 +92,8 @@ export default function MessagesPage() {
     setDeleteTarget(null);
   };
 
-  const tabCounts = useMemo(() => {
-    const all = rows ?? [];
-    return {
-      all: all.length,
-      matches: all.filter((r) => r.kind === "match" && !r.conversation.match.chat_closed_at).length,
-      direct: all.filter((r) => r.kind === "direct").length,
-      closed: all.filter((r) => r.kind === "match" && !!r.conversation.match.chat_closed_at).length,
-    };
-  }, [rows]);
-
   const visibleRows = useMemo(() => {
-    let list = rows ?? [];
-    if (tab === "matches") list = list.filter((r) => r.kind === "match" && !r.conversation.match.chat_closed_at);
-    else if (tab === "direct") list = list.filter((r) => r.kind === "direct");
-    else if (tab === "closed") list = list.filter((r) => r.kind === "match" && !!r.conversation.match.chat_closed_at);
-
+    const list = rows ?? [];
     const q = query.trim().toLowerCase();
     if (!q) return list;
     return list.filter((row) => {
@@ -131,13 +108,13 @@ export default function MessagesPage() {
       const lastBody = row.conversation.last_message_body ?? "";
       return [peerName, lastBody].some((f) => f.toLowerCase().includes(q));
     });
-  }, [rows, tab, query, currentUserId]);
+  }, [rows, query, currentUserId]);
 
   return (
     <div className="bg-background text-on-surface min-h-screen flex flex-col antialiased pb-28">
       <header className="sticky top-0 w-full z-30 bg-surface/80 backdrop-blur-xl shadow-sm pt-[env(safe-area-inset-top)]">
         <div className="px-container-margin pt-md pb-md flex flex-col gap-md">
-          <h1 className="font-headline-lg-mobile text-headline-lg-mobile text-on-surface font-bold tracking-tight text-center">Message center</h1>
+          <h1 className="font-headline-lg-mobile text-headline-lg-mobile text-on-surface font-bold tracking-tight text-center">Message</h1>
 
           <div className="relative">
             <span className="material-symbols-outlined absolute left-3.5 top-1/2 -translate-y-1/2 text-on-surface-variant text-[19px]">search</span>
@@ -147,34 +124,6 @@ export default function MessagesPage() {
               placeholder="Rechercher une personne, un objet, un message..."
               className="w-full h-11 pl-10 pr-4 rounded-xl bg-surface-container-lowest shadow-sm text-on-surface placeholder:text-on-surface-variant/70 font-body-md text-body-md text-[13px] focus:outline-none focus:ring-2 focus:ring-primary/20 transition-all"
             />
-          </div>
-
-          <div className="flex items-center gap-1.5 overflow-x-auto hide-scrollbar">
-            {TABS.map((t) => {
-              const isActive = tab === t.id;
-              const count = tabCounts[t.id];
-              return (
-                <button
-                  key={t.id}
-                  type="button"
-                  onClick={() => setTab(t.id)}
-                  className={`shrink-0 flex items-center gap-1.5 px-3.5 py-1.5 rounded-full font-label-md text-[13px] transition-all active:scale-95 ${
-                    isActive ? "bg-primary text-on-primary shadow-sm" : "bg-surface-container-lowest text-on-surface-variant shadow-sm"
-                  }`}
-                >
-                  {t.label}
-                  {count > 0 && (
-                    <span
-                      className={`min-w-[18px] h-[18px] px-1 rounded-full text-[11px] flex items-center justify-center ${
-                        isActive ? "bg-white/20 text-on-primary" : "bg-surface-container-high text-on-surface-variant"
-                      }`}
-                    >
-                      {count}
-                    </span>
-                  )}
-                </button>
-              );
-            })}
           </div>
         </div>
       </header>
