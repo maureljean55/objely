@@ -62,6 +62,19 @@ export async function createItemFromDraft(draft: DeclarationDraft, type: ItemTyp
     return { data: null, error: new Error("Vous devez être connecté pour publier une déclaration.") };
   }
 
+  // Same pre-check pattern as the daily cap below: the items INSERT policy
+  // (see 20260921030000_require_identity_verification_to_declare.sql) also
+  // requires an approved identity_verified_at, but that RLS violation alone
+  // can't tell the caller which requirement failed.
+  const { data: profile } = await supabase
+    .from("profiles")
+    .select("identity_verified_at")
+    .eq("id", user.id)
+    .maybeSingle<{ identity_verified_at: string | null }>();
+  if (!profile?.identity_verified_at) {
+    return { data: null, error: new Error("Votre compte est en cours de vérification. Veuillez patienter avant de publier une déclaration.") };
+  }
+
   // Pre-check rather than parsing the RLS-violation error the insert would
   // otherwise raise (see user_items_created_in_last_24h/the items INSERT
   // policy in supabase/migrations/20260918120000_cap_daily_declarations.sql)

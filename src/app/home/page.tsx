@@ -85,9 +85,9 @@ export default async function HomeDashboardPage({
         supabase.from("notifications").select("id", { count: "exact", head: true }).eq("user_id", user.id).eq("read", false),
         supabase
           .from("profiles")
-          .select("avatar_url, full_name")
+          .select("avatar_url, full_name, identity_verified_at")
           .eq("id", user.id)
-          .maybeSingle<{ avatar_url: string | null; full_name: string | null }>(),
+          .maybeSingle<{ avatar_url: string | null; full_name: string | null; identity_verified_at: string | null }>(),
         supabase
           .from("notifications")
           .select("*")
@@ -97,6 +97,10 @@ export default async function HomeDashboardPage({
           .returns<AppNotification[]>(),
       ])
     : [{ count: 0 }, { data: null }, { data: [] as AppNotification[] }];
+
+  const identityNotVerified = !!user && !profile?.identity_verified_at;
+  const IDENTITY_BLOCKED_MESSAGE = "Votre compte est en cours de vérification. Veuillez patienter.";
+  const IDENTITY_BLOCKED_CTA = { href: "/profile/identity-verification", label: "Vérifier mon identité" };
 
   return (
     <div className={styles.page}>
@@ -216,6 +220,9 @@ export default async function HomeDashboardPage({
           <GuardedActionLink
             href="/report-lost"
             authenticated={!!user}
+            blocked={identityNotVerified}
+            blockedMessage={IDENTITY_BLOCKED_MESSAGE}
+            blockedCta={IDENTITY_BLOCKED_CTA}
             message="Dépêchez-vous de vous inscrire et on retrouvera votre objet ensemble !"
             emoji="😢"
             className={`${styles.actionCard} ${styles.lost}`}
@@ -234,6 +241,9 @@ export default async function HomeDashboardPage({
           <GuardedActionLink
             href="/report-found"
             authenticated={!!user}
+            blocked={identityNotVerified}
+            blockedMessage={IDENTITY_BLOCKED_MESSAGE}
+            blockedCta={IDENTITY_BLOCKED_CTA}
             message="Dépêchez-vous de vous inscrire et aidons ensemble son propriétaire à le retrouver !"
             emoji="🤝"
             className={`${styles.actionCard} ${styles.found}`}
@@ -467,6 +477,9 @@ export default async function HomeDashboardPage({
           <GuardedActionLink
             href="/report-lost"
             authenticated={!!user}
+            blocked={identityNotVerified}
+            blockedMessage={IDENTITY_BLOCKED_MESSAGE}
+            blockedCta={IDENTITY_BLOCKED_CTA}
             message="Dépêchez-vous de vous inscrire et on retrouvera votre objet ensemble !"
             emoji="😢"
             className="relative overflow-hidden text-white flex items-center gap-4 p-5 transition-transform hover:-translate-y-0.5 w-full text-left"
@@ -504,6 +517,9 @@ export default async function HomeDashboardPage({
           <GuardedActionLink
             href="/report-found"
             authenticated={!!user}
+            blocked={identityNotVerified}
+            blockedMessage={IDENTITY_BLOCKED_MESSAGE}
+            blockedCta={IDENTITY_BLOCKED_CTA}
             message="Dépêchez-vous de vous inscrire et aidons ensemble son propriétaire à le retrouver !"
             emoji="🤝"
             className="relative overflow-hidden text-white flex items-center gap-4 p-5 transition-transform hover:-translate-y-0.5 w-full text-left"

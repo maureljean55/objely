@@ -11,6 +11,10 @@ export default function GuardedActionLink({
   className,
   style,
   children,
+  blocked = false,
+  blockedTitle = "Vérification en cours",
+  blockedMessage,
+  blockedCta,
 }: {
   href: string;
   authenticated: boolean;
@@ -19,10 +23,16 @@ export default function GuardedActionLink({
   className?: string;
   style?: React.CSSProperties;
   children: ReactNode;
+  /** Set once the user is authenticated but still shouldn't reach `href` (e.g. pending identity verification). */
+  blocked?: boolean;
+  blockedTitle?: string;
+  blockedMessage?: string;
+  blockedCta?: { href: string; label: string };
 }) {
   const [open, setOpen] = useState(false);
+  const isVerificationGate = authenticated && blocked;
 
-  if (authenticated) {
+  if (authenticated && !blocked) {
     return (
       <Link href={href} className={className} style={style}>
         {children}
@@ -58,28 +68,47 @@ export default function GuardedActionLink({
                   boxShadow: "0 10px 20px -6px rgba(101, 80, 232, 0.55)",
                 }}
               >
-                {emoji}
+                {isVerificationGate ? "⏳" : emoji}
               </span>
-              <h3 className="relative font-headline-sm text-headline-sm text-on-surface font-extrabold">Oups !</h3>
-              <p className="relative font-body-md text-body-md text-on-surface-variant">{message}</p>
+              <h3 className="relative font-headline-sm text-headline-sm text-on-surface font-extrabold">
+                {isVerificationGate ? blockedTitle : "Oups !"}
+              </h3>
+              <p className="relative font-body-md text-body-md text-on-surface-variant">
+                {isVerificationGate ? blockedMessage : message}
+              </p>
               <div className="relative flex gap-2 w-full mt-1">
                 <button
                   type="button"
                   onClick={() => setOpen(false)}
                   className="flex-1 py-2.5 rounded-full font-label-md text-label-md text-on-surface-variant hover:bg-black/[0.04] transition-colors"
                 >
-                  Plus tard
+                  {isVerificationGate ? "Compris" : "Plus tard"}
                 </button>
-                <Link
-                  href="/register"
-                  className="flex-1 py-2.5 rounded-full font-label-md text-label-md text-white text-center transition-transform active:scale-95"
-                  style={{
-                    background: "linear-gradient(90deg, #1d3fd6, #7c3aed)",
-                    boxShadow: "0 10px 22px -8px rgba(37, 52, 220, 0.55)",
-                  }}
-                >
-                  S&apos;inscrire
-                </Link>
+                {isVerificationGate ? (
+                  blockedCta && (
+                    <Link
+                      href={blockedCta.href}
+                      className="flex-1 py-2.5 rounded-full font-label-md text-label-md text-white text-center transition-transform active:scale-95"
+                      style={{
+                        background: "linear-gradient(90deg, #1d3fd6, #7c3aed)",
+                        boxShadow: "0 10px 22px -8px rgba(37, 52, 220, 0.55)",
+                      }}
+                    >
+                      {blockedCta.label}
+                    </Link>
+                  )
+                ) : (
+                  <Link
+                    href="/register"
+                    className="flex-1 py-2.5 rounded-full font-label-md text-label-md text-white text-center transition-transform active:scale-95"
+                    style={{
+                      background: "linear-gradient(90deg, #1d3fd6, #7c3aed)",
+                      boxShadow: "0 10px 22px -8px rgba(37, 52, 220, 0.55)",
+                    }}
+                  >
+                    S&apos;inscrire
+                  </Link>
+                )}
               </div>
             </div>
           </div>
