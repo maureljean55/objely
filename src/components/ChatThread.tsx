@@ -35,15 +35,6 @@ function formatAppointmentDate(dateStr: string, timeStr: string) {
   return `${dateLabel} à ${timeLabel}`;
 }
 
-function initials(name: string) {
-  return name
-    .split(" ")
-    .map((part) => part[0])
-    .slice(0, 2)
-    .join("")
-    .toUpperCase();
-}
-
 function formatDuration(seconds: number) {
   const m = Math.floor(seconds / 60);
   const s = Math.floor(seconds % 60);
@@ -316,14 +307,7 @@ function MessageBubble({
   };
 
   return (
-    <div className={`flex gap-2 max-w-[85%] ${isMine ? "self-end flex-row-reverse" : "self-start"}`}>
-      <div
-        className={`w-8 h-8 rounded-full overflow-hidden shrink-0 flex items-center justify-center ${
-          isMine ? "bg-primary text-on-primary" : "bg-surface-container-highest text-on-surface-variant"
-        }`}
-      >
-        <span className="font-label-md text-label-md">{isMine ? "Moi" : initials(peerName)}</span>
-      </div>
+    <div className={`flex max-w-[85%] ${isMine ? "self-end" : "self-start"}`}>
       <div className="flex flex-col gap-1 min-w-0">
         <div className="relative">
           {!isDeleted && (
@@ -428,6 +412,8 @@ type Props = {
   onEdit: (messageId: string, body: string) => Promise<boolean>;
   onDelete: (messageId: string) => Promise<boolean>;
   onBack: () => void;
+  /** Match-based chats only: the other party's item and how well it matches, shown as a context strip under the header. */
+  itemContext?: { title: string; matchPercent: number } | null;
   /** Only match-based chats support restitution appointments, not QR/direct conversations. */
   restitutionEnabled?: boolean;
   appointmentsById?: Map<string, AppointmentInfo>;
@@ -453,6 +439,7 @@ export default function ChatThread({
   onEdit,
   onDelete,
   onBack,
+  itemContext,
   restitutionEnabled = false,
   appointmentsById,
   onProposeAppointment,
@@ -713,41 +700,59 @@ export default function ChatThread({
   return (
     <div className="bg-background text-on-background font-body-md antialiased">
       <header
-        className="glass-header fixed top-0 inset-x-0 z-50 flex justify-between items-center w-full px-container-margin pb-base shadow-[0_1px_0_rgba(0,0,0,0.05)]"
+        className="glass-header fixed top-0 inset-x-0 z-50 w-full shadow-[0_1px_0_rgba(0,0,0,0.05)]"
         style={{ paddingTop: "calc(0.5rem + env(safe-area-inset-top))" }}
       >
-        <button type="button" onClick={onBack} aria-label="Retour" className="text-primary p-2 -ml-2 rounded-full hover:bg-surface-container-high/50 transition-colors flex items-center">
-          <span className="material-symbols-outlined" style={{ fontVariationSettings: "'FILL' 0" }}>arrow_back_ios</span>
-        </button>
-        <div className="flex items-center gap-2">
-          <div className="relative w-8 h-8 rounded-full overflow-hidden bg-surface-container-high flex items-center justify-center text-on-surface-variant shrink-0">
-            {peerAvatarUrl ? (
-              <Image alt={peerName} src={peerAvatarUrl} fill sizes="32px" className="object-cover" />
-            ) : (
-              <span className="material-symbols-outlined text-[18px]">person</span>
-            )}
-          </div>
-          <h1 className="font-headline-sm text-headline-sm text-on-surface">{peerName}</h1>
-        </div>
-        {peerId && !chatClosed ? (
-          <button
-            type="button"
-            onClick={() => startCall({ id: peerId, name: peerName, avatarUrl: peerAvatarUrl })}
-            disabled={callStatus !== "idle"}
-            aria-label={`Appeler ${peerName}`}
-            className="w-9 h-9 flex items-center justify-center rounded-full hover:bg-surface-container-high/50 transition-colors text-primary disabled:opacity-40"
-          >
-            <span className="material-symbols-outlined" style={{ fontVariationSettings: "'FILL' 1" }}>call</span>
+        <div className="flex justify-between items-center px-container-margin pb-base">
+          <button type="button" onClick={onBack} aria-label="Retour" className="text-on-surface p-2 -ml-2 rounded-full hover:bg-surface-container-high/50 transition-colors flex items-center">
+            <span className="material-symbols-outlined" style={{ fontVariationSettings: "'FILL' 0" }}>arrow_back_ios</span>
           </button>
-        ) : (
-          <div className="w-9" />
+          <div className="flex items-center gap-2.5">
+            <div className="relative w-10 h-10 rounded-full overflow-hidden bg-surface-container-high flex items-center justify-center text-on-surface-variant shrink-0">
+              {peerAvatarUrl ? (
+                <Image alt={peerName} src={peerAvatarUrl} fill sizes="40px" className="object-cover" />
+              ) : (
+                <span className="material-symbols-outlined text-[20px]">person</span>
+              )}
+            </div>
+            <h1 className="font-headline-sm text-headline-sm text-on-surface font-bold">{peerName}</h1>
+          </div>
+          {peerId && !chatClosed ? (
+            <button
+              type="button"
+              onClick={() => startCall({ id: peerId, name: peerName, avatarUrl: peerAvatarUrl })}
+              disabled={callStatus !== "idle"}
+              aria-label={`Appeler ${peerName}`}
+              className="w-9 h-9 flex items-center justify-center rounded-full hover:bg-surface-container-high/50 transition-colors text-primary disabled:opacity-40"
+            >
+              <span className="material-symbols-outlined" style={{ fontVariationSettings: "'FILL' 1" }}>call</span>
+            </button>
+          ) : (
+            <div className="w-9" />
+          )}
+        </div>
+        {itemContext && (
+          <div className="px-container-margin pb-2.5">
+            <div className="flex items-center gap-2 bg-surface-container-low px-3 py-1.5 rounded-full">
+              <span className="w-2 h-2 rounded-full bg-primary shrink-0" />
+              <p className="font-label-md text-[12px] text-on-surface truncate">
+                <span className="font-semibold text-primary">{itemContext.title}</span> · Match {itemContext.matchPercent}%
+              </p>
+            </div>
+          </div>
         )}
       </header>
 
-      <main className="min-h-screen px-container-margin py-md pt-[calc(92px+env(safe-area-inset-top))] pb-[140px] flex flex-col gap-md">
-        <div className="bg-surface-container-high rounded-xl p-3 flex items-start gap-3 shadow-sm mx-auto max-w-sm mt-2 mb-4">
-          <span className="material-symbols-outlined text-tertiary mt-0.5" style={{ fontVariationSettings: "'FILL' 1" }}>security</span>
-          <p className="font-label-md text-label-md text-on-surface-variant flex-1">
+      <main
+        className={`min-h-screen px-container-margin py-md pb-[140px] flex flex-col gap-md ${
+          itemContext ? "pt-[calc(132px+env(safe-area-inset-top))]" : "pt-[calc(92px+env(safe-area-inset-top))]"
+        }`}
+      >
+        <div className="bg-surface-container-lowest rounded-2xl p-3 flex items-start gap-3 shadow-sm mx-auto max-w-sm mt-2 mb-4">
+          <span className="w-8 h-8 rounded-full bg-tertiary-fixed flex items-center justify-center text-tertiary shrink-0">
+            <span className="material-symbols-outlined text-[18px]" style={{ fontVariationSettings: "'FILL' 1" }}>security</span>
+          </span>
+          <p className="font-label-md text-label-md text-on-surface-variant flex-1 pt-1">
             Pour votre sécurité, <strong className="text-on-surface">ne partagez pas votre adresse personnelle</strong>. Privilégiez un lieu public en cas de rencontre.
           </p>
         </div>

@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import BottomNav from "@/components/BottomNav";
@@ -41,12 +41,22 @@ type Row =
   | { kind: "match"; key: string; lastMessageAt: string | null; conversation: Conversation }
   | { kind: "direct"; key: string; lastMessageAt: string | null; conversation: DirectConversationSummary };
 
+type Tab = "all" | "matches" | "direct" | "closed";
+const TABS: { id: Tab; label: string }[] = [
+  { id: "all", label: "Toutes" },
+  { id: "matches", label: "Correspondances" },
+  { id: "direct", label: "Directs" },
+  { id: "closed", label: "Restituées" },
+];
+
 export default function MessagesPage() {
   const [rows, setRows] = useState<Row[] | null>(null);
   const [currentUserId, setCurrentUserId] = useState<string | null>(null);
   const [deleteTarget, setDeleteTarget] = useState<{ conversationId: string; peerName: string } | null>(null);
   const [isDeleting, setIsDeleting] = useState(false);
   const [deleteError, setDeleteError] = useState<string | null>(null);
+  const [query, setQuery] = useState("");
+  const [tab, setTab] = useState<Tab>("all");
 
   useEffect(() => {
     Promise.all([getCurrentUser(), listMyConversations(), listMyDirectConversations()]).then(
@@ -91,17 +101,109 @@ export default function MessagesPage() {
     setDeleteTarget(null);
   };
 
+  const tabCounts = useMemo(() => {
+    const all = rows ?? [];
+    return {
+      all: all.length,
+      matches: all.filter((r) => r.kind === "match" && !r.conversation.match.chat_closed_at).length,
+      direct: all.filter((r) => r.kind === "direct").length,
+      closed: all.filter((r) => r.kind === "match" && !!r.conversation.match.chat_closed_at).length,
+    };
+  }, [rows]);
+
+  const visibleRows = useMemo(() => {
+    let list = rows ?? [];
+    if (tab === "matches") list = list.filter((r) => r.kind === "match" && !r.conversation.match.chat_closed_at);
+    else if (tab === "direct") list = list.filter((r) => r.kind === "direct");
+    else if (tab === "closed") list = list.filter((r) => r.kind === "match" && !!r.conversation.match.chat_closed_at);
+
+    const q = query.trim().toLowerCase();
+    if (!q) return list;
+    return list.filter((row) => {
+      if (row.kind === "match") {
+        const isLostSide = row.conversation.match.lost_item.user_id === currentUserId;
+        const otherItem = isLostSide ? row.conversation.match.found_item : row.conversation.match.lost_item;
+        const lastBody = row.conversation.lastMessage?.body ?? "";
+        return [otherItem.title, lastBody].some((f) => f.toLowerCase().includes(q));
+      }
+      const peerName = row.conversation.other_full_name || "Utilisateur Objely";
+      const lastBody = row.conversation.last_message_body ?? "";
+      return [peerName, lastBody].some((f) => f.toLowerCase().includes(q));
+    });
+  }, [rows, tab, query, currentUserId]);
+
   return (
-    <div className="bg-background text-on-surface min-h-screen flex flex-col antialiased">
-      <header className="sticky top-0 w-full z-30 bg-surface/80 backdrop-blur-xl shadow-sm flex items-center justify-between px-container-margin min-h-14 pt-[env(safe-area-inset-top)]">
-        <Link href="/profile" aria-label="Retour" className="flex items-center justify-center p-2 -ml-2 text-primary hover:opacity-70 active:scale-95 transition-transform">
-          <span className="material-symbols-outlined text-2xl">arrow_back_ios</span>
-        </Link>
-        <h1 className="font-headline-sm text-headline-sm font-extrabold tracking-tight text-on-surface absolute left-1/2 -translate-x-1/2">Messages</h1>
-        <div className="w-8 h-8" />
+    <div className="bg-background text-on-surface min-h-screen flex flex-col antialiased pb-28">
+      <header className="sticky top-0 w-full z-30 bg-surface/80 backdrop-blur-xl shadow-sm pt-[env(safe-area-inset-top)]">
+        <div className="flex items-center justify-between px-container-margin min-h-14">
+          <Link href="/profile" aria-label="Retour" className="flex items-center justify-center p-2 -ml-2 text-on-surface hover:opacity-70 active:scale-95 transition-transform">
+            <span className="material-symbols-outlined text-2xl">arrow_back_ios</span>
+          </Link>
+          <div className="w-8 h-8" />
+        </div>
+        <div className="px-container-margin pb-md flex flex-col gap-md">
+          <div>
+            <h1 className="font-headline-lg-mobile text-headline-lg-mobile text-on-surface font-bold tracking-tight">Messages</h1>
+            {rows !== null && (
+              <p className="font-body-md text-body-md text-[13px] text-on-surface-variant">
+                {rows.length === 0 ? "Aucun échange" : rows.length === 1 ? "1 échange en direct" : `${rows.length} échanges en direct`}
+              </p>
+            )}
+          </div>
+
+          <div className="relative">
+            <span className="material-symbols-outlined absolute left-3.5 top-1/2 -translate-y-1/2 text-on-surface-variant text-[19px]">search</span>
+            <input
+              value={query}
+              onChange={(e) => setQuery(e.target.value)}
+              placeholder="Rechercher une personne, un objet, un message..."
+              className="w-full h-11 pl-10 pr-4 rounded-xl bg-surface-container-lowest shadow-sm text-on-surface placeholder:text-on-surface-variant/70 font-body-md text-body-md text-[13px] focus:outline-none focus:ring-2 focus:ring-primary/20 transition-all"
+            />
+          </div>
+
+          <div className="flex items-center gap-1.5 overflow-x-auto hide-scrollbar">
+            {TABS.map((t) => {
+              const isActive = tab === t.id;
+              const count = tabCounts[t.id];
+              return (
+                <button
+                  key={t.id}
+                  type="button"
+                  onClick={() => setTab(t.id)}
+                  className={`shrink-0 flex items-center gap-1.5 px-3.5 py-1.5 rounded-full font-label-md text-[13px] transition-all active:scale-95 ${
+                    isActive ? "bg-primary text-on-primary shadow-sm" : "bg-surface-container-lowest text-on-surface-variant shadow-sm"
+                  }`}
+                >
+                  {t.label}
+                  {count > 0 && (
+                    <span
+                      className={`min-w-[18px] h-[18px] px-1 rounded-full text-[11px] flex items-center justify-center ${
+                        isActive ? "bg-white/20 text-on-primary" : "bg-surface-container-high text-on-surface-variant"
+                      }`}
+                    >
+                      {count}
+                    </span>
+                  )}
+                </button>
+              );
+            })}
+          </div>
+        </div>
       </header>
 
-      <main className="flex-1 w-full max-w-[800px] mx-auto px-container-margin pt-lg pb-xl">
+      <main className="flex-1 w-full max-w-[800px] mx-auto px-container-margin pt-md pb-xl flex flex-col gap-md">
+        <div className="relative overflow-hidden rounded-2xl bg-surface-container-lowest p-3.5 shadow-sm">
+          <div className="flex items-center gap-3">
+            <div className="w-8 h-8 rounded-full bg-primary-fixed flex items-center justify-center text-primary shrink-0">
+              <span className="material-symbols-outlined text-[18px]">verified_user</span>
+            </div>
+            <div className="flex flex-col min-w-0 flex-1">
+              <p className="font-label-md text-label-md text-on-surface truncate">Protocole Objely Sécurisé</p>
+              <p className="font-body-md text-body-md text-[12px] text-on-surface-variant truncate">Coordonnées chiffrées & restitution encadrée</p>
+            </div>
+          </div>
+        </div>
+
         {rows === null && (
           <div className="flex justify-center py-xl">
             <span className="w-8 h-8 border-4 border-primary-container/30 border-t-primary rounded-full animate-spin" />
@@ -110,11 +212,8 @@ export default function MessagesPage() {
 
         {rows !== null && rows.length === 0 && (
           <div className="flex flex-col items-center justify-center py-xl text-center">
-            <div
-              className="w-20 h-20 mb-lg rounded-full flex items-center justify-center shadow-lg"
-              style={{ background: "linear-gradient(135deg, #0058bc, #5952af)" }}
-            >
-              <span className="material-symbols-outlined text-white text-[36px]">chat_bubble</span>
+            <div className="w-20 h-20 mb-lg rounded-full bg-primary-fixed flex items-center justify-center">
+              <span className="material-symbols-outlined text-primary text-[36px]">chat_bubble</span>
             </div>
             <h3 className="font-headline-sm text-headline-sm font-bold text-on-surface mb-2">Aucune conversation pour le moment</h3>
             <p className="font-body-md text-body-md text-on-surface-variant max-w-sm">
@@ -123,42 +222,64 @@ export default function MessagesPage() {
           </div>
         )}
 
-        {rows !== null && rows.length > 0 && (
-          <ul className="flex flex-col rounded-[24px] overflow-hidden bg-surface-container-lowest soft-shadow inner-stroke">
-            {rows.map((row, i) => {
-              const isLast = i === rows.length - 1;
+        {rows !== null && rows.length > 0 && visibleRows.length === 0 && (
+          <div className="flex flex-col items-center justify-center py-xl text-center">
+            <p className="font-body-md text-body-md text-on-surface-variant">Aucun résultat pour ce filtre.</p>
+          </div>
+        )}
+
+        {visibleRows.length > 0 && (
+          <div className="flex flex-col gap-2.5">
+            {visibleRows.map((row) => {
               if (row.kind === "match") {
                 const { match, lastMessage } = row.conversation;
                 const isLostSide = match.lost_item.user_id === currentUserId;
                 const otherItem = isLostSide ? match.found_item : match.lost_item;
                 const isMine = lastMessage?.sender_id === currentUserId;
+                const isClosed = !!match.chat_closed_at;
                 return (
-                  <li key={row.key} className={!isLast ? "border-b border-outline-variant/30" : ""}>
-                    <Link href={`/chat/${match.id}`} className="block px-md py-4 hover:bg-surface-container-low transition-colors">
-                      <div className="flex items-start gap-4">
-                        <div className="relative shrink-0 mt-1 w-12 h-12 rounded-full overflow-hidden bg-surface-container-high flex items-center justify-center text-primary">
-                          {otherItem.photos?.[0] ? (
-                            <Image alt={otherItem.title} src={otherItem.photos[0]} fill sizes="48px" className="object-cover" />
-                          ) : (
-                            <span className="material-symbols-outlined" style={{ fontVariationSettings: "'FILL' 1" }}>
-                              {otherItem.category_icon || "inventory_2"}
-                            </span>
-                          )}
-                        </div>
-                        <div className="flex-1 min-w-0">
-                          <div className="flex items-center justify-between mb-1">
-                            <span className="font-label-md text-label-md text-on-surface font-semibold truncate pr-2">{otherItem.title}</span>
-                            {lastMessage && <span className="font-label-md text-[11px] text-outline shrink-0">{timeAgo(lastMessage.created_at)}</span>}
-                          </div>
-                          <p className="font-body-md text-body-md text-on-surface-variant truncate">
-                            {lastMessage
-                              ? `${isMine ? "Vous : " : ""}${previewText(lastMessage.body, lastMessage.kind, lastMessage.deleted_at)}`
-                              : "Aucun message pour le moment — dites bonjour !"}
-                          </p>
-                        </div>
+                  <Link
+                    key={row.key}
+                    href={`/chat/${match.id}`}
+                    className="flex items-start gap-3 p-3.5 rounded-2xl bg-surface-container-lowest shadow-sm active:scale-[0.99] transition-transform"
+                  >
+                    <div className="relative shrink-0 w-12 h-12 rounded-full overflow-hidden bg-surface-container-high flex items-center justify-center text-primary">
+                      {otherItem.photos?.[0] ? (
+                        <Image alt={otherItem.title} src={otherItem.photos[0]} fill sizes="48px" className="object-cover" />
+                      ) : (
+                        <span className="material-symbols-outlined" style={{ fontVariationSettings: "'FILL' 1" }}>
+                          {otherItem.category_icon || "inventory_2"}
+                        </span>
+                      )}
+                    </div>
+                    <div className="flex flex-col min-w-0 flex-1 gap-1">
+                      <div className="flex items-center justify-between gap-2">
+                        <h3 className="font-headline-sm text-headline-sm text-on-surface font-semibold truncate">{otherItem.title}</h3>
+                        {lastMessage && <span className="font-label-md text-[11px] text-outline shrink-0">{timeAgo(lastMessage.created_at)}</span>}
                       </div>
-                    </Link>
-                  </li>
+                      <div className="flex items-center gap-1.5 flex-wrap">
+                        <div className="flex items-center gap-1 px-2 py-0.5 rounded-full bg-surface-container text-on-surface font-label-md text-[11px]">
+                          <span className="font-semibold">{match.match_percent}% de correspondance</span>
+                        </div>
+                        {isClosed ? (
+                          <div className="flex items-center gap-1 px-2 py-0.5 rounded-full bg-surface-container-high text-on-surface font-label-md text-[11px]">
+                            <span className="material-symbols-outlined text-[12px] text-primary">check_circle</span>
+                            <span className="font-medium">Restitué</span>
+                          </div>
+                        ) : (
+                          <div className="flex items-center gap-1 px-2 py-0.5 rounded-full bg-surface-variant text-on-surface font-label-md text-[11px]">
+                            <span className="w-1.5 h-1.5 rounded-full bg-primary" />
+                            <span className="font-semibold">Conversation active</span>
+                          </div>
+                        )}
+                      </div>
+                      <p className="font-body-md text-body-md text-[13px] text-on-surface-variant truncate">
+                        {lastMessage
+                          ? `${isMine ? "Vous : " : ""}${previewText(lastMessage.body, lastMessage.kind, lastMessage.deleted_at)}`
+                          : "Aucun message pour le moment — dites bonjour !"}
+                      </p>
+                    </div>
+                  </Link>
                 );
               }
 
@@ -166,29 +287,27 @@ export default function MessagesPage() {
               const isMine = conversation.last_message_sender_id === currentUserId;
               const peerName = conversation.other_full_name || "Utilisateur Objely";
               return (
-                <li key={row.key} className={`flex items-stretch ${!isLast ? "border-b border-outline-variant/30" : ""}`}>
-                  <Link href={`/dm/${conversation.conversation_id}`} className="flex-1 min-w-0 block px-md py-4 hover:bg-surface-container-low transition-colors">
-                    <div className="flex items-start gap-4">
-                      <div className="relative shrink-0 mt-1 w-12 h-12 rounded-full overflow-hidden bg-surface-container-high flex items-center justify-center text-on-surface-variant">
-                        {conversation.other_avatar_url ? (
-                          <Image alt={peerName} src={conversation.other_avatar_url} fill sizes="48px" className="object-cover" />
-                        ) : (
-                          <span className="material-symbols-outlined">person</span>
+                <div key={row.key} className="flex items-stretch gap-2 rounded-2xl bg-surface-container-lowest shadow-sm overflow-hidden">
+                  <Link href={`/dm/${conversation.conversation_id}`} className="flex-1 min-w-0 flex items-start gap-3 p-3.5 active:scale-[0.99] transition-transform">
+                    <div className="relative shrink-0 w-12 h-12 rounded-full overflow-hidden bg-surface-container-high flex items-center justify-center text-on-surface-variant">
+                      {conversation.other_avatar_url ? (
+                        <Image alt={peerName} src={conversation.other_avatar_url} fill sizes="48px" className="object-cover" />
+                      ) : (
+                        <span className="material-symbols-outlined">person</span>
+                      )}
+                    </div>
+                    <div className="flex flex-col min-w-0 flex-1 gap-1">
+                      <div className="flex items-center justify-between gap-2">
+                        <h3 className="font-headline-sm text-headline-sm text-on-surface font-semibold truncate">{peerName}</h3>
+                        {conversation.last_message_created_at && (
+                          <span className="font-label-md text-[11px] text-outline shrink-0">{timeAgo(conversation.last_message_created_at)}</span>
                         )}
                       </div>
-                      <div className="flex-1 min-w-0">
-                        <div className="flex items-center justify-between mb-1">
-                          <span className="font-label-md text-label-md text-on-surface font-semibold truncate pr-2">{peerName}</span>
-                          {conversation.last_message_created_at && (
-                            <span className="font-label-md text-[11px] text-outline shrink-0">{timeAgo(conversation.last_message_created_at)}</span>
-                          )}
-                        </div>
-                        <p className="font-body-md text-body-md text-on-surface-variant truncate">
-                          {conversation.last_message_created_at
-                            ? `${isMine ? "Vous : " : ""}${previewText(conversation.last_message_body, conversation.last_message_kind, conversation.last_message_deleted_at)}`
-                            : "Aucun message pour le moment — dites bonjour !"}
-                        </p>
-                      </div>
+                      <p className="font-body-md text-body-md text-[13px] text-on-surface-variant truncate">
+                        {conversation.last_message_created_at
+                          ? `${isMine ? "Vous : " : ""}${previewText(conversation.last_message_body, conversation.last_message_kind, conversation.last_message_deleted_at)}`
+                          : "Aucun message pour le moment — dites bonjour !"}
+                      </p>
                     </div>
                   </Link>
                   <button
@@ -199,10 +318,10 @@ export default function MessagesPage() {
                   >
                     <span className="material-symbols-outlined text-[20px]">delete</span>
                   </button>
-                </li>
+                </div>
               );
             })}
-          </ul>
+          </div>
         )}
       </main>
 

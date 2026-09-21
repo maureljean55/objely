@@ -274,6 +274,8 @@ export default function SecureChatPage() {
   }));
 
   const appointmentsById = new Map(appointments.map((a) => [a.id, toAppointmentInfo(a)]));
+  const isLostSide = match.lost_item.user_id === currentUserId;
+  const otherItem = isLostSide ? match.found_item : match.lost_item;
 
   return (
     <ChatThread
@@ -281,6 +283,7 @@ export default function SecureChatPage() {
       peerName={otherProfile.full_name || "Utilisateur Objely"}
       peerAvatarUrl={otherProfile.avatar_url}
       currentUserId={currentUserId}
+      itemContext={{ title: otherItem.title, matchPercent: match.match_percent }}
       messages={chatMessages}
       onSend={handleSend}
       onSendVoice={handleSendVoice}
