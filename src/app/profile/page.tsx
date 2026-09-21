@@ -155,9 +155,15 @@ function ProfileSummary({
               </span>
             </div>
             {publicId && (
-              <span className="inline-flex items-center px-2.5 py-0.5 rounded-full bg-surface-container-high text-on-surface-variant font-label-md text-[11px] tracking-wider mb-1">
+              <button
+                type="button"
+                onClick={handleCopyId}
+                aria-label="Copier l'identifiant public"
+                className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-surface-container-high text-on-surface-variant font-label-md text-[11px] tracking-wider mb-1 active:scale-95 transition-transform"
+              >
                 @{publicId}
-              </span>
+                <span className="material-symbols-outlined text-[13px]">{copied ? "check" : "content_copy"}</span>
+              </button>
             )}
           </section>
 
@@ -217,35 +223,6 @@ function ProfileSummary({
             </div>
           </section>
 
-          {publicId !== null && (
-            <section className="animate-fadeIn mt-3">
-              <div className="bg-surface-container-lowest rounded-2xl p-4 shadow-sm">
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-2">
-                    <span className="material-symbols-outlined text-on-surface-variant text-[18px]">badge</span>
-                    <span className="font-label-md text-label-md text-on-surface-variant">Identifiant public</span>
-                  </div>
-                  <button
-                    type="button"
-                    onClick={handleCopyId}
-                    className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-primary-fixed/50 text-on-primary-fixed font-label-md text-[12px] active:scale-95 transition-all"
-                  >
-                    <span className="material-symbols-outlined text-[15px]">{copied ? "check" : "content_copy"}</span>
-                    {copied ? "Copié" : "Copier"}
-                  </button>
-                </div>
-                <div className="mt-2 flex items-baseline justify-between gap-2">
-                  <span className="font-mono text-headline-sm text-headline-sm tracking-[0.15em] text-on-surface font-semibold truncate">
-                    @{publicId}
-                  </span>
-                  <span className="font-label-md text-[12px] text-primary shrink-0">Prêt au partage</span>
-                </div>
-                <p className="font-body-md text-body-md text-[13px] text-on-surface-variant mt-1.5">
-                  Utilisez cet identifiant pour être facilement retrouvé sur Objely lors de déclarations croisées.
-                </p>
-              </div>
-            </section>
-          )}
         </>
       ) : (
         <section className="flex flex-col items-center text-center pt-10 pb-6 animate-fadeIn">
