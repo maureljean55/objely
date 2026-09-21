@@ -41,6 +41,7 @@ function buildHref(params: { category: string | null; type: string | null; statu
 
 export default function MyItemsBrowser({
   items,
+  matchByItemId,
   hasAnyItems,
   filtersActive,
   category,
@@ -49,6 +50,7 @@ export default function MyItemsBrowser({
   initialQuery = "",
 }: {
   items: Item[];
+  matchByItemId: Record<string, { id: string; percent: number }>;
   hasAnyItems: boolean;
   filtersActive: boolean;
   category: string | null;
@@ -224,9 +226,9 @@ export default function MyItemsBrowser({
             )}
           </div>
         ) : (
-          <section className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-md mb-xl">
+          <section className="grid grid-cols-1 lg:grid-cols-2 gap-md mb-xl">
             {visibleItems.map((item) => (
-              <MyItemCard key={item.id} item={item} />
+              <MyItemCard key={item.id} item={item} match={matchByItemId[item.id]} />
             ))}
           </section>
         )}

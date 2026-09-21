@@ -7,11 +7,11 @@ import Image from "next/image";
 import type { Item } from "@/lib/supabase/items";
 import { softDeleteItem } from "@/lib/supabase/items";
 
-const STATUS_BADGE = {
-  searching: { label: "Recherche active", icon: "radar", className: "bg-error-container text-on-error-container" },
-  matched: { label: "Correspondance trouvée", icon: "task_alt", className: "bg-primary-fixed text-primary" },
-  recovered: { label: "Retrouvé", icon: "check_circle", className: "bg-[#e8f5e9] text-[#2e7d32]" },
-  returned: { label: "Restitué", icon: "check_circle", className: "bg-[#e8f5e9] text-[#2e7d32]" },
+const STATUS_STYLE = {
+  searching: { icon: "radar", badgeClassName: "bg-primary-container text-on-primary-container", pulse: true },
+  matched: { icon: "auto_awesome", badgeClassName: "bg-primary text-on-primary", pulse: false },
+  recovered: { icon: "task_alt", badgeClassName: "bg-surface-container-highest text-on-surface", pulse: false },
+  returned: { icon: "task_alt", badgeClassName: "bg-surface-container-highest text-on-surface", pulse: false },
 } as const;
 
 function declaredDateLabel(item: Item) {
@@ -20,7 +20,12 @@ function declaredDateLabel(item: Item) {
   return `${verb} le ${new Date(item.occurred_on).toLocaleDateString("fr-FR")}`;
 }
 
-type Step = "closed" | "resolved" | "confirm" | "reason" | "deleting";
+function resolvedDateLabel(item: Item) {
+  const verb = item.status === "returned" ? "Restitué" : "Retrouvé";
+  return `${verb} le ${new Date(item.updated_at).toLocaleDateString("fr-FR")}`;
+}
+
+type Step = "closed" | "menu" | "resolved" | "confirm" | "reason" | "deleting";
 
 function DialogShell({ children }: { children: React.ReactNode }) {
   return (
@@ -30,12 +35,13 @@ function DialogShell({ children }: { children: React.ReactNode }) {
   );
 }
 
-export default function MyItemCard({ item }: { item: Item }) {
+export default function MyItemCard({ item, match }: { item: Item; match?: { id: string; percent: number } }) {
   const router = useRouter();
   const [step, setStep] = useState<Step>("closed");
   const [reason, setReason] = useState("");
   const [hidden, setHidden] = useState(false);
-  const badge = STATUS_BADGE[item.status];
+  const statusStyle = STATUS_STYLE[item.status];
+  const isResolved = item.status === "recovered" || item.status === "returned";
 
   if (hidden) return null;
 
@@ -52,59 +58,145 @@ export default function MyItemCard({ item }: { item: Item }) {
 
   return (
     <>
-      <div className="relative">
-        <Link
-          href={`/search/${item.id}`}
-          className="block bg-surface rounded-[24px] shadow-soft-bloom overflow-hidden border border-black/5 hover:scale-[1.02] transition-transform duration-300"
-        >
-          <div className="h-48 w-full relative bg-surface-container-high flex items-center justify-center text-primary">
+      <article className="relative bg-surface-container-lowest rounded-2xl p-md shadow-sm flex flex-col gap-sm overflow-hidden">
+        <Link href={`/search/${item.id}`} className="flex gap-md items-start">
+          <div className="relative w-20 h-20 rounded-xl overflow-hidden shrink-0 bg-surface-container flex items-center justify-center text-on-surface-variant">
             {item.photos?.[0] ? (
-              <Image
-                alt={item.title}
-                src={item.photos[0]}
-                fill
-                sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, (max-width: 1280px) 33vw, 25vw"
-                className="object-cover"
-              />
+              <Image alt={item.title} src={item.photos[0]} fill sizes="80px" className="object-cover" />
             ) : (
-              <span className="material-symbols-outlined text-5xl">{item.category_icon || "inventory_2"}</span>
+              <span className="material-symbols-outlined text-3xl">{item.category_icon || "inventory_2"}</span>
             )}
-            <div
-              className={`absolute top-sm right-sm px-3 py-1 rounded-full font-label-md flex items-center gap-1 shadow-sm backdrop-blur-md bg-opacity-90 ${badge.className}`}
-            >
-              <span className="material-symbols-outlined text-[14px]">{badge.icon}</span>
-              {badge.label}
+            <div className={`absolute bottom-1 right-1 w-5 h-5 rounded-full flex items-center justify-center shadow-sm ${statusStyle.badgeClassName}`}>
+              <span className={`material-symbols-outlined text-[12px] ${statusStyle.pulse ? "animate-pulse" : ""}`}>{statusStyle.icon}</span>
             </div>
           </div>
-          <div className="p-md flex flex-col gap-sm bg-surface">
-            <div className="flex justify-between items-start">
-              <h2 className="font-headline-sm text-on-surface font-semibold line-clamp-1">{item.title}</h2>
-              <span className="text-outline text-[12px] font-label-md whitespace-nowrap">
-                {item.type === "lost" ? "Perdu par moi" : "Trouvé par moi"}
+          <div className="flex-1 min-w-0">
+            <h3 className="font-headline-sm text-headline-sm font-bold text-on-surface truncate">{item.title}</h3>
+            <div className="flex items-center gap-1.5 pt-0.5">
+              <span
+                className={`px-2 py-0.5 rounded-full font-label-md text-[11px] font-semibold shrink-0 ${
+                  item.type === "lost" ? "bg-error-container text-on-error-container" : "bg-surface-container text-on-surface-variant"
+                }`}
+              >
+                {item.type === "lost" ? "Objet perdu" : "Objet trouvé"}
               </span>
+              <span className="font-label-md text-[11px] text-outline truncate">• {item.location || declaredDateLabel(item)}</span>
             </div>
-            <div className="flex flex-col gap-1 text-on-surface-variant font-label-md">
-              <div className="flex items-center gap-2">
-                <span className="material-symbols-outlined text-[16px]">calendar_today</span>
-                <span>{declaredDateLabel(item)}</span>
-              </div>
-              <div className="flex items-center gap-2">
-                <span className="material-symbols-outlined text-[16px]">location_on</span>
-                <span>{item.location || "Lieu non précisé"}</span>
-              </div>
+            <div
+              className={`pt-1.5 flex items-center gap-1 ${
+                item.status === "matched" ? "text-primary" : isResolved ? "text-on-surface-variant" : "text-primary"
+              }`}
+            >
+              {item.status === "matched" && match && (
+                <>
+                  <span className="material-symbols-outlined text-[16px]" style={{ fontVariationSettings: "'FILL' 1" }}>verified</span>
+                  <span className="font-label-md text-[12px] font-semibold">{match.percent}% de correspondance</span>
+                </>
+              )}
+              {item.status === "searching" && (
+                <>
+                  <span className="material-symbols-outlined text-[16px] animate-spin">sync</span>
+                  <span className="font-label-md text-[12px] font-semibold">Recherche active</span>
+                </>
+              )}
+              {isResolved && (
+                <>
+                  <span className="material-symbols-outlined text-[16px]">task_alt</span>
+                  <span className="font-label-md text-[12px] font-semibold">{resolvedDateLabel(item)}</span>
+                </>
+              )}
             </div>
           </div>
+          <button
+            type="button"
+            onClick={(e) => {
+              e.preventDefault();
+              setStep("menu");
+            }}
+            aria-label="Options"
+            className="w-8 h-8 rounded-full flex items-center justify-center text-outline hover:text-on-surface hover:bg-surface-container transition-all shrink-0"
+          >
+            <span className="material-symbols-outlined text-[20px]">more_horiz</span>
+          </button>
         </Link>
 
-        <button
-          type="button"
-          onClick={() => setStep("resolved")}
-          aria-label="Supprimer la déclaration"
-          className="absolute top-sm left-sm w-8 h-8 rounded-full bg-black/50 text-white flex items-center justify-center hover:bg-black/70 transition-colors z-10"
-        >
-          <span className="material-symbols-outlined text-[18px]">delete</span>
-        </button>
-      </div>
+        {item.status === "matched" && match && (
+          <div className="rounded-xl p-sm bg-surface-container-low flex flex-col gap-1">
+            <div className="flex items-center justify-between">
+              <span className="font-label-md text-[12px] font-medium text-on-surface">Une correspondance a été détectée pour cet objet.</span>
+              <span className="font-label-md text-[12px] font-bold text-primary shrink-0 ml-2">Prêt</span>
+            </div>
+            <div className="w-full h-1.5 rounded-full bg-surface-container-high overflow-hidden">
+              <div className="h-full bg-primary rounded-full" style={{ width: `${match.percent}%` }} />
+            </div>
+          </div>
+        )}
+
+        {item.status === "matched" && match ? (
+          <div className="flex items-center gap-sm pt-1">
+            <Link
+              href={`/activity/match?match=${match.id}`}
+              className="flex-1 h-11 rounded-xl bg-primary text-on-primary font-label-md text-label-md font-semibold flex items-center justify-center gap-1.5 shadow-sm active:scale-95 transition-all"
+            >
+              <span className="material-symbols-outlined text-[18px]">auto_awesome</span>
+              Voir la correspondance
+            </Link>
+            <Link
+              href={`/search/${item.id}`}
+              className="px-4 h-11 rounded-xl bg-surface-container-low text-on-surface font-label-md text-label-md font-semibold hover:bg-surface-container transition-all active:scale-95 flex items-center justify-center"
+            >
+              Détails
+            </Link>
+          </div>
+        ) : isResolved ? (
+          <div className="flex items-center justify-between px-sm py-2 rounded-xl bg-surface-container-low">
+            <span className="font-label-md text-[12px] text-on-surface-variant">
+              {item.type === "lost" ? "Objet retrouvé et déclaration clôturée." : "Propriétaire identifié et objet remis en mains propres."}
+            </span>
+            <span className="px-2 py-0.5 rounded-full bg-surface-container-highest text-on-surface font-label-md text-[11px] font-bold shrink-0 ml-2">
+              Clôturé
+            </span>
+          </div>
+        ) : (
+          <div className="flex items-center justify-between px-sm py-2 rounded-xl bg-surface-container-low">
+            <span className="font-body-md text-body-md text-[13px] text-on-surface-variant">
+              {item.type === "lost"
+                ? "Objely recherche activement une correspondance pour cet objet."
+                : "Cet objet est visible par les personnes qui l'ont perdu."}
+            </span>
+            <Link href={`/search/${item.id}`} className="text-primary font-label-md text-[12px] font-bold hover:underline shrink-0 ml-2">
+              Détails
+            </Link>
+          </div>
+        )}
+      </article>
+
+      {step === "menu" && (
+        <DialogShell>
+          <div className="flex flex-col w-full">
+            <Link
+              href={`/search/${item.id}`}
+              className="w-full py-3 text-center border-b border-surface-variant/50 text-on-surface font-body-lg text-body-lg active:bg-surface-variant/50 transition-colors"
+            >
+              Voir les détails
+            </Link>
+            <button
+              type="button"
+              onClick={() => setStep("resolved")}
+              className="w-full py-3 text-center text-error font-headline-sm text-headline-sm active:bg-surface-variant/50 transition-colors"
+            >
+              Supprimer la déclaration
+            </button>
+            <button
+              type="button"
+              onClick={() => setStep("closed")}
+              className="w-full py-3 text-center border-t border-surface-variant/50 text-on-surface-variant font-body-lg text-body-lg active:bg-surface-variant/50 transition-colors"
+            >
+              Annuler
+            </button>
+          </div>
+        </DialogShell>
+      )}
 
       {step === "resolved" && (
         <DialogShell>
