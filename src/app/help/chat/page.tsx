@@ -7,6 +7,13 @@ import { useSearchParams } from "next/navigation";
 import { uploadSupportAttachment } from "@/lib/supabase/supportAttachments";
 import { createClient } from "@/lib/supabase/client";
 
+// Mirrors INACTIVITY_ARCHIVE_MS in /api/support-chat — the server already
+// archives a stale "bot" conversation and starts a fresh one the next time
+// it's asked for, but that only fired on next page load. This client-side
+// timer re-asks while the tab stays open so a forgotten chat actually
+// resets after 10 minutes instead of only on the next visit.
+const INACTIVITY_ARCHIVE_MS = 10 * 60 * 1000;
+
 const SUGGESTIONS = [
   { icon: "search", label: "Problème avec une correspondance" },
   { icon: "package_2", label: "Problème avec un objet" },
@@ -48,6 +55,7 @@ function HelpChatContent() {
   const [sendError, setSendError] = useState<string | null>(null);
   const [loadError, setLoadError] = useState(false);
   const [isUploading, setIsUploading] = useState(false);
+  const [refreshKey, setRefreshKey] = useState(0);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const bottomRef = useRef<HTMLDivElement>(null);
@@ -83,11 +91,22 @@ function HelpChatContent() {
     return () => {
       cancelled = true;
     };
-  }, [resumeId]);
+  }, [resumeId, refreshKey]);
 
   useEffect(() => {
     bottomRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages]);
+
+  // Only the live "current chat" flow (not a specific conversation resumed
+  // from Historique — the server never auto-archives those) auto-resets
+  // once nothing has happened for 10 minutes.
+  useEffect(() => {
+    if (resumeId || status !== "bot" || messages.length === 0) return;
+    const lastActivity = new Date(messages[messages.length - 1].created_at).getTime();
+    const remaining = INACTIVITY_ARCHIVE_MS - (Date.now() - lastActivity);
+    const timer = setTimeout(() => setRefreshKey((k) => k + 1), Math.max(remaining, 0));
+    return () => clearTimeout(timer);
+  }, [resumeId, status, messages]);
 
   // Without this, an admin's reply (or the bot handing off) only ever
   // showed up on the next manual reload — the page fetched history once on
