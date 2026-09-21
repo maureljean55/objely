@@ -16,6 +16,7 @@ const MENU_ITEMS = [
   { icon: "notifications_active", label: "Notifications", description: "Alertes de proximité & statut", href: "/profile/notifications", iconBg: "bg-secondary-fixed/50", iconColor: "text-secondary" },
   { icon: "qr_code_2", label: "Mon QR Code", description: "Partagez votre profil Objely", href: "/qr", iconBg: "bg-tertiary-fixed/60", iconColor: "text-tertiary" },
   { icon: "groups", label: "Mes communautés", description: "Gares, universités & quartiers", href: "/communities", iconBg: "bg-secondary-container/20", iconColor: "text-secondary-container" },
+  { icon: "badge", label: "Vérification d'identité", description: "Obtenez le badge \"Identité vérifiée\"", href: "/profile/identity-verification", iconBg: "bg-primary-fixed/50", iconColor: "text-primary" },
   { icon: "help_center", label: "Aide & service client", description: "FAQ, guides et assistance", href: "/help", iconBg: "bg-surface-container-highest", iconColor: "text-on-surface-variant" },
   { icon: "flag", label: "Signaler un problème", description: "Signaler un abus ou un bug", href: "/profile/report", iconBg: "bg-error-container/60", iconColor: "text-error" },
 ] as const;
@@ -80,6 +81,7 @@ function ProfileSummary({
   displayName,
   trustScore,
   publicId,
+  identityVerified,
 }: {
   user: User | null;
   authChecked: boolean;
@@ -88,6 +90,7 @@ function ProfileSummary({
   displayName: string;
   trustScore: number;
   publicId: string | null;
+  identityVerified: boolean;
 }) {
   const authenticated = !!user;
   const tier = trustTier(trustScore);
@@ -150,9 +153,16 @@ function ProfileSummary({
               <h1 className="font-headline-lg-mobile md:font-headline-lg text-headline-lg-mobile md:text-headline-lg text-on-surface">
                 {displayName}
               </h1>
-              <span className="material-symbols-outlined text-primary text-[20px]" style={{ fontVariationSettings: "'FILL' 1" }}>
-                verified
-              </span>
+              {identityVerified && (
+                <span
+                  className="material-symbols-outlined text-primary text-[20px]"
+                  style={{ fontVariationSettings: "'FILL' 1" }}
+                  aria-label="Identité vérifiée"
+                  title="Identité vérifiée"
+                >
+                  verified
+                </span>
+              )}
             </div>
             {publicId && (
               <button
@@ -261,6 +271,7 @@ export default function UserProfilePage() {
   const [profileName, setProfileName] = useState<string | null>(null);
   const [trustScore, setTrustScore] = useState(0);
   const [publicId, setPublicId] = useState<string | null>(null);
+  const [identityVerified, setIdentityVerified] = useState(false);
   const [authChecked, setAuthChecked] = useState(false);
   const displayName = profileName || (user?.user_metadata?.full_name as string | undefined) || user?.email || "";
 
@@ -296,6 +307,7 @@ export default function UserProfilePage() {
           setProfileName(data?.full_name ?? null);
           setTrustScore(data?.trust_score ?? 0);
           setPublicId(data?.public_id ?? null);
+          setIdentityVerified(!!data?.identity_verified_at);
         });
       }
     });
@@ -326,7 +338,7 @@ export default function UserProfilePage() {
         className="md:hidden fixed top-0 inset-x-0 z-40 bg-background/95 backdrop-blur-md px-container-margin pb-4 shadow-sm"
         style={{ paddingTop: "env(safe-area-inset-top)" }}
       >
-        <ProfileSummary user={user} authChecked={authChecked} stats={stats} avatarUrl={avatarUrl} displayName={displayName} trustScore={trustScore} publicId={publicId} />
+        <ProfileSummary user={user} authChecked={authChecked} stats={stats} avatarUrl={avatarUrl} displayName={displayName} trustScore={trustScore} publicId={publicId} identityVerified={identityVerified} />
       </div>
 
       <main className="max-w-2xl mx-auto md:mt-8 px-container-margin md:px-0 md:pt-0">
@@ -334,7 +346,7 @@ export default function UserProfilePage() {
         <div className="md:hidden" style={{ height: mobileHeaderHeight }} />
 
         <div className="hidden md:block relative">
-          <ProfileSummary user={user} authChecked={authChecked} stats={stats} avatarUrl={avatarUrl} displayName={displayName} trustScore={trustScore} publicId={publicId} />
+          <ProfileSummary user={user} authChecked={authChecked} stats={stats} avatarUrl={avatarUrl} displayName={displayName} trustScore={trustScore} publicId={publicId} identityVerified={identityVerified} />
         </div>
 
         <div className="px-1 mb-2.5 mt-2">
