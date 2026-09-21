@@ -80,7 +80,7 @@ export default async function HomeDashboardPage({
   }] = await Promise.all([listRecentFinds(6), supabase.auth.getSession()]);
   const user = session?.user ?? null;
 
-  const [{ count: unreadCount }, { data: profile }, { data: activities }] = user
+  const [{ count: unreadCount }, { data: profile }, { data: activities }, { data: verification }] = user
     ? await Promise.all([
         supabase.from("notifications").select("id", { count: "exact", head: true }).eq("user_id", user.id).eq("read", false),
         supabase
@@ -95,12 +95,30 @@ export default async function HomeDashboardPage({
           .order("created_at", { ascending: false })
           .limit(1)
           .returns<AppNotification[]>(),
+        supabase
+          .from("identity_verifications")
+          .select("status")
+          .eq("user_id", user.id)
+          .order("created_at", { ascending: false })
+          .limit(1)
+          .maybeSingle<{ status: "pending" | "approved" | "rejected" }>(),
       ])
-    : [{ count: 0 }, { data: null }, { data: [] as AppNotification[] }];
+    : [{ count: 0 }, { data: null }, { data: [] as AppNotification[] }, { data: null }];
 
   const identityNotVerified = !!user && !profile?.identity_verified_at;
-  const IDENTITY_BLOCKED_MESSAGE = "Votre compte est en cours de vérification. Veuillez patienter.";
-  const IDENTITY_BLOCKED_CTA = { href: "/profile/identity-verification", label: "Vérifier mon identité" };
+  // A submission still under review gets a "please wait" message; no
+  // submission at all (or a rejected one, which needs a fresh submission
+  // just the same) gets a call to action instead, since there's nothing
+  // to wait for.
+  const hasPendingSubmission = verification?.status === "pending";
+  const IDENTITY_BLOCKED_MESSAGE = hasPendingSubmission
+    ? "Votre compte est en cours de vérification. Veuillez patienter."
+    : "Vous devez ajouter votre pièce d'identité depuis votre profil pour pouvoir faire une déclaration.";
+  const IDENTITY_BLOCKED_TITLE = hasPendingSubmission ? "Vérification en cours" : "Identité non vérifiée";
+  const IDENTITY_BLOCKED_CTA = {
+    href: "/profile/identity-verification",
+    label: hasPendingSubmission ? "Voir le statut" : "Ajouter mon document",
+  };
 
   return (
     <div className={styles.page}>
@@ -221,6 +239,7 @@ export default async function HomeDashboardPage({
             href="/report-lost"
             authenticated={!!user}
             blocked={identityNotVerified}
+            blockedTitle={IDENTITY_BLOCKED_TITLE}
             blockedMessage={IDENTITY_BLOCKED_MESSAGE}
             blockedCta={IDENTITY_BLOCKED_CTA}
             message="Dépêchez-vous de vous inscrire et on retrouvera votre objet ensemble !"
@@ -242,6 +261,7 @@ export default async function HomeDashboardPage({
             href="/report-found"
             authenticated={!!user}
             blocked={identityNotVerified}
+            blockedTitle={IDENTITY_BLOCKED_TITLE}
             blockedMessage={IDENTITY_BLOCKED_MESSAGE}
             blockedCta={IDENTITY_BLOCKED_CTA}
             message="Dépêchez-vous de vous inscrire et aidons ensemble son propriétaire à le retrouver !"
@@ -478,6 +498,7 @@ export default async function HomeDashboardPage({
             href="/report-lost"
             authenticated={!!user}
             blocked={identityNotVerified}
+            blockedTitle={IDENTITY_BLOCKED_TITLE}
             blockedMessage={IDENTITY_BLOCKED_MESSAGE}
             blockedCta={IDENTITY_BLOCKED_CTA}
             message="Dépêchez-vous de vous inscrire et on retrouvera votre objet ensemble !"
@@ -518,6 +539,7 @@ export default async function HomeDashboardPage({
             href="/report-found"
             authenticated={!!user}
             blocked={identityNotVerified}
+            blockedTitle={IDENTITY_BLOCKED_TITLE}
             blockedMessage={IDENTITY_BLOCKED_MESSAGE}
             blockedCta={IDENTITY_BLOCKED_CTA}
             message="Dépêchez-vous de vous inscrire et aidons ensemble son propriétaire à le retrouver !"
