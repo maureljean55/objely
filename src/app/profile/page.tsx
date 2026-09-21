@@ -11,33 +11,65 @@ import type { User } from "@supabase/supabase-js";
 
 const EMPTY_STATS: MyItemStats = { signaled: 0, found: 0, recovered: 0 };
 
-const MENU_ITEMS_TOP = [
-  { icon: "chat_bubble", label: "Messages", gradient: "linear-gradient(135deg, #0058bc, #5952af)", href: "/messages" },
-];
-
-const MENU_ITEMS_BOTTOM = [
-  { icon: "notifications", label: "Notifications", gradient: "linear-gradient(135deg, #0058bc, #3b82f6)", href: "/profile/notifications" },
-  { icon: "help", label: "Aide", gradient: "linear-gradient(135deg, #06b6d4, #0891b2)", href: "/help" },
-  { icon: "flag", label: "Signaler un problème", gradient: "linear-gradient(135deg, #f97316, #ef4444)", href: "/profile/report" },
-];
-
-const STATS_META = [
-  { key: "signaled", icon: "search", label: "Objets\nsignalés", color: "#0058bc" },
-  { key: "found", icon: "inventory_2", label: "Objets\ntrouvés", color: "#5952af" },
-  { key: "recovered", icon: "check_circle", label: "Retrouvés", color: "#16a34a" },
+const MENU_ITEMS = [
+  { icon: "forum", label: "Messages", description: "Vos conversations d'entraide", href: "/messages", iconBg: "bg-primary-fixed/50", iconColor: "text-primary" },
+  { icon: "notifications_active", label: "Notifications", description: "Alertes de proximité & statut", href: "/profile/notifications", iconBg: "bg-secondary-fixed/50", iconColor: "text-secondary" },
+  { icon: "qr_code_2", label: "Mon QR Code", description: "Partagez votre profil Objely", href: "/qr", iconBg: "bg-tertiary-fixed/60", iconColor: "text-tertiary" },
+  { icon: "groups", label: "Mes communautés", description: "Gares, universités & quartiers", href: "/communities", iconBg: "bg-secondary-container/20", iconColor: "text-secondary-container" },
+  { icon: "help_center", label: "Aide & service client", description: "FAQ, guides et assistance", href: "/help", iconBg: "bg-surface-container-highest", iconColor: "text-on-surface-variant" },
+  { icon: "flag", label: "Signaler un problème", description: "Signaler un abus ou un bug", href: "/profile/report", iconBg: "bg-error-container/60", iconColor: "text-error" },
 ] as const;
 
+const STATS_META = [
+  { key: "signaled", icon: "search", label: "Signalés", iconBg: "bg-primary-fixed", iconColor: "text-on-primary-fixed" },
+  { key: "found", icon: "inventory_2", label: "Trouvés", iconBg: "bg-secondary-fixed", iconColor: "text-secondary" },
+  { key: "recovered", icon: "task_alt", label: "Retrouvés", iconBg: "bg-primary-fixed-dim/40", iconColor: "text-primary" },
+] as const;
+
+const TRUST_TIERS = {
+  or: {
+    label: "Or",
+    wash: "bg-gradient-to-r from-amber-500/15 via-amber-400/10 to-amber-500/5",
+    iconBg: "bg-amber-500/20",
+    iconColor: "text-amber-600",
+    labelColor: "text-amber-950",
+    subColor: "text-amber-900/80",
+    badge: "bg-amber-600",
+  },
+  argent: {
+    label: "Argent",
+    wash: "bg-gradient-to-r from-slate-400/15 via-slate-300/10 to-slate-400/5",
+    iconBg: "bg-slate-400/20",
+    iconColor: "text-slate-600",
+    labelColor: "text-slate-900",
+    subColor: "text-slate-700/80",
+    badge: "bg-slate-600",
+  },
+  bronze: {
+    label: "Bronze",
+    wash: "bg-gradient-to-r from-orange-700/15 via-orange-600/10 to-orange-700/5",
+    iconBg: "bg-orange-700/20",
+    iconColor: "text-orange-800",
+    labelColor: "text-orange-950",
+    subColor: "text-orange-900/70",
+    badge: "bg-orange-700",
+  },
+  nouveau: {
+    label: "Nouveau",
+    wash: "bg-gradient-to-r from-primary/15 via-secondary/10 to-primary/5",
+    iconBg: "bg-primary/15",
+    iconColor: "text-primary",
+    labelColor: "text-on-surface",
+    subColor: "text-on-surface-variant",
+    badge: "bg-primary",
+  },
+} as const;
+
 function trustTier(score: number) {
-  if (score >= 70) {
-    return { label: "Or", gradient: "linear-gradient(135deg, #f6b93b, #d9822b)" };
-  }
-  if (score >= 40) {
-    return { label: "Argent", gradient: "linear-gradient(135deg, #9aa6b8, #6b7688)" };
-  }
-  if (score >= 15) {
-    return { label: "Bronze", gradient: "linear-gradient(135deg, #e59a5f, #b8622a)" };
-  }
-  return { label: "Nouveau", gradient: "linear-gradient(135deg, #0058bc, #5952af)" };
+  if (score >= 70) return TRUST_TIERS.or;
+  if (score >= 40) return TRUST_TIERS.argent;
+  if (score >= 15) return TRUST_TIERS.bronze;
+  return TRUST_TIERS.nouveau;
 }
 
 function ProfileSummary({
@@ -60,6 +92,7 @@ function ProfileSummary({
   const authenticated = !!user;
   const tier = trustTier(trustScore);
   const [copied, setCopied] = useState(false);
+  const [trustInfoOpen, setTrustInfoOpen] = useState(false);
 
   const handleCopyId = async () => {
     if (!publicId) return;
@@ -113,65 +146,103 @@ function ProfileSummary({
                 <span className="material-symbols-outlined text-[18px]">edit</span>
               </Link>
             </div>
-            <h1 className="font-headline-lg-mobile md:font-headline-lg text-headline-lg-mobile md:text-headline-lg text-on-surface mb-2">
-              {displayName}
-            </h1>
-            <div
-              className="flex items-center gap-2 rounded-full px-4 py-1.5 shadow-md mt-1 text-white"
-              style={{ background: tier.gradient }}
-            >
-              <span className="material-symbols-outlined text-[18px]" style={{ fontVariationSettings: "'FILL' 1" }}>
-                shield
-              </span>
-              <span className="font-label-md text-label-md text-white">
-                Niveau de confiance : {tier.label} ({trustScore}%)
+            <div className="flex items-center gap-1.5 mb-1.5">
+              <h1 className="font-headline-lg-mobile md:font-headline-lg text-headline-lg-mobile md:text-headline-lg text-on-surface">
+                {displayName}
+              </h1>
+              <span className="material-symbols-outlined text-primary text-[20px]" style={{ fontVariationSettings: "'FILL' 1" }}>
+                verified
               </span>
             </div>
+            {publicId && (
+              <span className="inline-flex items-center px-2.5 py-0.5 rounded-full bg-surface-container-high text-on-surface-variant font-label-md text-[11px] tracking-wider mb-1">
+                @{publicId}
+              </span>
+            )}
           </section>
 
-          <section className="grid grid-cols-3 gap-3 animate-fadeIn">
-            {STATS_META.map((meta) => (
-              <div key={meta.key} className="bg-surface-container-lowest rounded-[24px] p-4 flex flex-col items-center justify-center gap-1 soft-shadow inner-stroke">
-                <span className="material-symbols-outlined text-[20px]" style={{ color: meta.color }}>
-                  {meta.icon}
-                </span>
-                <span className="font-headline-lg-mobile text-headline-lg-mobile" style={{ color: meta.color }}>
-                  {stats[meta.key]}
-                </span>
-                <span className="font-label-md text-label-md text-on-surface-variant text-center leading-tight whitespace-pre-line">
-                  {meta.label}
+          <section className="relative animate-fadeIn">
+            <button
+              type="button"
+              onClick={() => setTrustInfoOpen((v) => !v)}
+              className={`w-full rounded-2xl p-3.5 flex items-center justify-between shadow-sm active:scale-[0.99] transition-transform ${tier.wash}`}
+            >
+              <div className="flex items-center gap-3">
+                <div className={`w-9 h-9 rounded-full flex items-center justify-center shrink-0 ${tier.iconBg}`}>
+                  <span className={`material-symbols-outlined text-[20px] ${tier.iconColor}`} style={{ fontVariationSettings: "'FILL' 1" }}>
+                    verified_user
+                  </span>
+                </div>
+                <div className="flex flex-col text-left">
+                  <div className="flex items-center gap-1">
+                    <span className={`font-label-md text-label-md font-semibold ${tier.labelColor}`}>Niveau de confiance : {tier.label}</span>
+                    <span className={`material-symbols-outlined text-[14px] ${tier.subColor}`}>info</span>
+                  </div>
+                  <span className={`font-body-md text-body-md text-[13px] ${tier.subColor}`}>Membre certifié Objely</span>
+                </div>
+              </div>
+              <div className="flex items-center gap-1.5 shrink-0">
+                <span className={`text-white font-label-md text-[11px] font-bold px-2.5 py-0.5 rounded-full ${tier.badge}`}>{trustScore}%</span>
+                <span className={`material-symbols-outlined text-[18px] ${tier.subColor}`}>
+                  {trustInfoOpen ? "expand_less" : "chevron_right"}
                 </span>
               </div>
-            ))}
+            </button>
+            {trustInfoOpen && (
+              <div className="mt-2 p-4 rounded-2xl bg-inverse-surface text-inverse-on-surface shadow-xl flex items-start gap-2.5">
+                <span className="material-symbols-outlined text-primary-fixed text-[18px] shrink-0 mt-0.5" style={{ fontVariationSettings: "'FILL' 1" }}>
+                  workspace_premium
+                </span>
+                <p className="font-body-md text-body-md text-[13px] text-inverse-on-surface/90">
+                  Votre niveau de confiance reflète votre activité, les validations par scan et les restitutions d&apos;objets réussies dans la communauté Objely.
+                </p>
+              </div>
+            )}
+          </section>
+
+          <section className="mt-4 animate-fadeIn">
+            <div className="flex items-center justify-between mb-2 px-1">
+              <span className="font-label-md text-[11px] uppercase tracking-wider text-on-surface-variant font-semibold">Mon activité</span>
+            </div>
+            <div className="grid grid-cols-3 gap-2.5">
+              {STATS_META.map((meta) => (
+                <div key={meta.key} className="bg-surface-container-lowest rounded-2xl p-3 flex flex-col items-center text-center shadow-sm">
+                  <div className={`w-8 h-8 rounded-full flex items-center justify-center mb-1 ${meta.iconBg}`}>
+                    <span className={`material-symbols-outlined text-[18px] ${meta.iconColor}`}>{meta.icon}</span>
+                  </div>
+                  <span className="font-headline-md text-headline-md text-on-surface font-bold">{stats[meta.key]}</span>
+                  <span className="font-label-md text-[11px] text-on-surface-variant mt-0.5">{meta.label}</span>
+                </div>
+              ))}
+            </div>
           </section>
 
           {publicId !== null && (
             <section className="animate-fadeIn mt-3">
-              <div className="relative overflow-hidden bg-surface-container-lowest rounded-[24px] p-4 flex items-center gap-3 soft-shadow inner-stroke">
-                <div
-                  className="absolute -right-6 -top-10 w-28 h-28 rounded-full opacity-[0.07]"
-                  style={{ background: "linear-gradient(135deg, #0058bc, #8b5cf6)" }}
-                />
-                <div
-                  className="relative w-11 h-11 rounded-full flex items-center justify-center text-white shrink-0 shadow-sm"
-                  style={{ background: "linear-gradient(135deg, #0058bc, #8b5cf6)" }}
-                >
-                  <span className="material-symbols-outlined text-[20px]">fingerprint</span>
+              <div className="bg-surface-container-lowest rounded-2xl p-4 shadow-sm">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-2">
+                    <span className="material-symbols-outlined text-on-surface-variant text-[18px]">badge</span>
+                    <span className="font-label-md text-label-md text-on-surface-variant">Identifiant public</span>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={handleCopyId}
+                    className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-primary-fixed/50 text-on-primary-fixed font-label-md text-[12px] active:scale-95 transition-all"
+                  >
+                    <span className="material-symbols-outlined text-[15px]">{copied ? "check" : "content_copy"}</span>
+                    {copied ? "Copié" : "Copier"}
+                  </button>
                 </div>
-                <div className="relative min-w-0 flex-1">
-                  <p className="font-label-md text-label-md text-on-surface-variant">Identifiant public</p>
-                  <p className="font-mono text-headline-sm text-headline-sm tracking-[0.2em] text-on-surface truncate">
+                <div className="mt-2 flex items-baseline justify-between gap-2">
+                  <span className="font-mono text-headline-sm text-headline-sm tracking-[0.15em] text-on-surface font-semibold truncate">
                     @{publicId}
-                  </p>
+                  </span>
+                  <span className="font-label-md text-[12px] text-primary shrink-0">Prêt au partage</span>
                 </div>
-                <button
-                  type="button"
-                  onClick={handleCopyId}
-                  aria-label="Copier l'identifiant"
-                  className="relative shrink-0 w-10 h-10 rounded-full flex items-center justify-center text-primary hover:bg-primary/10 active:scale-95 transition-all"
-                >
-                  <span className="material-symbols-outlined text-[20px]">{copied ? "check" : "content_copy"}</span>
-                </button>
+                <p className="font-body-md text-body-md text-[13px] text-on-surface-variant mt-1.5">
+                  Utilisez cet identifiant pour être facilement retrouvé sur Objely lors de déclarations croisées.
+                </p>
               </div>
             </section>
           )}
@@ -289,49 +360,31 @@ export default function UserProfilePage() {
           <ProfileSummary user={user} authChecked={authChecked} stats={stats} avatarUrl={avatarUrl} displayName={displayName} trustScore={trustScore} publicId={publicId} />
         </div>
 
-        <section className="bg-surface-container-lowest rounded-[32px] soft-shadow inner-stroke overflow-hidden mb-8 animate-slideUp">
+        <div className="px-1 mb-2.5 mt-2">
+          <span className="font-label-md text-[11px] uppercase tracking-wider text-on-surface-variant font-semibold">Espace personnel</span>
+        </div>
+        <section className="bg-surface-container-lowest rounded-2xl soft-shadow inner-stroke overflow-hidden mb-8 animate-slideUp">
           <div className="flex flex-col">
-            {MENU_ITEMS_TOP.map((item) => (
+            {MENU_ITEMS.map((item, i) => (
               <Link
                 key={item.label}
                 href={item.href}
-                className="w-full flex items-center justify-between p-lg text-left hover:bg-black/[0.02] transition-colors border-b border-surface-variant/50"
+                className={`w-full flex items-center justify-between p-3.5 text-left hover:bg-surface-container-low transition-colors ${
+                  i < MENU_ITEMS.length - 1 ? "border-b border-surface-container-high" : ""
+                }`}
               >
-                <div className="flex items-center gap-4">
-                  <div className="w-10 h-10 rounded-full flex items-center justify-center text-white shadow-sm" style={{ background: item.gradient }}>
-                    <span className="material-symbols-outlined">{item.icon}</span>
+                <div className="flex items-center gap-3 min-w-0">
+                  <div className={`w-9 h-9 rounded-xl flex items-center justify-center shrink-0 ${item.iconBg} ${item.iconColor}`}>
+                    <span className="material-symbols-outlined text-[20px]">{item.icon}</span>
                   </div>
-                  <span className="font-body-lg text-body-lg text-on-surface">{item.label}</span>
+                  <div className="min-w-0">
+                    <div className="font-label-lg text-label-lg text-on-surface">{item.label}</div>
+                    <div className="font-body-md text-body-md text-[13px] text-on-surface-variant truncate">{item.description}</div>
+                  </div>
                 </div>
-                <span className="material-symbols-outlined text-outline-variant">chevron_right</span>
+                <span className="material-symbols-outlined text-outline-variant text-[20px] shrink-0">chevron_right</span>
               </Link>
             ))}
-
-            {MENU_ITEMS_BOTTOM.map((item, i) => {
-              const rowClassName = `w-full flex items-center justify-between p-lg text-left hover:bg-black/[0.02] transition-colors ${
-                i < MENU_ITEMS_BOTTOM.length - 1 ? "border-b border-surface-variant/50" : ""
-              }`;
-              const content = (
-                <>
-                  <div className="flex items-center gap-4">
-                    <div className="w-10 h-10 rounded-full flex items-center justify-center text-white shadow-sm" style={{ background: item.gradient }}>
-                      <span className="material-symbols-outlined">{item.icon}</span>
-                    </div>
-                    <span className="font-body-lg text-body-lg text-on-surface">{item.label}</span>
-                  </div>
-                  <span className="material-symbols-outlined text-outline-variant">chevron_right</span>
-                </>
-              );
-              return item.href ? (
-                <Link key={item.label} href={item.href} className={rowClassName}>
-                  {content}
-                </Link>
-              ) : (
-                <button key={item.label} className={rowClassName}>
-                  {content}
-                </button>
-              );
-            })}
           </div>
         </section>
       </main>
