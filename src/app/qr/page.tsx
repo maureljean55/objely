@@ -7,7 +7,6 @@ import QRCode from "qrcode";
 import BottomNav from "@/components/BottomNav";
 import QrScanner from "@/components/QrScanner";
 import { getMyProfile, updateSharePhone } from "@/lib/supabase/profile";
-import { listMyItems, type Item } from "@/lib/supabase/items";
 
 const PROFILE_LINK_RE = /\/qr\/u\/([0-9a-f-]{36})/i;
 const LOGO_SRC = "/logo/objely-mark.png";
@@ -67,7 +66,6 @@ export default function QrConnectPage() {
   const [confirmOpen, setConfirmOpen] = useState(false);
   const [shareFeedback, setShareFeedback] = useState<string | null>(null);
   const [scanError, setScanError] = useState<string | null>(null);
-  const [myItems, setMyItems] = useState<Item[]>([]);
   const [idCopied, setIdCopied] = useState(false);
 
   useEffect(() => {
@@ -82,7 +80,6 @@ export default function QrConnectPage() {
       setShowNumber(data.share_phone);
       setAuthChecked(true);
     });
-    listMyItems().then(({ data }) => setMyItems(data ?? []));
   }, []);
 
   useEffect(() => {
@@ -148,24 +145,13 @@ export default function QrConnectPage() {
     router.push(`/qr/u/${match[1]}`);
   };
 
-  const itemsLabel =
-    myItems.length === 0
-      ? null
-      : myItems.length === 1
-        ? "1 objet protégé lié"
-        : `${myItems.length} objets protégés liés`;
-  const itemsPreview = myItems
-    .slice(0, 3)
-    .map((item) => item.title)
-    .join(", ");
-
   return (
     <div className="bg-background text-on-background font-body-md antialiased min-h-screen pb-28 md:pb-12">
       <header className="glass-header fixed top-0 inset-x-0 z-50 flex items-center justify-between px-container-margin min-h-16 pt-[env(safe-area-inset-top)] w-full shadow-[0_1px_0_rgba(0,0,0,0.05)]">
-        <button type="button" onClick={() => router.back()} aria-label="Retour" className="w-10 h-10 flex items-center justify-center rounded-full text-primary hover:bg-surface-container-high/50 transition-colors -ml-2">
+        <button type="button" onClick={() => router.back()} aria-label="Retour" className="w-10 h-10 flex items-center justify-center rounded-full text-on-surface hover:bg-surface-container-high/50 transition-colors -ml-2">
           <span className="material-symbols-outlined">arrow_back_ios</span>
         </button>
-        <h1 className="font-headline-sm text-headline-sm text-primary">Mon QR Code</h1>
+        <h1 className="font-headline-sm text-headline-sm text-on-surface">Mon QR Code</h1>
         <div className="w-10 h-10" />
       </header>
 
@@ -286,24 +272,6 @@ export default function QrConnectPage() {
                 {showNumber ? "Votre numéro est visible par les personnes qui scannent votre code." : "Votre numéro reste privé."}
               </p>
             </section>
-
-            {itemsLabel && (
-              <Link
-                href="/search"
-                className="bg-surface-container-lowest rounded-xl p-md soft-shadow flex items-center justify-between active:scale-[0.99] transition-transform"
-              >
-                <div className="flex items-center gap-3 min-w-0">
-                  <div className="w-10 h-10 rounded-full bg-secondary-fixed flex items-center justify-center shrink-0 text-secondary">
-                    <span className="material-symbols-outlined text-[20px]">devices_other</span>
-                  </div>
-                  <div className="flex flex-col min-w-0">
-                    <span className="font-label-md text-label-md text-on-surface truncate">{itemsLabel}</span>
-                    <span className="font-body-md text-body-md text-[13px] text-on-surface-variant truncate">{itemsPreview}</span>
-                  </div>
-                </div>
-                <span className="material-symbols-outlined text-outline text-[20px] shrink-0">chevron_right</span>
-              </Link>
-            )}
 
             <section className="flex flex-col gap-sm">
               <button
