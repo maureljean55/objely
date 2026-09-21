@@ -229,6 +229,19 @@ body {
   animation: fab-bounce 2.4s ease-in-out infinite;
 }
 
+@keyframes qr-scan-line {
+  0%,
+  100% {
+    top: 4px;
+  }
+  50% {
+    top: calc(100% - 8px);
+  }
+}
+.qr-scan-line {
+  animation: qr-scan-line 2.4s ease-in-out infinite;
+}
+
 @keyframes splash-fade-up {
   from {
     opacity: 0;
