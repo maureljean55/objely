@@ -1,7 +1,8 @@
-import { NextResponse, type NextRequest } from "next/server";
+import { NextResponse, type NextFetchEvent, type NextRequest } from "next/server";
 import { updateSession } from "@/lib/supabase/middleware";
+import { recordPageView, shouldRecordPageView } from "@/lib/analytics/pageViews";
 
-export async function proxy(request: NextRequest) {
+export async function proxy(request: NextRequest, event: NextFetchEvent) {
   // The splash screen is pure static animation — it doesn't render anything
   // user-specific and always redirects to /home client-side regardless of
   // auth state. Skipping the session check here means it paints instantly
@@ -12,7 +13,16 @@ export async function proxy(request: NextRequest) {
     return NextResponse.next();
   }
 
-  return updateSession(request);
+  const { response, userId } = await updateSession(request);
+
+  // Fire-and-forget: waitUntil lets this finish after the response is sent,
+  // so a slow or failed analytics write never adds latency to a real
+  // navigation or takes the page down with it.
+  if (shouldRecordPageView(request)) {
+    event.waitUntil(recordPageView(request.nextUrl.pathname, userId));
+  }
+
+  return response;
 }
 
 export const config = {

@@ -30,7 +30,7 @@ function isExemptFromAalGate(pathname: string) {
   return AAL_GATE_EXEMPT_PREFIXES.some((prefix) => pathname === prefix || pathname.startsWith(`${prefix}/`));
 }
 
-export async function updateSession(request: NextRequest) {
+export async function updateSession(request: NextRequest): Promise<{ response: NextResponse; userId: string | null }> {
   let supabaseResponse = NextResponse.next({ request });
 
   const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
@@ -40,7 +40,7 @@ export async function updateSession(request: NextRequest) {
     // the whole app down with it — let the request through unauthenticated
     // instead of a blank Internal Server Error page.
     console.error("Supabase env vars are not set; skipping session refresh.");
-    return supabaseResponse;
+    return { response: supabaseResponse, userId: null };
   }
 
   const supabase = createServerClient(url, key, {
@@ -88,9 +88,9 @@ export async function updateSession(request: NextRequest) {
     if (aal && aal.nextLevel === "aal2" && aal.currentLevel !== "aal2") {
       const redirectUrl = new URL("/login", request.url);
       redirectUrl.searchParams.set("next", request.nextUrl.pathname + request.nextUrl.search);
-      return NextResponse.redirect(redirectUrl);
+      return { response: NextResponse.redirect(redirectUrl), userId: null };
     }
   }
 
-  return supabaseResponse;
+  return { response: supabaseResponse, userId: session?.user?.id ?? null };
 }
