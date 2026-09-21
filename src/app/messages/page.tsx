@@ -6,7 +6,11 @@ import Image from "next/image";
 import BottomNav from "@/components/BottomNav";
 import { getCurrentUser } from "@/lib/auth";
 import { listMyConversations, type Conversation } from "@/lib/supabase/messages";
-import { listMyDirectConversations, type DirectConversationSummary } from "@/lib/supabase/directMessages";
+import {
+  listMyDirectConversations,
+  deleteDirectConversation,
+  type DirectConversationSummary,
+} from "@/lib/supabase/directMessages";
 
 function previewText(
   body: string | null,
@@ -40,6 +44,9 @@ type Row =
 export default function MessagesPage() {
   const [rows, setRows] = useState<Row[] | null>(null);
   const [currentUserId, setCurrentUserId] = useState<string | null>(null);
+  const [deleteTarget, setDeleteTarget] = useState<{ conversationId: string; peerName: string } | null>(null);
+  const [isDeleting, setIsDeleting] = useState(false);
+  const [deleteError, setDeleteError] = useState<string | null>(null);
 
   useEffect(() => {
     Promise.all([getCurrentUser(), listMyConversations(), listMyDirectConversations()]).then(
@@ -69,6 +76,20 @@ export default function MessagesPage() {
       },
     );
   }, []);
+
+  const handleDelete = async () => {
+    if (!deleteTarget) return;
+    setIsDeleting(true);
+    setDeleteError(null);
+    const { error } = await deleteDirectConversation(deleteTarget.conversationId);
+    setIsDeleting(false);
+    if (error) {
+      setDeleteError("Impossible de supprimer la conversation. Réessayez.");
+      return;
+    }
+    setRows((prev) => (prev ?? []).filter((row) => row.key !== `direct-${deleteTarget.conversationId}`));
+    setDeleteTarget(null);
+  };
 
   return (
     <div className="bg-background text-on-surface min-h-screen flex flex-col antialiased">
@@ -145,8 +166,8 @@ export default function MessagesPage() {
               const isMine = conversation.last_message_sender_id === currentUserId;
               const peerName = conversation.other_full_name || "Utilisateur Objely";
               return (
-                <li key={row.key} className={!isLast ? "border-b border-outline-variant/30" : ""}>
-                  <Link href={`/dm/${conversation.conversation_id}`} className="block px-md py-4 hover:bg-surface-container-low transition-colors">
+                <li key={row.key} className={`flex items-stretch ${!isLast ? "border-b border-outline-variant/30" : ""}`}>
+                  <Link href={`/dm/${conversation.conversation_id}`} className="flex-1 min-w-0 block px-md py-4 hover:bg-surface-container-low transition-colors">
                     <div className="flex items-start gap-4">
                       <div className="relative shrink-0 mt-1 w-12 h-12 rounded-full overflow-hidden bg-surface-container-high flex items-center justify-center text-on-surface-variant">
                         {conversation.other_avatar_url ? (
@@ -170,12 +191,58 @@ export default function MessagesPage() {
                       </div>
                     </div>
                   </Link>
+                  <button
+                    type="button"
+                    onClick={() => setDeleteTarget({ conversationId: conversation.conversation_id, peerName })}
+                    aria-label={`Supprimer la conversation avec ${peerName}`}
+                    className="shrink-0 w-11 flex items-center justify-center text-on-surface-variant hover:text-error hover:bg-error-container/20 transition-colors"
+                  >
+                    <span className="material-symbols-outlined text-[20px]">delete</span>
+                  </button>
                 </li>
               );
             })}
           </ul>
         )}
       </main>
+
+      {deleteTarget && (
+        <div
+          role="dialog"
+          aria-modal="true"
+          className="fixed inset-0 z-[100] flex items-end sm:items-center justify-center bg-black/30 backdrop-blur-sm"
+          onClick={() => !isDeleting && setDeleteTarget(null)}
+        >
+          <div
+            className="w-full sm:w-[400px] bg-surface-container-lowest rounded-t-[28px] sm:rounded-[28px] p-lg pb-8 sm:pb-lg shadow-xl"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <h2 className="font-headline-md text-headline-md text-on-surface mb-1">Supprimer la conversation avec {deleteTarget.peerName} ?</h2>
+            <p className="font-body-md text-body-md text-on-surface-variant mb-lg">
+              Elle disparaîtra de votre liste. Si {deleteTarget.peerName} vous répond, la conversation réapparaîtra.
+            </p>
+            {deleteError && <p className="font-body-md text-[13px] text-error mb-3">{deleteError}</p>}
+            <div className="flex gap-sm">
+              <button
+                type="button"
+                disabled={isDeleting}
+                onClick={() => setDeleteTarget(null)}
+                className="flex-1 h-12 rounded-[14px] bg-surface-container-high text-on-surface font-headline-sm text-headline-sm hover:bg-surface-container-highest transition-colors disabled:opacity-50"
+              >
+                Annuler
+              </button>
+              <button
+                type="button"
+                disabled={isDeleting}
+                onClick={handleDelete}
+                className="flex-1 h-12 rounded-[14px] bg-error text-on-error font-headline-sm text-headline-sm hover:opacity-90 transition-opacity disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                {isDeleting ? "Suppression…" : "Supprimer"}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
 
       <BottomNav active="profile" />
     </div>
