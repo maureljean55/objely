@@ -2,11 +2,22 @@ import { NextResponse } from "next/server";
 import { createClient as createAdminClient, type SupabaseClient } from "@supabase/supabase-js";
 import { createClient } from "@/lib/supabase/server";
 
-// Every bucket the app uploads to (see uploadItemPhoto/uploadAvatarPhoto/
-// uploadVoiceNote) stores files under `${userId}/...`, so emptying a user's
-// data here is just listing and removing everything in that one folder per
-// bucket — no per-file tracking needed.
-const STORAGE_BUCKETS = ["item-photos", "avatars", "voice-messages"];
+// Every bucket the app uploads to stores files under `${userId}/...`, so
+// emptying a user's data here is just listing and removing everything in
+// that one folder per bucket — no per-file tracking needed. Keep this in
+// sync with every `.storage.from(...)` call site under src/lib/supabase/ —
+// a bucket added there without being added here leaves orphaned files
+// behind on account deletion (identity-documents holds a scanned ID
+// document, which is exactly the kind of file this list exists to catch).
+const STORAGE_BUCKETS = [
+  "item-photos",
+  "avatars",
+  "voice-messages",
+  "identity-documents",
+  "community-covers",
+  "message-attachments",
+  "support-attachments",
+];
 
 async function emptyUserStorage(admin: SupabaseClient, userId: string) {
   for (const bucket of STORAGE_BUCKETS) {

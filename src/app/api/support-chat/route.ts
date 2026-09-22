@@ -119,6 +119,19 @@ export async function POST(request: Request) {
         }),
       },
     );
+
+    if (!response.ok) {
+      // A clean HTTP error (bad/expired key, quota exceeded, renamed/
+      // unavailable model) doesn't throw — without this check, `raw` below
+      // is silently undefined and the conversation stays stuck in "bot"
+      // status forever, repeating the generic fallback message with no
+      // human ever notified. Log the body for diagnosis, but never surface
+      // it to the user.
+      const errorBody = await response.text().catch(() => "");
+      console.error(`Gemini API error ${response.status}`, errorBody);
+      throw new Error(`Gemini API responded ${response.status}`);
+    }
+
     const json = await response.json();
     const raw: string | undefined = json?.candidates?.[0]?.content?.parts?.[0]?.text;
     if (raw) {
@@ -127,8 +140,13 @@ export async function POST(request: Request) {
       if (escalated) {
         botText += "\n\nJe transmets votre demande à un conseiller humain, qui vous répondra ici dès que possible.";
       }
+    } else {
+      // 200 OK but no usable text (e.g. safety-filtered response with no
+      // candidates) — same "don't strand the user silently" reasoning.
+      throw new Error("Gemini API returned no usable candidate text");
     }
-  } catch {
+  } catch (err) {
+    console.error("support-chat: falling back to human escalation", err);
     escalated = true;
     botText = "Désolé, une erreur technique est survenue. Je transmets votre demande à un conseiller humain.";
   }
