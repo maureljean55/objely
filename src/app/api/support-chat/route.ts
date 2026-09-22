@@ -59,6 +59,14 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: "Conversation introuvable." }, { status: 404 });
   }
 
+  // Every message here can trigger a real, billed Gemini call — cap it
+  // before that happens rather than after, so a scripted loop can't run up
+  // the bill or degrade the service for everyone else.
+  const { data: recentMessageCount } = await supabase.rpc("user_support_messages_in_last_minute", { p_user_id: user.id });
+  if ((recentMessageCount ?? 0) >= 20) {
+    return NextResponse.json({ error: "Trop de messages envoyés, patientez un instant avant de réessayer." }, { status: 429 });
+  }
+
   const { data: userMessage, error: insertError } = await supabase
     .from("support_messages")
     .insert(
