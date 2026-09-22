@@ -26,9 +26,14 @@ export default async function SearchFiltersPage({
   } = await supabase.auth.getSession();
   const user = session?.user ?? null;
 
+  // items_public rather than items directly: the exact location now lives
+  // in its own RLS-protected table (see
+  // 20260923010000_protect_item_location.sql) that items_public already
+  // joins correctly — including always showing the real value back to the
+  // owner, which is what this listing needs.
   const { data: myItems } = user
     ? await supabase
-        .from("items")
+        .from("items_public")
         .select("*")
         .eq("user_id", user.id)
         .is("deleted_at", null)

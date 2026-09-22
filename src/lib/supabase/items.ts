@@ -97,7 +97,6 @@ export async function createItemFromDraft(draft: DeclarationDraft, type: ItemTyp
       description: buildDescription(draft, type),
       brand: draft.brand || null,
       colors: draft.colors && draft.colors.length > 0 ? draft.colors : null,
-      location: draft.location || null,
       location_public: draft.locationPublic || null,
       hide_exact_location: draft.hideExactLocation ?? false,
       occurred_on: draft.date || null,
@@ -114,6 +113,9 @@ export async function createItemFromDraft(draft: DeclarationDraft, type: ItemTyp
     type === "found" && draft.privateDetail && draft.privateDetail.trim().length > 0
       ? supabase.from("item_secrets").insert({ item_id: item.id, private_detail: draft.privateDetail.trim() })
       : null,
+    // Exact location lives in its own RLS-protected table, not on items
+    // itself — see 20260923010000_protect_item_location.sql.
+    draft.location ? supabase.from("item_locations").insert({ item_id: item.id, location: draft.location }) : null,
     type === "found" ? awardFoundItemTrustBonus(item.id) : null,
   ]);
 
@@ -139,8 +141,12 @@ export async function listMyItems() {
   const user = session?.user ?? null;
   if (!user) return { data: [] as Item[], error: null };
 
+  // items_public rather than items directly: the exact location now lives in
+  // its own RLS-protected table (see 20260923010000_protect_item_location.sql)
+  // that items_public already joins correctly — including always showing the
+  // real value back to the owner, which is what this listing needs.
   return supabase
-    .from("items")
+    .from("items_public")
     .select("*")
     .eq("user_id", user.id)
     .is("deleted_at", null)

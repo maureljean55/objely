@@ -65,6 +65,22 @@ export default async function ActivityPage({ searchParams }: { searchParams: Pro
     .order("created_at", { ascending: false })
     .returns<MatchRow[]>();
 
+  // The embed above resolves through matches_*_item_id_fkey, which targets
+  // the base `items` table directly — PostgREST can't route a foreign-key
+  // embed through a view, so it can't apply items_public's redaction (exact
+  // location only for the owner or a confirmed counterpart) on its own (see
+  // the same limitation called out in getMatch, src/lib/supabase/messages.ts).
+  // Patch the (now correctly-redacted) location back in from a second query.
+  const itemIds = Array.from(new Set((allMatches ?? []).flatMap((m) => [m.lost_item.id, m.found_item.id])));
+  const { data: locatedItems } = itemIds.length
+    ? await supabase.from("items_public").select("id, location").in("id", itemIds)
+    : { data: [] as { id: string; location: string | null }[] };
+  const locationByItemId = new Map((locatedItems ?? []).map((i) => [i.id, i.location]));
+  for (const match of allMatches ?? []) {
+    match.lost_item.location = locationByItemId.get(match.lost_item.id) ?? null;
+    match.found_item.location = locationByItemId.get(match.found_item.id) ?? null;
+  }
+
   // Hide matches referencing an item either side has since soft-deleted —
   // the declaration no longer exists to its owner, so it shouldn't keep
   // showing up as an active match to the other party.
