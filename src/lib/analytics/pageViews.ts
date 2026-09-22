@@ -1,6 +1,10 @@
 import type { NextRequest } from "next/server";
 
 const EXCLUDED_PREFIXES = ["/api/"];
+// Technical routes a browser/PWA fetches on its own (manifest, robots,
+// sitemap) — not proxy-matcher-excluded like images are, but not a page
+// anyone "visited" either, so they'd otherwise pollute the top-pages ranking.
+const EXCLUDED_EXACT_PATHS = new Set(["/manifest.webmanifest", "/robots.txt", "/sitemap.xml"]);
 
 /**
  * Decides whether a request is a real navigation worth counting, as opposed
@@ -11,6 +15,7 @@ const EXCLUDED_PREFIXES = ["/api/"];
 export function shouldRecordPageView(request: NextRequest): boolean {
   if (request.method !== "GET") return false;
   if (EXCLUDED_PREFIXES.some((prefix) => request.nextUrl.pathname.startsWith(prefix))) return false;
+  if (EXCLUDED_EXACT_PATHS.has(request.nextUrl.pathname)) return false;
   if (request.headers.get("next-router-prefetch")) return false;
   if (request.headers.get("purpose") === "prefetch" || request.headers.get("sec-purpose")?.includes("prefetch")) return false;
   return true;
