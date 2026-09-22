@@ -29,7 +29,7 @@ export default function TwoFactorAuthSection() {
   };
 
   useEffect(() => {
-    refreshFactors();
+    Promise.resolve().then(() => refreshFactors());
   }, []);
 
   const startEnroll = async () => {

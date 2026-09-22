@@ -23,7 +23,6 @@ export default function DeclarationMatchesPage() {
   const [phase, setPhase] = useState<"checking" | "verified" | "match" | "no-match">("checking");
   const [candidate, setCandidate] = useState<MatchCandidate | null>(null);
   const [ringOffset, setRingOffset] = useState(CIRCUMFERENCE);
-  const [surveillance, setSurveillance] = useState(true);
   const [isPublishing, setIsPublishing] = useState(false);
   const [publishError, setPublishError] = useState<string | null>(null);
 
@@ -276,18 +275,6 @@ export default function DeclarationMatchesPage() {
             </div>
 
             <div className="bg-surface-container-lowest rounded-[24px] p-md soft-shadow mb-lg border border-surface-variant">
-              <div className="flex items-center justify-between mb-2">
-                <label htmlFor="surveillance-toggle" className="font-headline-sm text-headline-sm text-on-surface">Activer la surveillance</label>
-                <button
-                  id="surveillance-toggle"
-                  type="button"
-                  aria-pressed={surveillance}
-                  onClick={() => setSurveillance((v) => !v)}
-                  className={`w-12 h-6 rounded-full relative transition-colors ${surveillance ? "bg-primary" : "bg-surface-container-highest"}`}
-                >
-                  <span className={`absolute top-1 w-4 h-4 bg-white rounded-full shadow-sm transition-transform ${surveillance ? "translate-x-6" : "translate-x-1"}`} />
-                </button>
-              </div>
               <p className="font-body-md text-body-md text-on-surface-variant">Objely continuera à rechercher automatiquement des correspondances.</p>
             </div>
 

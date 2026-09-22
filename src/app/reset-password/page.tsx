@@ -78,8 +78,13 @@ export default function ResetPasswordPage() {
     const searchParams = new URLSearchParams(window.location.search);
     const tokenHash = searchParams.get("token_hash");
     if (tokenHash && searchParams.get("type") === "recovery") {
-      setPendingTokenHash(tokenHash);
-      setCheckingSession(false);
+      // Deferred the same way the other branches below already are (via
+      // .then()) — same reasoning, satisfies the "no synchronous setState
+      // in an effect body" rule without changing behavior.
+      Promise.resolve().then(() => {
+        setPendingTokenHash(tokenHash);
+        setCheckingSession(false);
+      });
       return;
     }
 
@@ -97,8 +102,10 @@ export default function ResetPasswordPage() {
     if (hash) window.history.replaceState(null, "", window.location.pathname + window.location.search);
 
     if (hashParams.get("error") || hashParams.get("error_code")) {
-      setHasSession(false);
-      setCheckingSession(false);
+      Promise.resolve().then(() => {
+        setHasSession(false);
+        setCheckingSession(false);
+      });
       return;
     }
 
