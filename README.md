@@ -1,36 +1,80 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Objely
 
-## Getting Started
+**Objely met en relation les personnes qui perdent un objet et celles qui le trouvent.**
+On déclare un objet perdu ou trouvé, Objely cherche automatiquement les déclarations qui correspondent, puis les deux personnes échangent et organisent la restitution en toute sécurité.
 
-First, run the development server:
+🔗 **Démo : [objely.vercel.app](https://objely.vercel.app)**
+
+---
+
+## Fonctionnalités
+
+- **Déclaration en quelques étapes** : objet perdu ou trouvé, catégorie, couleurs, marque, lieu, date et photos.
+- **Rapprochement automatique** : chaque déclaration reçoit un score de correspondance avec les objets existants (voir plus bas).
+- **Vérification de propriété** avant toute restitution, et vérification d'identité depuis le profil.
+- **Messagerie en temps réel** : réponses, modification et suppression de messages, messages vocaux.
+- **Rendez-vous de restitution** synchronisés en temps réel entre les deux personnes.
+- **Communautés** avec leurs propres objets et leur discussion de groupe.
+- **QR code personnel** : un objet étiqueté renvoie vers un profil public pour contacter son propriétaire.
+- **Notifications push** sur le web.
+- **Score de confiance** des utilisateurs, qui progresse avec les objets rendus.
+- **Assistant de support** basé sur Gemini, avec une limite de requêtes pour maîtriser les coûts.
+- **RGPD** : suppression du compte, pages CGU et confidentialité.
+
+## Comment fonctionne le rapprochement
+
+Le calcul est fait directement dans PostgreSQL, par la fonction `find_best_match_candidate`.
+Seul le meilleur candidat quitte la base, ce qui évite de charger toutes les déclarations dans le navigateur.
+
+| Critère | Points |
+|---|---|
+| Même type inverse (perdu ↔ trouvé) et même catégorie | 40 (base) |
+| Au moins une couleur en commun | +15 |
+| Même marque | +15 |
+| Au moins un mot de lieu en commun | +15 |
+| Dates à 14 jours d'écart au plus | +15 |
+
+Le score est plafonné à 100. Un index partiel sur `(type, category_id, status)` accélère la recherche.
+
+## Base de données
+
+- **80 migrations** Supabase / PostgreSQL versionnées dans `supabase/migrations`
+- Sécurité par ligne (RLS) sur les tables, fonctions SQL pour les opérations sensibles
+- Suppression logique des objets, stockage des photos et avatars, temps réel sur les messages et les rendez-vous
+
+## L'écosystème Objely
+
+| Application | Rôle |
+|---|---|
+| **Objely** (ce dépôt) | Application principale pour le grand public |
+| [Objely Admin](https://github.com/maureljean55/objely-admin) | Modération : indicateurs, utilisateurs, rapprochements, support, signalements |
+| [Objely École](https://github.com/maureljean55/objely-ecole) | Borne tactile pour les lycées et universités |
+| [Objely École Admin](https://github.com/maureljean55/objely-admin-ecole) | Gestion des objets par la vie scolaire |
+
+## Stack
+
+Next.js · React · TypeScript · Tailwind CSS · Supabase (PostgreSQL, Auth, Storage, Realtime) · Web Push · API Gemini · Vercel
+
+## Lancer le projet en local
 
 ```bash
+npm install
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Puis ouvrir http://localhost:3000.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+Variables d'environnement à définir dans `.env.local` :
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+| Variable | Usage |
+|---|---|
+| `NEXT_PUBLIC_SUPABASE_URL` | URL du projet Supabase |
+| `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY` | Clé publique Supabase |
+| `SUPABASE_SECRET_KEY` | Clé serveur Supabase (côté serveur uniquement) |
+| `NEXT_PUBLIC_SITE_URL` | URL publique du site |
+| `GEMINI_API_KEY` | Assistant de support |
+| `NEXT_PUBLIC_VAPID_PUBLIC_KEY`, `VAPID_PRIVATE_KEY`, `VAPID_SUBJECT` | Notifications push |
 
-## Learn More
+## Auteur
 
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+**N'cho Jean Maurel Monne**, étudiant en intelligence artificielle à l'ECE Paris · [GitHub](https://github.com/maureljean55)
